@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "校园招聘动态表";
+}
+<div class="mini-tabs" id="mainTab" style="width: 100%; height: 100%;" activeindex="0">
+</div>
+
+
+<script type="text/javascript">
+
+    function pageLoad(data) {
+        setTab();
+    }
+
+    function setTab() {
+
+        var mainTabs = mini.get("mainTab");
+
+        var passTab = {
+            title: "校园招聘面试通过率",
+            url: "/HR/AutoForm/Recruitment_Schoolrecruitmentinterview/Recruitment_SchoolInterviewPassRate",
+            showCloseButton: false
+        };
+        mainTabs.addTab(passTab);
+        mainTabs.activeTab(passTab);
+
+        var entryTab = {
+            title: "校园招聘入职率",
+            url: "/HR/AutoForm/Recruitment_Schoolrecruitmentinterview/Recruitment_SchoolInterviewEntryRate",
+            showCloseButton: false
+        };
+
+        mainTabs.addTab(entryTab);
+
+
+        var finishTab = {
+            title: "校园招聘完成率",
+            url: "/HR/AutoForm/Recruitment_Schoolrecruitmentinterview/Recruitment_SchoolInterviewFinishRate",
+            showCloseButton: false
+        };
+
+        mainTabs.addTab(finishTab);
+    }
+
+</script>
+
+
+

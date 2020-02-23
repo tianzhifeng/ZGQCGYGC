@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "CooperationTrackTab";
+}
+
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<link href="~/Scripts/Menu/Style.css" rel="stylesheet" type="text/css" />
+
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="0">
+    <div title="north" showheader="false" region="north" height="28" showspliticon="false" style="border:0px">
+        <div class="menu_tab_a_bg">
+            <ul id="TabPlan" class="menu_tab_a">
+                <li style="cursor:pointer">
+                    <a style="cursor: pointer" key="提资里程碑计划" class="current">互提矩阵表</a>
+                </li>
+                <li style="cursor:pointer">
+                    <a style="cursor: pointer" key="专业提资计划">互提详细计划</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border:0px">
+        <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;">
+            <div title="" showheader="false" headerstyle="display:none;">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var wbsID = "@Html.Raw(ViewBag.WBSID)";
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var key = "";
+    $("#TabPlan a").bind("click", function (e) {
+        $("#TabPlan a").removeClass("current");
+        key = $(e.target).attr("key");
+        loadTab();
+        $(e.target).addClass("current");
+    });
+
+    function onChange(e) {
+        loadTab();
+    }
+
+    function loadTab() {
+        var url = "CooperationTrack?ProjectInfoID=" + projectInfoID + "&WBSID=" + wbsID;
+        if (key == "专业提资计划")
+            url = "CooperationDetailPlanTrack?ProjectInfoID=" + projectInfoID + "&WBSID=" + wbsID;
+        else if (key == "提资里程碑计划")
+            url = "CooperationTrack?ProjectInfoID=" + projectInfoID + "&WBSID=" + wbsID;
+        var modeCode = getQueryString("ModeCode");
+        if (modeCode)
+            url += "&ModeCode=" + modeCode;
+        var mainTabs = mini.get("mainTab");
+        var tab = mainTabs.getTabs()[0];
+        tab.url = url;
+        mainTabs.reloadTab(tab);
+    }
+
+    function pageLoad() {
+        onChange();
+    }
+</script>
+<style type="text/css">
+    .mini-tabs-bodys {
+        padding: 0 0 0 0;
+    }
+
+    .mini-tabs-scrollCt {
+        visibility: hidden;
+        height: 0px;
+    }
+</style>

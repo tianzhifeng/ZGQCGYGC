@@ -1,0 +1,542 @@
+﻿@{
+    ViewBag.Title = "收款计划列表";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<style type="text/css">
+    .icon-row-cancel {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+        cursor: pointer;
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/cancel.gif) no-repeat;
+    }
+
+    .icon-row-save {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+        cursor: pointer;
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/save.gif) no-repeat;
+    }
+
+    .icon-row-edit {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+        cursor: pointer;
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/edit.gif) no-repeat;
+    }
+
+    .icon-row-split {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+        cursor: pointer;
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/split.gif) no-repeat;
+    }
+
+    .icon-row-remove {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+        cursor: pointer;
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/remove.gif) no-repeat;
+    }
+</style>
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table>
+        <tr>
+            <td style="white-space: nowrap; width: 100%;">
+                <a class="mini-button" id="btnCombine" iconcls="icon-addnew" onclick="combinPlanReceipt()" plain="true">
+                    计划合并
+                </a>
+                <a class="mini-button" id="btnDelay" iconcls="icon-print" onclick="planDelay();" plain="true">计划延期</a>
+                <a class="mini-button" id="btnBadDebt" iconcls="icon-goto" onclick="setBadDebt();" plain="true">坏账</a>
+                <a class="mini-button" id="btnRevertBadDebt" iconcls="icon-undo" onclick="revertBadDebt();" plain="true">
+                    撤销坏账
+                </a>
+                @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap; width: 100%;">
+                <div id="gridPattern" class="mini-checkbox" style="width: 60px;" checked="true" readonly="false" text="简洁视图"
+                     onvaluechanged="gridPatternChanged()">
+                </div>
+                <span class="separator"></span>分组：
+                <input class="mini-combobox" id="cbGroupType" style="width: 75px;" valuefield="value" textfield="text"
+                       data="groupType" onvaluechanged="groupTypeChanged()" />
+                <span class="separator"></span>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入客户名称或合同名称或合同编号" style="width: 240px;"
+                       onenter="tabSearch()" onbuttonclick="tabSearch()" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GridArea">
+    <div id="dataGrid" class="mini-datagrid" autoload="false" url="GetList" showsummaryrow="true" multiselect="true"
+         style="width: 100%; height: 100%" ondrawsummarycell="onDrawSummaryCell" virtualscroll="false" ondrawcell="OnDrawCell"
+         oncellendedit="OnCellEndEdit" editnextonenterkey="true" editnextrowcell="true" ondrawgroup="onDrawGroup"
+         sortfield="PlanDate" sortorder="asc" frozenstartcolumn="0" frozenendcolumn="5" allowcellvalid="true">
+        <div property="columns">
+            <div type="checkcolumn" width="30">
+            </div>
+            <div type="indexcolumn" width="30">
+            </div>
+            <div field="action" width="60" headeralign="center" align="center" renderer="onPlanReceiptActionRender">
+                操作
+            </div>
+            <div field="ContractInfoName" name="ContractInfoName" width="200" headeralign="center" allowsort="true" align="left">
+                合同名称
+            </div>
+            <div field="Name" headeralign="center" width="200" allowsort="true" align="left">
+                计划收费条件<input property="editor" name="Name" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PlanDate" dateformat="yyyy-MM" width="80" headeralign="center" allowsort="true" align="center">
+                计划收款日期<input property="editor" class="mini-monthpicker" style="width: 100%;" />
+            </div>
+            <div field="" headeralign="center" width="100" allowsort="true" align="center">
+                计划收费比例<input property="editor" name="Name" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="" headeralign="center" width="100" allowsort="true" align="center">
+                计划收费金额(元)<input property="editor" name="Name" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="" headeralign="center" width="100" allowsort="true"
+                 align="center" vtype="required;float;min:0.1">
+                计划开票比例
+            </div>
+            <div field="FactInvoiceValue" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true"
+                 align="right">
+                计划开票金额(元)
+            </div>
+            <div field="" headeralign="center" width="100" allowsort="true"
+                 align="center" vtype="required;float;min:0.1">
+                计划适用税率
+            </div>
+            <div field="FactInvoiceValue" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true"
+                 align="right">
+                计划开票销项税额(元)
+            </div>
+            <div field="State" width="80" headeralign="center" allowsort="true" align="center">
+                状态
+            </div>
+            <div field="FactInvoiceValue" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true"
+                 align="right">
+                累计开票金额(元)
+            </div>
+            <div field="FactValue" name="FactValue" width="100" datatype="currency" currencyunit="￥" headeralign="center"
+                 allowsort="true" align="right">
+                实际到款金额(元)
+            </div>
+            <div field="FactDate" width="80" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                到款时间
+            </div>
+            <div field="BadDebtValue" datatype="currency" currencyunit="￥" width="100" headeralign="center" allowsort="true"
+                 align="right">
+                坏账金额
+            </div>
+            <div field="Remark" headeralign="center" width="150" allowsort="true" align="left" vtype="string">
+                备注<input property="editor" name="Remark" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="CustomerInfoName" name="CustomerInfoName" width="160" headeralign="center" allowsort="true" align="left">
+                客户名称
+            </div>
+            <div field="ContractInfoCode" name="ContractInfoCode" width="80" headeralign="center" allowsort="true" align="center">
+                合同编号
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; display: none;" showmodal="true"
+     allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">
+                        客户名称
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$CustomerInfoName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                    </td>
+                    <td width="10%" align="center">
+                        合同编号
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$ContractInfoCode" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                    </td>
+                    <td width="10%" align="center">
+                        商务经理
+                    </td>
+                    <td width="23%" align="left">
+                        <input class="mini-buttonedit" name="$EQ$ProductionChargerUser" textname="ProductionChargerUserName" style="width: 85%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        合同名称
+                    </td>
+                    <td align="left">
+                        <input name="$LK$ContractInfoName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                    </td>
+                    <td align="center">
+                        收款项名称
+                    </td>
+                    <td align="left">
+                        <input name="$LK$Name" class="mini-textbox" style="width: 85%" vtype="maxLength:500" />
+                    </td>
+                    <td align="center">  生产责任部门</td>
+                    <td align="left"><input class="mini-buttonedit" name="$EQ$ProductionDept" textname="ProductionDeptName" style="width: 85%;" allowinput="false" /></td>
+                </tr>
+                <tr>
+
+                    <td align="center"></td>
+                    <td></td>
+                    <td align="center"></td>
+                    <td></td>
+                    <td align="center"></td>
+                    <td></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="tabSearch()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.PlanReceiptState))
+</script>
+<script type="text/javascript">
+    addSingleUserSelector("$EQ$BusinessChargerUser");
+    addSingleOrgSelector("$EQ$ProductionDept");
+    addSingleOrgSelector("QuickSearchProductionDept");
+    addSingleOrgSelector("ProductionDept");
+    addSingleUserSelector("$EQ$ProductionChargerUser");
+
+    var groupType = [{ value: "CustomerInfoName", text: "客户" }, { value: "ContractInfoName", text: "合同" }, { value: "ProductionDeptName", text: "生产部门" },
+                     { value: "NoGroup", text: "不分组" }];
+
+    addGridLink('dataGrid', 'ContractInfoName', '/MvcConfig/UI/Form/PageView?TmplCode=Fun_ContractInfo_ContractInfoTab&ID={ContractInfoID}&FuncType=View', { "width": "80%", "height": "90%", "title": "查看", "mustSelectOneRow": "true" });
+    addSingleUserSelector("BusinessChargerUser");
+    addGridEnum("dataGrid", "State", "PlanReceiptState");
+</script>
+<script type="text/javascript">
+
+    normalParamSettings.searchFields = "CustomerInfoName,Name,ContractInfoName,ContractInfoCode";
+    function onTabPageLoad() {
+        mini.get("cbGroupType").setValue("NoGroup");
+        gridPatternChanged();
+    }
+
+    //列表显示模式改变
+    function gridPatternChanged() {
+        var grid = mini.get("dataGrid");
+        var ck = mini.get("gridPattern");
+        var simplyMode = ck.getValue();
+        var columnName = "DutyType,ProductionChargerUserName,FactInvoiceValue,FactDate,Remark,CustomerInfoName,ContractInfoCode";
+        if (simplyMode == "true") {
+            if (grid.isEditing()) {
+                msgUI("请先【保存】或者【取消】正在编辑的收款项");
+                ck.setValue(false);
+                return;
+            }
+            ck.setText("简洁视图");
+            for (var i = 0; i < columnName.split(",").length; i++) {
+                grid.hideColumn(grid.getColumn(columnName.split(",")[i]));
+            }
+            grid.unFrozenColumns();
+        } else {
+            if (grid.isEditing()) {
+                msgUI("请先【保存】或者【取消】正在编辑的收款项", 1);
+                ck.setValue(true);
+                return;
+            }
+            ck.setText("简洁视图");
+            for (var i = 0; i < columnName.split(",").length; i++) {
+                grid.showColumn(grid.getColumn(columnName.split(",")[i]));
+            }
+            grid.frozenColumns(0, 5);
+        }
+    }
+
+
+    //重新绘制单元格
+    function OnDrawCell(e) {
+        var record = e.record;
+        if (e.field == "State") {
+            if (record.IsDelay == "T") {
+                e.cellStyle = "color:#e00000;font-weight:bold;background:#e6b7b7";
+            }
+            else if (record.State == "Receipted") {
+                e.cellStyle = "color:#2da100;background:#c6d7e6";
+            }
+            else if (record.State == "PartReceipted") {
+                e.cellStyle = "color:#0a6aad;background:#e6dfbd";
+            }
+            else if (record.State == "UnFinished") {
+                e.cellStyle = "color:#8e3e84;background:#e6cfe3";
+            }
+            else if (record.State == "BadDebt") {
+                e.cellStyle = "color:#777777;background:#e5e5e5";
+            }
+        }
+    }
+
+    //重绘计划收款的操作按钮
+    function onPlanReceiptActionRender(e) {
+        var dataGrid = e.sender;
+        var row = e.row; var rowIndex = e.rowIndex; var record = e.record;
+        var uid = record._uid;
+        var result = "";
+        if (dataGrid.isEditingRow(row)) {
+            result = '<div style="width:37px;margin:0px; auto"><span class="icon-row-save" onclick="javascript:savePlanReceiptRow(\'' + uid + '\',\'' + rowIndex + '\')" title="保存" style="cursor:pointer;margin-right:5px;float:left;"></span>';
+            result += '<span class="icon-row-cancel" onclick="javascript:cancelPlanReceiptRow(\'' + uid + '\')" title="取消" style="cursor:pointer;float:left"></span></div>'
+        }
+        else if (row.State != "UnReceipt")
+            result = "";
+        else {
+            result = '<div style="margin:0px; padding:0px; auto">' +
+            '<span class="icon-row-split" onclick="javascript:splitPlanReceiptRow(\'' + uid + '\')" title="拆分" style="cursor:pointer;margin-right:5px;float:left;"></span>'
+            + '<span class="icon-row-edit" onclick="javascript:editPlanReceiptRow(\'' + uid + '\')" title="编辑" style="cursor:pointer;margin-right:5px;float:left;"></span></div>';
+        }
+        return result;
+    }
+
+    //编辑计划收款
+    function editPlanReceiptRow(row_uid) {
+        var grid = mini.get("dataGrid");
+        if (grid.isEditing()) {
+            msgUI("请先【保存】或者【取消】正在编辑的计划收款");
+            return;
+        }
+        //验证计划收款是否已经开票或者申请开票
+        var row = grid.getRowByUID(row_uid);
+        if (row.State != "UnReceipt") {
+            msgUI("只能编辑未关闭的计划");
+            return;
+        }
+        grid.beginEditRow(row);
+    }
+
+    //取消编辑计划收款
+    function cancelPlanReceiptRow(row_uid) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getRowByUID(row_uid);
+        if (row._state == "added") {
+            grid.reload();
+        }
+        else {
+            grid.cancelEditRow(row);
+        }
+    }
+
+    //保存计划收款
+    function savePlanReceiptRow(row_uid, rowIndex) {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        var row = grid.getRowByUID(row_uid);
+        addExecuteParam("planReceiptData", mini.encode(row));
+        execute("SavePlanReceipt", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                grid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function combinPlanReceipt() {
+        var grid = mini.get("dataGrid");
+        if (grid.isEditing()) {
+            msgUI("请先【保存】或者【取消】正在编辑的计划收款");
+            return;
+        }
+        var rows = grid.getSelecteds();
+        if (rows.length < 2) {
+            msgUI("请至少选择2条计划收款");
+            return;
+        }
+        msgUI("您确定要合并选中计划收款吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("PlanReceiptData", rows);
+            execute("CombinePlanReceipt", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    grid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function setBadDebt() {
+        var grid = mini.get("dataGrid");
+        if (grid.isEditing()) {
+            msgUI("请先【保存】或者【取消】正在编辑的计划收款");
+            return;
+        }
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择条一条计划收款");
+            return;
+        }
+        msgUI("您确定要将选中的计划收款标记为坏账吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("PlanReceiptData", mini.encode(rows));
+            execute("SetBadDebt", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    grid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function splitPlanReceiptRow(row_uid, rowIndex) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getRowByUID(row_uid);
+        msgUI("您确定需要拆分计划收款吗？", 2, function (result) {
+            if (result != "ok") return;
+            var url = "SplitEdit?ID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "计划收款拆分", width: 800, height: 400,
+                onDestroy: function (data) {
+                    if (!data || data == "close") return;
+                    addExecuteParam("PlanReceiptID", row.ID);
+                    addExecuteParam("SplitData", data);
+                    execute("SplitPlanReceipt", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            grid.reload();
+                        }, validateForm: false
+                    });
+                }
+            });
+        });
+    }
+
+    function revertBadDebt() {
+        var grid = mini.get("dataGrid");
+        if (grid.isEditing()) {
+            msgUI("请先【保存】或者【取消】正在编辑的计划收款");
+            return;
+        }
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一条收款计划");
+            return;
+        }
+        msgUI("您确定要撤销选中的坏账记录吗？", 2, function (data) {
+            if (data != "ok") return;
+            addExecuteParam("PlanReceiptData", mini.encode(rows));
+            execute("RevertBadDebt", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    grid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function planDelay() {
+        var grid = mini.get("dataGrid");
+        if (grid.isEditing()) {
+            msgUI("请先【保存】或者【取消】正在编辑的计划收款");
+            return;
+        }
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一条收款计划");
+            return;
+        }
+        addExecuteParam("PlanReceiptData", mini.encode(rows));
+        execute("ValidateOperation", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "DelayEdit";
+                openWindow(url, {
+                    refresh: false, title: "计划收款延期", width: 400, height: 300,
+                    onDestroy: function (data) {
+                        if (!data || data == "close") return;
+                        msgUI("您确定需要延期所选择的【" + rows.length + "】条计划收款吗？", 2, function (result) {
+                            if (result != "ok") return;
+                            addExecuteParam("NewPlanDate", data);
+                            addExecuteParam("PlanReceiptData", mini.encode(rows));
+                            execute("DelayPlan", {
+                                showLoading: true, refresh: false, onComplete: function (data) {
+                                    grid.reload();
+                                }, validateForm: false
+                            });
+                        });
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+    //分组
+    function groupTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var groupColumName = mini.get("cbGroupType").value;
+        var column = grid.getColumn(groupColumName);
+        if (column) {
+            grid.groupBy(groupColumName, "asc");
+        }
+        else {
+            grid.clearGroup();
+        }
+        grid.reload();
+    }
+
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        if (result.sumData && e.field) {
+            if (result.sumData[e.field] != undefined) {
+                e.cellHtml = "￥" + result.sumData[e.field];
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+            else if (result.avgData[e.field] != undefined) {
+                e.cellHtml = "平均：" + "￥" + result.avgData[e.field];
+                e.cellStyle = "text-align:center; color:Brown,datatype:currency";
+            }
+            else {
+                e.cellHtml = "";
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+        }
+        if (e.field == "Name") {
+            e.cellHtml = "总计：";
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+    }
+
+    //分组
+    function onDrawGroup(e) {
+        var grid = mini.get("dataGrid");
+        var groupColumName = mini.get("cbGroupType").value;
+        var column = grid.getColumn(groupColumName);
+        if (column) {
+            type = column.header + "：";
+        }
+        var sumPlanValue = 0;
+        for (var i = 0; i < e.rows.length; i++) {
+            var plan = e.rows[i];
+            var planValue = parseFloat(plan.PlanValue);
+            if (isNaN(planValue)) planValue = 0;
+            sumPlanValue += planValue;
+        }
+        e.cellHtml = type + e.value + "<font style='color:#FF4500' > (计划收款金额：" + sumPlanValue + ")</font>";
+    }
+
+</script>

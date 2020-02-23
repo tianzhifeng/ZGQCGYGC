@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "MileStoneGantt";
+}
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-import" onclick="importMileStone" plain="true">导入</a>
+                <a class="mini-button" iconcls="icon-add" onclick="addMileStone" plain="true">增加里程碑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="deleteMileStone" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveMileStone" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-zoomin" onclick="zoomIn" plain="true">放大</a>
+                <a class="mini-button" iconcls="icon-zoomout" onclick="zoomOut" plain="true">缩小</a>
+                <a class="mini-button" iconcls="icon-goto" onclick="gotoStandard" plain="true">转到标准视图</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <div name="showWBS" class="mini-checkbox" truevalue="True" falsevalue="False" text="显示WBS" onvaluechanged="onValueChanged">
+                </div>
+                &nbsp;&nbsp;<span style="color: Red;">灰色单元格不可编辑</span> &nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GanttDV">
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+
+    var gantt = initGantt();
+    gantt.render(document.getElementById("GanttDV"));
+
+    loadData("False");
+    function loadData(includeWBS) {
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        addExecuteParam("IncludeWBS", includeWBS);
+        gantt.loading();
+        execute("GetTree", { refresh: false, onComplete: function (data) {
+            var list = mini.arrayToTree(data, "children", "UID", "ParentTaskUID");
+            gantt.loadTasks(list);
+            gantt.unmask();
+        }, validateForm: false
+        });
+    }
+
+    function onViewChange(e) {
+        loadData(e.value);
+    }
+
+    function gotoStandard() {
+        window.location.href = "/Project/Basic/MileStone/MileStonePlanList" + window.location.search;
+    }
+
+    function onValueChanged(e) {
+        loadData(e.value);
+    }
+
+    function importMileStone() {
+        var node = gantt.getSelected();
+        var wbsType = "Project";
+        if (node && node.Milestone != 1) wbsType = node.WBSType;
+        openWindow("/Project/Extend/MileStoneImport/MileStoneImport?NodeType=" + wbsType, { refresh: false, title: "里程碑模板导入", width: 750, height: 500,
+            onDestroy: function (rows) {
+                if (rows == "close" || !rows || rows.length == 0) return;
+                addExecuteParam("MileStoneData", mini.encode(rows));
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                execute("ImportMileStoneData", { showLoading: true, onComplete: function (data) {
+                    var includeWBS = mini.getbyName("showWBS").getValue();
+                    loadData(includeWBS);
+                }
+                });
+            }
+        });
+    }
+
+    function addMileStone() {
+        var node = gantt.getSelected();
+        if (!node) {
+            msgUI("请选择项目节点。");
+            return;
+        }
+        var task = {};
+        if (node.WBSType != "Project") {
+            return msgUI("只能对项目节点添加里程碑！", 1);
+        }
+        task["WBSID"] = node.WBSID;
+        task["Milestone"] = 1;
+        gantt.addTask(task, "add", node)
+    }
+
+    function deleteMileStone() {
+        var rows = gantt.getSelecteds();
+        if (rows.length < 1) {
+            msgUI("请选择一条记录！");
+            return;
+        }
+        msgUI("您确定要删除选定记录么？", 2, function (data) {
+            if (data != "ok") return;
+            addExecuteParam("NodeList", mini.encode(rows));
+            execute("DeleteMileStone", {
+                refresh: false, showLoading: true, validateForm: false, validateForm: false,
+                onComplete: function (data) {
+                    var includeWBS = mini.getbyName("showWBS").getValue();
+                    loadData(includeWBS);
+                }
+            });
+        });
+
+    }
+
+    function saveMileStone() {
+        var nodes = gantt.getTaskList();
+        if (nodes.length == 0)
+            return;
+        addExecuteParam("NodeList", mini.encode(nodes));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("SaveMileStoneList", { showLoading: true, refresh: false, onComplete: function (data) {
+            var includeWBS = mini.getbyName("showWBS").getValue();
+            loadData(includeWBS);
+        }, validateForm: false
+        });
+    }
+
+
+    function zoomIn() {
+        gantt.zoomIn();
+    }
+    function zoomOut() {
+        gantt.zoomOut();
+    }
+
+    gantt.on("cellbeginedit", function (e) {
+        var record = e.record, column = e.column, field = e.field;
+        if (field == "Name" && record.WBSType) {
+            e.cancel = true;
+        }
+    });
+
+    gantt.on("taskclick", function (e) {
+
+    });
+
+    gantt.on("drawcell", function (e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (field == "Milestone" && record.Milestone == 1) {
+            e.cellHtml = "<span title='里程碑'></span>";
+            e.cellStyle = "background: url(/CommonWebResource/Theme/Default/MiniUI/icons/flag_red.gif) no-repeat;";
+        }
+        else if (field == "Name" && record.WBSType) {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if (e.column.field == "Start" || e.column.field == "Finish") {
+            var d = e.value;
+            if (d) {
+                e.cellHtml = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+            }
+        }
+    });
+
+    function initGantt() {
+        var gantt = new PlusGantt();
+        gantt.setStyle("width:100%;height:100%;border:0px;");
+        gantt.setAllowResize(false);
+        gantt.setMultiSelect(true);
+        gantt.setAllowDragDrop(true);
+        gantt.setTableViewWidth(400)
+        gantt.setTopTimeScale("month");
+        var currentDate = new Date();
+        gantt.setTimeLines([
+      { date: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()), text: "当前日期", style: "width:2px;background:red;" }
+        ]);
+        new RGanttSchedule(gantt);
+
+        gantt.setColumns([
+            { header: "", field: "WBSType", width: 30, align: "center", allowDrag: false, allowMove: false, visible: false },
+            { header: "", field: "Milestone", width: 30, align: "center", allowDrag: false, allowMove: false },
+            { header: mini.Gantt.Name_Text, field: "Name", width: 300, name: "taskname", headeralign: "center",
+                editor: { type: "textbox" }
+            },
+            { header: mini.Gantt.Finish_Text, field: "Finish", width: 80,
+                editor: {
+                    type: "datepicker"
+                }
+            }
+        ]);
+        //设置节点列
+        gantt.setTreeColumn("taskname");
+        return gantt;
+    }
+</script>
+<style type="text/css">
+    .mini-splitter-border
+    {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+    }
+    .icon-MileStone
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/flag_red.gif) no-repeat;
+    }
+</style>

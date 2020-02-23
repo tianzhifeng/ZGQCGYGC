@@ -1,0 +1,138 @@
+html {
+    font-size: 14px;
+}
+
+html, body {
+
+    height: 100%;
+}
+
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+li {
+    list-style: none;
+}
+
+body {
+    border: none;
+}
+
+.f-left {
+    float: left;
+}
+
+.f-right {
+    float: right;
+}
+
+#wrap-container-contents {
+    height: 100%;
+}
+
+#wrap-container {
+    height: 100%;
+    background: linear-gradient(left top,rgba(255,255,255,0.86),rgba(255,255,255,0.17));
+    background: -ms-linear-gradient(left top,rgba(255,255,255,0.86),rgba(255,255,255,0.17));
+    background: -webkit-linear-gradient(left top,rgba(255,255,255,0.86),rgba(255,255,255,0.17));
+    background: -moz-linear-gradient(left top,rgba(255,255,255,0.86),rgba(255,255,255,0.17));
+    background: -o-linear-gradient(left top,rgba(255,255,255,0.86),rgba(255,255,255,0.17));
+}
+
+    #wrap-container .top-info ul {
+        overflow: hidden;
+    }
+
+        #wrap-container .top-info ul .first-li {
+            padding-left: 10px;
+             padding-right: 10px;
+        }
+
+        #wrap-container .top-info ul li {
+            float: left;
+        }
+
+    
+
+    #wrap-container .top-info ul li img {
+        vertical-align: text-bottom;
+    }
+
+
+
+    #wrap-container .top-info ul li .line {
+        line-height: 58px;
+    }
+
+    #wrap-container .top-info ul li .title {
+        margin: 0px 2px;
+        display: inline-block;
+    }
+
+    #wrap-container .top-info ul li .big {
+        font-weight: bold;
+        font-size: 19px;
+    }
+
+    #wrap-container .top-info ul li .blue {
+        color: #1c4289;
+    }
+
+    #wrap-container .top-info ul li .bold {
+        font-weight: bold;
+    }
+
+    #wrap-container .top-info ul li .updown {
+        margin-top: 7px;
+        margin-left: 20px;
+    }
+
+        #wrap-container .top-info ul li .updown p:first-child {
+            margin-bottom: 5px;
+        }
+
+    #wrap-container .top-info .info {
+        height: 58px;
+        border-bottom: 1px solid #fffefd;
+    }
+
+        #wrap-container .top-info .info .has-line {
+            background-image: url(../img/s-line.png);
+            background-position: 100% 8px;
+            background-repeat: no-repeat;
+        }
+
+    #wrap-container .top-info .tab {
+        margin-top: 15px;
+        border-bottom: 1px solid #fffcf9;
+    }
+
+    #wrap-container .top-info {
+        padding-left: 35px;
+        padding-right: 35px;
+    }
+
+        #wrap-container .top-info .tab li {
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 30px;
+            padding-bottom: 5px;
+        }
+
+        #wrap-container .top-info .tab .active {
+            border-bottom: 3px solid #4d9ae2;
+        }
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#wrap-container-content {
+    height: calc(100% - 121px);
+    overflow-y: hidden;
+}

@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<div id="mainTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" maskonload="false">
+</div>
+<script type="text/javascript">
+    @*var taskNoticeID = "@Html.Raw(ViewBag.TaskNoticeID)";
+    var taskNoticeTmplCode = "@Html.Raw(ViewBag.TaskNoticeTmplCode)";*@
+    var id = getQueryString("ID");
+    mini.parse();
+    initTab();
+    function initTab() {
+        var tabs = mini.get("mainTabs");
+        //var projectUrl = "/MvcConfig/UI/Form/PageView?TmplCode=" + (taskNoticeTmplCode || "TaskNotice");
+        if (id != "") {
+            //projectUrl = projectUrl + "&ID=" + taskNoticeID + "&FuncType=view";
+            //var mainTab = { title: "任务单信息", url: projectUrl, showCloseButton: false };
+            //tabs.addTab(mainTab);
+            //tabs.activeTab(mainTab);
+            var receiptTab = { title: "收款记录", url: "ReceiptList?ProjectInfoID=" + id, showCloseButton: false };
+            tabs.addTab(receiptTab);
+            tabs.activeTab(receiptTab);
+            var scheduleTab = { title: "开票记录", url: "InvoiceList?ProjectInfoID=" + id, showCloseButton: false };
+            tabs.addTab(scheduleTab);
+        }
+        //else {
+        //    var mainTab = { title: "项目基本信息", url: projectUrl, showCloseButton: false };
+        //    tabs.addTab(mainTab);
+        //    tabs.activeTab(mainTab);
+        //}
+    }
+
+
+</script>

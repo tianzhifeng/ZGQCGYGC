@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D9E8179E-3AD1-459F-9F20-257BECB89D2D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Project.Logic</RootNamespace>
+    <AssemblyName>Project.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="MvcAdapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\MvcAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessFacade\Base\Enums\AuditEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Config\BaseConfigFO.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\ActivityEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\CBSEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\CommonEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\MileStoneEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\OBSEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\ProductEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\WBSEnums.cs" />
+    <Compile Include="BusinessFacade\Base\EPS\EPSFO.cs" />
+    <Compile Include="BusinessFacade\Base\Gantt\GanttNode.cs" />
+    <Compile Include="BusinessFacade\Base\IExport.cs" />
+    <Compile Include="BusinessFacade\Base\Navigate\DesignNavigation.cs" />
+    <Compile Include="BusinessFacade\Base\Navigate\DesignNavigationFO.cs" />
+    <Compile Include="BusinessFacade\Base\Engineering\ProjectGroupFO.cs" />
+    <Compile Include="BusinessFacade\Base\Project\ProjectInfoFO.cs" />
+    <Compile Include="BusinessFacade\Base\WBS\VirtualWBS.cs" />
+    <Compile Include="BusinessFacade\Base\WBS\WBSFO.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\ConfigEnums.cs" />
+    <Compile Include="BusinessFacade\Base\Enums\Const.cs" />
+    <Compile Include="BusinessFacade\Function.cs" />
+    <Compile Include="BusinessFacade\HighChart\HighChartHelper.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\PieChart\BarChart.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\PieChart\ColumnChart.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\PieChart\PieChart.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\BaseChart.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\Chart.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\PlotOptions.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\Series.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\SubTitle.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\Title.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\ToolTip.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\xAxis.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\HighChart\Property\yAxis.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="Domain.Partial\Entrance.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EXE_MajorPutInfo.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EXE_MettingSign.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_DesignPlan.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EXE_PublishApply.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_DesignPlanPetrifaction.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_ElectricalPowerProjectScheme.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_MajorDesignInput.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_MixProjectScheme.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_SchemeForm.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_CP_TaskNotice.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_DesignInput.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_SimpleProjectSchmea.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_SingleProjectScheme.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EXE_ChangeAudit.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_SC_SchemeForm_OEM_Szsow.cs" />
+    <Compile Include="Domain.Partial\InstanceBase\S_E_Product.cs" />
+    <Compile Include="Domain.Partial\InstanceBase\S_I_ProjectInfo.cs" />
+    <Compile Include="Domain.Partial\InstanceBase\S_W_StandardWorkTime.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EXE_Audit.cs" />
+    <Compile Include="Domain\BaseConfig.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BaseConfig.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\BaseModelExtend.cs" />
+    <Compile Include="Domain\ConfigBase\S_C_CBSDefine.cs" />
+    <Compile Include="Domain\ConfigBase\S_D_EPSDef.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_EngineeringSpace.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_EngineeringSpaceRes.cs" />
+    <Compile Include="Domain\ConfigBase\S_D_Feature.cs" />
+    <Compile Include="Domain\ConfigBase\S_D_RoleDefine.cs" />
+    <Compile Include="Domain\ConfigBase\S_D_WBSAttrDefine.cs" />
+    <Compile Include="Domain\ConfigBase\S_D_WBSTemplate.cs" />
+    <Compile Include="Domain\ConfigBase\S_D_WBSTemplateNode.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_DBSDefine.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_ProjectMode.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_SpaceDefine.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_WBSStructInfo.cs" />
+    <Compile Include="Domain\ConfigBase\S_T_WBSStructRole.cs" />
+    <Compile Include="Domain\InstanceBase\S_C_CBS.cs" />
+    <Compile Include="Domain\InstanceBase\S_C_CBS_Budget.cs" />
+    <Compile Include="Domain\InstanceBase\S_C_CBS_Cost.cs" />
+    <Compile Include="Domain\InstanceBase\S_D_DBS.cs" />
+    <Compile Include="Domain\InstanceBase\S_D_Document.cs" />
+    <Compile Include="Domain\InstanceBase\S_E_Product.cs" />
+    <Compile Include="Domain\InstanceBase\S_I_ProjectGroup.cs" />
+    <Compile Include="Domain\InstanceBase\S_I_ProjectInfo.cs" />
+    <Compile Include="Domain\InstanceBase\S_P_CooperationPlan.cs" />
+    <Compile Include="Domain\InstanceBase\S_P_MileStone.cs" />
+    <Compile Include="Domain\InstanceBase\S_P_MileStonePlan.cs" />
+    <Compile Include="Domain\InstanceBase\S_T_ToDoList.cs" />
+    <Compile Include="Domain\InstanceBase\S_W_Activity.cs" />
+    <Compile Include="Domain\InstanceBase\S_W_CooperationExe.cs" />
+    <Compile Include="Domain\InstanceBase\S_W_TaskWork.cs" />
+    <Compile Include="Domain\InstanceBase\S_W_WBS.cs" />
+    <Compile Include="Domain\InstanceBase\S_W_WBS_Version.cs" />
+    <Compile Include="Domain\Project.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Project.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DTO\AuditSignUserDTO.cs" />
+    <Compile Include="DTO\CoSignAdviceDTO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BusinessFacade\Custom\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="Domain\BaseConfig.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BaseConfig.cs</LastGenOutput>
+    </None>
+    <None Include="Domain\EF.Reverse.POCO.Core.ttinclude" />
+    <None Include="Domain\EF.Reverse.POCO.ttinclude" />
+    <None Include="Domain\Project.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Project.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BaseLogic\Base.Logic\Base.Logic.csproj">
+      <Project>{EC8BB43B-4F2B-4E79-9BE7-5521D4A86F62}</Project>
+      <Name>Base.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BaseLogic\Workflow.Logic\Workflow.Logic.csproj">
+      <Project>{ED0D8A90-6A47-4092-802B-869E4A76B41D}</Project>
+      <Name>Workflow.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

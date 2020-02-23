@@ -1,0 +1,268 @@
+﻿<style>
+    .mini-textarea .mini-textbox-input {
+        resize: none;
+        height: 98px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+</style>
+<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false" style="top: 30px; position: relative;">
+<div class="formDiv">
+    <fieldset>
+        <legend>基本属性</legend>
+        <div>
+            <table style="width: 100%;">
+                <tr class="hideRow">
+                    <td width="30%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="45%">
+                    </td>
+                    <td width="10%"></td>
+                </tr>
+                <tr>
+                    <td>
+                        过滤空格：
+                    </td>
+                    <td colspan="3">
+                        <input name="Filter" class="mini-combobox" value="around" data="ExcelFilter" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>分隔符:</td>
+                    <td colspan="3">
+                         <input class="mini-radiobuttonlist" name="IsMultiple" textfield="text" valuefield="value" value="false" data="IsMultiple"  required="true"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>类型:</td>
+                    <td colspan="3">
+                         <input class="mini-radiobuttonlist" required="true" name="Type" textfield="text" valuefield="value" value="default" data="ConvertType" onvaluechanged="valueChangedConvertType"></input>
+                    </td>
+                </tr>
+                <tr id="tr_selector">
+                    <td>对象:</td>
+                    <td  colspan="3">
+                         <input name="SelectorKey" class="mini-combobox" style="width: 100%" onvaluechanged="valueChangedSelectorKey" />
+                    </td>
+                </tr>
+                <tr id="tr_conn">
+                    <td>所属模块:</td>
+                    <td colspan="3">
+                        <input name="ConnName" class="mini-combobox" style="width: 100%;" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                    </td>
+                </tr>
+                <tr id="tr_sql">
+                    <td>SQL语句:</td>
+                    <td colspan="2">
+                         <textarea name="SQL" textname="SQL" class="mini-textarea" style="height: 100px;width:100%;" ></textarea>
+                    </td>
+                    <td><a href="#" onclick="executeQuery()">执行</a></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;">字段</td>
+                    <td style="text-align:center;"></td>
+                    <td style="text-align:center;" colspan="2">输出字段</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="FiledListBox" name="FiledListBox" class="mini-listbox" style="height:200px;"
+                            textField="value" valueField="value">
+                        </div>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="button" value="输出" onclick="addFiled()" style="width:40px; margin-top:15px;"/><br />
+                    </td>
+                    <td colspan="2">
+                        <div id="SelectListBox" name="SelectListBox" class="mini-datagrid" style="height:200px;text-align:center;" showPager="false" pageSize="150" allowCellEdit="true" allowCellSelect="true" multiSelect="true" >     
+                            <div property="columns">
+                                <div header="字段" field="value" width="70"></div>
+                                <div name="outputField" field="outputField" headerAlign="center" allowSort="true" width="130">输出字段
+                                     <input property="editor" class="mini-textbox" style="width:100%;" minWidth="150"/>
+                                </div>
+                                <div header="" field="delete" width="30" renderer="onRenderer"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    var yesNo = [{ "value": "true", "text": "是" }, { "value": "false", "text": "否" }];
+    var ConvertType = [{ "value": "default", "text": "常用" }, { "value": "select", "text": "选择器" }, { "value": "custom", "text": "自定义" }];
+    var ListBoxType = [{ "value": "0", "text": "绑定" }, { "value": "1", "text": "输出" }];
+    var ExcelFilter = [{ "value": "around", "text": "前后" }, { "value": "middle", "text": "中间" }];
+    var IsMultiple = [{ "value": "false", "text": "单个" }, { "value": "true", "text": "多个(大小写逗号,，)" }];
+    addGridEnum("SelectListBox", "type", "ListBoxType");
+    var Categories = @Html.Raw(ViewBag.EnumCategory);
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+            data = JSON.parse(data);
+            var type = data.Type;
+            var selectorKey = data.SelectorKey;
+            if (type == '')
+                mini.getbyName("Type").setValue('default');
+            else
+                mini.getbyName("Type").setValue(type);
+            isShow();
+            if (selectorKey == '')
+                GetSelectorList(true);
+            else {
+                var isSystem = false;
+                if (selectorKey == 'SystemUser' || selectorKey == 'SystemOrg' || selectorKey == 'Employee') {
+                    isSystem = true;
+                } 
+                GetSelectorList(isSystem);
+            }
+            if(typeof(data.FiledListBox) != 'undefined'){
+                var filedListBox = mini.get("FiledListBox");
+                filedListBox.setData(data.FiledListBox);
+            }
+            if(typeof(data.SelectListBox) != 'undefined'){
+                var selectListBox = mini.get("SelectListBox");
+                selectListBox.setData(data.SelectListBox);
+            }
+        }
+    }
+    window.onload=function(){ 
+        setCategoryData('Base','');
+    } 
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+    }
+
+    isShow('default');
+    GetSelectorList(true);
+    function GetSelectorList(isSystem) {
+        addExecuteParam("IsSystem", isSystem);
+        execute("GetSelectorList", {
+            onComplete: function (data) {
+                var selectorKey = mini.getbyName("SelectorKey");
+                selectorKey.setData(data);
+            }
+        });
+    }
+
+    function isShow(type) {
+        if(typeof(type) == 'undefined' || type == '')
+            type = mini.getbyName("Type").getValue();
+        if (type != 'custom') {
+            $("#tr_sql,#tr_conn").hide();
+            $("#tr_selector").show();
+        } else {
+            $("#tr_sql,#tr_conn").show();
+            $("#tr_selector").hide();
+        }
+    }
+
+    function valueChangedConvertType(e) {
+        var type = mini.getbyName("Type").getValue();        if (type != 'custom') {
+            GetSelectorList(type == "default");
+        }
+        isShow();
+        mini.get("FiledListBox").setData("");
+        mini.get("SelectListBox").setData("");
+        mini.getbyName("SQL").setValue('');
+    }
+
+    function valueChangedSelectorKey(e) {
+        addExecuteParam("SelectorKey", e.value);
+        execute("GetSelectorField", {
+            onComplete: function (data) {
+                var filedListBox = mini.get("FiledListBox");
+                filedListBox.setData(data);
+            }
+        });
+    }
+
+
+    function addFiled() {
+        var filedListBox = mini.get("FiledListBox");
+        var selectListBox = mini.get("SelectListBox");
+        var items = filedListBox.getSelecteds();
+        var selectData = selectListBox.getData();
+        var bindData = new Array();
+        for (var i = 0; i < items.length; i++) {
+            bindData.push({ value: items[i].value});
+        }
+        selectListBox.addRows(bindData);
+    }
+
+    function onRenderer(e) {
+        return '<a href="javascript:void(0)" onclick="delFiled(\'' + e.record.value + '\');">删除</a>';
+    }
+
+    function delFiled(value) {
+        var selectListBox = mini.get("SelectListBox");
+        var data = selectListBox.getData();
+        var newData = new Array();
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].value != value)
+                newData.push(data[i]);
+        }
+        selectListBox.setData(newData);
+    }
+
+    function executeQuery() {
+        var connName = mini.getbyName("ConnName").getValue();
+        var sql = mini.getbyName("SQL").getValue();
+        addExecuteParam("ConnName", connName);
+        addExecuteParam("SQL", sql);
+        execute("GetCustomField", {
+            onComplete: function (data) {
+                var filedListBox = mini.get("FiledListBox");
+                filedListBox.setData(data);
+                mini.get("SelectListBox").setData("");
+            }
+        });
+    }
+
+    function returnForm(windowSettings) {     
+        windowSettings = $.extend(true, {}, windowParamSettings, windowSettings);
+        var form = new mini.Form(windowSettings.formId);
+        var data = form.getData();
+
+        data.FiledListBox = mini.get("FiledListBox").getData();
+        data.SelectListBox = mini.get("SelectListBox").getData();
+        if(data.SelectListBox.length <= 0){
+            msgUI("请选择输出字段！");
+        }else{
+            var isPass = true;
+            for (var i = 0; i < data.SelectListBox.length; i++) {
+                if(typeof(data.SelectListBox[i].outputField) == 'undefined' || (typeof(data.SelectListBox[i].outputField) != 'undefined' && data.SelectListBox[i].outputField == '')){
+                    isPass = false;
+                }
+            }
+            if(isPass)
+                closeWindow(data);
+            else
+                msgUI("请输入输出字段！");
+        }
+    }
+</script>

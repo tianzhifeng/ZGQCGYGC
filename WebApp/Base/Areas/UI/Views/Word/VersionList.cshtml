@@ -1,0 +1,78 @@
+﻿<div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-remove" onclick="execute('DeleteVersion?Code={Code}', {});">删除最高版本</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');" onbuttonclick="quickSearch('Code,Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetVersionList" multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px">
+        <div property="columns">
+            @*<div type="checkcolumn">
+            </div>*@
+            <div field="Code" width="120" allowsort="true" align="center">
+                Word导出编号
+            </div>
+            <div field="Name" width="150" allowsort="true">
+                Word导出名称
+            </div>
+            <div headeralign="center" header="相关业务数据">
+                <div property="columns">
+                    <div field="ConnName" width="80" allowsort="true" align="center">
+                        库名
+                    </div>
+                    <div field="SQL" width="100" allowsort="true" align="center">
+                        SQL
+                    </div>
+                </div>
+            </div>
+            <div field="ModifyTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm" width="120" allowsort="true">
+                最后修订时间
+            </div>
+            <div field="VersionNum" align="center" width="80" allowsort="true">
+                版本号
+            </div>
+            <div field="VersionStartDate" align="center" datatype="date" dateformat="yyyy-MM-dd" width="120" allowsort="true">
+                版本开始时间
+            </div>
+            <div field="VersionEndDate" align="center" datatype="date" dateformat="yyyy-MM-dd" width="120" allowsort="true">
+                版本结束时间
+            </div>
+            <div headeralign="center" header="修订">
+                <div property="columns">
+                    <div field="Base" width="60" align="center">
+                        基本信息
+                    </div>
+                    <div field="Item" width="60" align="center">
+                        格式控制
+                    </div>
+                </div>
+            </div>
+
+            @*<div field="DownloadWord" width="60" align="center">
+                word模板
+            </div>*@
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    addGridLink("dataGrid", "Base", "VersionEdit?wordID={ID}&FuncType=View", { linkText: '查看', width: 1000, onFilter: function (e) { if (e.row["Description"] != "FormWord") return true; } });
+    addGridLink("dataGrid", "Item", "ItemList?WordID={ID}&FuncType=View", { linkText: '查看', width: 1000, onFilter: function (e) { if (e.row["Description"] != "FormWord") return true; } });
+</script>
+<script type="text/javascript">
+    addGridButton("dataGrid", "DownloadWord", {
+        linkText: '查看', onButtonClick: function (row) {
+            var url = "DownloadWord?TmplCode=" + row["Code"];
+            window.location = url;
+            //window.open(url);
+        },
+        onFilter: function (e) { if (e.row["HasWord"] == "1") return true; else return false }
+    });
+</script>

@@ -1,0 +1,390 @@
+﻿@section scripts{
+    <script charset="utf-8" src="@Url.Content("/MvcConfig/Scripts/pinyin.js")" type="text/javascript"></script>
+}
+<style type="text/css">
+    .flow-nav {
+        width: 100%;
+        height: 30px;
+    }
+
+        .flow-nav ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding-left: 15px;
+        }
+
+        .flow-nav li {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            float: left;
+            padding-left: 3px;
+            padding-right: 3px;
+            line-height: 14px;
+            padding-top: 5px;
+        }
+
+    .flow-content {
+        width: 100%;
+        overflow: hidden;
+        height: calc(100% - 41px);
+    }
+
+    .clicked {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .noclick {
+        color: #ACA899;
+        cursor: pointer;
+    }
+
+    .current {
+        cursor: pointer;
+        font-weight: bold;
+        color: #308ac0;
+    }
+
+    .flowNumber {
+        border-radius: 7px;
+        width: 14px;
+        height: 14px;
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+        line-height: 14px;
+        float: left;
+        margin-right: 3px;
+    }
+
+    .bg-blue {
+        background-color: #308ac0;
+    }
+
+    .bg-gray {
+        background-color: gray;
+    }
+
+    .bg-tint {
+        background-color: #ACA899;
+    }
+</style>
+<div class="mini-fit">
+    <div class="flow-nav">
+        <ul>
+            <li id="UseEdit">
+                <div class="flowNumber">1</div>
+                基本信息 >
+            </li>
+            @if (@ViewBag.IsUEditor == "T")
+            {
+                <li id="UEditorFlowForm">
+                    <div class="flowNumber">2</div>
+                    表单设计 >
+                </li>
+            }
+            else
+            {
+                <li id="FlowForm">
+                    <div class="flowNumber">2</div>
+                    表单设计 >
+                </li>
+            }
+            <li id="FlowDesign">
+                <div class="flowNumber">3</div>
+                流程设计 >
+            </li>
+            <li id="FlowUse">
+                <div class="flowNumber">4</div>
+                应用与布局 >
+            </li>
+            <li id="FlowRole">
+                <div class="flowNumber">5</div>
+                菜单入口与权限
+            </li>
+            @*<li id="FlowView">完成</li>*@
+
+            <li id="Next" style="float: right; text-decoration: underline; color: #333; margin-right: 10px; font-size: 13px; cursor: pointer; font-weight: bold; height: 22px; line-height: 22px; padding-top: 0px!important;" onclick="next();">下一步</li>
+            <li id="Prev" style="float: right; text-decoration: underline; color: #333; margin-right: 10px; font-size: 13px; cursor: pointer; font-weight: bold; height: 22px; line-height: 22px; padding-top: 0px!important; margin-left: 13px;" onclick="prev();">上一步</li>
+            <li id="CreateUse" style="float: right; text-decoration: underline; color: #333; padding-right: 15px; font-size: 13px; cursor: pointer; font-weight: bold; height: 22px; line-height: 22px; padding-top: 0px!important; border-right: solid 1px #adb3b9">退出</li>
+        </ul>
+    </div>
+    <div class="flow-content">
+        <iframe id="flow-iframe" style="border: 0px" scrolling="no" width="100%" height="100%"></iframe>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="menuAddModule" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/ModuleEdit'});">增加模块</li>
+    <li name="menuEditModule" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/ModuleEdit'});">编辑模块</li>
+    <li name="menuDelModule" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除模块</li>
+</ul>
+
+<script type="text/javascript">
+    var FirstInfo = '@ViewBag.FirstInfo';
+    //流程导航参数
+    var FlowPath = "/MvcConfig/WorkFlow/Flow/";
+    var categoryID = getQueryString("CategoryID");
+    var CreateUse = 'CreateUse', UseEdit = 'UseEdit', FlowForm = '', FlowDesign = 'FlowDesign', FlowUse = 'FlowUse', FlowRole = 'FlowRole', FlowView = 'FlowView', Next = 'Next', Prev = 'Prev';
+    var IsUEditor = '@ViewBag.IsUEditor';
+    if (IsUEditor == "T")
+        FlowForm = "UEditorFlowForm";
+        else
+        FlowForm = "FlowForm";
+
+    function pageLoad() {
+        if (FirstInfo && FirstInfo.split(',').length > 0) {
+            if (FirstInfo.split(',')[0])
+                setCache("_CacheFlowID", FirstInfo.split(',')[0])
+            if (FirstInfo.split(',')[1])
+                setCache("_CacheUseID", FirstInfo.split(',')[1])
+            if (FirstInfo.split(',')[2])
+                setCache("_CacheRoleID", FirstInfo.split(',')[2])
+        }
+        flowNavBar();
+    }
+    var curID = '';
+    function flowNavBar(id) {
+        var flowFormID = getCache("_CacheFlowFormID");
+        var flowID = getCache("_CacheFlowID");
+        var roleID = getCache("_CacheRoleID");
+        var useID = getCache("_CacheUseID");
+        var finish = getCache("_CacheFinish");
+
+        $(".flow-nav li").each(function (index, envet) {
+            $('#' + envet.id).removeClass();
+        });
+        $(".flow-nav li div").each(function (index, envet) {
+            $(this).removeClass();
+            $(this).addClass('flowNumber');
+        });
+        $('#' + UseEdit).addClass('clicked');
+        $('#' + UseEdit + ' .flowNumber').addClass('bg-gray');
+
+        if (!useID) {
+            $('#' + FlowUse).removeClass();
+            $('#' + FlowUse).addClass('noclick');
+            $('#' + FlowUse).addClass('clicked');
+            $('#' + FlowUse + ' .flowNumber').addClass('bg-tint');
+        } else {
+            $('#' + FlowUse).removeClass();
+            $('#' + FlowUse).addClass('clicked');
+            $('#' + FlowUse + ' .flowNumber').addClass('bg-gray');
+        }
+
+        if (!flowID) {
+            $('#' + FlowDesign).removeClass();
+            $('#' + FlowDesign).addClass('noclick');
+            $('#' + FlowDesign + ' .flowNumber').addClass('bg-tint');
+        } else {
+            $('#' + FlowDesign).removeClass();
+            $('#' + FlowDesign).addClass('clicked');
+            $('#' + FlowDesign + ' .flowNumber').addClass('bg-gray');
+        }
+
+        if (!roleID) {
+            $('#' + FlowRole).removeClass();
+            $('#' + FlowRole).addClass('noclick');
+            $('#' + FlowRole + ' .flowNumber').addClass('bg-tint');
+        } else {
+            $('#' + FlowRole).removeClass();
+            $('#' + FlowRole).addClass('clicked');
+            $('#' + FlowRole + ' .flowNumber').addClass('bg-gray');
+        }
+        curID = id;
+        if (FlowRole == id) {
+            $("#flow-iframe").attr("src", FlowPath + FlowRole + "?CategoryID=" + categoryID);
+            $('#' + FlowRole).addClass('current');
+            $('#' + FlowRole + ' .flowNumber').removeClass('bg-gray');
+            $('#' + FlowRole + ' .flowNumber').removeClass('bg-tint');
+            $('#' + FlowRole + ' .flowNumber').addClass('bg-blue');
+            $('#' + FlowUse + ' .flowNumber').addClass('bg-gray');
+            $('#' + FlowDesign + ' .flowNumber').addClass('bg-gray');
+            $('#' + FlowForm + ' .flowNumber').addClass('bg-gray');
+            $('#' + FlowUse).addClass('clicked');
+            $('#' + FlowDesign).addClass('clicked');
+            $('#' + FlowForm).addClass('clicked');
+            $('#' + Prev).show();
+            $('#' + Next).hide();
+            $('#' + Next).css('margin-left', '0px');
+        } else if (FlowUse == id) {
+            $("#flow-iframe").attr("src", FlowPath + FlowUse);
+            $('#' + FlowUse).addClass('current');
+            $('#' + FlowUse + ' .flowNumber').removeClass('bg-gray');
+            $('#' + FlowUse + ' .flowNumber').removeClass('bg-tint');
+            $('#' + FlowUse + ' .flowNumber').addClass('bg-blue');
+            $('#' + FlowDesign + ' .flowNumber').addClass('bg-gray');
+            $('#' + FlowForm + ' .flowNumber').addClass('bg-gray');
+
+            $('#' + FlowDesign).addClass('clicked');
+            $('#' + FlowForm).addClass('clicked');
+            $('#' + Prev).show();
+            $('#' + Next).show();
+            $('#' + Next).css('margin-left', '0px');
+        } else if (FlowDesign == id) {
+            $('#' + FlowDesign).addClass('current');
+            $('#' + FlowDesign + ' .flowNumber').removeClass('bg-gray');
+            $('#' + FlowDesign + ' .flowNumber').removeClass('bg-tint');
+            $('#' + FlowDesign + ' .flowNumber').addClass('bg-blue');
+            $('#' + FlowForm + ' .flowNumber').addClass('bg-gray');
+            $("#flow-iframe").attr("src", FlowPath + FlowDesign + "?CategoryID=" + categoryID);
+            $('#' + FlowForm).addClass('clicked');
+            $('#' + Prev).show();
+            $('#' + Next).show();
+            $('#' + Next).css('margin-left', '0px');
+        } else if (FlowForm == id) {
+            $("#flow-iframe").attr("src", FlowPath + FlowForm);
+            $('#' + FlowForm).addClass('current');
+            $('#' + FlowForm + ' .flowNumber').removeClass('bg-gray');
+            $('#' + FlowForm + ' .flowNumber').removeClass('bg-tint');
+            $('#' + FlowForm + ' .flowNumber').addClass('bg-blue');
+            $('#' + UseEdit + ' .flowNumber').addClass('bg-gray');
+            $('#' + Prev).show();
+            $('#' + Next).show();
+            $('#' + Next).css('margin-left', '0px');
+        } else if (UseEdit == id) {
+            $('#' + UseEdit).addClass('current');
+            $('#' + UseEdit + ' .flowNumber').removeClass('bg-gray');
+            $('#' + UseEdit + ' .flowNumber').removeClass('bg-tint');
+            $('#' + UseEdit + ' .flowNumber').addClass('bg-blue');
+            $('#' + FlowForm + ' .flowNumber').addClass('bg-gray');
+            $('#' + FlowForm).addClass('clicked');
+            $('#' + Prev).hide();
+            $('#' + Next).show();
+            $('#' + Next).css('margin-left', '13px');
+            var code = getCache("_CacheUseCode");
+            var parentID = getCache("_CacheUseParentID");
+            var fullID = getCache("_CacheUseFullID");
+            $("#flow-iframe").attr("src", FlowPath + UseEdit + "?Code=" + code + "&ParentID=" + parentID + "&FullID=" + fullID + "&IsOpen=false&CategoryID=" + categoryID);
+        } else {
+            $("#flow-iframe").attr("src", FlowPath + FlowForm);
+            $('#' + FlowForm).addClass('current');
+            $('#' + FlowForm + ' .flowNumber').removeClass('bg-gray');
+            $('#' + FlowForm + ' .flowNumber').removeClass('bg-tint');
+            $('#' + FlowForm + ' .flowNumber').addClass('bg-blue');
+            $('#' + Prev).show();
+            $('#' + Next).show();
+            $('#' + Next).css('margin-left', '0px');
+            curID = FlowForm;
+        }
+    }
+
+    function next() {
+        if (curID) {
+            if (curID == UseEdit) {
+                curID = FlowForm;
+            } else if (curID == FlowForm) {
+                curID = FlowDesign;
+            } else if (curID == FlowDesign) {
+                curID = FlowUse;
+            } else if (curID == FlowUse) {
+                curID = FlowRole;
+            }
+        }
+
+        flowNavBar(curID);
+    }
+
+    function prev() {
+        if (curID) {
+            if (curID == FlowForm) {
+                curID = UseEdit;
+            } else if (curID == FlowDesign) {
+                curID = FlowForm;
+            } else if (curID == FlowUse) {
+                curID = FlowDesign;
+            } else if (curID == FlowRole) {
+                curID = FlowUse;
+            }
+        }
+
+        flowNavBar(curID);
+    }
+
+    $(".flow-nav li").click(function (e) {
+        var targetId = e.target.id;
+        if (targetId == Prev || targetId == Next)
+            return;
+        if (targetId == '')
+            targetId = e.target.parentNode.id;
+        curID = targetId;
+
+        flowNavBar(targetId);
+        $(this).each(function (index, envet) {
+            if (targetId == envet.id) {
+                $("#" + envet.id).addClass('current');
+            }
+            else {
+                $("#" + envet.id).addClass('clicked');
+            }
+        });
+
+        if (targetId == CreateUse)
+            window.parent.$('#_flowUseTab').trigger("click");
+        else if (targetId == FlowRole || targetId == FlowView || targetId == FlowDesign)
+            $("#flow-iframe").attr("src", FlowPath + targetId + "?CategoryID=" + categoryID);
+        else if (targetId == UseEdit) {
+            var code = getCache("_CacheUseCode");
+            var parentID = getCache("_CacheUseParentID");
+            var fullID = getCache("_CacheUseFullID");
+            $("#flow-iframe").attr("src", FlowPath + targetId + "?Code=" + code + "&ParentID=" + parentID + "&FullID=" + fullID + "&IsOpen=false&CategoryID=" + categoryID);
+        } else
+            $("#flow-iframe").attr("src", FlowPath + targetId);
+    });
+
+
+    //树节点点击事件
+    var url = "/Base/UI/Form/GetFormList";
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            jQuery(".gw-grid-toolbar .mini-button").show();
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID + "&NodeFullID=" + e.node.FullID);
+            dataGrid.load();
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load();
+            jQuery(".gw-grid-toolbar .mini-button").hide();
+        }
+    }
+
+    function getPYCode(str) {
+        var result = codefans_net_CC2PY(str).toUpperCase().replace("(", "").replace(")", "");
+        if (result.split('|').length > 0)
+            return result.split('|')[1];
+        else
+            return result;
+    }
+
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var menuAddModule = mini.getbyName("menuAddModule", menu);
+        var menuEditModule = mini.getbyName("menuEditModule", menu);
+        var menuDelModule = mini.getbyName("menuDelModule", menu);
+
+
+        if (node.ParentID == null || node.ParentID == "") {
+            menuAddModule.show();
+            menuEditModule.hide();
+            menuDelModule.hide();
+
+        }
+        else if (node.ParentID == "0") {
+            menuAddModule.hide();
+            menuEditModule.show();
+            menuDelModule.show();
+        }
+
+    }
+</script>

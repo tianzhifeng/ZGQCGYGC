@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "成果列表";
+}
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetVersionList"
+         multiselect="true" borderstyle="border-left:0;border-right:0;">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Code" width="100" allowsort="true" align="center">
+                成果编号
+            </div>
+            <div field="Name" width="*" allowsort="true" align="left">
+                成果名称
+            </div>
+            <div field="FileType" width="60" allowsort="true" align="center">
+                类型
+            </div>
+            <div field="Version" width="60" allowsort="true" align="center">
+                版本号
+            </div>
+            <div field="CreateUser" width="60" allowsort="true" align="center">
+                提交人
+            </div>
+            <div field="SubmitDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                提交日期
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.DrawingFileType")
+    @Html.GetEnum(typeof(EPC.Logic.AuditState));
+    @Html.GetEnum(typeof(EPC.Logic.CoSignState));
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "FileType", "DrawingFileType");
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+
+    addGridLink('dataGrid', 'Name', 'DesignWorkSpaceEdit?ID={DrawingResultID}', { funcType: 'view', height: 380, width: 700 });
+
+</script>

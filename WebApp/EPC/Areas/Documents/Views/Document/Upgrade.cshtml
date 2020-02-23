@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Upgrade";
+}
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveVersion();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm" url="GetVersionModel">
+            <input name="ID" class="mini-hidden" />
+            <input name="DocumentID" class="mini-hidden" />
+            <input name="VersionNo" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td>文件名称</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name='Name' class='mini-textbox' required='true' allowinput='true' style='width:100%;' maxlength='200' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>版本名称</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name='VersionName' class='mini-textbox' required='true' allowinput='true' style='width:100%;' maxlength='200' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>主文件</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name='MainFile' class='mini-singlefile' style='width:100%' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>其他附件</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name='Attachments' class='mini-multifile' style='width:100%' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>备注说明</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name='Remark' class='mini-textarea' required='false' allowinput='true' style='width:100%;height:100px;' maxlength='500' />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function saveVersion() {
+        save({ action: "SaveVersion" });
+    }
+
+    function onFormSetData(data) {
+        setFormItemDisabled("Name");
+    }
+</script>

@@ -1,0 +1,427 @@
+﻿@{
+    ViewBag.Title = "Gantte";
+    Layout = "~/Views/Shared/_LayoutRGantte.cshtml";
+}
+
+<style>
+    /* button */
+    .mini-button-text {
+        padding-top: 1px;
+        padding-bottom: 2px;
+        padding-top: 3px\9;
+        padding-bottom: 1px\9;
+    }
+
+    /* textbox */
+    .mini-textbox, .mini-buttonedit {
+        height: 20px;
+    }
+
+    .mini-pager-reload {
+        /* background-image: url(images/pager/reload.png); */
+        background-image: none !important;
+    }
+
+    .mini-textbox-border, .mini-buttonedit-border {
+        height: 18px;
+        border-radius: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .mini-textbox-input, .mini-buttonedit-input {
+        height: 20px;
+        line-height: 17px;
+    }
+    /* buttonedit */
+    .mini-buttonedit-button {
+        height: 13px;
+    }
+
+    .mini-buttonedit-icon {
+        width: 15px;
+        height: 14px;
+    }
+
+    .mini-datepicker .mini-buttonedit-icon {
+        background-position: 50% 1px;
+    }
+
+
+    .mini-grid-editwrap .mini-textbox {
+        margin-top: 0px;
+    }
+
+    .mini-grid-editwrap .mini-buttonedit {
+        margin-top: 0px;
+    }
+</style>
+<div class="mini-toolbar" style="padding: 0px; border: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="mini-pager-reload" onclick="refresh" plain="true">刷新</a>
+                <a class="mini-button" iconcls="icon-zoomOut" onclick="zoomIn" plain="true">放大</a>
+                <a class="mini-button" iconcls="icon-zoomIn" onclick="zoomOut" plain="true">缩小</a>
+                <a class="mini-button" iconcls="icon-goto" onclick="gotoTreeList();" plain="true">返回列表</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <div id="showAll" name="showAll" checked="true" class="mini-checkbox" text="显示实际完成" onvaluechanged="onCheckBoxValueChanged"></div>
+                &nbsp;  &nbsp;  &nbsp;
+                当前版本：<a href="javascript:void();" onclick="viewVersionList();">@ViewBag.VersionNo</a>
+                &nbsp;  &nbsp;  &nbsp;
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="wbsNodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                时间刻度：
+                <select onchange="changeTopTimeAndBottomTimeScale(this.value)" style="margin-right: 20px;">
+                    <option value="year,halfyear">年/半年</option>
+                    <option value="year,quarter">年/季度</option>
+                    <option value="year,month" selected="selected">年/月</option>
+                    <option value="year,week">年/周</option>
+                    <option value="year,day">年/日</option>
+                    <option value="halfyear,quarter">半年/季度</option>
+                    <option value="halfyear,month">半年/月</option>
+                    <option value="halfyear,week">半年/周</option>
+                    <option value="halfyear,day">半年/日</option>
+                    <option value="quarter,month">季度/月</option>
+                    <option value="quarter,week">季度/周</option>
+                    <option value="quarter,day">季度/日</option>
+                    <option value="month,week">月/周</option>
+                    <option value="month,day">月/日</option>
+                    <option value="week,day">周/日</option>
+                </select>
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GanttDV">
+</div>
+
+<script type="text/javascript">
+    var versionID = "@Html.Raw(ViewBag.VersionID)";
+    var flowEnd = "@Html.Raw(ViewBag.FlowEnd)";
+    var defineID = "@Html.Raw(ViewBag.DefineID)";
+    var scheduleCode = "@Html.Raw(ViewBag.ScheduleCode)";
+    var wbsNodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+</script>
+<script type="text/javascript">
+
+    window.__holidaytable =@Html.Raw(ViewBag.HolidayTable);
+    Date.prototype.isDayOff = function () {
+        var date = this;
+        var key = mini.formatDate(date, "yyyy-MM-dd");
+        if (date.getDay() === 0 || date.getDay() === 6) {
+            if (__holidaytable[key]===0) {
+                return false;
+            }
+            return true;
+        } else {
+            if (__holidaytable[key]) {
+                return true;
+            }
+        }
+        return false;
+    };
+    Date.prototype.addDaysSkipDayOff = function (value) {
+        var temp = new Date(this.getTime());
+        while (temp.isDayOff()) {
+            temp.setDate(temp.getDate() + 1);
+        }
+        while (value-- > 0) {
+            temp.setDate(temp.getDate() + 1);
+            while (temp.isDayOff()) {
+                temp.setDate(temp.getDate() + 1);
+            }
+        }
+        return temp;
+    }
+    Date.prototype.betweenWorkDay = function (end) {
+        var temp = new Date(this.getTime());
+        var enddate = mini.formatDate(end, "yyyy-MM-dd");
+        var wd = 0;
+        while (temp.isDayOff()) {
+            temp.setDate(temp.getDate() + 1);
+        }
+        while (mini.formatDate(temp, "yyyy-MM-dd") <= enddate ) {
+            temp.setDate(temp.getDate() + 1);
+            wd++;
+            while (temp.isDayOff()) {
+                temp.setDate(temp.getDate() + 1);
+            }
+        }
+        return wd;
+    }
+
+</script>
+<script src="/EPC/Scripts/PlusGantt/plusgantt/ScheduleService.js"></script>
+<script type="text/javascript">
+    var engineeringInfoID=getQueryString("EngineeringInfoID");
+    var scheduleCode = getQueryString("ScheduleCode");
+    var funcType = getQueryString("FuncType");
+    if(funcType&& funcType.toLowerCase()=="view"){
+        $(".mini-toolbar").hide();
+    }
+    var gantt = initGantt();
+    gantt.render(document.getElementById("GanttDV"));
+
+    gantt.on("drawcell",
+           function(e) {
+               var record = e.record;
+               var column = e.column;
+               var field = e.field;
+               //var bgstyle = "background-color:rgba(0,0,0,0.1);";
+
+               if(record.NodeType!="Task"&&field=="Name"){
+                   e.cellStyle = "font-weight:bolder;";
+               }
+
+               if (record.CanEdit == "0") {
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if (record.Milestone && (field == "Start" || field == "Duration")) {
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if (field == "Start" || field == "Finish") {
+                   var d = e.value;
+                   if (d) {
+                       e.cellHtml = new Date(e.value).Format("yy-MM-dd");
+                   }
+               }
+               if (field == "BaseStart" || field == "BaseFinish") {
+                   var d = e.value;
+                   if (d) {
+                       e.cellHtml = new Date(e.value).Format("yy-MM-dd");
+                   }
+               }
+               if (e.column.field == "FactStart" || e.column.field == "FactFinish") {
+                   var d = e.value;
+                   if (d) {
+                       e.cellHtml = new Date(e.value).Format("yy-MM-dd");
+                   }
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if(funcType&&funcType.toLowerCase()=="view"||flowEnd=="True"){
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+           });
+
+    loadData(function(){
+        createBaseline();
+        gantt.setViewModel("track");
+    });
+
+    function loadData(onLoad) {
+        var task = gantt.getSelected();
+        addExecuteParam("EngineeringInfoID", engineeringInfoID);
+        addExecuteParam("DefineID", defineID);
+        gantt.loading();
+        execute("GetGantteTree", {
+            formId: "none",
+            refresh: false, onComplete: function (data) {
+                var list = mini.arrayToTree(data, "children", "UID", "ParentTaskUID");
+                gantt.loadTasks(list);
+                gantt.unmask();
+                if (task) {
+                    $.each(data,
+                        function (i, v) {
+                            if (v.ID === task.ID) {
+                                gantt.select(v);
+                                gantt.scrollIntoView(v);
+                                return false;
+                            }
+                        });
+                } else {
+                    if (data.length) {
+                        gantt.select(data[0]);
+                        gantt.fire('taskclick', { task: data[0] });
+                    }
+                }
+                gantt.filter(function (tk) {
+                    if (tk.Visible != "1") return false;
+                    return true;
+                });
+                if (onLoad) {
+                    onLoad(list);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function refresh() {
+        loadData();
+    }
+
+    function addNode(e) {
+        var node = gantt.getSelected(); if (!node) { msgUI("请至少选择一个节点"); return; }
+        addExecuteParam("VersionID", versionID);
+        addExecuteParam("ParentNodeID", node.TID);
+        execute("AddEmptyNode", { showLoading: true, refresh: false, onComplete: function (data) {
+            gantt.addTask(data,"add",node);
+        }, validateForm: false
+        });
+    }
+
+    function gotoTreeList() {
+        var url="TraceList?EngineeringInfoID="+engineeringInfoID+"&ScheduleCode="+scheduleCode;
+        window.location=url;
+    }
+
+    function onRemove() {
+        var tasks = gantt.getSelecteds();
+        if (tasks.length == 0) {
+            return;
+        }
+        msgUI("您确定要删除选中的内容吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", mini.encode(tasks));
+            execute("DeleteTask", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    for (var i = 0; i < tasks.length; i++) {
+                        gantt.removeTask(tasks[i]);
+                    }
+                }, validateForm: false
+            });
+        });
+    }
+
+    function saveData() {
+        var nodes = gantt.getChangedTasks();
+        if(nodes.length==0)return;
+        addExecuteParam("VersionID", versionID);
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveTasks", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                gantt.acceptChanges();
+            }, validateForm: false
+        });
+    }
+
+    function create() {
+        msgUI("您确定要开始编制进度计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            addExecuteParam("ScheduleCode", scheduleCode);
+            execute("UpgradSchedule", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function upgrad() {
+        msgUI("您确定要升版进度计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            addExecuteParam("ScheduleCode", scheduleCode);
+            execute("UpgradSchedule", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function startFlow() {
+        if (!versionID) {
+            msgUI("没有找到指定的版本，无法提交"); return;
+        }
+        var nodes = gantt.getChangedTasks();
+        addExecuteParam("VersionID", versionID);
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveTasks", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "/EPC/Manage/ScheduleVersion/PageView?FlowCode=WBSVersion&TmplCode=WBSVersion&ID=" + versionID;
+                openWindow(url, {
+                    refresh: false, title: "进度计划审批", width: "80%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") return;
+                        window.location.reload();
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function revert() {
+        msgUI("撤销操作将撤销所有的编辑内容，您确定要继续吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("VersionID", versionID);
+            execute("Revert", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        gantt.expandAll();
+        gantt.collapseLevel(level);
+    }
+
+    function flowTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "80%", height: "85%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var checked = e.value;
+
+        if (checked&&checked=="true") {
+            createBaseline();
+            gantt.setViewModel("track");
+        }
+        else {
+            clearBaseline();
+            gantt.setViewModel("gantt");
+        }
+    }
+
+    function createBaseline() {
+        var tasklist = gantt.getTaskList();
+        for (var i = 0, l = tasklist.length; i < l; i++) {
+            var task = tasklist[i];
+            if(task.Milestone=="1"){
+                if(!task.FactFinish||!task.Finish)continue;
+                var baseline0 = {
+                    Start: new Date(task.Finish.getTime()),
+                    Finish: new Date(task.FactFinish.getTime())
+                };
+                task.Baseline = [];
+                task.Baseline.push(baseline0);
+            }
+            else{
+                if (!task.FactStart || !task.FactFinish) continue;
+                var baseline0 = {
+                    Start: new Date(task.FactStart.getTime()),
+                    Finish: new Date(task.FactFinish.getTime())
+                };
+                task.Baseline = [];
+                task.Baseline.push(baseline0);
+            }
+        }
+        gantt.refresh();
+    }
+
+    function clearBaseline() {
+        var tasklist = gantt.getTaskList();
+        for (var i = 0, l = tasklist.length; i < l; i++) {
+            var task = tasklist[i];
+            delete task.Baseline;
+        }
+        gantt.refresh();
+    }
+    function viewVersionList() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=WBSVersionList&EngineeringInfoID=" + engineeringInfoID + "&ScheduleCode="+scheduleCode+"&VersionID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "计划版本信息", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+</script>

@@ -1,0 +1,536 @@
+﻿@{
+    ViewBag.Title = "MainContent";
+}
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.min.js" type="text/javascript"></script>
+<link href="/Project/Scripts/EngineeringSpace/css/bootstrap.min.css" rel="stylesheet"
+      type="text/css" />
+<link href="/Project/Scripts/EngineeringSpace/css/font-awesome.min.css" rel="stylesheet"
+      type="text/css" />
+<script src="/Project/Scripts/EngineeringSpace/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/Project/Scripts/EngineeringSpace/css/content.css" />
+<script>
+    $("body").css("background-color", "");
+</script>
+@{
+    var engineeringInfo = ViewBag.EngineeringInfo as Market.Logic.Domain.S_I_Engineering;
+    var groupInfo = ViewBag.ProjectGroupInfo as Project.Logic.Domain.S_I_ProjectGroup;
+    string detpName = engineeringInfo.MainDeptName + "," + engineeringInfo.OtherDeptName;
+    DateTime? startWorkingDate = ViewBag.StartWorkingDate;
+    var difDay = 0;
+    if (startWorkingDate.HasValue)
+    {
+        var timeSpan = DateTime.Now.Subtract(startWorkingDate.Value);
+        difDay = timeSpan.Days + 1;
+    }
+
+    <div id="tab-content-container">
+        <div class="tab-content-right">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active">
+                    <div class="tab-content-title clearfix">
+                        <div class="left-img pull-left">
+                        </div>
+                        <div class="pull-left tab-title-left">
+                            <h4>@engineeringInfo.Name &nbsp;·&nbsp;<span id="eCode">@engineeringInfo.Code</span></h4>
+                            <div>
+                                @if (!string.IsNullOrEmpty(engineeringInfo.CustomerInfoName))
+                                {
+                                    <div class="edlink" id="customerInfo">
+                                        <a href="javascript:void(0)" onclick="openUrl('/Market/Basic/Customer/Index?FuncType=view&ID=@engineeringInfo.CustomerInfo','客户信息查看')">@engineeringInfo.CustomerInfoName</a>
+                                    </div>
+
+                                }
+                                @if (!string.IsNullOrEmpty(engineeringInfo.PhaseContent))
+                                {
+                                    <span>当前阶段：</span><span>@engineeringInfo.PhaseContent&nbsp;&nbsp;</span>
+                                }
+                                @if (difDay > 0)
+                                {    <span>累计开工天数：</span><span>@difDay 天</span>}
+                                else
+                                { <span>尚未开工</span>}
+
+                            </div>
+                        </div>
+                        <div class="pull-right tab-title-right">
+                            <p>
+                                <span class="lf">总建筑面积：</span>
+                                @if (string.IsNullOrEmpty(engineeringInfo.Proportion))
+                                {
+                                    <span>0 平方米</span>
+                                }
+                                else
+                                {
+                                    <span>@engineeringInfo.Proportion 平方米</span>
+                                }
+                                <span class="lf">总占地面积： </span>
+                                @if (string.IsNullOrEmpty(engineeringInfo.LandingArea))
+                                {
+                                    <span>0 公顷</span>
+                                }
+                                else
+                                {
+                                    <span>@engineeringInfo.LandingArea 公顷</span>
+                                }
+                            </p>
+                            <p>
+                                <span class="lf">工程负责人：</span><span>@engineeringInfo.ChargerUserName</span> <span class="lf">参与部门：</span><span>@detpName.TrimEnd(',')</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tab-content-contents clearfix">
+                        <div class="tab-content-contents-left">
+                            <div class="tab-content-contents-left-publish clearfix">
+                                @{
+                                    var list = ViewBag.LastestNotice as List<Project.Logic.Domain.S_N_Notice>;
+
+                                    if (list.Count != 0)
+                                    {
+                                        <div class="white-block">
+                                        </div>
+                                    }
+                                    <ul>
+                                        @{
+                                            if (list.Count == 0)
+                                            {
+                                                <img src="/Project/Scripts/EngineeringSpace/images/NoContent.png" class="nothings" />
+                                            }
+
+                                            foreach (var item in list)
+                                            {
+                                                var mins = (DateTime.Now - item.CreateDate.Value).TotalMinutes;
+                                                <li>
+                                                    <p>
+                                                        <a onclick="openNoticeForm('@item.ID','@item.LinkUrl')" href="javascript:void(0)">@item.Title</a>
+                                                    </p>
+                                                    <span>@item.CreateUserName</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    @if (mins < 1)
+                                                    {
+                                                        <span>刚刚上传</span>
+                                                    }
+                                                    else if (mins < 60)
+                                                    {
+                                                        var min = Math.Floor(mins);
+                                                        <span>@min 分钟前上传</span>
+                                                    }
+                                                    else if (mins < 1440)
+                                                    {
+                                                        var hour = Math.Floor(mins / 60);
+                                                        <span>@hour 小时前上传</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        var diffDate = Math.Floor(mins / 1440);
+                                                        <span>@diffDate 天前上传</span>
+                                                    }
+                                                    <span class="glyphicon glyphicon-time"></span>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                }
+                                <div class="tab-content-contents-forum">
+                                    <div onclick="openNotice('True','项目动态')">
+                                        <p>@ViewBag.SysNoticeNum</p>
+                                        <span>项目动态</span>
+                                    </div>
+                                    <div onclick="openNotice('False','工程公告')">
+                                        <p>@ViewBag.NoticeNum</p>
+                                        <span>公告</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content-contents-right">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>
+                                            主要人员
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var userTable = ViewBag.UserInfo as System.Data.DataTable;
+                                        var userRowCount = 9;
+                                        var count = 9;
+                                        if (count > userTable.Rows.Count)
+                                        {
+                                            count = userTable.Rows.Count;
+                                        }
+                                        for (int i = 0; i < count; i++)
+                                        {
+                                            var name = userTable.Rows[i]["UserName"].ToString();
+                                            var dept = userTable.Rows[i]["DeptName"].ToString();
+                                            var roleName = userTable.Rows[i]["RoleName"].ToString();
+                                            var mobilePhone = userTable.Rows[i]["MobilePhone"].ToString();
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                    </div>
+                                                </td>
+                                                <td class="info-one">
+                                                    <div>
+                                                        <span>@name</span><span>@dept</span>
+                                                    </div>
+                                                    <div style="font-size: 11px;">
+                                                        <span>@roleName</span><span>@mobilePhone</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        if (count < userRowCount)
+                                        {
+                                            for (int i = count; i < userRowCount; i++)
+                                            {
+                                                <tr>
+                                                    <td></td>
+                                                    <td class="info-one">
+                                                        <div class="nothing">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-content-state clearfix">
+                        @{
+                            var projectList = ViewBag.ProjectList as List<Project.Logic.Domain.S_I_ProjectInfo>;
+                            var projectPrintCount = ViewBag.ProjectPrintCount as Dictionary<string, int>;
+                            int rowCount = ((projectList.Count + 1) / 4) + 1;
+                            int columCount = 4;
+
+                            for (int i = 0; i < rowCount; i++)
+                            {
+                                for (int m = 0; m < columCount; m++)
+                                {
+                                    var index = 4 * i + m;
+                                    if (index >= projectList.Count) { break; }
+
+                                    else
+                                    {
+                                        var project = projectList[index];
+                                        var stateName = Formula.Helper.EnumBaseHelper.GetEnumDescription(typeof(Project.Logic.ProjectCommoneState), project.State);
+                                        var businessType = Formula.Helper.EnumBaseHelper.GetEnumDef("Base.ProjectClass").EnumItem.ToList().FirstOrDefault(a => a.Code == project.ProjectClass);
+                                        if (businessType != null)
+                                        {
+                                            project.ProjectClass = businessType.Name;
+                                        }
+                                        var projectID = project.ID;
+                                        var printCount = projectPrintCount[projectID];
+                                        var stateColor = "";
+                                        switch (stateName)
+                                        {
+                                            case "未下达":
+                                                stateColor = "green";
+                                                break;
+                                            case "策划中":
+                                                stateColor = "deep-green";
+                                                break;
+                                            case "设计中":
+                                                stateColor = "blue";
+                                                break;
+                                            case "已完工":
+                                                stateColor = "red";
+                                                break;
+                                            case "已暂停":
+                                                stateColor = "yellow";
+                                                break;
+                                            case "已终止":
+                                                stateColor = "deep-red";
+                                                break;
+                                        }
+
+                                        <div class="state-contaiber prjID" id="@project.ID">
+                                            <div class="@stateColor tips">
+                                            </div>
+                                            <div class="state-content">
+                                                <em>@project.Code</em>
+                                                <p class="pn" projectname="@project.Name" engineeringname="@project.GroupRootInfo.Name" engineeringid="@project.GroupRootInfo.ID">
+                                                    @project.Name · @project.ProjectClass · @project.PhaseName
+                                                </p>
+                                                <div class="clearfix peoplewrap">
+                                                    <div class="pull-left people" style="bottom: 0px;">
+                                                        <p>
+                                                            负责：@project.ChargeUserName
+                                                        </p>
+                                                        <p>
+                                                            下达：@project.CreateDate.ToString("yyyy-MM-dd")
+                                                        </p>
+                                                    </div>
+                                                    <span class="@stateColor">@stateName</span>
+                                                </div>
+                                                <div class="shade">
+                                                    <p>
+                                                        <span>承接部门：</span> <span>@project.ChargeDeptName</span>
+                                                    </p>
+                                                    <p>
+                                                        <span>累积出图量：</span> <span>@printCount</span>
+                                                    </p>
+                                                    <p>
+                                                        <span>参与专业：</span> <span>@project.MajorText</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                            @*<div id="taskNoticePush" class="state-contaiber addstate" onclick="createNewProject('@engineeringInfo.ID','@engineeringInfo.Code')">*@
+                            <div id="taskNoticePush" class="state-contaiber addstate" onclick="showTaskMode('@engineeringInfo.ID','@engineeringInfo.Code')">
+                                <div class="state-content" title="任务单下达">
+                                    <span class="icon icon-plus"></span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="tab-content-upload clearfix">
+                        <div class="engineer">
+                            <div class="tab-title">
+                                <span>工程资料</span>
+                            </div>
+                            <ul>
+                                @{
+                                    var dataList = ViewBag.DataList as List<Project.Logic.Domain.S_D_DataCollection>;
+                                    if (dataList.Count == 0)
+                                    {
+                                        <li style="margin-top: 80px; border: none!important;">
+                                            <div style="text-align: center; width: 100%">
+                                                <h2 style="color: #cdced2; font-size: 16px;">
+                                                    暂无资料
+                                                </h2>
+                                            </div>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        foreach (var data in dataList)
+                                        {
+                                            var hours = (DateTime.Now - data.CreateDate.Value).TotalHours;
+                                            <li>
+                                                @{
+                                            var typeIndex = data.FileName.LastIndexOf('.');
+                                            var fileType = "others";
+                                            if (typeIndex >= 0)
+                                            {
+                                                fileType = data.FileName.Substring(typeIndex + 1).ToLower();
+                                            }
+                                            var filePic = "/Project/Scripts/EngineeringSpace/images/";
+                                            if (fileType == "dwg")
+                                            {
+                                                filePic += "cad.png";
+                                            }
+                                            else if (fileType == "pdf")
+                                            {
+                                                filePic += "pdf.png";
+                                            }
+                                            else if (fileType == "docx" || fileType == "doc")
+                                            {
+                                                filePic += "word.png";
+                                            }
+                                            else if (fileType == "xls" || fileType == "xlsx" || fileType == "xlsm")
+                                            {
+                                                filePic += "excel.png";
+                                            }
+                                            else if (fileType == "jpg" || fileType == "jpeg" || fileType == "png" || fileType == "gif" || fileType == "bmp"
+                                                || fileType == "tiff" || fileType == "psd" || fileType == "svg" || fileType == "tga" || fileType == "wmf"
+                                                || fileType == "pcx" || fileType == "fpx" || fileType == "exif" || fileType == "pcd" || fileType == "cdr"
+                                                || fileType == "ufo" || fileType == "dxf" || fileType == "eps" || fileType == "ai" || fileType == "raw")
+                                            {
+                                                filePic += "image.png";
+                                            }
+                                            else
+                                            {
+                                                filePic += "others.png";
+                                            }
+
+                                                }
+                                                <img src=@filePic />
+                                                <div>
+                                                    <p>
+                                                        <a href="javascript:void(0)" onclick="DownloadFile('@data.Attachment');">
+                                                            @data.FileName
+                                                        </a>
+                                                    </p>
+                                                    <span>@data.CreateUser</span>
+                                                    @if (hours < 1)
+                                                    {
+                                                        <span>1 小时内上传</span>
+                                                    }
+                                                    else if (hours < 24)
+                                                    {
+                                                        var hour = Math.Floor(hours);
+                                                        <span>@hour 小时前上传</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        var diffDate = Math.Floor(hours / 24);
+                                                        <span>@diffDate 天前上传</span>
+                                                    }
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        </div>
+                        <div class="outputs">
+                            <div class="tab-title">
+                                <span>最新输出成果</span>
+                            </div>
+                            <ul>
+                                @{
+                                    var productList = ViewBag.ProductList as List<Project.Logic.Domain.S_E_Product>;
+                                    if (productList.Count == 0)
+                                    {
+                                        <li style="margin-top: 80px; border: none!important;">
+                                            <div style="text-align: center; width: 100%">
+                                                <h2 style="color: #cdced2; font-size: 16px;">
+                                                    暂无成果
+                                                </h2>
+                                            </div>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        for (var i = 0; i < productList.Count; i++)
+                                        {
+                                            var hours = (DateTime.Now - productList[i].SubmitDate.Value).TotalHours;
+                                            <li>
+                                                <img src="/Project/Scripts/EngineeringSpace/images/outputs.png" />
+                                                <div>
+                                                    <p>
+                                                        <a href="javascript:void(0)" onclick="DownloadFile('@productList[i].MainFile');">
+                                                            @productList[i].Name
+                                                        </a>
+                                                    </p>
+                                                    <span>@productList[i].CreateUser</span>
+                                                    @if (hours < 1)
+                                                    {
+                                                        <span>1 小时内上传</span>
+                                                    }
+                                                    else if (hours < 24)
+                                                    {
+                                                        var hour = Math.Floor(hours);
+                                                        <span>@hour 小时前上传</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        var diffDate = Math.Floor(hours / 24);
+                                                        <span>@diffDate 天前上传</span>
+                                                    }
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="TaskWin" class="mini-window" title="选择任务单" style="width: 250px; height: 180px;"
+         showmodal="true" allowresize="true">
+        <input name='Task' class='mini-radiobuttonlist' required='false' allowinput='false'
+               data='' onvaluechanged="onTaskModeSelected" textfield="text" valuefield="value"
+               repeatlayout="table" repeatdirection="horizontal" repeatitems="1" />
+    </div>
+}
+<script type="text/javascript">
+    @Html.GetEnum("Project.TaskNoticeForEngineerSpace");
+    var groupID = getQueryString("GroupInfoID");
+
+    $(document).ready(function () {
+        $("#tab-content-container").niceScroll({ cursorborder: "none" });
+        $(".tab-content-contents-right").niceScroll({ cursorborder: "none" });
+    });
+
+    $(".tab-content-state .state-contaiber").not(".addstate").on("click", function (event) {
+        var prjID = $(this).find(".prjID").prevObject[0].id;
+        var title = $(this).find(".pn").attr("projectname");
+        var engineeringName = $(this).find(".pn").attr("engineeringname");
+        var engineeringID = $(this).find(".pn").attr("engineeringid");
+        var leftUrl = "SliderProject?ProjectInfoID=" + prjID;
+        var rightUrl = "";
+        window.parent.movespro(prjID, title, engineeringName, engineeringID);
+    });
+
+    $(".tab-content-state .state-content").on("mouseover", function () {
+
+        $(this).find(".shade").stop().animate({ top: "0px" })
+    }).on("mouseout", function () {
+        $(this).find(".shade").stop().animate({ top: "100%" })
+    });
+
+    function openNotice(isFromSys, title) {
+        if (isFromSys == "True")
+            openWindow("/MvcConfig/UI/List/PageView?TmplCode=SysNotice&GroupInfoID=" + groupID + "&Type=Engineering" + "&FuncType=View", { "width": "1000", "title": title });
+        else
+            openWindow("/MvcConfig/UI/List/PageView?TmplCode=Notice&GroupInfoID=" + groupID + "&Type=Engineering" + "&FuncType=View", { "width": "1000", "title": title });
+    }
+
+    function openNoticeForm(noticeID, linkUrl) {
+        var url = "/Project/Engineering/EngineeringNotice/Views?ID=" + noticeID;
+        if (linkUrl) { url = linkUrl; }
+        openWindow(url + "&FuncType=View", { "width": "70%", height: "80%", "title": "查看" });
+    }
+
+    var EngineeringInfoID = "";
+    var Code = "";
+    function showTaskMode(id, code) {
+        if (TaskNoticeForEngineerSpace && TaskNoticeForEngineerSpace.length > 0) {
+            if (TaskNoticeForEngineerSpace.length == 1)
+                createNewProject(id, code, TaskNoticeForEngineerSpace[0].value);
+            else {
+                EngineeringInfoID = id;
+                Code = code;
+                mini.getbyName("Task").setData(TaskNoticeForEngineerSpace);
+                var win = mini.get("TaskWin");
+                win.show();
+                $(".mini-radiobuttonlist-td").css({ padding: "0px 0px 0px 20px" })
+                $("input[type='radio']").css({ margin: "0" });
+                $("input[type='radio']").next().css({ margin: "0" });
+            }
+        }
+        else
+            createNewProject(id, code, "TaskNotice");
+    }
+
+    function onTaskModeSelected(e) {
+        if (EngineeringInfoID && Code && e.value) {
+            createNewProject(EngineeringInfoID, Code, e.value, function () {
+                var win = mini.get("TaskWin");
+                win.hide();
+            });
+        }
+    }
+
+    function createNewProject(id, code, tmpCode, onDestroy) {
+        var url = "/Project/AutoUI/TaskNotice/PageView?TmplCode=" + tmpCode + "&Code=" + code + "&EngineeringInfoID=" + id;
+        var paramData = {
+            url: url,
+            width: "70%",
+            height: "80%",
+            title: "设计任务通知单"
+        };
+        if (onDestroy)
+            paramData["onDestroy"] = onDestroy;
+        flowAdd(tmpCode, paramData);
+    }
+
+    function openUrl(url, title) {
+        if (url && url != "")
+            openWindow(url, { "width": "80%", "title": title, addQueryString: false });
+    }
+
+</script>

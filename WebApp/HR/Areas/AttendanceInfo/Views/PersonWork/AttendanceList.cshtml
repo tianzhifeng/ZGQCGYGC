@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "AttendanceList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div id="fitDiv" class="mini-fit">
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%; height: 100%;' url='GetList'>
+        <div property="columns">
+            <div type='indexcolumn' headeralign='center'>序号</div>
+            <div field="Year" name="Year" headeralign="center" width="80" align="center">年份</div>
+            <div field="Month" name="Month" headeralign="center" width="80" align="center">月份</div>
+            <div field="Date" headeralign="center" width="80" align="center">日期</div>
+            <div field="SignIn" headeralign="center" width="*" align="center">上班时间</div>
+            <div field="SignOut" headeralign="center" width="*" align="center">下班时间</div>
+        </div>
+    </div>
+</div>

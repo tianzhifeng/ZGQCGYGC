@@ -1,0 +1,113 @@
+﻿<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%; text-align: left">
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <input name="DocumentInfoID" class="mini-hidden" />
+    <div class="basediv">
+        <table cellpadding="0" cellspacing="0" align="center" style="width: 95%;">
+            <tr align="center">
+                <td style="font-size: 16pt; font-weight: bold; line-height: 35px; text-align: center;">文件信息
+                </td>
+            </tr>
+        </table>
+        <table width="100%" class="formTable" cellspacing="0">
+            <tr>
+                <td>上传文件&nbsp;&nbsp;<b style="color: red;">*</b></td>
+                <td colspan="3">
+                    <input name="SourceFileID" class="mini-singlefile" style="width: 100%" required="true"/>
+                </td>
+            </tr>
+            <tr>
+                <td width="13%">文件名称&nbsp;&nbsp;<b style="color: red;">*</b>
+                </td>
+                <td width="37%">
+                    <input name="FileName" class="mini-textbox" style="width: 100%;" required="true" vtype="maxLength:200;" />
+                </td>
+                <td width="13%">文件编号&nbsp;&nbsp;<b style="color: red;">*</b>
+                </td>
+                <td width="37%">
+                    <input name="FileCode" class="mini-textbox" style="width: 100%;" required="true" vtype="maxLength:50;" />
+                </td>
+            </tr>
+            <tr>
+                <td>文件扩展名称
+                </td>
+                <td>
+                    <input name="ExtName" style="width: 100%" class="mini-textbox asLabel" readonly />
+                </td>
+                <td>文件大小(KB)
+                </td>
+                <td>
+                    <input name="FileSize" style="width: 100%" class="mini-textbox asLabel" readonly />
+                </td>
+            </tr>
+            <tr>
+                <td>上传人
+                </td>
+                <td>
+                    <input name="CreateUserID" textname="CreateUserName" class="mini-buttonedit asLabel" style="width: 100%;" emptytext="请输入拼音..." readonly />
+                </td>
+                <td>所属部门
+                </td>
+                <td>
+                    <input name="OrgName" class="mini-textbox asLabel" style="width: 100%;" readonly />
+                    <input name="OrgID" class="mini-hidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>上传时间
+                </td>
+                <td>
+                    <input name="CreateDate" class="mini-datepicker asLabel" style="width: 100%;" readonly />
+                </td>
+                <td>是否作废
+                </td>
+                <td>
+                    <input name="IsValid" class="mini-combobox asLabel" style="width: 100%;" textfield="text" valuefield="value" emptytext="请选择..." data="IsValid" allowinput="false" shownullitem="true" nullitemtext="请选择..." readonly />
+                </td>
+            </tr>
+            <tr>
+                <td>其它</td>
+                <td colspan="3">
+                    <input name="Attachment" class="mini-multifile" style="width: 100%" vtype="maxLength:2000;" />
+                </td>
+            </tr>
+            <tr>
+                <td>备注
+                </td>
+                <td colspan="3">
+                    <input class="mini-textarea" name="Remark" style="width: 100%; height: 80px;" vtype="maxLength:500;" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script type="text/javascript">
+    @Html.GetEnum("System.IsValid")
+
+    function onFormSetData() {
+        $(".mini-singlefile-input").change(function() {
+            var file = mini.getbyName("SourceFileID").getValue();
+            var fileName = getMiniFileName(file);
+            var name = fileName.substring(0, fileName.lastIndexOf("."));
+            var ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+            var fileSize = file.substring(file.lastIndexOf("_") + 1);
+            if (mini.getbyName("FileName").getValue() == "") {
+                mini.getbyName("FileName").setValue(name);
+            }
+            mini.getbyName("ExtName").setValue(ext);
+            mini.getbyName("FileSize").setValue(fileSize);
+        });
+    }
+</script>

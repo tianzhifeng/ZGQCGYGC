@@ -1,0 +1,49 @@
+﻿
+<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" plain="true" iconcls="icon-refer" onclick="select">选择</a>
+            </td>
+            <td class="gw-toolbar-right">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <fieldset>
+        <legend>红头信息</legend>
+        <div>
+            <table style="table-layout:fixed">
+            <tr class="hideRow">
+                <td width="30%">
+                </td>
+                <td width="70%">
+                </td>
+            </tr>
+            <tr>
+                <td>模板</td>
+                <td>
+                    <input id="cbHongTou" class="mini-combobox" style="width:100%;" textField="text" valueField="value" 
+                        url="GetHongTou" showNullItem="true" required="true" allowInput="false" />
+                </td>
+            </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+<script type="text/javascript">
+    function select(e) {
+        var cb = mini.get("cbHongTou");
+        if (cb.getValue() == "") {
+            msgUI("请选择红头模板!");
+            return;
+        }
+        msgUI("确认套红?", 2, function (action) {
+            if (action == "ok") {
+                var data = { value: cb.getValue(), text: cb.getText() };
+                closeWindow(data);
+            }
+        });
+    }
+</script>

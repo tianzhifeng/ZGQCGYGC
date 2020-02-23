@@ -1,0 +1,20 @@
+@charset "utf-8";
+/* J_20130718*/
+body{ margin:0px;}
+.gw_pm_main{ width:100%; height:120px; border:1px solid #d3d3d3; background:url(gw_pm_main_bg.gif) #FFFFFF repeat-x;}
+.gw_pm_mains{ width:100%; height:120px; border:1px solid #94e34e; background:url(gw_pm_main_bg.gif) #FFFFFF repeat-x;}
+.gw_pm_main_table{width:100%; height:120px; border:1px solid #ffffff;}
+.gw_pm_main_title{padding-left:10px; line-height:32px; height:35px font-size:14px; font-family:Microsoft YaHei;}
+.gw_pm_main_sum {line-height:16px; height:75px; color:#666; font-size:12px; font-family:Microsoft YaHei; overflow:hidden;}
+.gw_pm_main_link {line-height:16px; height:10px; color:#000; font-size:12px; font-family:Microsoft YaHei; font-weight:bold;}
+.gw_pm_button { line-height:18px; font-size:12px; font-family:Microsoft YaHei;}
+.gw_pm_button2 a { border:1px solid #9f9f9f; background:#ffffff; padding:0px; width:60px; table-layout: inherit; display:block; text-decoration:none; color:#36C; margin-bottom:3px;}
+.gw_pm_button2 a:hover { border:1px solid #0094d1; background:#d9eef4; width:70px; padding:0px;}
+.gw_pm_button3 a { border:1px solid #9f9f9f; background:#94e34e; padding:0px; width:60px; table-layout: inherit; display:block; text-decoration:none; color:#0c5300; margin-bottom:3px;}
+.gw_pm_button3 a:hover { border:1px solid #0094d1; background:#94e34e; width:70px; padding:0px;}
+.gw_pm_button4 a { border:1px solid #9f9f9f; background:#f3f3f3; padding:0px; width:60px; table-layout: inherit; display:block; text-decoration:none; color:#999; margin-bottom:3px;}
+.gw_pm_button4 a:hover { border:1px solid #9f9f9f; background:#f3f3f3; width:60px; padding:0px;}
+.gw_pm_buttono a { border:1px solid #9f9f9f; background:#FFF; padding:0px; width:60px; height:50px; line-height:50px; table-layout: inherit; display:block; text-decoration:none; color:#36C; margin-bottom:3px;}
+.gw_pm_buttono a:hover { border:1px solid #9f9f9f; background:#d9eef4; width:60px; padding:0px;}
+.gw_pm_buttonh a { border:1px solid #a7ac16; background:#fffd6d; padding:0px; width:60px; height:50px; line-height:50px; table-layout: inherit; display:block; text-decoration:none; color:#36C; margin-bottom:3px;}
+.gw_pm_buttonh a:hover { border:1px solid #9f9f9f; background:#d9eef4; width:60px; padding:0px;}

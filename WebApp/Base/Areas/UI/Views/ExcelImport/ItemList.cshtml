@@ -1,0 +1,143 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="addRow({ItemType:'Text'},{createId:true,isLast:true})">添加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delRow();">移除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveItemList();">保存</a>
+                <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetItemList" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div field="Settings" width="80">高级</div>
+            <div field="Name" width="150" vtype="required;">
+                Excel标题
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="ItemType" width="100" autoshowpopup="true" align="center" vtype="required;">
+                映射规则
+                <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="ImportItemType" onitemclick="commitEdit" />
+            </div>
+            <div field="Code" width="180" vtype="required;">
+                对应字段
+                @*<a href="javescript:void(0)" title="外建列语法:外建表名.列名">对应字段</a>*@
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Width" width="60">
+                列宽度
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="Align" width="50" autoshowpopup="true" align="center">
+                对齐
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="align" onitemclick="commitEdit" />
+            </div>
+            <div type="checkboxcolumn" field="Required" truevalue="true" falsevalue="false" width="40">
+                必填
+            </div>
+            <div type="checkboxcolumn" field="Hidden" truevalue="true" falsevalue="false" width="40">
+                隐藏
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.ImportItemType))
+    var align = [{ value: "left", text: "靠左" }, { value: "center", text: "居中" }, { value: "right", text: "靠右" }];
+    function itemTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["Settings"] = "";
+    }
+
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+    function getitemTypeText(value) {
+        for (var i = 0; i < ImportItemType.length; i++) {
+            if (ImportItemType[i]["value"] == value)
+                return ImportItemType[i]["text"];
+        }
+    }
+
+    addGridButton("dataGrid", "Settings", {
+        linkText: '设置', onButtonClick: function (row) {
+            var type = row["ItemType"];
+            if (!type) { msgUI('请先选择控件类型!'); return; }
+            var url = "Settings" + type;
+            var title = getitemTypeText(type);
+            var width = 600;
+            var grid = mini.get("dataGrid");
+            openWindow(url, {
+                width: width, title: title, data: row["Settings"], onDestroy: function (data) {
+                    if (data != "close")
+                        row["Settings"] = mini.encode(data);
+                }
+            });
+        }
+    });
+</script>
+<script type="text/javascript">
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+</script>
+<script type="text/javascript">
+
+    function saveItemList() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        grid.validate();
+        if (grid.isValid() == false) {
+            msgUI("输入数据有误！");
+            return;
+        }
+        var isValidate = true;
+        var data = grid.getData();
+        for (var i = 0; i < data.length; i++) {
+            var itemType = data[i].ItemType;
+            if (itemType == "Enum") {
+                var settings = data[i].Settings;
+                if (typeof (data[i].Settings) == "string")
+                    settings = JSON.parse(data[i].Settings);
+                if (typeof (settings) == 'undefined' ||
+                    (typeof (settings) != 'undefined' && (settings.IsMultiple == null || settings.IsMultiple == ""))
+                    || (typeof (settings) != 'undefined' && (settings.EnumKey == null || settings.EnumKey == ""))
+                    ) {
+                    msgUI("【" + data[i].Name + "】类型为枚举时,请设置枚举的必填信息!");
+                    return;
+                }
+            } else if (itemType == "Convert") {
+                var settings = data[i].Settings;
+                if (typeof (data[i].Settings) == 'string')
+                    settings = JSON.parse(data[i].Settings);
+                if (typeof (settings) == 'undefined' ||
+                (typeof (settings) != 'undefined' && (settings.IsMultiple == null || settings.IsMultiple == ""))
+                || (typeof (settings) != 'undefined' && (settings.SelectListBox == null || settings.SelectListBox == ""))
+                ) {
+                    msgUI("【" + data[i].Name + "】类型为转换时,选择字段中必需保存在绑定字段!");
+                    return;
+                }
+            }
+        }
+        if (isValidate) {
+            addExecuteParam("ItemList", grid.getData());
+            execute("SaveItemList", { actionTitle: "保存", validateForm: false });
+        }
+    }
+</script>

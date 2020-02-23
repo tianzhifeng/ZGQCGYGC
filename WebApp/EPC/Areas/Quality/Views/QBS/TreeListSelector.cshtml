@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">
+                    选择
+                </a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow();" plain="true">
+                    取消
+                </a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称或编号' onenter="treeSearch();" onbuttonclick="treeSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width: 100%; height: 100%;" url="" expandonload="true" showtreeicon="true" allowcellwrap="true"
+         multiselect="true" borderstyle="border-left:0px;"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType"
+         allowresize="false" fitcolumns="false"
+         ondrop="onNodeDrop">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="260" headeralign="center">
+                名称
+            </div>
+            <div field="Code" width="100" align="left" headeralign="center">
+                编号
+            </div>
+            <div field="ChargerUser" displayfield="ChargerUserName" width="70" align="center" headeralign="center">
+                负责人
+            </div>
+            <div field="Standard" width="200" align="left" headeralign="center">
+                质量验收标准
+            </div>
+            <div field="Remark" width="300" align="left" headeralign="center">
+                备注
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var showAll = getQueryString("ShowAll");
+    if (!showAll) showAll = "false";
+    var url = "GetQBSList?EngineeringInfoID=" + engineeringInfoID + "&ShowAll=" + showAll;
+    $("#dataTree").attr("url", url);
+
+    function returnValue() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getSelecteds();
+        closeWindow(nodes);
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                var code = node.Code ? node.Code.toLowerCase() : "";
+                if (text.indexOf(key) != -1 || code.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,46 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a id="btnKeep" class="mini-button" iconcls="icon-ok" onclick="execute('CollisionKeep',{actionTitle:'保留',mustSelectRow:true});">保留</a>
+                <a id="btnCover" class="mini-button" iconcls="icon-paste" onclick="execute('CollisionCover',{actionTitle:'覆盖',mustSelectRow:true});">覆盖</a>
+                <a id="btnClear" class="mini-button" iconcls="icon-remove" onclick="execute('CollisionClear',{actionTitle:'删除',mustSelectRow:true});">删除</a>
+            </td>
+            <td class="gw-toolbar-right"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetCollisionList"
+         multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Collision" width="60" allowsort="true" align="center">
+                状态
+            </div>
+            <div field="UIType" width="100" allowsort="true" align="center">
+                类型
+            </div>
+            <div field="Code" width="200" allowsort="true">
+                对象编号
+            </div>
+            <div field="Name" width="*" allowsort="true">
+                对象名称
+            </div>
+            <div field="ModifyUserName" width="100" allowsort="true" align="center">
+                最后修改人
+            </div>
+            <div field="ModifyTime" width="120" allowsort="true" dateformat="yyyy-MM-dd HH:mm"
+                 align="center">
+                最后修改时间
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var collisionType = [{ value: 'Collision', text: '冲突' }, { value: 'keep', text: '保留' }, { value: 'cover', text: '覆盖' }];
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "Collision", "collisionType");
+</script>

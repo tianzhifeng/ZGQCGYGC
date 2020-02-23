@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "Tab";
+}
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="按年度分析" url="List?ProjectInfoID=@ViewBag.ProjectInfoID">
+        </div>
+        <div title="项目总工时" url="AllList?ProjectInfoID=@ViewBag.ProjectInfoID">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="head">
+	<button class="left" onclick="$monitor.goback(this)"><i class="glyphicon glyphicon-menu-left"></i></button>
+	<span class="title">项目信息</span>
+	<button class="right"></button>
+</div>
+<div class="tab">
+	<div>
+		<button class="active" onclick="projectInfo('prjinfo',this)">基本信息</button>
+		<button onclick="projectInfo('prjusers',this)">通讯录</button>
+	</div>
+</div>
+
+        <div class="content has-tab">
+            <!-- 项目基本信息 -->
+            <div class="has-show prjinfo">
+                <div class="prj-info">
+                    <div class="title" way-data="Name"></div>
+                    <div class="code" way-data="Code"></div>
+                    <div class="item">
+                        <div class="key">客户名称：</div>
+                        <div class="value"way-data="CustomerName"></div>
+                    </div>
+                    <div class="item">
+                        <div class="key">项目阶段：</div>
+                        <div class="value" way-data="PhaseName"></div>
+                    </div>
+                    <div class="item">
+                        <div class="key">责任部门：</div>
+                        <div class="value" way-data="ChargeDeptName"></div>
+                    </div>
+                    <div class="item">
+                        <div class="key">项目经理：</div>
+                        <div class="value" way-data="ChargeUserName"></div>
+                    </div>
+                    <div class="item">
+                        <div class="key">创建日期：</div>
+                        <div class="value" way-data="CreateDate" way-transform="dateFormatter"></div>
+                    </div>
+                    <!--<div class="item">
+                        <div class="key">委托日期：</div>
+                        <div class="value" way-data="DelegateDate" way-transform="dateFormatter"></div>
+                    </div>-->
+                    <div class="item">
+                        <div class="planKey">计划开始日期：</div>
+                        <div class="planValue" way-data="PlanStartDate" way-transform="dateFormatter"></div>
+                    </div>
+                    <div class="item">
+                        <div class="planKey">计划完成日期：</div>
+                        <div class="planValue" way-data="PlanFinishDate" way-transform="dateFormatter"></div>
+                    </div>
+                    <div class="item">
+                        <div class="key">参与专业：</div>
+                        <div class="value" way-data="Major" way-transform="majorFormatter"></div>
+                    </div>
+                    <div class="content-key">项目范围及人物要求：</div>
+                    <div class="content-value" way-data="Description"></div>
+                </div>
+            </div>
+            <!--通讯录-->
+            <div class="has-show prjusers">
+                <div class="prj-user">
+                    <div class="search search-whole">
+                        <div>
+                            <i class="glyphicon glyphicon-search"></i>
+                            <input type="text" placeholder="请输入姓名查询" onchange="searchUsers(this)" />
+                            <i class="glyphicon glyphicon-remove-sign"></i>
+                        </div>
+                    </div>
+                    <ul class="prj-userlist scroll">
+                        <div class="scroll-content">
+                            <li class="itemRepeat">
+                                <div class="icon" way-data="UserName" way-transform="firstName"></div>
+                                <div class="userinfo">
+                                    <div class="name" way-data="UserName"></div>
+                                    <div class="dept" way-data="MajorRole"></div>
+                                    <div class="address">
+                                        <span class="phone" onclick="callUser('tel',this)" way-data="MobilePhone"></span>
+                                        <span class="email" onclick="callUser('mailto',this)" way-data="Email"></span>
+                                    </div>
+                                </div>
+                            </li>
+                         </div>
+                    </ul>
+                </div>
+            </div>
+        </div>

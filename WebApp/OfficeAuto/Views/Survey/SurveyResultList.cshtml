@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "问卷调查统计查询";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入调查主题" style="width: 200px;"
+                    onenter="quickSearch('SurveyName');" onbuttonclick="quickSearch('SurveyName');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetSurveyResultList" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" sortfield="ID" sortorder="desc">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="SurveyName" headeralign="center" width="180" allowsort="true" align="left">
+                调查主题</div>
+            <div field="IsMemoryUser" headeralign="center" width="80" allowsort="true" align="center">
+                是否记名</div>
+            <div field="SurveyStartDate" width="90" headeralign="center" allowsort="true" align="center"
+                dateformat="yyyy-MM-dd">
+                调查开始日期</div>
+            <div field="SurveyEndDate" width="90" headeralign="center" allowsort="true" align="center"
+                dateformat="yyyy-MM-dd">
+                调查结束日期</div>
+            <div field="CreateUserName" width="100" headeralign="center" allowsort="true" align="center">
+                创建人</div>
+            <div field="CreateDate" width="90" headeralign="center" allowsort="true" align="center"
+                dateformat="yyyy-MM-dd">
+                创建日期</div>
+            <div field="Enter" headeralign="center" width="80" align="center" renderer="onEnterRenderer">
+                查看统计结果</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px;" showmodal="true"
+    allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="13%" align="center">
+                    调查主题
+                </td>
+                <td width="20%" align="left">
+                    <input class="mini-textbox" name="$LK$SurveyName" style="width: 85%;" onenter="search();" />
+                </td>
+                <td width="13%" align="center">
+                    是否记名
+                </td>
+                <td width="20%" align="left">
+                    <input name="$EQ$IsMemoryUser" class="mini-combobox" style="width: 85%" data="TrueOrFalse"
+                        valuefield="value" textfield="text" shownullitem="true" onenter="search();" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    调查日期(起)
+                </td>
+                <td width="35%" align="left">
+                    <input name="$FR$SurveyStartDate" class="mini-datepicker" style="width: 85%" />
+                </td>
+                <td width="15%" align="center">
+                    止
+                </td>
+                <td width="35%" align="left">
+                    <input name="$TO$SurveyEndDate" class="mini-datepicker" style="width: 85%;" />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("System.TrueOrFalse")
+</script>
+<script type="text/javascript">
+
+    //为Grid枚举列指定枚举定义
+    addGridEnum("dataGrid", "IsMemoryUser", "TrueOrFalse");
+
+    //注册Grid链接列
+    addGridLink('dataGrid', 'SurveyName', '/OfficeAuto/SurveySubject/Edit?ID={ID}', { funcType: 'view', width: 880, height: '90%' });
+
+    function doEnter(ID) {
+        url = "/OfficeAuto/Survey/Result?ID=" + ID;
+        openWindow(url, { width: 1050, height: '90%' });
+        //   openWindow(url,{ title: '项目空间', width: "100%" ,height: "100%"});
+    }
+
+
+    function onEnterRenderer(e) {
+        var record = e.record;
+        var thtml = "";
+        thtml = '<a href="javascript:void(0);"  onclick="doEnter(\'' + record.ID + '\')">查看</span></a> ';
+        return thtml;
+    }
+
+</script>
+<style type="text/css">
+    .icon-search:before
+    {
+        content: "";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+</style>

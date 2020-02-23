@@ -1,0 +1,291 @@
+﻿<style>
+    .send
+    {
+        background-image: url(/CommonWebResource/RelateResource/image/icons/icon_mail.gif);
+    }
+    
+    .end
+    {
+        background-image: url(/CommonWebResource/Theme/Default/MiniUI/icons/end.gif);
+    }
+</style>
+<div class="mini-toolbar" id="btnDiv" style="width: 100%;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="Save();"
+                    visible="false">保存</a>
+                <a class="mini-button" id="btnEnd" plain="true" iconcls="end" onclick="CompleteTask();"
+                    visible="false">完成</a>
+                <a class="mini-button" id="btnUndo" plain="true" iconcls="icon-undo" onclick="resetTask();"
+                    visible="false">重做</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" id="btnHelp" onclick="showHelp()" iconcls="icon-help" plain="true">
+                    帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>任务信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        任务名称
+                    </td>
+                    <td colspan="3">
+                        <input name="Name" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        计划完成日期
+                    </td>
+                    <td>
+                        <input name="DeadLine" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                    <td>
+                        实际完成日期
+                    </td>
+                    <td>
+                        <input name="ExecTime" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        综合评分
+                    </td>
+                    <td>
+                        <input name="ExecScore" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <hr />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div id='subToolbar' class='mini-toolbar' style='height: 25px; border-bottom: 0px;
+                            display: none;'>
+                            <table>
+                                <tr>
+                                    <td style='text-align: left;'>
+                                        <a class='mini-button' iconcls='icon-add' onclick='addRow({Urgency:"一般"},{gridId:"subItems",isLast:true});'>
+                                            添加</a>
+                                        <a class='mini-button' iconcls='icon-remove' onclick='delRow({ gridId: "subItems" });'>
+                                            移除</a>
+                                        <a class='mini-button' iconcls='end' onclick='confirmSubTask();'>确认完成</a>
+                                        <a class='mini-button' iconcls='icon-redo' onclick='redoSubTask();'>重做</a>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id='subItems' class='mini-datagrid' multiselect='true' allowcelledit='true'
+                            allowcellselect='true' showpager='false' allowunselect='false' style="height: 120px;">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="Name" width="*" header="子任务" vtype="required;">
+                                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                <div field="ExecUserIDs" displayfield="ExecUserNames" width="120" header="责任人" vtype="required;"  align="center">
+                                    <input name="selectorExecUserIDs" property="editor" class="mini-buttonedit" style="width: 100%;" />
+                                </div>
+                                <div field="Urgency" width="80" header="紧急程度" align="center">
+                                    <input property="editor" name="Urgency" class="mini-combobox" style="width: 100%;"
+                                        data="urgency" />
+                                </div>
+                                <div field="DeadLine" width="120" dateformat="yyyy-MM-dd" header="截至日期" align="center">
+                                    <input property="editor" class="mini-datepicker" style="width: 100%;" />
+                                </div>
+                                <div field="CompleteTime" width="120" dateformat="yyyy-MM-dd" header="确认完成日期" align="center">
+                                </div>
+                                <div field="ExecTime" width="120" dateformat="yyyy-MM-dd" header="完成日期" align="center">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <textarea class="mini-textarea" name="ExecDescription" emptytext="执行情况" style="width: 100%;
+                            height: 120px;"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <input class="mini-multifile" style="width: 100%" name="ExecAttachment" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    var urgency = [{ value: "一般", text: "一般" }, { value: "紧急", text: "紧急"}];
+    addSingleUserSelector("selectorExecUserIDs")
+</script>
+<script type="text/javascript">
+    function onFormSetData(data) {
+        //不能修改任务信息
+        setFormItemDisabled("Name");
+        setFormItemDisabled("DeadLine");
+        //执行时间不能修改
+        setFormItemDisabled("ExecTime");
+
+        if (data.ExecUserID == user.UserID && !data.ExecTime) {
+            mini.get("btnSave").show();
+            mini.get("btnEnd").show();
+
+            //只有第一级任务可以添加子任务
+            if (data.TaskExecID) { //存在此属性，则不是第一级任务
+                $("#subToolbar").hide();
+                var subItems = mini.get("subItems");
+                if (subItems.data.length == 0) {
+                    subItems.hide();
+                }
+                else {
+                    subItems.setAllowCellEdit(false);
+                }
+            }
+            else {
+                $("#subToolbar").show();
+            }
+        }
+        else {
+            setFormDisabled(true);
+            $("#subToolbar").hide();
+            mini.get("btnEnd").hide();
+            var subItems = mini.get("subItems");
+            if (subItems.data.length == 0) {
+                subItems.hide();
+            }
+            else {
+                subItems.setAllowCellEdit(false);
+            }
+        }
+
+        if (data.ExecUserID != user.UserID) {
+            if (data.ExecTime) {
+                mini.get("btnUndo").show();
+            }
+            else {
+                mini.get("btnUndo").hide();
+            }
+        }
+
+
+        $("#divFloat").hide();
+    }
+</script>
+<script type="text/javascript">
+    function commitGridEdit() {
+        var grid = mini.get("subItems");
+        grid.commitEdit();
+    }
+</script>
+<script type="text/javascript">
+    function confirmSubTask() {
+        var grid = mini.get("subItems");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择要完成的子项！");
+            return;
+        }
+        var fieldValues = [];
+        for (var i = 0; i < rows.length; i++) {
+            if (!rows[i].ID) {
+                msgUI("新增加的子项不能直接完成！");
+                return;
+            }
+            fieldValues.push(rows[i]["ID"]);
+        }
+        var subTaskIDs = fieldValues.join(',');
+
+        msgUI("确认子项已完成吗？", 2, function (action) {
+            if (action != "ok") return;
+            $.post("confirmSubTask?execId=" + getQueryString("execId"), { subTaskIDs: subTaskIDs }, function (data, status) {
+                msgUI("子项已完成");
+
+                grid.setData(mini.decode(data));
+            })
+        });
+    }
+
+    function redoSubTask() {
+        var grid = mini.get("subItems");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择要重做的子项！");
+            return;
+        }
+        var fieldValues = [];
+        for (var i = 0; i < rows.length; i++) {
+            if (!rows[i].ID) {
+                msgUI("新增加的子项不能直接重做！");
+                return;
+            }
+            fieldValues.push(rows[i]["ID"]);
+        }
+        var subTaskIDs = fieldValues.join(',');
+
+        msgUI("确认子项重做吗？", 2, function (action) {
+            if (action != "ok") return;
+            $.post("redoSubTask?execId=" + getQueryString("execId"), { subTaskIDs: subTaskIDs }, function (data, status) {
+                msgUI("子项已重做");
+                grid.setData(mini.decode(data));
+            })
+        });
+    }
+
+    function resetTask() {
+        msgUI("确认重做该项吗？", 2, function (action) {
+            if (action != "ok") return;
+            $.post("redoSubTask?execId=" + getQueryString("execId"), function (data, status) {
+                msgUI("该项已重做");
+            })
+        });
+    }
+</script>
+<script type="text/javascript">
+    function Save() {
+        save({ onComplete: function () {
+            msgUI("保存成功！", 1, function () {
+                window.parent.closeWindow('');
+            });
+        }
+        });
+    }
+
+    function CompleteTask() {
+        save({ action: 'CompleteTask', onComplete: function () {
+            msgUI("成功完成！", 1, function () {
+                window.parent.closeWindow('');
+            });
+        }
+        });
+    }
+</script>

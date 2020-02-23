@@ -1,0 +1,280 @@
+﻿<div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+    <div title="发文签发单">
+        @if (string.IsNullOrEmpty(Request["IsPreView"]) &&
+    string.IsNullOrEmpty(Request["FlowCode"]) &&
+    string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+        {
+            <div style='width: 100%; height: 28px;'>
+            </div>
+        }
+        else if ((!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"])) && System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"].ToLower() == "true")
+        {
+            <div style='width: 100%; height: 28px;'>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Request["IsPreView"]))
+        {
+        }
+        else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+        {
+            @Html.GetFlowbar()
+        }
+        else
+        {
+            <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+                <table>
+                    <tr>
+                        <td>
+                            <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a> <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                        </td>
+                        <td id="btnRight"></td>
+                    </tr>
+                </table>
+            </div>
+        }
+        <form id="dataForm" method="post" align="center" autogetdata="false">
+            <input name="ID" class="mini-hidden" />
+            @Html.Raw(ViewBag.HiddenHtml)
+            <div class="formDiv">
+                @Html.Raw(ViewBag.FormHtml)
+            </div>
+            @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+            {
+                <div class="flow-msg">
+                    <fieldset class="formDiv">
+                        <legend>操作信息</legend>
+                        <div id="comment">
+                        </div>
+                    </fieldset>
+                </div>
+                <br />
+                <br />
+                <script type="text/javascript">
+                    function onCommentLoad(e) {
+                        if (e.data.length == 0)
+                            $("#commentGrid").hide();
+                    }
+                </script>
+            }
+        </form>
+    </div>
+    <div title="发文正文">
+        <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        @*<a class="mini-button" iconcls="icon-save" onclick="saveFile()" plain="true">保存文件</a>
+                        <a class="mini-button" id="redFile" iconcls="icon-add" onclick="WebUseTemplate();" plain="true">套红头</a>*@
+                        @*<a class="mini-button" id="sign" iconcls="icon-add" onclick="WebOpenSignature();" plain="true">签章</a>*@
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        @*<script src="~/Scripts/webOffice/iWebOffice2009.js"></script>*@
+        <object classid="clsid:E77E049B-23FC-4DB8-B756-60529A35FAD5" id="WebOffice"
+            width="100%" height="95%" codebase="/CommonWebResource/RelateResource/cab/WebOffice_v7.0.1.8.cab">
+            <param name='_ExtentX' value='6350' />
+            <param name='_ExtentY' value='6350' />
+        </object>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+    var recordID ="@Html.Raw(ViewBag.RecordID)";
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        var _returnForm = null;
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            _returnForm = onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(_returnForm);
+        }
+
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+</script>
+<script language="javascript" event="NotifyToolBarClick(iIndex)" for="WebOffice">
+    WebOffice_NotifyToolBarClick(iIndex);
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+    var hasRedFile = "@ViewBag.HasRedFile";
+    var hasDoc = "@ViewBag.HasDoc";
+    $(document).ready(function () {
+        if (FlowCurrntStep && FlowCurrntStep.Code == "OfficialDocument") {
+            //$("#redFile").show();
+            //$("#sign").show();
+        } else {
+            //$("#redFile").hide();
+            //$("#sign").hide();
+        }
+        Load();
+    })
+    var id = getQueryString("ID");
+    var webOffice = document.getElementById("WebOffice");
+    function WebOffice_NotifyToolBarClick(iIndex) {
+        if (iIndex == 32776) {
+            saveFile();
+        } else if (iIndex == 32777) {
+            WebUseTemplate();
+        } else if (iIndex == 32778) {
+            WebOpenSignature();
+        } else if (iIndex == 32779) {
+            webOffice.PrintDoc(1);
+        }
+    }
+
+    function StatusMsg(mString) {
+
+    }
+
+    function flowSubmitComplete(data) {
+        var ID = data.ID;
+        var NextTaskExecID = data.NextTaskExecID;
+        var NextRoutingID = data.NextRoutingID;
+        var NextRoutingName = data.NextRoutingName;
+        var NextExecUserIDs = data.NextExecUserIDs;
+
+        //webOffice.SetCurrUserName(user.UserName);
+        webOffice.HttpInit();
+        webOffice.HttpAddPostString("DataID", data.ID);
+        webOffice.HttpAddPostString("HasRedFile", hasRedFile);
+        webOffice.HttpAddPostCurrFile("CurrentDoc", "");
+        var rtn = webOffice.HttpPost(getRootPath() + "/OfficialDocument/Posting/SaveFile");
+
+        if (!NextRoutingID) {
+            if (window && window.external && window.external.CloseWindows) {
+                window.external.CloseWindows();
+            }
+            else {
+                closeWindow("refresh");
+            }
+            return;
+        }
+        var loadingMessageId = mini.loading(NextRoutingName + ",进行中...", "表单提交", { width: 300 });
+        var url = "Submit?AutoPass=True&ExecComment=&ID=" + ID + "&RoutingID=" + NextRoutingID + "&TaskExecID=" + NextTaskExecID + "&NextExecUserIDs=" + NextExecUserIDs + "&Urgency=" + mini.getbyName("urgency").getValue();
+        execute(url, {
+            loadingMessageId: loadingMessageId, actionTitle: flowRouting.routingName, onComplete: function (data, settings) {
+                flowSubmitComplete(mini.decode(data));
+            }
+        });
+    }
+
+    function getRootPath() {
+        var pathName = window.location.pathname.substring(1);
+        var webName = pathName == '' ? '' : pathName.substring(0, pathName.indexOf('/'));
+        return window.location.protocol + '//' + window.location.host + '/' + webName;
+    }
+
+    function saveFile() {
+        flowSave({
+            onComplete: function (data) {
+                //webOffice.SetCurrUserName(user.UserName);
+                webOffice.HttpInit();
+                webOffice.HttpAddPostString("DataID", data.ID);
+                webOffice.HttpAddPostString("HasRedFile", hasRedFile);
+                webOffice.HttpAddPostCurrFile("CurrentDoc", "");
+                var rtn = webOffice.HttpPost(getRootPath() + "/OfficialDocument/Posting/SaveFile");
+            }
+        });
+    }
+
+    function WebUseTemplate() {
+        msgUI("套红操作会丢失尚未保存的操作！请套红操作前务必进行【保存文件】操作！<br \>是否确认进行套红？", 2, function (action) {
+            if (action == "ok") {
+                var url = "/MvcConfig/UI/List/PageView?TmplCode=SingleRedFileSelector";
+                openWindow(url, {
+                    refresh: false, title: "红头文件选择", width: 700, height: 600,
+                    onDestroy: function (data) {
+                        if (data && data.length > 0 && data != "close") {
+                            var redFile = data[0];
+                            if (WebAcceptAllRevisions()) {
+                                InsertRedFile(redFile);
+                                hasRedFile = "true";
+                            }
+                            else {
+                                alert("文档清稿失败，无法进行套红，请重试");
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function WebAcceptAllRevisions() {
+        if (webOffice.AcceptAllRevisions() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function InsertRedFile(redFile) {
+        webOffice.LoadOriginalFile(getRootPath() + "/OfficialDocument/Posting/GetRedFile?fileID=" + redFile["RedFile"], "doc");
+        webOffice.SetFieldValue("ZhengWen", getRootPath() + "/OfficialDocument/Posting/GetFile?DataID=" + id + "&HasRedFile=false", "::FILE::");
+        webOffice.SetFieldValue("Title", mini.getbyName("Title").getValue(), "");
+        webOffice.SetFieldValue("ZiHao", mini.getbyName("FileNo").getValue(), "");
+    }
+
+    //作用：签章
+    function WebOpenSignature() {
+        webOffice.SetFieldValue("Stamp", getRootPath() + "/OfficialDocument/Posting/GetStamp", "::JPG::");
+    }
+</script>

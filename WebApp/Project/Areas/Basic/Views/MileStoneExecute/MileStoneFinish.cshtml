@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "MileStoneFinish";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+         splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="setFinish();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <form id="dataForm" method="post" url="GetModel">
+            <input name="ID" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>里程碑完成信息</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    里程碑名称
+                                </td>
+                                <td style="padding-right: 40px;">
+                                    <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:500" />
+                                </td>
+                                <td>
+                                    权重
+                                </td>
+                                <td style="padding-right: 40px;">
+                                    <input name="Weight" style="width: 100%" class="mini-textbox" vtype="maxLength:500;int" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    计划完成日期
+                                </td>
+                                <td style="padding-right: 40px;">
+                                    <input name="PlanFinishDate" class="mini-datepicker" style="width: 100%" />
+                                </td>
+                                <td>
+                                    实际完成日期
+                                </td>
+                                <td style="padding-right: 40px;">
+                                    <input name="FactFinishDate" class="mini-datepicker" style="width: 100%" required="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    附件
+                                </td>
+                                <td style="padding-right: 40px;" colspan="3">
+                                    <input name="ApplyFiles" class="mini-multifile" style="width: 100%; " />
+                            </tr>
+                            <tr>
+                                <td>
+                                    描述
+                                </td>
+                                <td style="padding-right: 40px;" colspan="3">
+                                    <input name="ApplyRemark" class="mini-textarea" style="width: 100%; height: 100px;" vtype="maxLength:500" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    操作人
+                                </td>
+                                <td style="padding-right: 40px;">
+                                    <input name="ApplyApprovalUserID" textname="ApplyApprovalUserName" class="mini-buttonedit" style="width: 100%;"
+                                           required="true" />
+                                </td>
+                                <td>
+                                    操作时间
+                                </td>
+                                <td style="padding-right: 40px;">
+                                    <input name="ApplyApprovalDate" class="mini-datepicker" style="width: 100%" required="true" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    addSingleUserSelector("ApplyUserID");
+
+    function pageLoad() {
+        setFormItemDisabled("Name");
+        //setFormItemDisabled("Weight");
+        setFormItemDisabled("PlanFinishDate");
+    }
+
+
+
+    function setFinish() {
+        var form = new mini.Form("dataForm");
+        var data = form.getData();
+        addExecuteParam("MileStoneData", mini.encode(data));
+        execute("SetFinish", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                closeWindow();
+            }, validateForm: true
+        });
+    }
+</script>

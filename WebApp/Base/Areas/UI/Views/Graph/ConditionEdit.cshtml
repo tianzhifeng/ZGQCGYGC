@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "ConditionEdit";
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-save" onclick="returnData();" plain="true">保存</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="dataForm">
+    <input name="ID" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>筛选项定义</legend>
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td width="15%">
+                            名称
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Name" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                        <td width="15%">
+                            编号
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Code" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            数据列表
+                        </td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="data" id="data" textname="dataText" class="mini-buttonedit" style="width: 100%"
+                                required="true" allowinput="false" onbuttonclick="onDataClick()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            默认值
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="DefaultValue" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<script type="text/javascript">    function onDataClick() {
+        var btn = mini.getbyName("data");
+        var data = btn.getValue(); openWindow('/MvcConfig/Meta/Enum/EnumEdit', { width:
+350, height: 300, data: data, onDestroy: function (s) {
+    if (s != "close") {
+        var 
+d = s; if (typeof (s) == "object" || typeof (s) == "array" || s.constructor == Array
+|| s.constructor == Object) var d = mini.encode(s); btn.setValue(d); btn.setText(d);
+    }
+}
+        });
+    } function returnData() {
+        var form = new mini.Form("dataForm"); if (form.validate())
+        { var obj = {}; obj.formData = form.getData(); closeWindow(obj); }
+    } </script>

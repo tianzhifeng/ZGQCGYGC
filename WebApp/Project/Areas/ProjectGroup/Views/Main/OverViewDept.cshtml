@@ -1,0 +1,198 @@
+﻿@{
+    ViewBag.Title = "OverViewDept";
+}
+
+<link rel="stylesheet" type="text/css" href="/Project/Scripts/Main/css/chartAnalysis.css">
+<script src="/Project/Scripts/Main/js/jquery.min.js" type="text/javascript"></script>
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $("body").css("backgroud-color", "transparent");
+</script>
+<div class="section green">
+    <div class="title title-border">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 100%;"><h4>今年收款与成本分析（单位：万元）</h4></td>
+                <td style="white-space: nowrap;">
+                    <div name="analysisType" class="mini-radiobuttonlist" repeatitems="4" repeatlayout="table" repeatdirection="horizontal"
+                         value="Month" extfield="text" valuefield="value" data="analysisType" onvaluechanged="reloadCostData">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="echarts" id="costChart">
+    </div>
+    <div id="costGrid" url="" class="mini-datagrid" style="width: 100%; height: auto;" idfield="ID" multiselect="true" showpager="false"
+         onload="onCostGridLoad" ondrawcell="onCostDrawCell">
+        <div property="columns">
+            <div field="DataType" width="100" headeralign="center" allowsort="true">
+            </div>
+            @for (int i = 1; i <= 12; i++)
+            {
+                var field = i + "_Month";
+                var name = i + "月";
+                <div field="@field" width="60" headeralign="center" allowsort="true" align="right">
+                    @name
+                </div>
+            }
+            <div field="Total" width="70" headeralign="center" allowsort="true" align="right">
+                合计
+            </div>
+        </div>
+    </div>
+</div>
+<div class="section red">
+    <div class="title title-border">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 100%;"><h4>合同额分析（单位：万元）</h4></td>
+                <td style="white-space: nowrap;">
+                    <div name="contractAnalysisType" class="mini-radiobuttonlist" repeatitems="4" repeatlayout="table" repeatdirection="horizontal"
+                         value="Month" extfield="text" valuefield="value" data="analysisType" onvaluechanged="reloadContractData">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="echarts" id="contractChart">
+    </div>
+    <div id="contractGrid" url="" class="mini-datagrid" style="width: 100%; height: auto;" idfield="ID" multiselect="true" showpager="false"
+         onload="onContractGridLoad" ondrawcell="onContractDrawCell">
+        <div property="columns">
+            <div field="Year" width="70" headeralign="center" allowsort="false" align="center">
+                年份
+            </div>
+            @for (int i = 1; i <= 12; i++)
+            {
+                var field = i + "Month";
+                var name = i + "月";
+                <div field="@field" width="60" headeralign="center" allowsort="false" align="right">
+                    @name
+                </div>
+            }
+            <div field="Total" width="70" headeralign="center" allowsort="false" align="right">
+                合计
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var analysisType = [{ value: "Month", text: "单月" }, { value: "Total", text: "累计" }];
+    var deptID = getQueryString("DeptID");
+
+    $("#costGrid").attr("url", "GetCostInfo?DeptID=" + deptID + "&AnalysisType=Month");
+    $("#contractGrid").attr("url", "GetContractInfo?DeptID=" + deptID + "&AnalysisType=Month");
+
+    function onCostGridLoad(e) {
+        if (e.result && e.result.costChart) {
+            $('#costChart').highcharts(e.result.costChart)
+        }
+    }
+
+    function reloadCostData(e) {
+        var dataGrid = mini.get("costGrid");
+        dataGrid.setUrl("GetCostInfo?DeptID=" + deptID + "&AnalysisType=" + e.value);
+        dataGrid.reload();
+    }
+
+    function onContractGridLoad(e) {
+        if (e.result && e.result.Chart) {
+            $('#contractChart').highcharts(e.result.Chart)
+        }
+    }
+
+    function reloadContractData(e) {
+        var dataGrid = mini.get("contractGrid");
+        dataGrid.setUrl("GetContractInfo?DeptID=" + deptID + "&AnalysisType=" + e.value);
+        dataGrid.reload();
+    }
+
+    function onCostDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field == "DataType") {
+            e.cellStyle = "font-weight:bold;";
+        }
+        else if (record["DataType"] == "成本率") {
+            if (e.value != undefined) {
+                if (e.value <= 0) {
+                    e.cellStyle = "font-weight:bold;";
+                }
+                else {
+                    e.cellStyle = "font-weight:bold;";
+                }
+                e.cellHtml = e.value + "%";
+            }
+        }
+        else if (field) {
+            var belongMonth = field.replace("_Month", "");
+            var dataType = record["DataType"];
+            if (field == "Total") belongMonth = "";
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:viewCostDetailInfo(\'' + dataType + '\',\'' + belongMonth + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+    }
+
+    function viewCostDetailInfo(dataType, belongMonth) {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ReceiptInfo&BelongYear=@DateTime.Now.Year&ProductUnit=" + deptID + "&FuncType=view";
+        if (dataType == "成本（万元）") {
+            url = "/MvcConfig/UI/List/PageView?TmplCode=CostSubjectDetail&BelongYear=@DateTime.Now.Year&ProjectDeptID=" + deptID + "&FuncType=view";
+        }
+        if (belongMonth) {
+            url += "&BelongMonth=" + belongMonth + "";
+        }
+        var title = @DateTime.Now.Year + "年收款情况查看";
+        openWindow(url, {
+            refresh: false, title: title, width: "80%", height: "80%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onContractDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field == "Year") {
+            e.cellStyle = "font-weight:bold;";
+        }
+        else if (record["Year"] == "同比增长率" && field != "Year") {
+            if (e.value != undefined) {
+                if (e.value <= 0) {
+                    e.cellStyle = "color:green;font-weight:bold;";
+                }
+                else {
+                    e.cellStyle = "color:red;font-weight:bold;";
+                }
+                e.cellHtml = e.value + "%";
+            }
+        }
+        else if (field) {
+            var belongMonth = field.replace("Month", "");
+            var belongYear = record["Year"];
+            if (field == "Total") belongMonth = "";
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + belongYear + '\',\'' + belongMonth + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+    }
+
+    function viewDetailInfo(belongYear, belongMonth) {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ContractInfo&ProductionDept=" + deptID;
+        var title = belongYear + "年合同签订情况查看";
+        if (belongMonth) title = belongYear + "年" + belongMonth + "月合同签订情况查看";
+        url += "&BelongYear=" + belongYear;
+        if (belongMonth) {
+            url += "&BelongMonth=" + belongMonth;
+        }
+        openWindow(url, {
+            refresh: false, title: title, width: "90%", height: "90%",
+            onDestroy: function () { }
+        });
+    }
+
+</script>

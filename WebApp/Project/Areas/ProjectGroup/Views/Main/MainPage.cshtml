@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "MainPage";
+    Layout = null;
+}
+@using Config.Logic;
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="/Project/Scripts/Main/js/jquery.min.js"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/miniui.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/customCtrl.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /MvcConfig/miniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/Project/Scripts/Main/css/projectall.css">
+</head>
+<body>
+    <div id="wrap-container">
+        <div class="top-info">
+            <div style="overflow:auto">
+                 <ul class="info">
+                    <li class="first-li has-line li-one">
+                        @{
+                            var contractDic = ViewBag.ContractDic as Dictionary<string, object>;
+                            <div class="f-left">
+                                <img src="/Project/Scripts/Main/img/money.png">
+                                <span class="line title">剩余合同额</span>
+                                <a href="javascript:void(0)" class="blue line big" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=ContractInfo&IsSigned=Signed', { width: '90%', height: '90%' })">@contractDic.GetValue("ContractValue")</a>
+                                <span>万元</span>
+                            </div>
+                            <div class="f-left updown">
+                                <p>
+                                    <span>今年已收:</span>
+                                    <a href="javascript:void(0)" class="blue bold" onclick="openWindow('/Market/Analysis/DeptAnalysis/DeptReceiptInfo?BelongYear=@DateTime.Now.Year.ToString()', { width: '90%', height: '90%' })">@contractDic.GetValue("ReceiptValue")</a>
+                                    <span>万元</span>
+                                </p>
+                                <p>
+                                    <span>经营应收:</span>
+                                    <a href="javascript:void(0)" class="blue bold" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=ReceiptObjInfo&MileStoneState=True&IsSigned=Signed', { width: '90%', height: '90%' })">@contractDic.GetValue("InvoiceValue")</a>
+                                    <span>万元</span>
+                                </p>
+                            </div>
+                        }
+
+                    </li>
+
+                    <li class="first-li has-line li-two">
+                        @{
+                            var projectDic = ViewBag.ProjectDic as Dictionary<string, object>;
+                            <div class="f-left">
+                                <img src="/Project/Scripts/Main/img/rate.png">
+                                <span class="line title">签约率</span>
+                                <span class="line big">@projectDic["SignScale"]</span>
+                                <span>%</span>
+                            </div>
+                            <div class="f-left updown">
+                                <p>
+                                    <span>已签约:</span>
+                                    <a href="javascript:void(0)" class="blue bold" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=ProjectInfo&&SignState=Signed', { width: '90%', height: '90%' })">@projectDic["SignCount"]</a>
+                                    <span>个</span>
+                                </p>
+                                <p>
+                                    <span>在建总数:</span>
+                                    <a href="javascript:void(0)" class="blue bold" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=ProjectInfo&State=Plan,Execute,Create', { width: '90%', height: '90%' })">@projectDic["ProjectCount"]</a>
+                                    <span>个</span>
+                                </p>
+                            </div>
+                        }
+                    </li>
+                    <li class="first-li li-three">
+                        <div class="f-left">
+                            <img src="/Project/Scripts/Main/img/book-top.png" style="padding-top: 17px;">
+                            <span class="line title">成本</span>
+                        </div>
+                        <div class="f-left updown">
+                            @{  var costDic = ViewBag.CostDic as Dictionary<string, object>;
+                            <p>
+
+                                <span>直接成本:<a href="javascript:void()" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=CostSubjectDetail&BelongYear=@DateTime.Now.Year&CostType=Production', { width: '90%', height: '90%' })" class="blue bold">@costDic.GetValue("Production")</a>万元</span>
+                                <span>人工成本:<a href="javascript:void()" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=CostSubjectDetail&BelongYear=@DateTime.Now.Year&CostType=UserCost', { width: '90%', height: '90%' })" class="blue bold">@costDic.GetValue("UserCost")</a>万元</span>
+                            </p>
+                                <p>
+                                    <span>分包支付:<a href="javascript:void()" onclick="openWindow('/MvcConfig/UI/List/PageView?TmplCode=CostSubjectDetail&BelongYear=@DateTime.Now.Year&CostType=Payment', { width: '90%', height: '90%' })" class="blue bold">@costDic.GetValue("Payment")</a>万元</span>
+                                </p>
+                            }
+                        </div>
+                    </li>
+                </ul>
+            </div>
+           
+            <ul class="tab">
+                <li class="active" data-url="OverViewMain">
+                    <span>总体概况</span>
+                </li>
+                @*<li data-url="./projectOverview.html">
+                        <span>重点信息</span>
+                    </li>*@
+                @*<li data-url="./projectOverview.html">
+                    <span>报表中心</span>
+                </li>*@
+            </ul>
+        </div>
+        <div id="wrap-container-content">
+            <div id="wrap-container-contents">
+                <iframe id="iframe" src="OverViewMain"></iframe>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".top-info .tab li").on("click", function () {
+                if ($(this).attr("class") == "active") { return; }
+                $(this).addClass("active").siblings().removeClass("active");
+                var src = $(this).attr("data-url");
+                $("#iframe").attr("src", src);
+                //parent.setheight();
+            });
+            console.log($(".li-one").width(), $(".li-two").width(), $(".li-three").width())
+            var widths = $(".li-one").width() + $(".li-two").width() + $(".li-three").width() + 70;
+           $(".info").width(widths)
+            //$('#iframe').load(function () {
+            //    var h = $("#iframe").contents().find("html").height() + "px";
+            //    $("#wrap-container-contents").css("height", h);
+            //});
+        })
+    </script>
+</body>
+</html>

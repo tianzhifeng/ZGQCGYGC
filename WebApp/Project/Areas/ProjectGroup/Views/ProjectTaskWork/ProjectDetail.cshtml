@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "ProjectDetail";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="GetProjectDetail" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+        multiselect="true" borderstyle="border:0;" showpager="false" showsummaryrow="true" ondrawsummarycell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="Name" width="*" headeralign="center" allowsort="true">
+                专业名称</div>
+            <div field="AllCount" width="90" headeralign="center" align="right" summarytype="sum">
+                卷册总数</div>
+            <div field="AllFinishedCount" width="90" headeralign="center" align="right" summarytype="sum">
+                已完成数</div>
+            <div field="AllFinishedPercent" width="90" headeralign="center" align="right">
+                完成比例(%)</div>
+            <div field="PeriodCount" width="90" headeralign="center" renderer="onLinkRender" align="right" summarytype="sum">
+                本期计划数</div>
+            <div field="PeriodFinished" width="90" headeralign="center" renderer="onLinkRender" align="right" summarytype="sum">
+                本期完成数</div>
+            <div field="PeriodPercent" width="100" headeralign="center" align="right">
+                本期完成比例(%)</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var year = getQueryString("Year");
+    var season = getQueryString("Season");
+    var month = getQueryString("Month");
+
+    var url = $("#dataGrid").attr("url");
+    url = url.split('?')[0] + "?ProjectInfoID=" + projectInfoID + "&Year=" + year + "&Season=" + season + "&Month=" + month;
+    $("#dataGrid").attr("url", url);
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        if (e.field == "Name") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: left;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+    }
+</script>

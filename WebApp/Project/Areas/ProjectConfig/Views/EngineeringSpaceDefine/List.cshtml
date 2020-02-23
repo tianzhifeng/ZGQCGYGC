@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({ width: '60%', height: '60%' });">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ width: '60%', height: '60%' });">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" style="width: 200px;" emptytext="请输入名称或编号" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" ondrawcell="onDrawCell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Publish" width="40" headeralign="center" align="center">
+                应用
+            </div>
+            <div field="Config" width="40" headeralign="center" align="center">
+                配置
+            </div>
+            <div field="Code" width="150" headeralign="center" allowsort="true" align="center">
+                编号
+            </div>
+            <div field="Name" width="250" headeralign="center" allowsort="true">
+                名称
+            </div>
+            <div field="Remark" width="*" headeralign="center" allowsort="true">
+                备注
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+
+        addGridLink('dataGrid', 'Name', 'Edit?ID={ID}', { title: "项目模式定义", funcType: 'edit', width: "60%", height: "60%" });
+        addGridLink("dataGrid", "Config", "Tab?ID={ID}", { linkText: "配置", width: "90%", height: "90%" });
+
+        function onDrawCell(e) {
+            if (e.field == "Publish") {
+                e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/set.gif' onclick='Publish(\"" + e.record.ID + "\")'  />";
+            }
+            if (e.field == "Config") {
+                e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif' onclick='openWindow(\"Tab?ID=" + e.record.ID + "\",{title:\"配置\", width: \"90%\", height: \"90%\"})'  />";
+            }
+        }
+
+        function Publish(id) {
+            msgUI("确认应用吗？", 2, function (data) {
+                if (data == "ok") {
+                    var grid = mini.get("dataGrid");
+                    var row = grid.findRow(function (row) {
+                        if (row.ID == id) return true;
+                    });
+                    addExecuteParam("ModeCode", row.Code);
+                    execute("Publish", { actionTitle: "应用" });
+                }
+            });
+        }
+
+    </script>
+

@@ -1,0 +1,8 @@
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\bin\Debug\WebOffice.Logic.dll.config
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\bin\Debug\WebOffice.Logic.dll
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\bin\Debug\WebOffice.Logic.pdb
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\bin\Debug\Aspose.Words.dll
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\bin\Debug\Aspose.Words.xml
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\obj\Debug\WebOffice.Logic.csprojResolveAssemblyReference.cache
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\obj\Debug\WebOffice.Logic.dll
+E:\产品代码\EPM\BusinessModule\BaseLogic\WebOffice.Logic\obj\Debug\WebOffice.Logic.pdb

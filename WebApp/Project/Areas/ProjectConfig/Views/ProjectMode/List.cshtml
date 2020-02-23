@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "项目模式列表";
+}
+<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="add({width:'60%',height:'70%'});">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ width: '60%', height: '70%' });">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                <a class="mini-button" iconcls="icon-copy" onclick="DoCopy();">复制</a>
+                <a id="btnExportDef" class="mini-button" iconcls="icon-download" onclick="exportSql();">导出Sql</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('ModeCode,Name');"
+                       onbuttonclick="quickSearch('ModeCode,Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+         allowresize="false" idfield="id" multiselect="true" ondrawcell="onDrawCell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Publish" width="40" headeralign="center" align="center">
+                应用
+            </div>
+            <div field="Config" width="40" headeralign="center" align="center">
+                配置
+            </div>
+            <div field="Name" width="200" headeralign="center" allowsort="true" align="left">
+                名称
+            </div>
+            <div field="ModeCode" width="150" headeralign="center" allowsort="true" align="left">
+                编号
+            </div>
+            <div field="Priority" width="80" headeralign="center" allowsort="true" align="right">
+                优先级
+            </div>
+            <div field="IsDefault" width="80" headeralign="center" allowsort="true" align="center">
+                是否默认
+            </div>
+            <div field="Description" width="*" headeralign="center" allowsort="true" align="left">
+                描述
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.TrueOrFalse))
+
+</script>
+<script type="text/javascript">
+    addGridLink('dataGrid', 'Name', 'Edit?ID={ID}', { title: "项目模式定义", funcType: 'edit', width: 700, height: 300 });
+
+    addGridEnum("dataGrid", "IsDefault", "TrueOrFalse");
+
+    function onDrawCell(e) {
+        if (e.field == "Publish") {
+            e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/set.gif' onclick='Publish(\"" + e.record.ID + "\")'  />";
+        }
+        if (e.field == "Config") {
+            e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif' onclick='openWindow(\"Tab?ID=" + e.record.ID + "\",{title:\"配置\"})'  />";
+        }
+    }
+
+    function Publish(id) {
+        msgUI("确认应用吗？", 2, function (data) {
+            if (data == "ok") {
+                var grid = mini.get("dataGrid");
+                var row = grid.findRow(function (row) {
+                    if (row.ID == id) return true;
+                });
+
+                addExecuteParam("ModeCode", row.ModeCode);
+                execute("Publish", { actionTitle: "应用" });
+            }
+
+        });
+    }
+
+    function DoCopy() {
+        var row = mini.get("dataGrid").getSelected();
+        if (row.length <= 0) {
+            msgUI("请选择一条记录。");
+            return;
+        }
+
+        addExecuteParam("ModeCode", row.ModeCode);
+        execute("DoCopy", {
+            actionTitle: "复制", onComplete: function () {
+                msgUI("复制完成，请及时修改模版名称及编号。");
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function exportSql() {
+        var rows = mini.get("dataGrid").getSelecteds();
+        if (rows.length <= 0) {
+            msgUI("请选择一条记录。");
+            return;
+        }
+
+        var ids = getValues(rows, "ID");
+        var url = "/Project/ProjectConfig/ProjectMode/ExportSql?IDs=" + ids;
+        window.open(url);
+    }
+</script>

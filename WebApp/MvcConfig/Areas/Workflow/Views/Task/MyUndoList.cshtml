@@ -1,0 +1,204 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+    //枚举与查询列的对应关系
+    ViewBag.ColumnEnums = new Dictionary<string, string>();
+
+    //快速查询列
+    ViewBag.KeyQueryField = "FlowName,TaskName,CreateTime,SendTaskUserNames,TaskUserName";
+    ViewBag.ColumnEnums["FlowCategory"] = @MvcConfig.Areas.Workflow.Controllers.TaskController.GetUndoFlowCatalogyEnumData();
+}
+
+<div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true" ondrawcell="OnDrawCell" pagesize="20" sortfield="GoToUp,Urgency,CreateTime" sortorder="desc,desc,desc">
+    <div property="columns">
+        <div type="checkcolumn" width="30"></div>
+        <div field="Urgency" width="40" headeralign="center" allowsort="true">@ViewBag.urgent</div>
+        <div field="TaskName" width="250" headeralign="center" allowsort="true" renderer="onTaskLinkRenderer">@ViewBag.taskName</div>
+        <div field="FlowName" width="150" textalign="center" allowsort="true" headeralign="center">@ViewBag.flowName</div>
+        <div field="FlowCategory" width="65" align="center" allowsort="true" headeralign="center">@ViewBag.flowClass</div>
+        <div field="CreateTime" width="130" align="center" allowsort="true" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss">@ViewBag.sendTime</div>
+        <div field="SendTaskUserNames" width="55" align="center" allowsort="true" headeralign="center">@ViewBag.sender</div>
+        <div field="CurrentStep" width="80" align="center" headeralign="center">最新环节</div>
+        <div field="FlowTrace" width="40" align="center" headeralign="center">@ViewBag.flow</div>
+        <div field="GoToUp" width="40" align="center" headeralign="center">@ViewBag.GoToUp</div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="@ViewBag.detail" style="width: 800px; height: 200px;" showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="15%" align="center">
+                        @ViewBag.taskName
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$TaskName" style="width: 90%" class="mini-textbox" />
+                    </td>
+                    <td width="15%" align="center">
+                        @ViewBag.flowName
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$FlowName" style="width: 90%" class="mini-textbox" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%" align="center">
+                        @ViewBag.taskType
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$EQ$TaskExecType" class="mini-combobox" style="width: 90%;" textfield="text" valuefield="value" data="TaskTypeData" shownullitem="true" />
+                    </td>
+                    <td width="15%" align="center">
+                        @ViewBag.sender
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$SendTaskUserNames" style="width: 90%" class="mini-textbox" />
+                        @*   <input name="$IL$SendTaskUserIDs" textname="SendTaskUserNames" style="width: 90%"
+                            class="mini-buttonedit" allowinput="true" />*@
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%" align="center">
+                        @ViewBag.sendTime
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$FR$CreateTime" style="width: 100px;" class="mini-datepicker" />
+                        -
+                        <input name="$TO$CreateTime" style="width: 100px;" class="mini-datepicker" />
+                    </td>
+                    <td width="15%" align="center">
+                        @ViewBag.recipient
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$TaskUserName" style="width: 90%" class="mini-textbox" />
+                        @* <input name="$IN$TaskUserID" textname="TaskUserName" style="width: 90%" class="mini-buttonedit"
+                            allowinput="true" />*@
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button mini-button-plain" onclick="multiSearch()" iconcls="icon-find" style="margin-right: 20px;">@ViewBag.ok</a>
+            <a class="mini-button mini-button-plain" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">@ViewBag.reset</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var TaskTypeData = [{ "value": "Normal", "text": "审批任务" }, { "value": "Delegate", "text": "委托任务" }];
+
+    //为Grid枚举列指定枚举定义
+    addGridEnum("dataGrid", "TaskExecType", "TaskTypeData");
+
+    //选人控件
+    //    addMultiUserSelector("$IL$SendTaskUserIDs");
+    //    addMultiUserSelector("$IN$TaskUserID");
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+    var menu = mini.get("popupMenu");
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        var url = "GetMyUndoList?"
+        if (getQueryString("Category") != "") {
+            url += "Category=" + getQueryString("Category");
+        }
+
+        grid.setUrl(url);
+        grid.load();
+        var isBatchApproval = '@System.Configuration.ConfigurationManager.AppSettings["Flow_BatchApproval"]';
+        if (isBatchApproval == 'True') {
+            mini.get("batchApproval").show();
+            $(".batchApproval").css('display', 'block');
+        }
+    });
+
+    function OnDrawCell(e) {
+        if (e.field == "Urgency") {
+            if (e.value == "1")
+                e.cellHtml = "<span class='icon-row-urgency' title='紧急' style='cursor:hand;float:center;'></span>";
+            else
+                e.cellHtml = "<span class='icon-row-urgency-not' title='一般' style='cursor:hand;float:center;'></span>";
+        }
+        if (e.field == "FlowTrace") {
+            e.cellHtml = "<span class='fa fa-fw fa-sitemap' title='查看' onclick='openTrace()' style='cursor:hand;float:center;cursor: pointer;color:#00e;'></span>";
+        }
+        if (e.field == "GoToUp") {
+            if (e.value == null)
+                e.cellHtml = "<span class='fa fa-fw fa-arrow-up' title='置顶' onclick='GoToUp(\"" + e.value + "\")' style='cursor:hand;float:center;cursor: pointer;color:#00e;'></span>";
+            else
+                e.cellHtml = "<span class='fa fa-fw fa-arrow-up' title='置顶' onclick='GoToUp(\"" + e.value + "\")' style='cursor:hand;float:center;cursor: pointer;color:red;'></span>";
+        }
+    }
+    function onTaskLinkRenderer(e) {
+        var rec = e.record;
+        var url = $.trim(rec.FormUrl);
+        var taskName = $.trim(rec.TaskName).replace("\"", "").replace("\'", "");
+        if (taskName.length > 20)
+            taskName = taskName.substr(0, 20) + "...";
+        if (url.indexOf('?') > 0)
+            url += "&";
+        else
+            url += "?";
+        url += "TaskExecID=" + rec.ID + "&ID=" + $.trim(rec.FormInstanceID);
+
+        var s = '<a href="javascript:void(0);" onclick="ExecuteFormFlow(\'' + url + '\',\'' + taskName + '\',\'' + $.trim(rec.FormWidth) + '\',\'' + $.trim(rec.FormHeight) + '\')">' + $.trim(e.value) + '</a>';
+        return s;
+    }
+
+    function ExecuteFormFlow(urlstr, taskName, formWidth, formHeight) {
+        if (urlstr && urlstr != "") {
+            if ($.trim(formWidth) == "") formWidth = "880";
+            if ($.trim(formHeight) == "") formHeight = "85%";
+            openWindow(urlstr, {
+                title: taskName, width: formWidth, height: formHeight,
+                onDestroy: function () {
+                    //window.location.reload();
+                    mini.get("dataGrid").reload();
+                }
+            });
+        }
+    }
+
+    function openTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID={FormInstanceID}&FuncType=FlowTrace";
+        openWindow(url, { title: "流程跟踪", width: 1000, height: "85%" });
+    }
+
+    function refreshUndoCount() {
+        if (typeof (window.parent.updateUndoNodes) != "undefined") {
+            window.parent.updateUndoNodes();
+        }
+    }
+    function GoToUp(NumKey) {
+        var dataGrid = mini.get("dataGrid");
+        addExecuteParam("NumKey", NumKey);
+        execute("GoToUp?TaskID={TaskID}", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+</script>
+<style type="text/css">
+    .scrollbar::-webkit-scrollbar {
+        width: 1px;
+        height: 12px;
+        background-color: #f5f5f5;
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        border-radius: 10px;
+        background-color: #f5f5f5;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        height: 20px;
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #555;
+    }
+</style>

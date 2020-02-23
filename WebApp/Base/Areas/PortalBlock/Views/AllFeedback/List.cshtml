@@ -1,0 +1,273 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-excel" onclick="ImportExcel('Feedback_New','/Base/PortalBlock/AllFeedback/VaildExcelData','/Base/PortalBlock/AllFeedback/BatchSave');"
+                    plain="true">导入</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入项目名称" onenter="quickSearch('ProjectName');"
+                    onbuttonclick="quickSearch('ProjectName');" />
+                <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList"
+        multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="ProjectName" headeralign="center" align="left" width="100" allowsort="true">
+                项目名称</div>
+            <div field="ProjectDept" headeralign="center" align="left" width="80" allowsort="true">
+                责任部门</div>
+            <div field="ProjectPrincipal" headeralign="center" align="left" width="80" allowsort="true">
+                项目负责人</div>
+            <div field="DealUserName" headeralign="center" align="left" width="80" allowsort="true">
+                处理人</div>
+            <div field="DealStatus" headeralign="center" align="left" width="80" allowsort="true">
+                处理状态</div>
+            <div field="ProblemNature" headeralign="center" align="left" width="80" allowsort="true">
+                问题性质</div>
+            <div field="DealResult" headeralign="center" align="left" width="200" allowsort="true">
+                处理说明</div>
+            <div field="Module" headeralign="center" align="left" width="80" allowsort="true">
+                相关模块</div>
+            <div field="ExpectedCompleteTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                期望完成时间</div>
+            <div field="Title" headeralign="center" align="left" width="200" allowsort="true">
+                反馈标题</div>
+            <div field="Url" headeralign="center" align="left" width="200" allowsort="true">
+                反馈地址</div>
+            <div field="CreateUserName" headeralign="center" align="left" width="80" allowsort="true">
+                反馈人</div>
+            <div field="CreateTime" width="80" dateformat="yyyy-MM-dd" headeralign="center" allowsort="true"
+                align="center">
+                反馈时间</div>
+            <div field="Level" headeralign="center" align="left" width="80" allowsort="true">
+                严重程度</div>
+            <div field="Type" headeralign="center" align="left" width="80" allowsort="true">
+                反馈类型</div>
+            <div field="Content" headeralign="center" align="left" width="300" allowsort="true">
+                反馈内容</div>
+            <div field="ConfirmProblemsTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                问题确认时间
+            </div>
+            <div field="PlanCompleteTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                计划完成时间
+            </div>
+            <div field="ActualCompleteTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                实际完成时间
+            </div>
+            <div field="ConfirmCompleteTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                确认完成时间
+            </div>
+            <div field="ConfirmProblemsUserName" headeralign="center" align="left" width="60"
+                allowsort="true">
+                问题确认人
+            </div>
+            <div field="ConfirmCompleteUserName" headeralign="center" align="left" width="60"
+                allowsort="true">
+                确认完成人
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 375px;
+    display: none;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="13%">
+                    项目名称
+                </td>
+                <td width="35%">
+                    <input name="$LK$ProjectName" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="13%">
+                    责任部门
+                </td>
+                <td width="35%">
+                    <input name="$LK$ProjectDept" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="4%" />
+            </tr>
+            <tr>
+                <td width="13%">
+                    项目负责人
+                </td>
+                <td width="35%">
+                    <input name="$LK$ProjectPrincipal" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="13%">
+                    处理人
+                </td>
+                <td width="35%">
+                    <input name="$LK$DealUserName" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    处理状态
+                </td>
+                <td>
+                    <input name="$LK$DealStatus" class="mini-combobox" style="width: 100%;" data='dealStatus' />
+                </td>
+                <td>
+                    问题性质
+                </td>
+                <td>
+                    <input name="$LK$ProblemNature" class="mini-combobox" style="width: 100%;" data='FeedbackProblemNature' />
+                </td>
+            </tr>
+            <tr>
+                <td width="13%">
+                    处理说明
+                </td>
+                <td width="35%">
+                    <input name="$LK$DealResult" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="13%">
+                    相关模块
+                </td>
+                <td width="35%">
+                    <input name="$LK$Module" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    期望完成时间
+                </td>
+                <td>
+                    <input name="$FR$ExpectedCompleteTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ExpectedCompleteTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td width="13%">
+                    反馈标题
+                </td>
+                <td width="35%">
+                    <input name="$LK$Title" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td width="13%">
+                    反馈地址
+                </td>
+                <td width="35%">
+                    <input name="$LK$Url" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="13%">
+                    反馈人
+                </td>
+                <td width="35%">
+                    <input name="$LK$CreateUserName" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    反馈时间
+                </td>
+                <td>
+                    <input name="$FR$CreateTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$CreateTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td>
+                    严重程度
+                </td>
+                <td>
+                    <input name="$LK$Level" class="mini-combobox" style="width: 100%;" data='FeedbackLevel' />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    反馈类型
+                </td>
+                <td>
+                    <input name="$LK$Type" class="mini-combobox" style="width: 100%;" data='FeedbackType' />
+                </td>
+                <td>
+                    反馈内容
+                </td>
+                <td>
+                    <input name="$LK$Content" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    问题确认时间
+                </td>
+                <td>
+                    <input name="$FR$ConfirmProblemsTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ConfirmProblemsTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td>
+                    计划完成时间
+                </td>
+                <td>
+                    <input name="$FR$PlanCompleteTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$PlanCompleteTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    实际完成时间
+                </td>
+                <td>
+                    <input name="$FR$ActualCompleteTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ActualCompleteTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td>
+                    确认完成时间
+                </td>
+                <td>
+                    <input name="$FR$ConfirmCompleteTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ConfirmCompleteTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    问题确认人
+                </td>
+                <td>
+                    <input name="$LK$ConfirmProblemsUserName" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td>
+                    确认完成人
+                </td>
+                <td>
+                    <input name="$LK$ConfirmCompleteUserName" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>           
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var dealStatus = [{ value: "问题待确认", text: "问题待确认" }, { value: "暂缓", text: "暂缓" }, { value: "不处理", text: "不处理" }, { value: "待安排", text: "待安排" }, { value: "进行中", text: "进行中" }, { value: "修改完成", text: "修改完成" }, { value: "确认完成", text: "确认完成"}];
+    var FeedbackType = [{ value: '界面报错', text: '界面报错' }, { value: '界面美化', text: '界面美化' }, { value: '功能改进', text: '功能改进' }, { value: '性能低下', text: '性能低下' }, { value: '新增功能', text: '新增功能'}];
+    var FeedbackLevel = [{ value: '一般', text: '一般' }, { value: '严重', text: '严重' }, { value: '非常严重', text: '非常严重'}];
+    var FeedbackProblemNature = [{ value: 'BUG', text: 'BUG' }, { value: '修订', text: '修订' }, { value: '新增', text: '新增' }, { value: '变更', text: '变更'}];
+    var FeedbackProjectName = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectName"]';
+    var FeedbackProjectPrincipal = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectPrincipal"]';
+    var FeedbackProjectDept = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectDept"]';
+    var FeedbackServerUrl = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackServerUrl"]';    
+</script>
+<script type="text/javascript">
+    addGridEnum('dataGrid', 'Level', 'FeedbackLevel');
+    addGridEnum('dataGrid', 'Type', 'FeedbackType');
+    addGridEnum('dataGrid', 'ProblemNature', 'FeedbackProblemNature');
+    addGridEnum('dataGrid', 'DealStatus', 'dealStatus');
+</script>

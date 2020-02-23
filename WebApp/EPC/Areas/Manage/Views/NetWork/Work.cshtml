@@ -1,0 +1,211 @@
+﻿<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" id="splitter">
+        <div size="450" showcollapsebutton="true" borderstyle="0px" style="background-color: #fff;" expanded="false">
+            <div class="mini-toolbar" id="btnDiv" style="height: 30px; border-top: 0px; border-left: 0px; border-bottom: 1px solid #ccc">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td id="btnRight">
+                            <a class="mini-button" iconcls="icon-node" name="SetDate" onclick="openWindow()">日期设置</a>
+                            <span class="separator"></span>
+                            <a class="mini-button" iconcls="icon-add" onclick="addRow()">添加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delRow()">移除</a>
+                            @*<a class="mini-button" iconcls="icon-down" onclick="import()">导入</a>*@
+                            <a class="mini-button" iconcls="icon-save" onclick="save()">保存</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="dataGrid" class="mini-datagrid" url="GetData" style="width: 100%; height: 100%;" allowcellvalid="true" allowcelledit="true" allowcellselect="true" multiselect="false" editnextonenterkey="true" editnextrowcell="true">
+                <div property="columns">
+                    <div type="indexcolumn" width="25"></div>
+                    <div name="Name" field="Name" headeralign="center" allowsort="true">
+                        名称<span style="color: red;">*</span><input property="editor" class="mini-textbox" style="width: 100%;" required="true" />
+                    </div>
+                    <div name="Code" field="Code" headeralign="center" allowsort="true" width="50">
+                        工作代号<span style="color: red;">*</span><input property="editor" class="mini-textbox" style="width: 100%;" required="true" />
+                    </div>
+                    <div name="Precedence" field="Precedence" headeralign="center" allowsort="true" width="60">
+                        紧前工作<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div name="Time" field="Time" headeralign="center" allowsort="true" width="40">
+                        工时<span style="color: red;">*</span><input property="editor" class="mini-textbox" vtype="float" required="true" style="width: 100%;" />
+                    </div>
+                    <div name="VirtualTime" field="VirtualTime" headeralign="center" allowsort="true" width="40">
+                        等待工时<input property="editor" class="mini-textbox" vtype="float" style="width: 100%;" />
+                    </div>
+                    <div name="projectID" field="projectID" headeralign="center" allowsort="true" width="40" visible="false">
+                        项目ID<input property="editor" class="mini-textbox" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="false">
+            <iframe id="ptyIframe" frameborder="0px" style="border: 0px; width: 100%; height: 100%"></iframe>
+        </div>
+    </div>
+</div>
+<div id="dateWindow" class="mini-window" title="请输入" style="width: 200px; min-height: 120px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="form" method="post">
+            <div style="padding-left: 8px; padding-bottom: 5px; padding-right: 8px; padding-top: 5px;">
+                <div>
+                    <table style="width: 100%; text-align: left;">
+                        <tr>
+                            <td>
+                                <input name="BeginWorkTime" class="mini-datepicker" format="yyyy-MM-dd" style="width: 100%;" showTime="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mini-toolbar" style="padding-left: 40px;">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveDate();">保存</a>
+                            <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //以下是对左边数据的维护
+    var ptyIframe = document.getElementById("ptyIframe");
+
+    function addRow() {
+        var dataGrid = mini.get("dataGrid");
+        var newRow = { ProjectID: getQueryString("ProjectID") };
+        dataGrid.addRow(newRow);
+        dataGrid.deselectAll();
+        dataGrid.select(newRow);
+    }
+
+
+    function dateFormat(fmt, date) { //author: meizz   
+        var o = {
+            "M+": date.getMonth() + 1,                 //月份   
+            "d+": date.getDate(),                    //日   
+            "h+": date.getHours(),                   //小时   
+            "m+": date.getMinutes(),                 //分   
+            "s+": date.getSeconds(),                 //秒   
+            "q+": Math.floor((date.getMonth() + 3) / 3), //季度   
+            "S": date.getMilliseconds()             //毫秒   
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function getBeginWorkTime() {
+        var url_beginTime = getQueryString("BeginWorkTime");
+        var beginWorkTime = mini.getbyName("BeginWorkTime").getValue();
+        beginWorkTime = dateFormat("yyyy-MM-dd", new Date(beginWorkTime));
+        if (url_beginTime != '') {
+            return url_beginTime;
+        } else if (beginWorkTime != '' && beginWorkTime.indexOf('NaN') < 0) {
+            return beginWorkTime;
+        } else {
+            return '2012-01-01';
+        }
+    }
+
+    function openWindow() {
+        var window = mini.get('dateWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.onscroll = scroll;
+        window.queryWindowId = window.id;
+        window.show();
+    }
+    function closeWindow() {
+        var window = mini.get('dateWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.queryWindowId = window.id;
+        window.hide();
+    }
+
+    function saveDate() {
+        var beginWorkTime = mini.getbyName("BeginWorkTime").getValue();
+        if ($.trim(beginWorkTime) == '') {
+            msgUI("时间不能为空!");
+            return;
+        }
+        save();
+        mini.getbyName("SetDate").setText("日期设置" + "(" + getBeginWorkTime() + ")");
+        closeWindow();
+    }
+
+    function delRow() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length > 0) {
+            dataGrid.removeRows(rows, true);
+        }
+    }
+    function pageLoad() {
+        var dataGrid = mini.get("dataGrid");
+        $.ajax({
+            url: "GetData",
+            data: { ProjectID: getQueryString("ProjectID") },
+            type: "post",
+            success: function (text) {
+                if (text.length > 0) {
+                    mini.getbyName("BeginWorkTime").setValue(text[0].BeginWorkTime);
+                    mini.getbyName("SetDate").setText("日期设置" + "(" + text[0].BeginWorkTime + ")");
+                }
+                refresh(false);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+
+        var splitter = mini.get("splitter");
+        splitter.on("collapse", function (e) {
+            refresh(false);
+        });
+    }
+
+    function refresh(op) {
+        ptyIframe.src = "/EPC/Manage/NetWork/Svg?beginWorkTime=" + getBeginWorkTime() + "&projectID=" + getQueryString("projectID") + "&optimize=" + op;
+    }
+
+    function save() {
+        var dataGrid = mini.get("dataGrid");
+        if (dataGrid.data.length > 0) {
+            var alt = false;
+            var data = dataGrid.getChanges();
+            //for (var i = 0; i < data.length; i++) {
+            //    for (var j = 0; j < dataGrid.data.length; j++) {
+            //        if (dataGrid.data[j].Code == data[i].Code) {
+            //            alt = true;
+            //            break;
+            //        }
+            //    }
+            //}
+            if (alt) { msgUI("请填写必填信息,并且工作代号不能相同!"); return;} else {
+                var json = mini.encode(data);
+                $.ajax({
+                    url: "SaveWork",
+                    data: { Data: json, BeginWorkTime: getBeginWorkTime(), ProjectID: getQueryString("ProjectID") },
+                    type: "post",
+                    success: function (text) {
+                        msgUI("保存成功");
+                        refresh(false);
+                        dataGrid.reload();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(jqXHR.responseText);
+                    }
+                });
+            }
+        }
+    }
+</script>

@@ -1,0 +1,88 @@
+﻿
+<script type="text/javascript">
+    @Html.Raw(ViewBag.Script)
+    @Html.Raw(ViewBag.FixedFields)
+</script>
+
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px;border-width:0px" allowresize="false" handlersize="0">
+        <div showcollapsebutton="false" size="55%" style="border-bottom: 0px; border-right: 0px;">
+            @Html.Raw(ViewBag.ListHtml)
+        </div>
+        <div showcollapsebutton="false" size="45%" style="border-bottom: 0px; border-left: 1px;">
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-left-width:1px; border-top:0px" allowresize="false" handlersize="0">
+                <div showcollapsebutton="false" size="5%" style="border:0px; padding-top: 180px; background-color: #F9F9F9">
+                    <div class="mini-fit" style="width: 100%">
+                        <a class="mini-button" iconcls="icon-right" onclick="addSelected"></a>
+                        <br><br>
+                        <br><br>
+                        <a class="mini-button" iconcls="icon-left" onclick="removeSelecteds"></a>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" size="95%" style="">
+                    <div class="mini-toolbar" style="border-top: 0px; border-bottom: 0px; border-left:0px;">
+                    </div>
+                    <div class="mini-fit">
+                        <div id="selectedList" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-bottom:0px" showcheckbox="true" multiselect="true" showfooter="false" showpager="false">
+                            <div property="columns">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $("#dataGrid").attr("onload", "onGridLoad");
+    function onGridLoad(e) {
+        var selectedList = mini.get("selectedList");
+        var cols = e.sender.getColumns();
+        selectedList.set({ columns: cols });
+    }
+
+    function addSelected() {
+        var grid = mini.get("dataGrid");
+        var selectedList = mini.get("selectedList");
+
+        var items = grid.getSelecteds();
+        var selecteds = selectedList.getData();
+        var idMaps = {};
+        for (var i = 0, l = selecteds.length; i < l; i++) {
+            var o = selecteds[i];
+            var id = o["ID"];
+            idMaps[id] = o;
+        }
+
+        for (var i = items.length - 1; i >= 0; i--) {
+            var o = items[i];
+            var id = o["ID"];
+            if (idMaps[id] == null)
+                selectedList.addRow(o);
+        }
+    }
+
+    function removeSelecteds() {
+        var selectedList = mini.get("selectedList");
+        var items = selectedList.getSelecteds();
+        selectedList.removeRows(items);
+    }
+
+    function returnList() {
+        var selectedList = mini.get("selectedList");
+        closeWindow(selectedList.getData());
+    }
+
+    function setData(data) {
+        var selectedList = mini.get("selectedList");
+        var ids = getValues(data, "ID");
+        addExecuteParam("ids", ids);
+        execute("GetSelectedList", {
+            onComplete: function (txt) {
+                var items = mini.decode(txt);
+                selectedList.addRows(items);
+            }
+        });
+    }
+</script>

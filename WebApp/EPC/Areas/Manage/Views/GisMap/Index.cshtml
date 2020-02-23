@@ -1,0 +1,790 @@
+﻿@{
+    ViewBag.Title = "GisMap";
+}
+
+<script src="@Url.Content("/MvcConfig/Scripts/BI/js/jquery.tmpl.js")" type="text/javascript"></script>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.11&key=da2c76e8ac413b587be65ffa87123f05&&plugin=AMap.Scale,AMap.OverView,AMap.ToolBar,Map3D,AMap.DistrictSearch,AMap.Geocoder,AMap.CitySearch"></script>
+<link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+
+<link rel="stylesheet" href="~/Scripts/Gis/gis.css" />
+<style type="text/css">
+    /*html, body, div, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img, input, button, a, i, em, b, strong {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }*/
+
+    ul, ol, li {
+        list-style: none;
+    }
+
+    body, html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        position: absolute;
+    }
+
+    #dituContent {
+        width: 100%;
+        height: 100%;
+    }
+
+    .map-search {
+        position: absolute;
+        top: 10px;
+        left: 60px;
+        width: 425px;
+        z-index: 100;
+    }
+
+    .map-search-box {
+        width: 425px;
+        background: #fff;
+        height: 38px;
+        border-radius: 3px;
+        overflow: hidden;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    }
+
+        .map-search-box input[type="text"] {
+            border: 0;
+            height: 38px;
+            line-height: 38px;
+            padding: 0 10px;
+            color: #333;
+            vertical-align: middle;
+            float: left;
+            width: 330px;
+            outline: 0;
+        }
+
+    #projDetail {
+        width: 341px;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        right: -341px;
+        background-color: #fff;
+        z-index: 10;
+        transition: right .2s;
+    }
+
+    .close_list {
+        position: absolute;
+        left: -20px;
+        background-color: #fff;
+        width: 17px;
+        display: block;
+        top: 45%;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        height: 40px;
+        z-index: 10;
+        cursor: pointer;
+        padding-top: 24px;
+        padding-left: 3px;
+    }
+</style>
+@*<div id="projDetail" style="display:none">
+        <div id="leftPanel" style="overflow-y:auto;overflow-x:hidden; height:100%">
+        </div>
+        <div class="close_list" onclick="showHideLeftPanel()">
+            <img src="/EPC/Scripts/Manage/Space/images/chose-spec.png" alt="">
+        </div>
+    </div>*@
+<div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+    <table>
+        <tr>
+            <td>
+                <a class='mini-button' id='btnAdd' iconcls='icon-add' text='确定选择' onclick="confirm()"></a>
+            </td>
+            <td class='gw-toolbar-right'>
+                <input id='addressKey' class='mini-buttonedit gw-searchbox' style="width:300px" emptytext='请输入地址' onenter="findPosFromAdress()" onbuttonclick="findPosFromAdress()" />
+                <a class='mini-button' onclick="findPosFromAdress()" iconcls='icon-find'>定位</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="map-search">
+    <div id="queryform" class="map-search-box" style="width: 300px; margin-left: 20px;">
+        <input type="text" placeholder="请输入工程名称或编号" showtip="false" name="filter" id="filter" />
+    </div>
+</div>
+<div id="dituContent"></div>
+//公开的变量
+<script>
+    var bToCurrentPosition = true;
+    var functype = getQueryString("FuncType");
+    var rangeConfig = @Html.Raw(ViewBag.RangeConfig);
+    var regionColorOpt = ['#D2616F', '#5361EE', '#FACC78', '#C08FE9', '#CD8F8D', '#7BBFBD',
+        '#7BD9F7', '#BBBA78', '#5361EE', '#FACC78', '#C08FE9', '#CD8F8D', '#7BD9F7', '#BBBA78', '#5361EE', '#FACC78', '#C08FE9', '#CD8F8D'];
+    //初始视点中心
+    var initialPt = { Lo: @ViewBag.Long, La: @ViewBag.Lat };
+    //初始缩放级别
+    var initialZoomVal = @ViewBag.InitialZoomVal;
+
+    //显示具体项目位置的缩放级别
+    var projZoomVal = @ViewBag.ProjZoomVal;
+    //定位至当前位置的时候的缩放级别
+    var currentPosZoomVal = 16;
+    var resultInfo = {};
+</script>
+//私有的变量
+<script>
+    var bubbleList = [], map = null, geocoder;
+</script>
+<script id="gisLeftPanelTemplate" type="text/x-jquery-tmpl">
+
+</script>
+<script>
+    $(document).ready(function () {
+        try
+        {
+            createMap(); //创建地图
+
+            initialZoom();//初始
+            if (functype == 'ViewAll') {
+                addMapControl(); //向地图添加控件
+                refreshMapLays();//图层信息
+
+                customMapZoomEndEvent();//自定义地图缩放事件
+                showConfirmButton(false);//不显示确定按钮
+                showSearch(true);
+                showProjPanel(true);
+            }
+            else if (functype == 'View') {
+                setMarkerFormUrlParamAndZoom(false);//根据链接参数long、lat设置标记并zoom
+
+                showConfirmButton(false);//不显示确定按钮
+                showSearch(false);
+            }
+            else {
+                setMarkerFormUrlParamAndZoom(true);//根据链接参数long、lat设置标记并zoom
+
+                customMapClickEvent();//编辑页面获取地理坐标及地址信息
+                showSearch(false);
+            }
+        }
+        catch(error)
+        {
+            msgUI('高德地图未响应,错误提示【'+error+'】');
+        }
+    })
+
+    //创建地图
+    function createMap() {
+        map = new AMap.Map('dituContent', {resizeEnable: true});
+    }
+
+    //地图控件添加
+    function addMapControl() {
+        var toolBar = new AMap.ToolBar({
+            visible: false
+        });    
+        map.addControl(toolBar);
+        toolBar.show();
+    }
+
+    //默认视点位置及缩放级别
+    function initialZoom() {
+        map.setZoomAndCenter(initialZoomVal - 1, [initialPt.Lo, initialPt.La]); //同时设置地图层级与中心点
+    }
+
+    //设置为当前位置并且zoom
+    function setCurrentPosition(callBack) {
+        if(!geocoder){
+            geocoder = new AMap.Geocoder({
+                city: "",
+                radius: 1000 
+            });
+        }
+        AMap.plugin('AMap.Geolocation', function () {
+            var geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true, //是否使用高精度定位，默认:true
+                timeout: 10000,          //超过10秒后停止定位，默认：5s
+                buttonPosition: 'RB',    //定位按钮的停靠位置
+                buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+                zoomToAccuracy: true   //定位成功后是否自动调整地图视野到定位点
+            });
+            map.addControl(geolocation); 
+        });
+    }
+
+    function setRangeBlockFromDB(item,index)
+    {
+        addExeParam();
+        addExecuteParam("rangeSubItems", item.SubList);
+        addExecuteParam("name", item.Name);
+        addExecuteParam("field", item.Field);
+        addExecuteParam("subField", item.SubField);
+        execute("/EPC/Manage/GisMap/GetRangeCount", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                if(!data || data == '')
+                    data = 0;
+
+                var subListZoomVal = item.MaxZoomVal + 1;//超出该范围即可
+                if(subListZoomVal > 18)
+                    subListZoomVal =18;//百度地图限制
+                var centerPtLong = parseFloat(item.Long);
+                var centerPtLat = parseFloat(item.Lat);
+                if(!isNaN(centerPtLong) && !isNaN(centerPtLat))
+                {
+                    addCircleBlockByPt([centerPtLong, centerPtLat], data || 0, subListZoomVal, item.Name, getColor(index));
+                }
+                else
+                {
+                    addCircleBlockByName(item.Name, item.UpName, data || 0, subListZoomVal, item.Name, getColor(index));
+                }
+
+            }, validateForm: false
+        });
+    }
+
+    //设置区域点选块并读取项目数量
+    function addCircleBlockByPt(point, projCount, zoomVal, title, color) {
+        var myCompOverlay = new CircleAndContOverlay(
+            point,
+            (color || 'blue'),
+            title, projCount,
+            function () {
+                refreshMapLays();
+                map.setZoomAndCenter(zoomVal, point);
+            });
+    }
+
+    //设置区域点选块并读取项目数量
+    function addCircleBlockByName(localName, upLocalName, projCount, zoomVal, title, color) {
+        AMap.service(["AMap.PlaceSearch"], function() {
+            var autoOptions = {
+                city: upLocalName
+            }              
+            var placeSearch = new AMap.PlaceSearch(autoOptions);
+            placeSearch.search(localName, function (status, result) { 
+                if (status == 'complete') {
+                    var pois = result.poiList.pois;
+                    if(pois.length > 0){
+                        var point = [result.poiList.pois[0].location.lng, result.poiList.pois[0].location.lat];
+                        var myCompOverlay = new CircleAndContOverlay(
+                            point,
+                            (color || 'blue'),
+                            title, projCount,
+                            function () {
+                                refreshMapLays();                  
+                                map.setZoomAndCenter(zoomVal, point);                               
+                            });
+                    }
+                }
+            });
+
+        });
+    }
+
+    //获取所有项目并且在地图上添加标记
+    function setAllProjMarkerFromDB() {
+        addExeParam();
+        execute("/EPC/Manage/GisMap/GetList", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                if (data) {
+                    $.each(data, function (index, item) {
+                        addProjMarker(item);
+                    })
+                }
+            }, validateForm: false
+        });
+    }
+
+    //添加项目标记点
+    function addProjMarker(proj) {
+        var sContent = "<div id='project' style='text-align:left;font-size:12px'><ul>" +
+                        "<li>名称：" + proj.Name + "</li>" +
+                        "<li>编号：" + proj.SerialNumber + "</li>" +
+                        "<li>负责人：" + proj.ChargeUserName + "</li>" +
+                        "<li>状态：" + setStateName(proj.State) + "</li>" +
+                        "<li>立项时间：" + new Date(proj.CreateDate).format("yyyy-MM-dd") + "</li>" +
+                        "<li><a style='float:right' href='javascript:void(0)' onclick='showHideLeftPanel(\""+proj.ID+"\")'>详情</a></li>" +
+                        "</ul></div>";
+
+        //var marker = SetMark(proj.Long, proj.Lat, proj.Name, sContent);
+        var marker = SetMark(proj.Long, proj.Lat, proj.Name, proj.ID);
+        bubbleList.push(marker);
+    }
+
+    //自定义地图事件
+    function customMapZoomEndEvent() {
+        map.on('zoomend', function(e){refreshMapLays();});
+    }
+
+    function refreshMapLays() {
+        var zoomVal = map.getZoom();
+        map.clearMap();
+        bubbleList = [];
+
+        $.each(rangeConfig,function(index,item){
+            var minZoomVal = Math.min(item.MaxZoomVal,item.MinZoomVal);
+            var maxZoomVal = Math.max(item.MaxZoomVal,item.MinZoomVal);
+            if(zoomVal >= minZoomVal && zoomVal <= maxZoomVal)
+            {
+                setRangeBlockFromDB(item,index);
+            }
+        })
+
+        //显示项目标记
+        if(zoomVal >= projZoomVal)
+        {
+            setAllProjMarkerFromDB();
+        }
+    }
+
+    //编辑页面获取地理坐标及地址信息
+    function customMapClickEvent() {
+        map.on('click', function(e){
+            map.clearMap();
+            addMark(e.lnglat.lng, e.lnglat.lat);
+        });
+    }
+
+    //根据链接参数long、lat设置标记
+    function setMarkerFormUrlParamAndZoom(noPosShowLocal) {
+        var long = getQueryString("long");
+        var lat = getQueryString("lat");
+        if(!geocoder){
+            geocoder = new AMap.Geocoder({
+                city: "",
+                radius: 1000 
+            });
+        }
+        if (long && lat) {
+            var fLong = parseFloat(long);
+            var fLat = parseFloat(lat);
+            if (!isNaN(fLong) && !isNaN(fLat)) {
+                addMark(fLong, fLat, function (point) {
+                    map.centerAndZoom(point, 15);
+                });
+
+            }
+        }
+        else if(noPosShowLocal){
+            setCurrentPosition(function (point) {
+                if (point) {
+                    addMark(point.lng, point.lat, function (point) {
+                        map.centerAndZoom(point, 15);
+                    });
+                }
+            })
+        }
+    }
+
+    //隐藏显示确定按钮
+    function showConfirmButton(bShow) {
+        if (!bShow) {
+            $(".gw-grid-toolbar").css("display", "none");
+        }
+        else {
+            $(".gw-grid-toolbar").css("display", "block");
+        }
+    }
+
+    //确定
+    function confirm() {
+        mini.confirm("确定选定当前坐标信息吗？", "确定？",
+            function (action) {
+                if (action == "ok") {
+                    closeWindow(resultInfo);
+                } else {
+
+                }
+            }
+        );
+    }
+
+    function markerClick(e) {
+        var infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
+        infoWindow.setContent(e.target.content);
+        infoWindow.open(map, e.target.getPosition());
+        var lng = e.lnglat.lng;
+        var lat = e.lnglat.lat;  
+        geocoder.getAddress([lng, lat], function(status, result) {
+            if (status === 'complete' && result.regeocode) {
+                resultInfo = result.regeocode.addressComponent;
+                resultInfo.address = result.regeocode.formattedAddress;
+                resultInfo.long = lng;
+                resultInfo.lat = lat;
+            }
+        });
+    }
+
+    function findPosFromAdress()
+    {
+        var addressName = mini.get('addressKey').getValue();       
+        if(addressName && addressName != '')
+        {
+            map.clearMap();
+            var citysearch = new AMap.CitySearch();
+            AMap.plugin('AMap.PlaceSearch', function () {
+                var autoOptions = {
+                    city: ''
+                }              
+                citysearch.getLocalCity(function(status, result) {
+                    if (status === 'complete' && result.info === 'OK') {
+                        if (result && result.city && result.bounds) {
+                            autoOptions.city = result.city;
+                            var placeSearch = new AMap.PlaceSearch(autoOptions);
+
+                            placeSearch.search(addressName, function (status, result) {                  
+                                // 搜索成功时，result即是对应的匹配数据
+                                if (status == 'complete') {
+                                    // 查询成功时，result即对应匹配的POI信息
+                                    var pois = result.poiList.pois;
+                                    var marker = [];
+                                    for(var i = 0; i < pois.length; i++){
+                                        var poi = pois[i];
+                                        marker[i] = new AMap.Marker({
+                                            position: poi.location,   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                                            title: poi.name
+                                        });
+                                        // 将创建的点标记添加到已有的地图实例：
+                                        marker[i].content = poi.name;
+                                        marker[i].on('click', markerClick);
+                                        map.add(marker[i]);
+                                    }
+                                    map.setFitView();
+                                }
+                            });
+                        }
+                    }
+                });
+            })
+        }  
+    }
+
+    //隐藏显示搜索框
+    function showSearch(bShow) {
+        if (!bShow) {
+            $(".map-search").css("display", "none");
+            $("#filter").keyup(function (e) { });
+        }
+        else {
+            $(".map-search").css("display", "block");
+            $("#filter").keyup(function (e) {
+                if (e.keyCode == "13") {
+                    refreshMapLays();
+                }
+            })
+        }
+    }
+
+    //隐藏项目面板
+    function showProjPanel(bShow) {
+        if (!bShow) {
+            $("#projDetail").css("display", "none");
+        }
+        else {
+            $("#projDetail").css("display", "block");
+        }
+    }
+
+    function showHideLeftPanel(id) {
+        if(id)
+        {
+            execute("/EPC/Manage/GisMap/GetProjProperties?projID="+id, {
+                showLoading: false, refresh: false, onComplete: function (data) {
+                    if (data) {
+                        var html = $("#gisLeftPanelTemplate").tmpl(data);
+                        $("#leftPanel").html(html);
+                    }
+                }, validateForm: false
+            });
+            $('#projDetail').css('right', '0px');//总是展开
+        }
+        else
+        {
+            if ($('#projDetail').css('right') == '-341px')
+                $('#projDetail').css('right', '0px');
+            else
+                $('#projDetail').css('right', '-341px');
+        }
+    }
+
+    function addExeParam() {
+        var searchFields = "Name,SerialNumber";
+        var keys = searchFields.split(',');
+        var keyValue = $("#filter").val();
+        if (keyValue && keyValue != '') {
+            var quickSearchData = {};
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyValue;
+            }
+            addExecuteParam("quickQueryFormData", mini.encode(quickSearchData));
+        }
+    }
+
+    function SetMark(lng, lat, address, projID/*tipHtml*/) {
+        if(lng != '' && lat != ''){
+            var point = [lng, lat];
+            var myCompOverlay = new ChatBubbleOverlay(point, address,
+                function(){
+                    if(typeof(parent.moves) != 'undefined')
+                        parent.moves(projID, address, projID);
+                });
+
+            return myCompOverlay;
+        }
+    }
+
+    function addMark(lng, lat, callBack) {
+        resultInfo.long = lng;
+        resultInfo.lat = lat;
+        geocoder.getAddress([lng, lat], function(status, result) {
+            if (status === 'complete' && result.regeocode) {
+                var address = result.regeocode.formattedAddress;
+                resultInfo = result.regeocode.addressComponent;
+                resultInfo.address = address;
+                resultInfo.long = lng;
+                resultInfo.lat = lat;
+                var myCompOverlay = new ChatBubbleOverlay([lng, lat], address);
+            }
+        });
+    };
+
+    function clearSelect()
+    {
+        $.each(bubbleList,function(index,item){
+            item.UnSelect();
+        })
+    }
+
+    function getAddressPos(address, getAddressFunc)
+    {
+        var localSearch = new BMap.LocalSearch(map);
+        localSearch.setSearchCompleteCallback(function(searchResult) {
+            var poi = searchResult.getPoi(0);
+            if(getAddressFunc)
+            {
+                var pos = { lng:poi.point.lng, lat:poi.point.lat };
+                getAddressFunc(pos);
+            }
+        });
+        localSearch.search(address);
+    }
+
+
+    //---------------圆形内加文字---------------↓
+    function CircleAndContOverlay(point, backColor, title, projCount, onclick) {
+        var marker = new AMap.Marker({
+            position: point,
+            content: CircleContent(backColor, title, projCount + '个', onclick),
+            offset: new AMap.Pixel(-15, -15)
+        });
+        marker.setzIndex(projCount);
+        marker.setMap(map);
+    }
+
+    function CircleContent(backColor, text1, text2, onclick) {
+        var div = this._div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.zIndex = 100;
+        div.style.backgroundColor = backColor;
+        div.style.borderRadius = "60px";
+        div.style.color = "white";
+        div.style.textAlign = "center";
+        div.style.height = "60px";
+        div.style.width = "60px";
+        // div.style.marginTop = "95%";
+        div.style.paddingTop = "24px";
+        div.style.paddingLeft = "10px";
+        div.style.paddingRight = "10px";
+        //div.style.filter = "alpha(Opacity=20)";
+        div.style.opacity = "0.9";
+        div.style.cursor = "pointer";
+        div.style.MozUserSelect = "none";
+        div.style.fontSize = "14px";
+        var p1 = document.createElement("p");
+        p1.style.whiteSpace = "pre-wrap";
+        div.appendChild(p1);
+        p1.appendChild(document.createTextNode(text1));
+
+        var p2 = document.createElement("p");
+        p2.style.whiteSpace = "pre-wrap";
+        div.appendChild(p2);
+        p2.appendChild(document.createTextNode(text2));
+        var that = this;
+
+        div.onmouseover = function () {
+            this.style.backgroundColor = "#6BADCA";
+            //this.style.borderColor = "#0000ff";
+            //this.getElementsByTagName("span")[0].innerHTML = that._overText || that._text;
+        }
+
+        div.onmouseout = function () {
+            this.style.backgroundColor = backColor;
+            //this.style.borderColor = "#BC3B3A";
+            //this.getElementsByTagName("span")[0].innerHTML = that._text;
+        }
+        div.onclick = onclick;
+        return div;
+    }
+    CircleAndContOverlay.prototype.draw = function () {
+        var map = this._map;
+        var pixel = map.pointToOverlayPixel(this._point);
+        this._div.style.left = (pixel.x - parseInt(this._div.style.width) / 2) + "px";
+        this._div.style.top = (pixel.y - parseInt(this._div.style.height) / 2) + "px";
+    }
+    //---------------圆形内加文字---------------↑
+    //---------------聊天气泡---------------↓
+    function ChatBubbleOverlay(point, text, onclick, mouseover) {
+        this._point = point;
+        this._text = text;
+        this._onclick = onclick;
+        this._mouseover = mouseover;
+        this._selected = false;
+        var marker = new AMap.Marker({
+            position: point,
+            content: ChatBubbleContent(text, mouseover, onclick),
+            offset: new AMap.Pixel(-15, -15)
+        });    
+        marker.setMap(map);      
+    }
+
+    function ChatBubbleContent(text, mouseover, onclick) {
+        var div = this._div = document.createElement("div");
+        div.id = 'xyz';
+        div.style.position = "absolute";
+        div.style.backgroundColor = "#EE5D5B";
+        div.style.color = "white";
+        div.style.height = "22px";
+        div.style.paddingTop = "2px";
+        div.style.paddingLeft = "4px";
+        div.style.paddingRight = "4px";
+        div.style.lineHeight = "18px";
+        div.style.whiteSpace = "nowrap";
+        div.style.cursor = "pointer";
+        div.style.MozUserSelect = "none";
+        div.style.fontSize = "14px"
+        var span = this._span = document.createElement("span");
+        div.appendChild(span);
+        span.appendChild(document.createTextNode(text));
+        var that = this;
+
+        var arrow = this._arrow = document.createElement("div");
+        arrow.style.position = "absolute";
+        arrow.style.width = "11px";
+        arrow.style.height = "10px";
+        arrow.style.top = "22px";
+        arrow.style.left = "10px";
+        arrow.style.overflow = "hidden";
+        div.appendChild(arrow);
+
+        div.onmouseover = function () {
+            if(!that._selected)
+            {
+                this.style.backgroundColor = "#6BADCA";
+                this.style.borderColor = "#0000ff";
+                //this.getElementsByTagName("span")[0].innerHTML = that._overText;
+                arrow.style.backgroundPosition = "0px -20px";
+            }
+            if (mouseover)
+                that._mouseover();
+        }
+
+        div.onmouseout = function () {
+            if(!that._selected)
+            {
+                this.style.backgroundColor = "#EE5D5B";
+                this.style.borderColor = "#BC3B3A";
+                //this.getElementsByTagName("span")[0].innerHTML = that._text;
+                arrow.style.backgroundPosition = "0px 0px";
+            }
+        }
+
+        div.onclick = function(){
+            if (onclick)
+                div.onclick = onclick;
+
+            that._selected = true;
+            that._div.style.backgroundColor = "#FF9625";
+            arrow.style.backgroundPosition = "0px -10px";
+        }
+        div.onclick = onclick;
+        return div;
+    }
+    ChatBubbleOverlay.prototype.draw = function () {
+        var map = this._map;
+        var pixel = map.pointToOverlayPixel(this._point);
+        this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+        this._div.style.top = pixel.y - 30 + "px";
+    }
+    ChatBubbleOverlay.prototype.UnSelect = function () {
+        this._selected = false;
+    }
+    ChatBubbleOverlay.prototype.Point = function(){ return this._point;}
+    //---------------聊天气泡---------------↑
+
+    //----------------项目统计相关-------------↓
+    //获取项目状态名称
+    function setStateName(obj) {
+        var state = "";
+        switch (obj) {
+            case "Plan":
+                state = "策划中";
+                break;
+            case "Create":
+                state = "未下达";
+                break;
+            case "Execute":
+                state = "设计中";
+                break;
+            case "Finish":
+                state = "已完成";
+                break;
+            case "Pause":
+                state = "已暂停";
+                break;
+            case "Terminate":
+                state = "已终止";
+                break;
+            case "Completeinstallation":
+                state = "安装完成";
+                break;
+            case "Completeinspection":
+                state = "调试完成";
+                break;
+            case "Bid":
+                state = "投标中";
+                break;
+            default:
+                state = "";
+        }
+        return state;
+
+    }
+
+    //----------------项目统计相关-------------↑
+
+    //地区里是否有定义过行政区
+    function hasDistrictDefinition(region) {
+        var regionObj = RegionAndProvinces[region].text;
+        var result = false;
+        if (regionObj) {
+            var strProvinces = regionObj.text;
+            var provinceArr = strProvinces.split(',');
+            if (provinceArr) {
+                $.each(provinceArr, function (index1, item1) {//循环地区的省
+                    $.each(ProvinceAndDistricts, function (index2, item2) {//循环判断是否有定义省的行政区
+                        if (item1.indexOf(item2.id) || item2.id.indexOf(item1)) {
+                            result = true;
+                        }
+                    })
+                })
+
+            }
+
+            return result;
+        }
+    }
+
+    function getColor(index) {
+        return regionColorOpt[index % regionColorOpt.length];
+    }
+</script>

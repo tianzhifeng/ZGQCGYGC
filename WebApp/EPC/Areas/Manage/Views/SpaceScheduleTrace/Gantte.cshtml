@@ -1,0 +1,370 @@
+﻿@{
+    ViewBag.Title = "Gantte";
+    Layout = "~/Views/Shared/_LayoutRGantte.cshtml";
+}
+
+<style>
+    /* button */
+    .mini-button-text {
+        padding-top: 1px;
+        padding-bottom: 2px;
+        padding-top: 3px\9;
+        padding-bottom: 1px\9;
+    }
+
+    /* textbox */
+    .mini-textbox, .mini-buttonedit {
+        height: 20px;
+    }
+
+    .mini-pager-reload {
+        /* background-image: url(images/pager/reload.png); */
+        background-image: none !important;
+    }
+
+    .mini-textbox-border, .mini-buttonedit-border {
+        height: 18px;
+        border-radius: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .mini-textbox-input, .mini-buttonedit-input {
+        height: 20px;
+        line-height: 17px;
+    }
+    /* buttonedit */
+    .mini-buttonedit-button {
+        height: 13px;
+    }
+
+    .mini-buttonedit-icon {
+        width: 15px;
+        height: 14px;
+    }
+
+    .mini-datepicker .mini-buttonedit-icon {
+        background-position: 50% 1px;
+    }
+
+
+    .mini-grid-editwrap .mini-textbox {
+        margin-top: 0px;
+    }
+
+    .mini-grid-editwrap .mini-buttonedit {
+        margin-top: 0px;
+    }
+
+    .gw-searchbox {
+        padding-top: 0px !important;
+    }
+
+        .gw-searchbox .mini-buttonedit-border {
+            padding: 0px;
+        }
+
+        .mini-splitter-border{
+            border-left:0px;
+        }
+</style>
+<div class="mini-toolbar" style="padding: 0px; border: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="mini-pager-reload" onclick="refresh" plain="true">刷新</a>
+                <a class="mini-button" iconcls="icon-zoomOut" onclick="zoomIn" plain="true">放大</a>
+                <a class="mini-button" iconcls="icon-zoomIn" onclick="zoomOut" plain="true">缩小</a>
+                &nbsp;
+                <div id="showAll" name="showAll" checked="true" class="mini-checkbox" text="显示实际完成" onvaluechanged="onCheckBoxValueChanged"></div>
+                &nbsp;
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;padding-bottom:4px" textfield="text" valuefield="value" data="wbsNodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;
+                时间刻度：
+                <select onchange="changeTopTimeAndBottomTimeScale(this.value)" style="margin-right: 20px;">
+                    <option value="year,halfyear">年/半年</option>
+                    <option value="year,quarter">年/季度</option>
+                    <option value="year,month" selected="selected">年/月</option>
+                    <option value="year,week">年/周</option>
+                    <option value="year,day">年/日</option>
+                    <option value="halfyear,quarter">半年/季度</option>
+                    <option value="halfyear,month">半年/月</option>
+                    <option value="halfyear,week">半年/周</option>
+                    <option value="halfyear,day">半年/日</option>
+                    <option value="quarter,month">季度/月</option>
+                    <option value="quarter,week">季度/周</option>
+                    <option value="quarter,day">季度/日</option>
+                    <option value="month,week">月/周</option>
+                    <option value="month,day">月/日</option>
+                    <option value="week,day">周/日</option>
+                </select>
+            </td>
+            <td style="white-space: nowrap;">
+                起：
+                <input name='beginDate' class='mini-datepicker' style='' value="@ViewBag.MonthFirstDay" onvaluechanged="refresh" />
+                止：
+                <input name='endDate' class='mini-datepicker' style='' value="@ViewBag.MonthLastDay" onvaluechanged="refresh" />
+                &nbsp;
+                <a class="mini-button" iconcls="" onclick="showWindow('queryWindow');" plain="false">设置查询条件</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GanttDV">
+</div>
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 400px; height: 180px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+            <table>
+                <tr>
+                    <td width="15%">项目编号</td>
+                    <td width="85%" nowrap="nowrap"><input name="EngineeringCode" class="mini-textbox" style='width:100%' /></td>
+                </tr>
+                <tr>                   
+                    <td width="15%">项目名称</td>
+                    <td width="85%" nowrap="nowrap"><input name="EngineeringName" class="mini-textbox" style='width:100%' /></td>
+                </tr>
+                <tr>
+                    <td width="15%">项目类别</td>
+                    <td width="85%" nowrap="nowrap"><input name="ProjectClass" class="mini-combobox" data='ProjectClass' style='width:100%' /></td>
+                </tr>
+                <tr>
+                    <td width="15%">项目经理</td>
+                    <td width="85%" nowrap="nowrap"><input name="ProjManagerName" class="mini-textbox" style='width:100%' /></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick='refresh()' iconcls='icon-find' style='margin-right: 20px;'>查询</a>
+            <a class='mini-button' onclick='clearQueryForm()' iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var defineID = "@Html.Raw(ViewBag.DefineID)";
+    var flowEnd = '';
+    var wbsNodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+    @Html.GetEnum("Base.ProjectClass")
+</script>
+<script type="text/javascript">
+
+    window.__holidaytable =@Html.Raw(ViewBag.HolidayTable);
+    Date.prototype.isDayOff = function () {
+        var date = this;
+        var key = mini.formatDate(date, "yyyy-MM-dd");
+        if (date.getDay() === 0 || date.getDay() === 6) {
+            if (__holidaytable[key]===0) {
+                return false;
+            }
+            return true;
+        } else {
+            if (__holidaytable[key]) {
+                return true;
+            }
+        }
+        return false;
+    };
+    Date.prototype.addDaysSkipDayOff = function (value) {
+        var temp = new Date(this.getTime());
+        while (temp.isDayOff()) {
+            temp.setDate(temp.getDate() + 1);
+        }
+        while (value-- > 0) {
+            temp.setDate(temp.getDate() + 1);
+            while (temp.isDayOff()) {
+                temp.setDate(temp.getDate() + 1);
+            }
+        }
+        return temp;
+    }
+    Date.prototype.betweenWorkDay = function (end) {
+        var temp = new Date(this.getTime());
+        var enddate = mini.formatDate(end, "yyyy-MM-dd");
+        var wd = 0;
+        while (temp.isDayOff()) {
+            temp.setDate(temp.getDate() + 1);
+        }
+        while (mini.formatDate(temp, "yyyy-MM-dd") <= enddate ) {
+            temp.setDate(temp.getDate() + 1);
+            wd++;
+            while (temp.isDayOff()) {
+                temp.setDate(temp.getDate() + 1);
+            }
+        }
+        return wd;
+    }
+
+</script>
+<script src="/EPC/Scripts/PlusGantt/plusgantt/ScheduleService.js"></script>
+<script type="text/javascript">
+    var funcType = "view";
+    //if(funcType&& funcType.toLowerCase()=="view"){
+    //    $(".mini-toolbar").hide();
+    //}
+    var gantt = initGantt();
+    gantt.render(document.getElementById("GanttDV"));
+
+    gantt.on("drawcell",
+           function(e) {
+               var record = e.record;
+               var column = e.column;
+               var field = e.field;
+               //var bgstyle = "background-color:rgba(0,0,0,0.1);";
+
+               if(record.NodeType!="Task"&&field=="Name"){
+                   e.cellStyle = "font-weight:bolder;";
+               }
+
+               if (record.CanEdit == "0") {
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if (record.Milestone && (field == "Start" || field == "Duration")) {
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if (field == "Start" || field == "Finish") {
+                   var d = e.value;
+                   if (d) {
+                       e.cellHtml = new Date(e.value).Format("yy-MM-dd");
+                   }
+               }
+               if (field == "BaseStart" || field == "BaseFinish") {
+                   var d = e.value;
+                   if (d) {
+                       e.cellHtml = new Date(e.value).Format("yy-MM-dd");
+                   }
+               }
+               if (e.column.field == "FactStart" || e.column.field == "FactFinish") {
+                   var d = e.value;
+                   if (d) {
+                       e.cellHtml = new Date(e.value).Format("yy-MM-dd");
+                   }
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if(funcType&&funcType.toLowerCase()=="view"){
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+               if(funcType&&funcType.toLowerCase()=="view"||flowEnd=="True"){
+                   e.cellStyle += "background:#F0F0F0;";
+               }
+           });
+
+    function pageLoad()
+    {
+        loadData(function(){
+            createBaseline();
+            gantt.setViewModel("track");
+        });
+    }
+    
+
+    function loadData(onLoad) {
+        var task = gantt.getSelected();
+        addExecuteParam("DefineID", defineID);
+
+        var beginDateCtrl = mini.getbyName('beginDate');
+        if(beginDateCtrl && beginDateCtrl.getValue())
+            addExecuteParam("BeginDate", beginDateCtrl.getValue().toLocaleDateString());
+        var endDateCtrl = mini.getbyName('endDate');
+        if(endDateCtrl && endDateCtrl.getValue())
+            addExecuteParam("EndDate", endDateCtrl.getValue().toLocaleDateString());
+
+        if(mini.getbyName('EngineeringCode'))
+            addExecuteParam("engineeringCode", mini.getbyName('EngineeringCode').getValue());
+        if(mini.getbyName('EngineeringName'))
+            addExecuteParam("engineeringName", mini.getbyName('EngineeringName').getValue());
+        if(mini.getbyName('ProjectClass'))
+            addExecuteParam("projectClass", mini.getbyName('ProjectClass').getValue());
+        if(mini.getbyName('ProjManagerName'))
+            addExecuteParam("projManagerName", mini.getbyName('ProjManagerName').getValue());
+        gantt.loading();
+        execute("GetGantteTree", {
+            formId: "none",
+            refresh: false, onComplete: function (data) {
+                var list = mini.arrayToTree(data, "children", "UID", "ParentTaskUID");
+                gantt.loadTasks(list);
+                gantt.unmask();
+                if (task) {
+                    $.each(data,
+                        function (i, v) {
+                            if (v.ID === task.ID) {
+                                gantt.select(v);
+                                gantt.scrollIntoView(v);
+                                return false;
+                            }
+                        });
+                } else {
+                    if (data.length) {
+                        gantt.select(data[0]);
+                        gantt.fire('taskclick', { task: data[0] });
+                    }
+                }
+                gantt.filter(function (tk) {
+                    if (tk.Visible != "1") return false;
+                    return true;
+                });
+                if (onLoad) {
+                    onLoad(list);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function refresh() {
+        loadData();
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        gantt.expandAll();
+        gantt.collapseLevel(level);
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var checked = e.value;
+
+        if (checked&&checked=="true") {
+            createBaseline();
+            gantt.setViewModel("track");
+        }
+        else {
+            clearBaseline();
+            gantt.setViewModel("gantt");
+        }
+    }
+
+    function createBaseline() {
+        var tasklist = gantt.getTaskList();
+        for (var i = 0, l = tasklist.length; i < l; i++) {
+            var task = tasklist[i];
+            if(task.Milestone=="1"){
+                if(!task.FactFinish||!task.Finish)continue;
+                var baseline0 = {
+                    Start: new Date(task.Finish.getTime()),
+                    Finish: new Date(task.FactFinish.getTime())
+                };
+                task.Baseline = [];
+                task.Baseline.push(baseline0);
+            }
+            else{
+                if (!task.FactStart || !task.FactFinish) continue;
+                var baseline0 = {
+                    Start: new Date(task.FactStart.getTime()),
+                    Finish: new Date(task.FactFinish.getTime())
+                };
+                task.Baseline = [];
+                task.Baseline.push(baseline0);
+            }
+        }
+        gantt.refresh();
+    }
+
+    function clearBaseline() {
+        var tasklist = gantt.getTaskList();
+        for (var i = 0, l = tasklist.length; i < l; i++) {
+            var task = tasklist[i];
+            delete task.Baseline;
+        }
+        gantt.refresh();
+    }
+</script>

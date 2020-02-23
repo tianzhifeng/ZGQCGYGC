@@ -1,0 +1,253 @@
+﻿@{
+    ViewBag.Title = "MultiContractPaymentObjSelector";
+}
+
+<div class="mini-toolbar" id="btnDiv" style="border-top: 0px; border-left: 0px;">
+    <a class="mini-button" id="btnSelect" iconcls="icon-refer" plain="true" onclick="save">保存</a>
+    <span class="separator"></span><a class="mini-button" iconcls="icon-remove" plain="true" onclick="closeWindow();">取消</a>
+</div>
+
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px;border-width:0px" allowresize="false" handlersize="0">
+        <div showcollapsebutton="false" size="55%" style="border-bottom: 0px; border-right: 0px;">
+            <div class="mini-fit">
+                <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="2">
+                    <div title="north" showheader="false" region="north" height="250" showspliticon="false">
+                        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 100%;"></td>
+                                    <td style="white-space: nowrap;">
+                                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入合同名称或编号"
+                                            style="width: 240px" onenter="quickSearch('Name,SerialNumber',{gridId:'dataGrid'});" onbuttonclick="quickSearch('Name,SerialNumber',{gridId:'dataGrid'});" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="mini-fit" style="width: 100%; height: 100%">
+                            <div id="dataGrid" url="GetContractList?EngineeringInfoID=@ViewBag.EngineeringInfoID" class="mini-datagrid" style="width: 100%; height: 100%;" showpager="false"
+                            idfield="ID" multiselect="false" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;" onselectionchanged="onSelectionChanged">
+                                <div property="columns">
+                                    <div type="checkcolumn">
+                                    </div>
+                                    <div field="SerialNumber" width="80" allowsort="true" headeralign="center">
+                                        合同编号
+                                    </div>
+                                    <div field="Name" width="150" allowsort="true" headeralign="center">
+                                        合同名称
+                                    </div>
+                                    <div field="ContractAmount" datatype="currency" currencyunit="￥" allowsort="true"
+                                        headeralign="center" align="right">
+                                        合同金额（元）
+                                    </div>
+                                    <div field="SumPaymentValue" datatype="currency" allowsort="true" headeralign="center"
+                                        align="right">
+                                        已付款金额（元）
+                                    </div>
+                                    <div field="NoPaymentAmount" datatype="currency" allowsort="true" headeralign="center"
+                                        align="right">
+                                        可付款金额（元）
+                                    </div>
+                                    <div field="SumInvoiceValue" datatype="currency" allowsort="true" headeralign="center"
+                                        align="right">
+                                        已收票金额（元）
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div title="center" region="center" style="border:0px">
+                        <div class="mini-fit" style="width: 100%; height: 100%">
+                            <div id="paymentObjGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+                                idfield="ID" multiselect="true" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;" showpager="false">
+                                <div property="columns">
+                                    <div type="checkcolumn">
+                                    </div>
+                                    <div field="Name" width="80" headeralign="center" allowsort="true">
+                                        付款项
+                                    </div>
+                                    <div field="PlanPaymentDate" width="80" headeralign="center" dateformat="yyyy-MM"
+                                        allowsort="true" align="center">
+                                        计划付款日期
+                                    </div>
+                                    <div field="PlanPaymentValue" datatype="currency" currencyunit="￥" headeralign="center"
+                                        width="80" allowsort="true" align="right">
+                                        金额（元）
+                                    </div>
+                                    <div field="SumPaymentValue" datatype="currency" currencyunit="￥" headeralign="center"
+                                        width="120" allowsort="true" align="right">
+                                        已付款金额（元）
+                                    </div>
+                                    <div field="RemainPaymentValue" datatype="currency" currencyunit="￥" headeralign="center"
+                                        width="120" allowsort="true" align="right">
+                                        可付款金额（元）
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="false" size="45%" style="border-bottom: 0px; border-left: 1px;">
+
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-left-width:1px; border-top:0px" allowresize="false" handlersize="0">
+                <div showcollapsebutton="false" size="5%" style="border: 0px; padding-top: 180px; background-color: #F9F9F9">
+                    <div class="mini-fit" style="width: 100%">
+                        <a class="mini-button" iconcls="icon-right" onclick="addSelected"></a>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <a class="mini-button" iconcls="icon-left" onclick="removeSelecteds"></a>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" size="95%" style="">
+                    <div class="mini-toolbar" style="border-top: 0px; border-bottom: 0px; border-left: 0px;">
+                        已选择的数据：
+                        计划日期设置：
+                        <input name="PlanDateSet" class="mini-datepicker" style="width: 120px" allowinput="false" onvaluechanged="onPlanDateSet" />
+                    </div>
+                    <div class="mini-fit">
+                        <div id="selectedList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                            borderstyle="border-left:0px;border-bottom:0px" showcheckbox="true" multiselect="true"
+                            showfooter="false" showpager="false" allowcellvalid="true"
+                            allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true">
+                            <div property="columns">
+                                <div type="checkcolumn"></div>
+                                <div field="PaymentObjName" width="80" headeralign="center" allowsort="true">
+                                    付款项
+                                </div>
+                                <div field="PlanDate" width="120" headeralign="center" dateformat="yyyy-MM-dd"
+                                    allowsort="true" align="center" vtype="required;">
+                                    计划付款日期<input property="editor" class="mini-datepicker" style="width: 100%;" allowinput="false" />
+                                </div>
+                                <div field="PlanValue" datatype="currency" currencyunit="￥" headeralign="center"
+                                    width="120" allowsort="true" align="right" vtype="required;float;">
+                                    计划付款（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                <div field="ContractInfoName" width="150" allowsort="true" headeralign="center">
+                                    合同名称
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function pageLoad() {
+        var date = getQueryString("Date");
+        if (date)
+            mini.getbyName("PlanDateSet").setValue(date);
+    }
+
+    function save() {
+        var selectedList = mini.get("selectedList");
+        var items = selectedList.getData();
+        if (items.length == 0) {
+            msgUI("请至少添加一个付款计划");
+            return;
+        }
+        selectedList.commitEdit();
+        selectedList.accept();
+        selectedList.validate();
+        if (!selectedList.isValid()) {
+            msgUI("请完善付款计划信息");
+            return;
+        }
+        addExecuteParam("PlanList", mini.encode(items));
+        execute("SavePlanList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                closeWindow();
+            }, validateForm: false
+        });
+    }
+
+    function onPlanDateSet() {
+        var date = mini.getbyName("PlanDateSet").getText();
+        var selectedList = mini.get("selectedList");
+        var rows = selectedList.getData();
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            selectedList.updateRow(row, { PlanDate: date });
+        }
+    }
+
+    //合同选择发生改变时
+    function onSelectionChanged(e) {
+        var row = e.selected;
+        if (row != null) {
+            var contractInfoID = row.ID;
+            var url = "GetPaymentObjectList?ContractInfoID=" + contractInfoID;
+            var paymentObjGrid = mini.get("paymentObjGrid");
+            paymentObjGrid.setUrl(url);
+            paymentObjGrid.reload();
+        }
+    }
+
+    addGridButton('paymentObjGrid', 'Name', { onButtonClick: addSingle });
+    function addSingle(row) {
+        var selectedList = mini.get("selectedList");
+        var selectDatas = selectedList.getData();
+        for (var i = 0, l = selectDatas.length; i < l; i++) {
+            var o = selectDatas[i];
+            if (row["ID"] == o["ID"])
+                return;
+        }
+        var mainGrid = mini.get("dataGrid");
+        var mainrow = mainGrid.getSelected();
+        if (!mainrow) {
+            msgUI("请至少选择一个合同");
+            return;
+        }
+        var date = mini.getbyName("PlanDateSet").getText();
+        var o = row;
+        selectedList.addRow({
+            PaymentObj: o["ID"], PaymentObjName: o["Name"], Scale: o["Scale"], PlanValue: o["RemainPaymentValue"], Condition: o["Condition"], PlanDate: date,
+            EngineeringInfo: mainrow["EngineeringInfoID"], EngineeringInfoName: mainrow["EngineeringInfoName"], EngineeringInfoCode: mainrow["EngineeringInfoCode"],
+            ContractInfo: mainrow["ID"], ContractInfoName: mainrow["Name"], ContractInfoCode: mainrow["SerialNumber"],
+            SupplierInfo: mainrow["PartyB"], SupplierInfoName: mainrow["PartyBName"], EngineeringInfoID: mainrow["EngineeringInfoID"]
+        });
+    }
+
+    function addSelected() {
+        var selectedList = mini.get("selectedList");
+        var selecteds = selectedList.getData();
+        var idMaps = {}; for (var i = 0, l = selecteds.length; i < l; i++) {
+            var o = selecteds[i];
+            var id = o["PaymentObj"];
+            idMaps[id] = o;
+        }
+
+        var mainGrid = mini.get("dataGrid");
+        var mainrow = mainGrid.getSelected();
+        if (!mainrow) {
+            msgUI("请至少选择一个合同");
+            return;
+        }
+        var detailGrid = mini.get("paymentObjGrid");
+        var items = detailGrid.getSelecteds();
+        var date = mini.getbyName("PlanDateSet").getText();
+
+        for (var i = items.length - 1; i >= 0; i--) {
+            var o = items[i];
+            var id = o["ID"];
+            if (idMaps[id] == null)
+                selectedList.addRow({
+                    PaymentObj: id, PaymentObjName: o["Name"], Scale: o["Scale"], PlanValue: o["RemainPaymentValue"], Condition: o["Condition"], PlanDate: date,
+                    EngineeringInfo: mainrow["EngineeringInfoID"], EngineeringInfoName: mainrow["EngineeringInfoName"], EngineeringInfoCode: mainrow["EngineeringInfoCode"],
+                    ContractInfo: mainrow["ID"], ContractInfoName: mainrow["Name"], ContractInfoCode: mainrow["SerialNumber"],
+                    SupplierInfo: mainrow["PartyB"], SupplierInfoName: mainrow["PartyBName"], EngineeringInfoID: mainrow["EngineeringInfoID"]
+                });
+        }
+    }
+    function removeSelecteds() {
+        var selectedList = mini.get("selectedList");
+        var items = selectedList.getSelecteds();
+        selectedList.removeRows(items);
+    }
+</script>

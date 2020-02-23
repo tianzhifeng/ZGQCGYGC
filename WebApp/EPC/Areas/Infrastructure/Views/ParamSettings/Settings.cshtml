@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "Settings";
+}
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="36" showspliticon="false" showheader="false" allowresize="false"
+         splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-save" onclick="save({ closeWindow: false });" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-ok" onclick="reset();" plain="true">应用</a>
+                    </td>
+                    <td id="btnRight">
+                        <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <form id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>空间相关设置</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+
+                            <tr>
+                                <td>显示WBS导航入口</td>
+                                <td>
+                                    <input name="ShowWBSNav" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="trueOrFalse" allowinput="false" required="true" value="false" />
+                                </td>
+                                <td style="padding-left:20px;">导航显示节点</td>
+                                <td>
+                                    <input name="NavWBSType" textname="NavWBSTypeName" class="mini-buttonedit" required="true" style="width: 100%" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>采购相关设置</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+
+                            <tr>
+                                <td>采购申请结束自动生成招标信息</td>
+                                <td>
+                                    <input name="AutoCreateInvitation" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="trueOrFalse" allowinput="false" required="true" value="false" />
+                                </td>
+                                <td style="padding-left:20px;"></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>费控相关设置</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+                            <tr>
+                                <td>付款申请结束后或付款登记后自动费用结算</td>
+                                <td>
+                                    <input name="PaymentAutoSettle" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="trueOrFalse" allowinput="false" required="true" />
+                                </td>
+                                <td style="padding-left:20px;">项目报销结束后自动费用结算</td>
+                                <td>
+                                    <input name="ProjReimbursementAutoSettle" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="trueOrFalse" allowinput="false" required="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>分包费用支付结束后自动费用结算</td>
+                                <td>
+                                    <input name="BOQPayAutoSettle" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="trueOrFalse" allowinput="false" required="true" />
+                                </td>
+                                <td style="padding-left:20px;"></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.WBSType")
+</script>
+
+<script type="text/javascript">
+    var trueOrFalse = [{ value: "true", text: "是" }, { value: "false", text: "否" }];
+    var RemoveApportionValidateMode = [{ value: "None", text: "不校验" }, { value: "Confirm", text: "异常后询问" }, { value: "Forbidden", text: "异常后禁止删除" }];
+    var CostAdjustValidateMode = [{ value: "None", text: "不校验" }, { value: "Confirm", text: "异常后询问" }, { value: "Forbidden", text: "异常后禁止删除" }];
+
+
+    addSelector("NavWBSType", "/EPC/WBSStructSelector/AllModeSelector",
+        {
+            width: 400, height: 700,
+            returnParams: "value:ID,text:Name"
+        });
+
+
+    function reset() {
+        execute("ResetSysParam", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                msgUI("应用成功");
+            }, validateForm: false
+        });
+
+    }
+</script>

@@ -1,0 +1,80 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td style="width:100%">
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="saveClick">保存</a>
+                <span class="separator"></span>
+                <a class="mini-button" plain="true" iconcls="icon-add" onclick="addRowClick">添加</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入批语内容" style="width: 200px;" 
+                     onenter="quickSearch('Comment');" onbuttonclick="quickSearch('Comment');"  />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%;height: 100%;" allowMoveColumn="false"  url="GetCommentList"
+        allowCellEdit="true" allowCellSelect="true" sortField="ID" sortOrder="desc">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="textareacolumn" field="Comment" width="*" headeralign="center" align="left">批语内容
+                <input property="editor" class="mini-textarea" required="true" style="width:100%;height:300px" />
+            </div>
+            <div type="checkboxcolumn" field="IsUse" trueValue="1" falseValue="0" width="60" headerAlign="center" align="center">
+                启用
+            </div>
+            <div field="CreateDate" width="100" headerAlign="center" align="center" dateFormat="yyyy-MM-dd">
+                创建时间</div>
+            <div name="delete" width="30" headerAlign="center" align="center" renderer="onDeleteRenderer" cellStyle="padding:0;"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+
+    function onDeleteRenderer(e) {
+        var rec = e.record;
+        var s = '<a class="icon-row-delete" onclick="javascript:deleteRow(\'' + rec._uid + '\')"  title="删除" style="float:center;"></a>';
+        return s;
+    }
+
+    function addRowClick(e) {
+        var row = {
+            Type: "Incoming",
+            IsTemplate: "1",
+            IsUse: "1",
+            CreateDate: new Date(),
+            CreateUserName: user.UserName,
+            CreateUserID: user.UserID
+        };
+        grid.addRow(row, 0);
+        grid.beginEditRow(row);
+    }
+
+    function deleteRow(row_uid) {
+        var row = grid.getRowByUID(row_uid);
+        msgUI("确认删除?!", 2, function (action) {
+            if (action == "ok") {
+                grid.removeRow(row);
+                saveCommentList("删除");
+            }
+        });
+    }
+
+    function saveClick(e) {
+        saveCommentList("保存");
+    }
+
+    function saveCommentList(actionTitle) {
+        execute("SaveCommentList", {
+            actionTitle: actionTitle,
+            gridId: "dataGrid"
+        });
+    }
+
+</script>

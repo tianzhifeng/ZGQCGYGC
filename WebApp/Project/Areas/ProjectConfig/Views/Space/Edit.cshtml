@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "空间定义编辑";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="32" showspliticon="false" showheader="false"
+        allowresize="false" splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                    <td id="btnRight">
+                        <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <form id="dataForm" method="post">
+        <input name="ID" class="mini-hidden" />
+        <input name="ParentID" class="mini-hidden" />
+        <input name="ModeID" class="mini-hidden" />
+        <input name="Type" class="mini-hidden" />
+        <div class="formDiv">
+            <fieldset>
+                <legend>基本信息</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                名称
+                            </td>
+                            <td>
+                                <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                            </td>
+                            <td>
+                                编号
+                            </td>
+                            <td>
+                                <input name="Code" class="mini-textbox" required="true" style="width: 100%" />
+                            </td>
+                        </tr>
+                        @*<tr>
+                            <td>
+                                是否参与
+                            </td>
+                            <td>
+                                <input name="IsDisplay" class="mini-combobox" data="YesOrNo" style="width: 100%;"
+                                    textfield="text" valuefield="value" allowinput="true" required="true" />
+                            </td>
+                            <td title="树结构中显示值对应的字段名。">
+                                显示字段
+                            </td>
+                            <td>
+                                <input name="DisplayField" class="mini-textbox" required="true" style="width: 100%" />
+                            </td>
+                        </tr>*@
+                        <tr>
+                            <td>
+                                类别
+                            </td>
+                            <td>
+                                <input id="defType" name="DefineType" class="mini-combobox" data="SpaceDefineType"
+                                    style="width: 100%;" textfield="text" valuefield="value" allowinput="true" required="true" />
+                            </td>
+                            <td>
+                                动态字段
+                            </td>
+                            <td>
+                                <input name="DynamicDataFiled" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                URL链接
+                            </td>
+                            <td colspan="3">
+                                <input name="LinkUrl" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.SpaceDefineType));   
+    @Html.GetEnum("Market.YesOrNo");   
+</script>
+<script type="text/javascript">
+    var parentID = getQueryString("ParentID");
+    if (parentID) {
+        $("#defType").attr("enabled", "false");
+    }
+</script>

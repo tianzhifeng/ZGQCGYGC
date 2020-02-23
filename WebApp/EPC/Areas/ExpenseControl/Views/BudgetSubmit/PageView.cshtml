@@ -1,0 +1,343 @@
+﻿@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTabl" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="预算审批表">
+            <form id="dataForm" method="post" align="center" autogetdata="false">
+                <input name="ID" class="mini-hidden" />
+                @Html.Raw(ViewBag.HiddenHtml)
+                <div class="formDiv" style="background-color: #fff;">
+                    @Html.Raw(ViewBag.FormHtml)
+                </div>
+                @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+                {
+                    <div style="padding-left: 35px; padding-right: 35px; padding-bottom: 65px;">
+                        <fieldset>
+                            <legend style="font-weight: bold; margin-left: 35px;">操作信息</legend>
+                            <div id="comment">
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <script type="text/javascript">
+                        function onCommentLoad(e) {
+                            if (e.data.length == 0)
+                                $("#commentGrid").hide();
+                        }
+                    </script>
+                }
+            </form>
+        </div>
+        <div title="预算详细信息">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;"></td>
+                        <td style="white-space: nowrap;">
+                            当前版本：<a href="javascript:void();" onclick="viewVersionList();">@ViewBag.VersionNo</a>
+                            &nbsp;  &nbsp;  &nbsp;
+                            显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType"
+                                      allowinput="false"
+                                      onvaluechanged="onShowTypeChanged" value="New" /> &nbsp; &nbsp;
+                            <div id="showAll" name="showAll" checked="true" class="mini-checkbox" text="显示明细" onvaluechanged="onCheckBoxValueChanged"></div>
+                            &nbsp;
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;"
+                     url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true"
+                     multiselect="true" virtualscroll="@ViewBag.VirtualScroll"
+                     treecolumn="Name" idfield="CBSID" parentfield="CBSParentID" resultastree="false" expandonload="true" iconfield="NodeType" contextmenu="#gridMenu"
+                     allowresize="false" fitcolumns="false">
+                    <div property="columns">
+                        <div type="indexcolumn"></div>
+                        <div name="Name" field="Name" width="270" headeralign="center" allowsort="false">
+                            名称
+                        </div>
+                        <div field="Unit" width="50" headeralign="center" allowsort="false" align="center">单位</div>
+                        <div field="Quantity" width="60" align="right" headeralign="center" allowsort="false">
+                            数量
+                        </div>
+                        <div field="UnitPrice" width="80" align="right" headeralign="center" allowsort="false">
+                            单价（元）
+                        </div>
+                        <div field="TotalValue" width="90" align="right" headeralign="center" allowsort="false">
+                            总价（元）
+                        </div>
+                        <div field="LastVersionValue" width="110" headeralign="center" allowsort="false" align="right">上一版总价（元）</div>
+                        <div field="TenderValue" width="110" headeralign="center" allowsort="false" align="right">概算版总价（元）</div>
+                        <div field="Branding" width="200" headeralign="center" allowsort="false">品牌</div>
+                        <div field="Remark" width="200" headeralign="center" allowsort="false">
+                            备注
+                            <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+{
+    if (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view")
+    {
+        <div style='width: 100%; height: 40px;'>
+        </div>
+    }
+    else
+    {
+        <div style='width: 100%; height: 80px;'>
+        </div>
+    }
+}
+
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0;
+        left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                        保存
+                    </a> <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                        取消
+                    </a>
+                </td>
+                <td id="btnRight"></td>
+            </tr>
+        </table>
+    </div>
+
+}
+
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+
+
+
+</script>
+
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div style="text-align:left; font-weight:bolder; color:red;">上一版内容</div>
+    <table class="mini-grid-table" cellspacing="0" cellpadding="0" style="width:700px;table-layout:fixed;">
+        <tr>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">名称</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">专业分类</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">  规格/ 型号</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">材质</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 80px;text-align:center"> 数量</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">品牌</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">连接方式</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center"> 备注</td>
+        </tr>
+        <tr>
+            <td style="width: 100px;text-align:center">${Name}</td>
+            <td style="width: 100px;text-align:center">${MajorName}</td>
+            <td style="width: 100px;text-align:center">${Model}</td>
+            <td style="width: 100px;text-align:center">${Material}</td>
+            <td style="width: 100px;text-align:center">${Unit}</td>
+            <td style="width: 100px;text-align:center">${Quantity}</td>
+            <td style="width: 100px;text-align:center">${Branding}</td>
+            <td style="width: 100px;text-align:center">${ConnectionType}</td>
+            <td style="width: 100px;text-align:center">${Remark}</td>
+        </tr>
+    </table>
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var versionID = getQueryString("ID");
+
+
+    $("#dataTree").attr("url","GetVersionTreeList?VersionID="+versionID+"&ShowType=New&ShowAll=true");
+
+    function viewVersionList() {
+        var engineeringInfoID = mini.getbyName("EngineeringInfoID").getValue();
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=BudgetVersionList&EngineeringInfoID=" + engineeringInfoID + "&VersionID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "预算历史版本", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.ModifyState == "Add") {
+            if (field == "Name") {
+                e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+            }
+            e.cellStyle = "background:#BBFFFF;";
+        }
+        else if (record.ModifyState == "Modify") {
+            if (field == "Name") {
+                e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+            }
+            e.cellStyle = " background: yellow;";
+        }
+        else if (record.ModifyState == "Remove") {
+            e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff;";
+        }
+        if (record.NodeType != "Detail") {
+            e.cellStyle += "font-weight:bolder; ";
+        }
+        if (record.CustomEdit == "True" && record.NodeType != "Detail") {
+            e.cellStyle += "color:red;";
+        }
+    }
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.showCellTooltip',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                var el = e.element;
+                var id = el.id;
+                if (id) {
+                    this.showLoading();
+                    addExecuteParam("ID", id);
+                    execute("GetLastDetailInfo", {
+                        showLoading: false, refresh: false, onComplete: function (data) {
+                            var html = $("#formTemplate").tmpl(data);
+                            tip.setContent(html);
+                        }, validateForm: false
+                    });
+                }
+            }
+        });
+    });
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        var showDiff = mini.getbyName("ShowType").getValue();
+        var showAll = mini.get("showAll").getValue();// false;
+        var url="GetVersionTreeList?VersionID="+versionID+"&ShowType="+showDiff+"&showAll="+showAll;
+        tree.setUrl(url);
+        tree.load();
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var tree = mini.get("dataTree");
+        var showAll = mini.get("showAll").getValue();// false;
+        var showDiff = mini.getbyName("ShowType").getValue();
+        tree.load({ showAll: showAll, ShowType: showDiff });
+    }
+
+</script>
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    .showCellTooltip {
+        background: yellow;
+    }
+</style>

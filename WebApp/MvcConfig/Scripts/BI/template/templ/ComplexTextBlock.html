@@ -1,0 +1,55 @@
+﻿<script id="ComplexTextBlock" type="text/x-jquery-tmpl">
+    <div class="BIinfo-block ${Style}">
+        <div class="BIinfo-block-content">
+            <span class="title"><i>|</i>${Title}</span>
+            <div class="i50 floatl textc brpl">
+                <span class="text bb mb" style="font-size: 12px; line-height: 22px; margin-top: 10px; display: block;">
+                    {{if LinkUrl1}}
+                    ${Prefix1}
+                    <a href="javascript:void(0);" onclick="openUrl('${LinkUrl1}')" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px;">${Value1}</a>
+                    ${Unit1}<br /><span style="font-size:13px;">${Title1}</span><br />
+                    {{else}}
+                    ${Prefix1}
+                    <a href="javascript:void(0);" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px; text-decoration:none">${Value1}</a>
+                    ${Unit1}<br /><span style="font-size:13px;">${Title1}</span><br />
+                    {{/if}}
+                </span>
+                <span class="text mb" style="font-size: 12px; line-height: 22px; margin-top: 10px; display: block;">
+                    {{if LinkUrl2}}
+                    ${Prefix2}
+                    <a href="javascript:void(0);" onclick="openUrl('${LinkUrl2}')" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px;">${Value2}</a>
+                    ${Unit2}<br /><span style="font-size:13px;">${Title2}</span><br />
+                    {{else}}
+                    ${Prefix2}
+                    <a href="javascript:void(0);" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px; text-decoration:none">${Value2}</a>
+                    ${Unit2}<br /><span style="font-size:13px;">${Title2}</span><br />
+                    {{/if}}
+                </span>
+            </div>
+            <div class="i50 floatl textc blpr">
+                <span class="text bb mb" style="font-size: 12px; line-height: 22px; margin-top: 10px; display: block;">
+                    {{if LinkUrl3}}
+                    ${Prefix3}
+                    <a href="javascript:void(0);" onclick="openUrl('${LinkUrl3}')" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px;">${Value3}</a>
+                    ${Unit3}<br /><span style="font-size:13px;">${Title3}</span><br />
+                    {{else}}
+                    ${Prefix3}
+                    <a href="javascript:void(0);" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px; text-decoration:none">${Value3}</a>
+                    ${Unit3}<br /><span style="font-size:13px;">${Title3}</span><br />
+                    {{/if}}
+                </span>
+                <span class="text mb" style="font-size: 12px; line-height: 22px; margin-top: 10px; display: block;">
+                    {{if LinkUrl4}}
+                    ${Prefix4}
+                    <a href="javascript:void(0);" onclick="openUrl('${LinkUrl4}')" style="font-size: 16px; font-weight: bold; margin: 00px 5px 0px 0px;">${Value4}</a>
+                    ${Unit4}<br /><span style="font-size:13px;">${Title4}</span><br />
+                    {{else}}
+                    ${Prefix4}
+                    <a href="javascript:void(0);" style="font-size: 16px; font-weight: bold; margin: 0px 5px 0px 0px; text-decoration:none">${Value4}</a>
+                    ${Unit4}<br /><span style="font-size:13px;">${Title4}</span><br />
+                    {{/if}}
+                </span>
+            </div>
+        </div>
+    </div>
+</script>

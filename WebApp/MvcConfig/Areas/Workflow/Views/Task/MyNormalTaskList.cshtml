@@ -1,0 +1,46 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="keyReceive" class="mini-buttonedit gw-searchbox" emptytext="@ViewBag.KeyEmptyText" onenter="quickSearch('Name',{gridId:'receiveTaskGrid',queryBoxId:'keyReceive'});"
+                    onbuttonclick="quickSearch('Name',{gridId:'receiveTaskGrid',queryBoxId:'keyReceive'});" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="receiveTaskGrid" class="mini-datagrid" style="width: 100%; height: 100%;"
+        url="/Base/Task/Task/GetReceiveTaskList" multiselect="true" ondrawcell="OnDrawCell">
+        <div property="columns">
+            <div field="Urgency" width="50" allowsort="true" align="center">
+                @ViewBag.urgent</div>
+            <div field="Name" width="*" allowsort="true">
+                @ViewBag.taskName</div>
+            <div field="DeadLine" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                @ViewBag.PCD</div>
+            <div field="CompleteTime" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                @ViewBag.CCD</div>
+            <div field="ExecTime" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                @ViewBag.AFD</div>
+            <div field="TaskStatus" width="120" allowsort="true" align="center">
+                @ViewBag.completeState</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    listConfig.width = 900;
+    listConfig.height = 650;
+    addGridLink("receiveTaskGrid", "Name", "/Base/Task/Task/Edit?ID={ID}&IsExecutor=True", { title: '查看任务：{Name}', width: 900, height: 650 });    
+</script>
+<script type="text/javascript">
+    function OnDrawCell(e) {
+        if (e.field == "Urgency") {
+            if (e.value == "紧急")
+                e.cellHtml = "<span class='icon-row-urgency' title='紧急' style='cursor:hand;float:center;'></span>";
+            else
+                e.cellHtml = "<span class='icon-row-urgency-not' title='一般' style='cursor:hand;float:center;'></span>";
+        }
+    }
+</script>

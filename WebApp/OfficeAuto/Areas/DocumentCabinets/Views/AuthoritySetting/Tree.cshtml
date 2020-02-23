@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "资料柜";
+}
+<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="250" showcollapsebutton="false">
+        <div class="mini-fit">
+            <ul id="myTree" class="mini-tree" url="GetTree" style="width: 100%; height: 100%"
+                showtreeicon="true" onnodeselect="onNodeSelect" ondrawnode="drawnode"
+                expandonload="3" textfield="Name" idfield="ID" parentfield="ParentID"
+                resultastree="false" selectonload="true" contextmenu="#treeMenu" iconfield="IconType"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <iframe id="myframe" name="myframe" src="" frameborder="0" style="width: 100%; height: 100%;" border="0" scrolling="no"></iframe>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="valid" id="btnValid" iconcls="icon-ok" onclick="onValid">取消作废</li>
+</ul>
+<script type="text/javascript">
+    var tree;
+    function pageLoad() {
+        tree = mini.get("myTree");
+    }
+
+    function drawnode(e) {
+        var node = e.node;
+        if (node.IsValid == "F") {
+            e.iconCls = "icon-cancel";
+            e.nodeHtml = "<span style='color: red;'>" + e.node.Name + "</span>";
+        }
+    }
+
+    function onNodeSelect(e) {
+        var node = e.node;
+        var url = "List?DocumentInfoID=" + node.ID + "&Level=" + node.Level;
+        $('#myframe').attr("src", url);
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var valid = mini.getbyName("valid", menu);
+        if (node.IsValid == "F") {
+            valid.show();
+        }
+        else {
+            e.cancel = true;
+        }
+    }
+
+    function onValid() {
+        var node = tree.getSelectedNode();
+        addExecuteParam("ID", node.ID);
+        execute("DoValidNode", {
+            mustConfirm: true, actionTitle: "取消作废", onComplete: function () { msgUI("取消作废成功！"); tree.reload(); }
+        });
+    }
+</script>

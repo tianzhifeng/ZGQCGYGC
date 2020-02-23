@@ -1,0 +1,105 @@
+﻿<div id="{|ID|}" class="box box-primary" style="height:{|Height|}">
+    <div class="box-header">
+        <h3 class="box-title">
+            {|Title|}</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" v-show="isLock()" data-widget="remove" onclick="$('#{|ID|}').data('hidden', 'true');dashboardChanged('{|ID|}');">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <iframe name="weather_inc" src="http://i.tianqi.com/index.php?c=code&id=55" style="border:solid 0px #7ec8ea" width="100%" height="294" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+    </div>
+    <div class="box-body box-header" style="display:none">
+         <div class="weather" style="background-color:rgba(14,61,110,0.8) !important;color: #FFF;display:none">
+                   <div class="_up">
+                        <div class="_weather"><img style="height:45px;" :src="weather.weatherType" /></div>
+                        <div class="_du">{{weather.temperature}}℃</div>   
+                        <div class="address">{{weather.city}}</div> 
+                   </div>
+                   <div class="_down">
+                        <div class="left">{{weather.time}}</div>
+                        <div class="right">{{weather.max_temperature}}° / {{weather.min_temperature}}°</div>
+                   </div>
+        </div>
+    </div>
+</div>
+<script src="http://api.map.baidu.com/api?ak=Z7MAv5D0jbH2zcly89mxp1a3&v=2.0&services=true"></script>
+<script>
+    var weatherList = new Vue({
+        el: '#{|ID|}',
+        data: {
+            weather: { city: "上海", time: getCurTime(), weatherType: "", temperature: 0, min_temperature: 0, max_temperature: 0 },
+            userrecord: { alarm: 0, task: 0, msg: 0 },
+            bannerList: []
+        },
+        methods: {
+                isLock: function (item) {
+                    return getCache('isLockPortal') == 'false' || window.location.href.indexOf('/Base/UI/Portal/Portal') > 0;
+                }
+        }
+    });
+
+    showPosition();
+    function showPosition(position) {
+        if (typeof (BMap) != 'undefined') {
+            var gc = new BMap.Geocoder();
+            var geolocation = new BMap.Geolocation();
+            geolocation.getCurrentPosition(function (r) {
+                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                    var mk = new BMap.Marker(r.point);
+                    gc.getLocation(r.point, function (rs) {
+                        var addComp = rs.addressComponents;
+                        weather(addComp.city);
+                    });
+
+                }
+            }, { enableHighAccuracy: true })
+        }
+    }
+
+    function weather(cityname) {
+        weatherList.weather.city = cityname;
+        var url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&callback=weatherMsg&appid=12b2817fbec86915a6e9b4dbbd3d9036";
+        var scr = document.createElement('script');
+        scr.setAttribute('type', 'text/javascript');
+        scr.setAttribute('src', url);
+        document.getElementsByTagName('head')[0].appendChild(scr);
+    }
+    function getWeather() {
+        return [{ ID: "clear", Name: "晴天" }, { ID: "cloud", Name: "多云" }, { ID: "rain", Name: "雨天" }, { ID: "mist", Name: "雾天" }, { ID: "snow", Name: "下雪" }, { ID: "thunderstorm", Name: "雷雨" }, { ID: "haze", Name: "雾霾" }];
+    }
+    //回调函数
+    function weatherMsg(data) {
+        var local_weather = data.weather[0].main.toLocaleLowerCase();
+        var temp = parseInt(data.main.temp - 273.13);
+        var temp_max = parseInt(data.main.temp_max - 273.13);
+        var temp_min = parseInt(data.main.temp_min - 273.13);
+        if (local_weather) {
+            var weathers = getWeather();
+            for (var i = 0; i < weathers.length; i++) {
+                if (local_weather.indexOf(weathers[i].ID) >= 0) {
+                    var skinType = get("skin") == "skin_transparent_yellow" ? "Yellow" : "Blue";
+                    var weatherIco = "/PortalLTE/Images/Portal/" + skinType + "/" + weathers[i].ID + ".png";
+                    weatherList.weather.weatherType = weatherIco;
+                    break;
+                }
+            }
+        }
+        weatherList.weather.temperature = temp;
+        weatherList.weather.min_temperature = temp_min;
+        weatherList.weather.max_temperature = temp_max;
+    }
+
+    function getCurTime() {
+        var date = new Date();//获取存储当前日期
+        var month = date.getMonth() + 1;
+        var weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        return month + " 月 " + date.getDate() + " 日 " + weekday[date.getDay()];
+    }
+</script>

@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "TaskTemplateImport";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="450" expanded="true" showheader="false" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;"></td>
+                    <td style="white-space: nowrap;">
+                        <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="quickSearch('Name')" onbuttonclick="quickSearch('Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetTemplateList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="false"
+                 onselectionchanged="onSelectionChanged"
+                 borderstyle="border-left:0px;border-right:0px;border-bottom:0px;">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="ImportAll" width="70" headeralign="center" allowsort="true" align="center">
+                        导入全部
+                    </div>
+                    <div field="Name" width="200" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="ProjectClass" width="150" headeralign="center" allowsort="true" align="center">
+                        项目类型
+                    </div>
+                    <div field="ProjectScale" width="90" headeralign="center" allowsort="true" align="center">
+                        规模
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="importTask();" plain="true">导入作业</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id='treeKey' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="searchTree();" onbuttonclick="searchTree();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="detailGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 borderstyle="border-left:0px;border-right:0px;border-bottom:0px;" showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="*" headeralign="center" allowsort="false">
+                        名称
+                    </div>
+                    <div field="Code" width="120" headeralign="center" allowsort="false" align="center">
+                        编号
+                    </div>
+                    <div field="TaskType" width="90" headeralign="center" allowsort="false" align="center">
+                        类型
+                    </div>
+                    <div field="MajorName" headeralign="center" width="70" allowsort="false" align="center">
+                        专业
+                    </div>
+                    <div field="PhaseName" headeralign="center" width="70" allowsort="false" align="center">
+                        阶段
+                    </div>
+                    <div field="SubProjectName" headeralign="center" width="100" allowsort="false" align="right">
+                        系统/子项
+                    </div>
+                    <div field="DesignName" headeralign="center" width="70" allowsort="false" align="center">
+                        设计阶段
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.TaskType))
+</script>
+<script type="text/javascript">
+    addGridEnum("detailGrid", "TaskType", "TaskType");
+
+    var scheduleCode = getQueryString("ScheduleCode");
+    $("#dataGrid").attr("GetTemplateList?ScheduleCode=" + scheduleCode);
+
+    function onSelectionChanged(e) {
+        if (e.selected) {
+            var detailGrid = mini.get("detailGrid");
+            detailGrid.setUrl("GetTemplateDetail?TemplateID=" + e.selected.ID);
+            detailGrid.reload();
+        }
+    }
+
+    function importTask() {
+        var detailGrid = mini.get("detailGrid");
+        var tasks = detailGrid.getSelecteds();
+        if (tasks.length == 0) {
+            msgUI("请至少选择一个作业");
+        }
+        var result = { ImportType: "Detail", Data: tasks };
+        closeWindow(result);
+    }
+
+    addGridButton("dataGrid", "ImportAll", {
+        linkText: "导入全部",
+        onButtonClick: function (row) {
+            msgUI("您确定要导入全部作业吗？", 2, function (result) {
+                if (result != "ok") { return; }
+                var result = { ImportType: "Template", Data: row };
+                closeWindow(result);
+            });
+        }
+    });
+
+    function searchTree() {
+        var dataGrid = mini.get("detailGrid");
+        var key = mini.get("treeKey").getValue().toLowerCase();
+        if (key) {
+            dataGrid.filter(function (row) {
+                if (row.Name.toLowerCase().indexOf(key) >= 0)
+                { return true; }
+                else
+                    return false;
+            });
+        }
+        else {
+            dataGrid.clearFilter();
+        }
+    }
+
+</script>

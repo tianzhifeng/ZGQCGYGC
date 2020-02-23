@@ -1,0 +1,2332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F08387A1-F15F-4A0F-8943-514111065839}</ProjectGuid>
+    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EPC</RootNamespace>
+    <AssemblyName>EPC</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aspose.Cells, Version=7.4.1.0, Culture=neutral, PublicKeyToken=00725b1ceb58d0a9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Aspose.Cells.dll</HintPath>
+    </Reference>
+    <Reference Include="Aspose.Tasks">
+      <HintPath>..\..\BaseFrame\Resource\Dll\Aspose.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Web.v12.1">
+      <HintPath>..\DevPivotGrid\dll\DevExpress.Web.v12.1.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EPC.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BusinessModule\Resource\Dll\EPC.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MvcAdapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\MvcAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\..\BaseFrame\Resource\Dll\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\..\BaseFrame\Resource\Dll\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Mvc.FixedDisplayModes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.FixedDisplayModes.1.0.0\lib\net40\Microsoft.Web.Mvc.FixedDisplayModes.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.4.0.30506.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.2.0.30506.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Areas\Analysis\AnalysisAreaRegistration.cs" />
+    <Compile Include="Areas\Analysis\Controllers\ContractReconciliationController.cs" />
+    <Compile Include="Areas\Bidding\BiddingAreaRegistration.cs" />
+    <Compile Include="Areas\Bidding\Controllers\BiddingOfferController.cs" />
+    <Compile Include="Areas\Bidding\Controllers\BidResultController.cs" />
+    <Compile Include="Areas\Bidding\Controllers\BidReviewController.cs" />
+    <Compile Include="Areas\Bidding\Controllers\T_M_BidSchemaController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ContractInfoBOQCheckController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ConstructionLogController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ConstructionLogViewDetailController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ConstructionTechController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ContractInfoBOQPayCheckController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ContractInfoBOQPriceCheckController.cs" />
+    <Compile Include="Areas\Construction\Controllers\FbContractChangeController.cs" />
+    <Compile Include="Areas\Construction\Controllers\FbContractInfoController.cs" />
+    <Compile Include="Areas\Construction\Controllers\FieldPhotoController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ContractReviewController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ProblemController.cs" />
+    <Compile Include="Areas\Construction\Controllers\PruchaseOnSiteController.cs" />
+    <Compile Include="Areas\Construction\Controllers\QBSController.cs" />
+    <Compile Include="Areas\Construction\Controllers\RectifyProblemController.cs" />
+    <Compile Include="Areas\Construction\ConstructionAreaRegistration.cs" />
+    <Compile Include="Areas\Construction\Controllers\BOQController.cs" />
+    <Compile Include="Areas\Construction\Controllers\BOQSubmitController.cs" />
+    <Compile Include="Areas\Construction\Controllers\ContractInfoSettlePeriodController.cs" />
+    <Compile Include="Areas\Construction\Controllers\TenderingInfoController.cs" />
+    <Compile Include="Areas\Construction\Controllers\TenderingSubcontractorController.cs" />
+    <Compile Include="Areas\Construction\Controllers\WorkingContactController.cs" />
+    <Compile Include="Areas\Contract\ContractAreaRegistration.cs" />
+    <Compile Include="Areas\Contract\Controllers\ContractDetailController.cs" />
+    <Compile Include="Areas\Contract\Controllers\ContractInfoController.cs" />
+    <Compile Include="Areas\Contract\Controllers\PlanReceiptController.cs" />
+    <Compile Include="Areas\Contract\Controllers\ReceiptController.cs" />
+    <Compile Include="Areas\Contract\Controllers\ContractChangeController.cs" />
+    <Compile Include="Areas\Contract\Controllers\T_C_InvoiceCreditNoteApplyController.cs" />
+    <Compile Include="Areas\Contract\Controllers\T_M_ContractReviewController.cs" />
+    <Compile Include="Areas\Contract\Controllers\T_M_InvoiceApplyController.cs" />
+    <Compile Include="Areas\Cooperation\Controllers\DocumentController.cs" />
+    <Compile Include="Areas\Cooperation\Controllers\ImageController.cs" />
+    <Compile Include="Areas\Cooperation\Controllers\MainController.cs" />
+    <Compile Include="Areas\Cooperation\Controllers\ProblemController.cs" />
+    <Compile Include="Areas\Cooperation\Controllers\VideoController.cs" />
+    <Compile Include="Areas\Cooperation\Controllers\WorkingContactController.cs" />
+    <Compile Include="Areas\Cooperation\CooperationAreaRegistration.cs" />
+    <Compile Include="Areas\Cooperation\Models\LoggerFilter.cs" />
+    <Compile Include="Areas\Design\Controllers\AuditController.cs" />
+    <Compile Include="Areas\Design\Controllers\BOMController.cs" />
+    <Compile Include="Areas\Design\Controllers\BOMPlanController.cs" />
+    <Compile Include="Areas\Design\Controllers\BOMSubmitController.cs" />
+    <Compile Include="Areas\Design\Controllers\BudgetBomController.cs" />
+    <Compile Include="Areas\Design\Controllers\BudgetBOQSubmitController.cs" />
+    <Compile Include="Areas\Design\Controllers\BudgetBomSubmitController.cs" />
+    <Compile Include="Areas\Design\Controllers\BudgetBOQController.cs" />
+    <Compile Include="Areas\Design\Controllers\CooperationController.cs" />
+    <Compile Include="Areas\Design\Controllers\CooperationFormController.cs" />
+    <Compile Include="Areas\Design\Controllers\DesignInputController.cs" />
+    <Compile Include="Areas\Design\Controllers\DrawingResultTraceController.cs" />
+    <Compile Include="Areas\Design\Controllers\T_E_BomFetchDataController.cs" />
+    <Compile Include="Areas\Design\Controllers\T_E_BomFetchPlanController.cs" />
+    <Compile Include="Areas\Design\Controllers\WorkSpaceController.cs" />
+    <Compile Include="Areas\Documents\Controllers\ParticipantDocumentController.cs" />
+    <Compile Include="Areas\Documents\Controllers\DocumentCustomSearchController.cs" />
+    <Compile Include="Areas\Documents\Controllers\DocumentController.cs" />
+    <Compile Include="Areas\Documents\Controllers\FolderManagerController.cs" />
+    <Compile Include="Areas\Documents\DocumentsAreaRegistration.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\BidController.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\BudgetController.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\BudgetSubmitController.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\ComparisonController.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\ControlSheetController.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\FinalReportController.cs" />
+    <Compile Include="Areas\ExpenseControl\Controllers\SettlementController.cs" />
+    <Compile Include="Areas\Finance\Controllers\CapitalCompanyAnalysisController.cs" />
+    <Compile Include="Areas\Finance\Controllers\CapitalCompanyPlanController.cs" />
+    <Compile Include="Areas\Finance\Controllers\EngineeringFundPlanController.cs" />
+    <Compile Include="Areas\Finance\Controllers\EngineeringInvestPlanController.cs" />
+    <Compile Include="Areas\Finance\Controllers\FundPlanController.cs" />
+    <Compile Include="Areas\Finance\Controllers\InvestPlanController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\CapitalPlanTemplateController.cs" />
+    <Compile Include="Areas\Finance\Controllers\EngineeringCashFlowController.cs" />
+    <Compile Include="Areas\Finance\Controllers\ProjectReimbursementController.cs" />
+    <Compile Include="Areas\Finance\FinanceAreaRegistration.cs" />
+    <Compile Include="Areas\HSE\Controllers\DeviceEntranceCheckController.cs" />
+    <Compile Include="Areas\HSE\Controllers\EnvironmentalFactorsIdentificationController.cs" />
+    <Compile Include="Areas\HSE\Controllers\HazardSourceIdentityController.cs" />
+    <Compile Include="Areas\HSE\Controllers\HSESafeTroublesManageController.cs" />
+    <Compile Include="Areas\HSE\Controllers\RectifyProblemController.cs" />
+    <Compile Include="Areas\HSE\Controllers\SafeCheckContentController.cs" />
+    <Compile Include="Areas\HSE\Controllers\SafetyEducationTrainingController.cs" />
+    <Compile Include="Areas\HSE\Controllers\SpecOperaPersonController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\BomConfigController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\BOMTemplateController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\CBSDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\ConstructionQuantityController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\DesignInputDefController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\EquipmentMaterialCategoryController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\ISODefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\NodeTemplateController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\ParamSettingsController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\PBSStructDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\QBSStructDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\ScheduleDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\TaskTemplateController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\ToDoListDefineController.cs" />
+    <Compile Include="Areas\Manage\Controllers\BidresultsanalysistableController.cs" />
+    <Compile Include="Areas\Manage\Controllers\CompletedController.cs" />
+    <Compile Include="Areas\Manage\Controllers\CustomerChangeController.cs" />
+    <Compile Include="Areas\Manage\Controllers\CustomerClassificationController.cs" />
+    <Compile Include="Areas\Manage\Controllers\DemandTaskNoticeViewController.cs" />
+    <Compile Include="Areas\Manage\Controllers\EngineeringChangeController.cs" />
+    <Compile Include="Areas\Manage\Controllers\EngineeringVideoController.cs" />
+    <Compile Include="Areas\Manage\Controllers\GisMapController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ISOController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ManagerChangeController.cs" />
+    <Compile Include="Areas\Manage\Controllers\NetWorkController.cs" />
+    <Compile Include="Areas\Manage\Controllers\OBSController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ParticipantUserController.cs" />
+    <Compile Include="Areas\Manage\Controllers\PBSController.cs" />
+    <Compile Include="Areas\Manage\Controllers\PBSVersionController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ProjectListController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleComparisonController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleFeedbackController.cs" />
+    <Compile Include="Areas\Manage\Controllers\SpaceScheduleTraceController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleTraceController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleTraceWithWBSController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleVersionController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ScheduleWBSController.cs" />
+    <Compile Include="Areas\Manage\Controllers\SupplierController.cs" />
+    <Compile Include="Areas\Manage\Controllers\ToDoListController.cs" />
+    <Compile Include="Areas\Manage\Controllers\T_I_EngineeringBuildController.cs" />
+    <Compile Include="Areas\Manage\Controllers\T_I_ManagerNominateController.cs" />
+    <Compile Include="Areas\Manage\Controllers\T_I_MemberShcmeaController.cs" />
+    <Compile Include="Areas\Manage\Controllers\T_I_ScheduleFeedbackController.cs" />
+    <Compile Include="Areas\Manage\Controllers\T_I_ScheduleFeedbackWithWBSController.cs" />
+    <Compile Include="Areas\Manage\Controllers\T_I_SupplierQualificationController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ArrivalDetailInfoController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ArrivalController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementContractSelectorController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\PBomController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementContractController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementContractPaymentPlanController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementInvoiceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementPaymentController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementTraceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\S_P_ProcurementApplyChangeController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_D_DebugAcceptanceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_I_InstallationAcceptanceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementContractChangeController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_ComparisonResultChangeController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_ComparisonResultController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_ContractReviewController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_InvitationApplyChangeController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_InvitationApplyController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\PlanController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\PlanSubmitController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_InvitationResultController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_PaymentApplyController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\ProcurementSmartApplyController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\S_P_ProcurementApplyController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\T_P_ReturnDatFileController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\CostAnalysisController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\GoodProcurementStateController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\QualityStatisticsController.cs" />
+    <Compile Include="Areas\Quality\Controllers\QBSController.cs" />
+    <Compile Include="Areas\Quality\Controllers\QBSVersionController.cs" />
+    <Compile Include="Areas\Quality\Controllers\T_Q_QBSAcceptanceController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\BidResultAnalysisController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\ContractAnalysisController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\CustomerChartController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\CustomerDistributeController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\CustomerReportController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\DeptAnalysisController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\MarketOverViewController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\ProjectAnalysisController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\ProjectInfoController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\SalesWorkReportController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\Controllers\ToDoListController.cs" />
+    <Compile Include="Areas\ReportAndAnalysis\ReportAndAnalysisAreaRegistration.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\DynamicQueryController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\StorageInfoController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\WarehouseAllotController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\WarehouseBackController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\WarehouseEntryController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\WarehouseInventoryController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\WarehouseOutController.cs" />
+    <Compile Include="Areas\Warehouse\Controllers\WarehouseScrapController.cs" />
+    <Compile Include="Areas\Warehouse\WarehouseAreaRegistration.cs" />
+    <Compile Include="Controllers\CBSSelectorController.cs" />
+    <Compile Include="Controllers\ContractSelectorController.cs" />
+    <Compile Include="Areas\Contract\Controllers\InvoiceController.cs" />
+    <Compile Include="Areas\Contract\Controllers\ReceiptRegisterController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\WBSAttrController.cs" />
+    <Compile Include="Areas\Manage\Controllers\CustomerInfoController.cs" />
+    <Compile Include="Areas\Design\DesignAreaRegistration.cs" />
+    <Compile Include="Areas\ExpenseControl\ExpenseControlAreaRegistration.cs" />
+    <Compile Include="Areas\HSE\HSEAreaRegistration.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\FolderTemplateController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\MeunDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\ModeController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\OBSTemplateController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\RoleDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\Controllers\WBSStructDefineController.cs" />
+    <Compile Include="Areas\Infrastructure\InfrastructureAreaRegistration.cs" />
+    <Compile Include="Areas\Manage\Controllers\SpaceController.cs" />
+    <Compile Include="Areas\Manage\ManageAreaRegistration.cs" />
+    <Compile Include="Areas\Procurement\ProcurementAreaRegistration.cs" />
+    <Compile Include="Areas\Quality\QualityAreaRegistration.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\EBomSelectorController.cs" />
+    <Compile Include="Controllers\NodeTemplateSelectorController.cs" />
+    <Compile Include="Controllers\PBSSelectorController.cs" />
+    <Compile Include="Controllers\ProcurementApplySelectorController.cs" />
+    <Compile Include="Controllers\ProjectInputSelector.cs" />
+    <Compile Include="Controllers\RoleSelectorController.cs" />
+    <Compile Include="Controllers\SWFUploadController.cs" />
+    <Compile Include="Controllers\TreeListController.cs" />
+    <Compile Include="Controllers\WBSSelectorController.cs" />
+    <Compile Include="Controllers\WBSStructSelectorController.cs" />
+    <Compile Include="EPCFormContorllor.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="EPCController.cs" />
+    <Compile Include="InfrastructureController.cs" />
+    <Compile Include="ModifyInMemory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\BootStrap\css\bootstrap-theme.css" />
+    <Content Include="Scripts\BootStrap\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\BootStrap\css\bootstrap.css" />
+    <Content Include="Scripts\BootStrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\BootStrap\css\common.css" />
+    <Content Include="Scripts\BootStrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\BootStrap\img\change.png" />
+    <Content Include="Scripts\BootStrap\img\glyphicons-halflings-white.png" />
+    <Content Include="Scripts\BootStrap\img\glyphicons-halflings.png" />
+    <Content Include="Scripts\BootStrap\img\good.png" />
+    <Content Include="Scripts\BootStrap\img\goodon.png" />
+    <Content Include="Scripts\BootStrap\img\leftmenu.png" />
+    <Content Include="Scripts\BootStrap\img\photo.png" />
+    <Content Include="Scripts\BootStrap\img\reply.png" />
+    <Content Include="Scripts\BootStrap\img\search.png" />
+    <Content Include="Scripts\BootStrap\img\sound.png" />
+    <Content Include="Scripts\BootStrap\img\top.png" />
+    <Content Include="Scripts\BootStrap\img\topon.png" />
+    <Content Include="Scripts\BootStrap\img\user.png" />
+    <Content Include="Scripts\BootStrap\js\bootstrap.js" />
+    <Content Include="Scripts\BootStrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\BootStrap\js\npm.js" />
+    <Content Include="Scripts\Construction\images\gobottom.gif" />
+    <Content Include="Scripts\Construction\images\goleft.gif" />
+    <Content Include="Scripts\Construction\images\goright.gif" />
+    <Content Include="Scripts\Construction\images\gotop.gif" />
+    <Content Include="Scripts\Design\Bom\jquery.tmpl.js" />
+    <Content Include="Scripts\Design\Bom\new_blue.png" />
+    <Content Include="Scripts\Design\Bom\new_red.png" />
+    <Content Include="Scripts\Design\Bom\red-line.jpg" />
+    <Content Include="Scripts\Design\Bom\red-line_black.jpg" />
+    <Content Include="Scripts\ECharts\asset\css\bootstrap-responsive.css" />
+    <Content Include="Scripts\ECharts\asset\css\bootstrap-theme.css" />
+    <Content Include="Scripts\ECharts\asset\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\ECharts\asset\css\bootstrap.css" />
+    <Content Include="Scripts\ECharts\asset\css\bootstrap.min.css" />
+    <Content Include="Scripts\ECharts\asset\css\carousel.css" />
+    <Content Include="Scripts\ECharts\asset\css\codemirror.css" />
+    <Content Include="Scripts\ECharts\asset\css\echartsHome.css" />
+    <Content Include="Scripts\ECharts\asset\css\flexslider.css" />
+    <Content Include="Scripts\ECharts\asset\css\google-code-prettify.css" />
+    <Content Include="Scripts\ECharts\asset\css\monokai.css" />
+    <Content Include="Scripts\ECharts\asset\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\ECharts\asset\ico\contractCount.png" />
+    <Content Include="Scripts\ECharts\asset\ico\customerCount.png" />
+    <Content Include="Scripts\ECharts\asset\ico\favicon.png" />
+    <Content Include="Scripts\ECharts\asset\ico\K线图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\preProjectCount.png" />
+    <Content Include="Scripts\ECharts\asset\ico\仪表盘.png" />
+    <Content Include="Scripts\ECharts\asset\ico\力导向图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\和弦图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\地图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\折线图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\散点图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\柱状图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\漏斗图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\雷达图.png" />
+    <Content Include="Scripts\ECharts\asset\ico\饼状图.png" />
+    <Content Include="Scripts\ECharts\asset\img\about\chenwei.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\denghongqi.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\echarts1.png" />
+    <Content Include="Scripts\ECharts\asset\img\about\erik.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\huangyue.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\huangzhimin.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\linfeng.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\lizhan.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\loutongbing.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\shenhao.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\shenyi.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\sushuang.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\tanhe.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\wangjunting.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\weitaiyun.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\yangji.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\yaofeifei.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\zhangyanru.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\zhouyang.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\about\zrender1.png" />
+    <Content Include="Scripts\ECharts\asset\img\about\zuming.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\architecture.png" />
+    <Content Include="Scripts\ECharts\asset\img\banner1.png" />
+    <Content Include="Scripts\ECharts\asset\img\banner2.png" />
+    <Content Include="Scripts\ECharts\asset\img\banner3.png" />
+    <Content Include="Scripts\ECharts\asset\img\banner4.png" />
+    <Content Include="Scripts\ECharts\asset\img\bg_direction_nav.png" />
+    <Content Include="Scripts\ECharts\asset\img\blacktocat.png" />
+    <Content Include="Scripts\ECharts\asset\img\connect.gif" />
+    <Content Include="Scripts\ECharts\asset\img\creativity.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\custom.png" />
+    <Content Include="Scripts\ECharts\asset\img\dataDancing.mp3" />
+    <Content Include="Scripts\ECharts\asset\img\dataRange.gif" />
+    <Content Include="Scripts\ECharts\asset\img\dataView.gif" />
+    <Content Include="Scripts\ECharts\asset\img\datazoom.gif" />
+    <Content Include="Scripts\ECharts\asset\img\device.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\axisBoundaryGap.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\axisBoundaryGap1.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\doc\axisDetail.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\doc\axisDetail.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\axisScale1.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\axisScale2.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\barTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\charts.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\doc\chordTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\dataRange.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\dataZoom.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\forceTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\grid.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\doc\kTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\legend.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\lineTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\mapTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\multiControl.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\doc\pieTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\radarTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\roamController.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\scatterTheme.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\timeline.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\title.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\toolbox.png" />
+    <Content Include="Scripts\ECharts\asset\img\doc\tooltip1.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\doc\tooltip2.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\draggable.gif" />
+    <Content Include="Scripts\ECharts\asset\img\dynamic1.gif" />
+    <Content Include="Scripts\ECharts\asset\img\dynamic2.gif" />
+    <Content Include="Scripts\ECharts\asset\img\echarts-logo.png" />
+    <Content Include="Scripts\ECharts\asset\img\echarts-logo2.png" />
+    <Content Include="Scripts\ECharts\asset\img\effect.gif" />
+    <Content Include="Scripts\ECharts\asset\img\example\axis.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar10.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar11.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar12.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar13.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar14.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar15.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar6.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar7.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar8.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bar9.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bmap1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\bmap2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\cache.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\chord.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\chord1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\chord2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\chord3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\chord4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dataRange.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dataRange1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dataZoom.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dataZoom1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dynamicLineBar.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dynamicPieRadar.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\dynamicScatterK.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\EChartsTheme.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\example\event.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\eventRiver1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\eventRiver2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\force.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\force1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\force2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\force4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\funnel.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\funnel1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\funnel2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\funnel3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\funnel4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\gauge.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\gauge1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\gauge2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\gauge3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\gauge4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\gauge5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\import.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\k.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\k1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\lasagna.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line6.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\line7.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\loading.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map10.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map11.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map12.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map13.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map14.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map15.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map16.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map17.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map18.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map19.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map20.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map6.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map7.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map8.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\map9.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix10.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix11.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix6.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix7.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix8.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\mix9.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie6.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\pie7.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\radar.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\radar1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\radar2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\radar3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter1.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter3.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter4.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter5.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\scatter6.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\theme.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\tooltip.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\webkit-dep.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\webkit-dep2.png" />
+    <Content Include="Scripts\ECharts\asset\img\example\wormhole.png" />
+    <Content Include="Scripts\ECharts\asset\img\explorer.png" />
+    <Content Include="Scripts\ECharts\asset\img\feature1.png" />
+    <Content Include="Scripts\ECharts\asset\img\feature2.png" />
+    <Content Include="Scripts\ECharts\asset\img\feature3.png" />
+    <Content Include="Scripts\ECharts\asset\img\fork.png" />
+    <Content Include="Scripts\ECharts\asset\img\glyphicons-halflings-white.png" />
+    <Content Include="Scripts\ECharts\asset\img\glyphicons-halflings.png" />
+    <Content Include="Scripts\ECharts\asset\img\groovepaper.png" />
+    <Content Include="Scripts\ECharts\asset\img\icon-bar.png" />
+    <Content Include="Scripts\ECharts\asset\img\legendSelected.gif" />
+    <Content Include="Scripts\ECharts\asset\img\magicType.gif" />
+    <Content Include="Scripts\ECharts\asset\img\mark.gif" />
+    <Content Include="Scripts\ECharts\asset\img\mix.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\multiStack.png" />
+    <Content Include="Scripts\ECharts\asset\img\scatter.gif" />
+    <Content Include="Scripts\ECharts\asset\img\slide-01.png" />
+    <Content Include="Scripts\ECharts\asset\img\slide-02.png" />
+    <Content Include="Scripts\ECharts\asset\img\slide-03.png" />
+    <Content Include="Scripts\ECharts\asset\img\slide-04.png" />
+    <Content Include="Scripts\ECharts\asset\img\slide-05.jpg" />
+    <Content Include="Scripts\ECharts\asset\img\subMapType.png" />
+    <Content Include="Scripts\ECharts\asset\img\ticks.png" />
+    <Content Include="Scripts\ECharts\asset\img\tweed.png" />
+    <Content Include="Scripts\ECharts\asset\img\zrender.png" />
+    <Content Include="Scripts\ECharts\asset\js\application.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-affix.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-alert.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-button.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-carousel.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-collapse.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-dropdown.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-modal.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-popover.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-scrollspy.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-tab.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-tooltip.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-transition.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap-typeahead.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap.js" />
+    <Content Include="Scripts\ECharts\asset\js\bootstrap.min.js" />
+    <Content Include="Scripts\ECharts\asset\js\codemirror.js" />
+    <Content Include="Scripts\ECharts\asset\js\dataDancing.js" />
+    <Content Include="Scripts\ECharts\asset\js\echartsConfig.js" />
+    <Content Include="Scripts\ECharts\asset\js\echartsDoc.js" />
+    <Content Include="Scripts\ECharts\asset\js\echartsExample.js" />
+    <Content Include="Scripts\ECharts\asset\js\echartsHome.js" />
+    <Content Include="Scripts\ECharts\asset\js\echartsTheme.js" />
+    <Content Include="Scripts\ECharts\asset\js\echartsThemeDesigner.js" />
+    <Content Include="Scripts\ECharts\asset\js\esl\css.js" />
+    <Content Include="Scripts\ECharts\asset\js\esl\esl.js" />
+    <Content Include="Scripts\ECharts\asset\js\esl\js.js" />
+    <Content Include="Scripts\ECharts\asset\js\google-code-prettify.js" />
+    <Content Include="Scripts\ECharts\asset\js\html5shiv.js" />
+    <Content Include="Scripts\ECharts\asset\js\javascript.js" />
+    <Content Include="Scripts\ECharts\asset\js\jquery.flexslider.js" />
+    <Content Include="Scripts\ECharts\asset\js\jquery.js" />
+    <Content Include="Scripts\ECharts\asset\js\jquery.min.js" />
+    <Content Include="Scripts\ECharts\js\chart\bar.js" />
+    <Content Include="Scripts\ECharts\js\chart\chord.js" />
+    <Content Include="Scripts\ECharts\js\chart\eventRiver.js" />
+    <Content Include="Scripts\ECharts\js\chart\force.js" />
+    <Content Include="Scripts\ECharts\js\chart\funnel.js" />
+    <Content Include="Scripts\ECharts\js\chart\gauge.js" />
+    <Content Include="Scripts\ECharts\js\chart\k.js" />
+    <Content Include="Scripts\ECharts\js\chart\line.js" />
+    <Content Include="Scripts\ECharts\js\chart\map.js" />
+    <Content Include="Scripts\ECharts\js\chart\pie.js" />
+    <Content Include="Scripts\ECharts\js\chart\radar.js" />
+    <Content Include="Scripts\ECharts\js\chart\scatter.js" />
+    <Content Include="Scripts\ECharts\js\config.js" />
+    <Content Include="Scripts\ECharts\js\echarts-all.js" />
+    <Content Include="Scripts\ECharts\js\echarts.js" />
+    <Content Include="Scripts\Gis\DelayUndone.png" />
+    <Content Include="Scripts\Gis\gis.css" />
+    <Content Include="Scripts\Gis\label.png" />
+    <Content Include="Scripts\Gis\NormalUndone.png" />
+    <Content Include="Scripts\Gis\space-cost.png" />
+    <Content Include="Scripts\Gis\space-product.png" />
+    <Content Include="Scripts\Gis\space-productprint.png" />
+    <Content Include="Scripts\Gis\space-productrecent.png" />
+    <Content Include="Scripts\Images\1.jpg" />
+    <Content Include="Scripts\Images\database.png" />
+    <Content Include="Scripts\Images\green.gif" />
+    <Content Include="Scripts\Images\miusRW.png" />
+    <Content Include="Scripts\Images\red.gif" />
+    <Content Include="Scripts\Images\yellow.gif" />
+    <Content Include="Scripts\Main\css\logStyle.css" />
+    <Content Include="Scripts\Main\css\partial.css" />
+    <Content Include="Scripts\Main\img\add.png" />
+    <Content Include="Scripts\Main\img\btn_left.jpg" />
+    <Content Include="Scripts\Main\img\btn_left.png" />
+    <Content Include="Scripts\Main\img\btn_right.jpg" />
+    <Content Include="Scripts\Main\img\btn_right.png" />
+    <Content Include="Scripts\Main\img\cil.png" />
+    <Content Include="Scripts\Main\img\cilRW.png" />
+    <Content Include="Scripts\Main\img\icon-help.png" />
+    <Content Include="Scripts\Main\img\icon-journal.png" />
+    <Content Include="Scripts\Main\img\icon-mail.png" />
+    <Content Include="Scripts\Main\img\icon-main01.png" />
+    <Content Include="Scripts\Main\img\icon-main02.png" />
+    <Content Include="Scripts\Main\img\icon-main03.png" />
+    <Content Include="Scripts\Main\img\icon-mainbt01.png" />
+    <Content Include="Scripts\Main\img\icon-mainbt02.png" />
+    <Content Include="Scripts\Main\img\icon-mainbt03.png" />
+    <Content Include="Scripts\Main\img\icon-mainmore.png" />
+    <Content Include="Scripts\Main\img\icon-select.png" />
+    <Content Include="Scripts\Main\img\icon-setup.png" />
+    <Content Include="Scripts\Main\img\icon-user.png" />
+    <Content Include="Scripts\Main\img\log.png" />
+    <Content Include="Scripts\Main\img\main-headbg.png" />
+    <Content Include="Scripts\Main\img\miniLog.JPG" />
+    <Content Include="Scripts\Main\img\miniLog.png" />
+    <Content Include="Scripts\Main\img\mius.png" />
+    <Content Include="Scripts\Main\img\more.JPG" />
+    <Content Include="Scripts\Main\img\more.png" />
+    <Content Include="Scripts\Main\img\sl.png" />
+    <Content Include="Scripts\Main\img\topBarlog.png" />
+    <Content Include="Scripts\Main\img\up-sj.png" />
+    <Content Include="Scripts\Main\img\UserImage.png" />
+    <Content Include="Scripts\Main\js\partial.js" />
+    <Content Include="Scripts\Main\js\timeago.min.js" />
+    <Content Include="Scripts\Manage\Space\css\bootstrap.min.css" />
+    <Content Include="Scripts\Manage\Space\css\content-pro.css" />
+    <Content Include="Scripts\Manage\Space\css\content.css" />
+    <Content Include="Scripts\Manage\Space\css\font-awesome.min.css" />
+    <Content Include="Scripts\Manage\Space\css\main.css" />
+    <Content Include="Scripts\Manage\Space\css\mini\miniui.css" />
+    <Content Include="Scripts\Manage\Space\css\slider-pro.css" />
+    <Content Include="Scripts\Manage\Space\css\slider.css" />
+    <Content Include="Scripts\Manage\Space\css\smooth-scrollbar.css" />
+    <Content Include="Scripts\Manage\Space\font\fontawesome-webfont.svg" />
+    <Content Include="Scripts\Manage\Space\font\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\Manage\Space\images\add-white.png" />
+    <Content Include="Scripts\Manage\Space\images\add.png" />
+    <Content Include="Scripts\Manage\Space\images\addresslist-bg.jpg" />
+    <Content Include="Scripts\Manage\Space\images\addRW.png" />
+    <Content Include="Scripts\Manage\Space\images\arrow.png" />
+    <Content Include="Scripts\Manage\Space\images\bf-green.png" />
+    <Content Include="Scripts\Manage\Space\images\cad.png" />
+    <Content Include="Scripts\Manage\Space\images\charts-blue.png" />
+    <Content Include="Scripts\Manage\Space\images\charts-green.png" />
+    <Content Include="Scripts\Manage\Space\images\charts-red.png" />
+    <Content Include="Scripts\Manage\Space\images\charts-yellow.png" />
+    <Content Include="Scripts\Manage\Space\images\charts-zs.png" />
+    <Content Include="Scripts\Manage\Space\images\chose-room.png" />
+    <Content Include="Scripts\Manage\Space\images\chose-rooml.png" />
+    <Content Include="Scripts\Manage\Space\images\chose-spec.png" />
+    <Content Include="Scripts\Manage\Space\images\cil.png" />
+    <Content Include="Scripts\Manage\Space\images\cilRW.png" />
+    <Content Include="Scripts\Manage\Space\images\clock-gre.png" />
+    <Content Include="Scripts\Manage\Space\images\clock.png" />
+    <Content Include="Scripts\Manage\Space\images\control-slider.png" />
+    <Content Include="Scripts\Manage\Space\images\control.png" />
+    <Content Include="Scripts\Manage\Space\images\control1.png" />
+    <Content Include="Scripts\Manage\Space\images\data.png" />
+    <Content Include="Scripts\Manage\Space\images\engineer.png" />
+    <Content Include="Scripts\Manage\Space\images\excel.png" />
+    <Content Include="Scripts\Manage\Space\images\fet.png" />
+    <Content Include="Scripts\Manage\Space\images\files.png" />
+    <Content Include="Scripts\Manage\Space\images\fixedzhen.png" />
+    <Content Include="Scripts\Manage\Space\images\flag-red.png" />
+    <Content Include="Scripts\Manage\Space\images\flag-yellow.png" />
+    <Content Include="Scripts\Manage\Space\images\flag.png" />
+    <Content Include="Scripts\Manage\Space\images\home.png" />
+    <Content Include="Scripts\Manage\Space\images\icon01.png" />
+    <Content Include="Scripts\Manage\Space\images\icon03.png" />
+    <Content Include="Scripts\Manage\Space\images\image.png" />
+    <Content Include="Scripts\Manage\Space\images\input.png" />
+    <Content Include="Scripts\Manage\Space\images\kxy-white.png" />
+    <Content Include="Scripts\Manage\Space\images\kxy.png" />
+    <Content Include="Scripts\Manage\Space\images\link.png" />
+    <Content Include="Scripts\Manage\Space\images\list-close.png" />
+    <Content Include="Scripts\Manage\Space\images\load.png" />
+    <Content Include="Scripts\Manage\Space\images\mius-white.png" />
+    <Content Include="Scripts\Manage\Space\images\mius.png" />
+    <Content Include="Scripts\Manage\Space\images\miusRW.png" />
+    <Content Include="Scripts\Manage\Space\images\NoContent.png" />
+    <Content Include="Scripts\Manage\Space\images\nothings.png" />
+    <Content Include="Scripts\Manage\Space\images\others.png" />
+    <Content Include="Scripts\Manage\Space\images\outputs.png" />
+    <Content Include="Scripts\Manage\Space\images\PBicon.png" />
+    <Content Include="Scripts\Manage\Space\images\pdf.png" />
+    <Content Include="Scripts\Manage\Space\images\people-w.png" />
+    <Content Include="Scripts\Manage\Space\images\people.png" />
+    <Content Include="Scripts\Manage\Space\images\pigeonhole.png" />
+    <Content Include="Scripts\Manage\Space\images\plan.png" />
+    <Content Include="Scripts\Manage\Space\images\PRicon.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-add.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-control.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-item-green.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-item.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-mius.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-ok-green.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-ok-h.png" />
+    <Content Include="Scripts\Manage\Space\images\pro-upsj.png" />
+    <Content Include="Scripts\Manage\Space\images\remove.png" />
+    <Content Include="Scripts\Manage\Space\images\select-down.png" />
+    <Content Include="Scripts\Manage\Space\images\select-now.png" />
+    <Content Include="Scripts\Manage\Space\images\select-on.png" />
+    <Content Include="Scripts\Manage\Space\images\select-up.png" />
+    <Content Include="Scripts\Manage\Space\images\sj.png" />
+    <Content Include="Scripts\Manage\Space\images\space-cost.png" />
+    <Content Include="Scripts\Manage\Space\images\space-costpayment.png" />
+    <Content Include="Scripts\Manage\Space\images\space-product.png" />
+    <Content Include="Scripts\Manage\Space\images\space-productprint.png" />
+    <Content Include="Scripts\Manage\Space\images\space-productrecent.png" />
+    <Content Include="Scripts\Manage\Space\images\space-projectcost.png" />
+    <Content Include="Scripts\Manage\Space\images\suqian.png" />
+    <Content Include="Scripts\Manage\Space\images\tag.png" />
+    <Content Include="Scripts\Manage\Space\images\tree-chose.png" />
+    <Content Include="Scripts\Manage\Space\images\tree-leaf.png" />
+    <Content Include="Scripts\Manage\Space\images\tree-open.png" />
+    <Content Include="Scripts\Manage\Space\images\up-sj.png" />
+    <Content Include="Scripts\Manage\Space\images\upload.png" />
+    <Content Include="Scripts\Manage\Space\images\ver.png" />
+    <Content Include="Scripts\Manage\Space\images\wave.png" />
+    <Content Include="Scripts\Manage\Space\images\wave_c.png" />
+    <Content Include="Scripts\Manage\Space\images\webzhen.png" />
+    <Content Include="Scripts\Manage\Space\images\word.png" />
+    <Content Include="Scripts\Manage\Space\images\yuandian.png" />
+    <Content Include="Scripts\Manage\Space\js\bootstrap.min.js" />
+    <Content Include="Scripts\Manage\Space\js\content.js" />
+    <Content Include="Scripts\Manage\Space\js\jquery-3.2.1.js" />
+    <Content Include="Scripts\Manage\Space\js\jquery.min.js" />
+    <Content Include="Scripts\Manage\Space\js\jquery.nicescroll.js" />
+    <Content Include="Scripts\Manage\Space\js\jquery.nicescroll.min.js" />
+    <Content Include="Scripts\Manage\Space\js\main.js" />
+    <Content Include="Scripts\Manage\Space\js\mini\miniui.js" />
+    <Content Include="Scripts\Manage\Space\js\slider.js" />
+    <Content Include="Scripts\Manage\Space\js\smooth-scrollbar.js" />
+    <Content Include="Scripts\MarketOverView\css\MainPageStyleBlue.css" />
+    <Content Include="Scripts\MarketOverView\css\MainPageStyleRed.css" />
+    <Content Include="Scripts\MarketOverView\css\style.css" />
+    <Content Include="Scripts\MarketOverView\img\bt-left-hover.png" />
+    <Content Include="Scripts\MarketOverView\img\bt-left.png" />
+    <Content Include="Scripts\MarketOverView\img\bt-right-hover.png" />
+    <Content Include="Scripts\MarketOverView\img\bt-right.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-down.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-g.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-h.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-q.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-r.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-up.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-z.png" />
+    <Content Include="Scripts\MarketOverView\img\icon-zl.png" />
+    <Content Include="Scripts\MarketOverView\img\icon.png" />
+    <Content Include="Scripts\MarketOverView\img\tab.png" />
+    <Content Include="Scripts\MarketOverView\js\jquery-3.2.1.js" />
+    <Content Include="Scripts\MarketOverView\js\jquery.min.js" />
+    <Content Include="Scripts\MarketOverView\js\jquery.nicescroll.js" />
+    <Content Include="Scripts\MarketOverView\js\jquery.nicescroll.min.js" />
+    <Content Include="Scripts\NetWork\calc.js" />
+    <Content Include="Scripts\NetWork\jquery-latest.js" />
+    <Content Include="Scripts\NetWork\netWork.js" />
+    <Content Include="Scripts\NetWork\saveSvgAsPng.js" />
+    <Content Include="Scripts\PlusGantt\jquery-1.6.2.min.js" />
+    <Content Include="Scripts\PlusGantt\jquery-1.8.1.min.js" />
+    <Content Include="Scripts\PlusGantt\lib\jquery.PrintArea.js" />
+    <Content Include="Scripts\PlusGantt\miniui\locale\en_US.js" />
+    <Content Include="Scripts\PlusGantt\miniui\locale\zh_CN.js" />
+    <Content Include="Scripts\PlusGantt\miniui\miniui.js" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\buttonedit\arrowbg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\buttonedit\btn-hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\buttonedit\btn-pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\buttonedit\btn.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\buttonedit\icon3.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\buttonedit\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\button\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\button\disabled.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\button\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\button\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\calendar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\grid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\layout\east.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\layout\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\layout\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\layout\north.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\layout\south.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\layout\west.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\listbox\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\menu\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\menu\menu_bg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\menu\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\navbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\pager\first.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\pager\last.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\pager\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\pager\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\panel\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\splitter\splitter.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tabs\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tabs\tab.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\toolbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\treegrid\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\treegrid\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\treegrid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\collapseLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\expandLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\firstAndlastcollapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\firstAndlastexpand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\firstCollapseNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\firstExpandNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\lastCollapseNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\lastExpandNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\lastline.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\treeline.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\treeNodeLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\window\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\skin.css" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\buttonedit\arrowbg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\buttonedit\btn-hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\buttonedit\btn-pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\buttonedit\btn.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\buttonedit\icon3.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\buttonedit\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\button\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\button\disabled.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\button\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\button\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\calendar\months.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\grid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\layout\east.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\layout\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\layout\north.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\layout\south.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\layout\west.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\listbox\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\menu\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\menu\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\menu\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\menu\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\navbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\pager\first.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\pager\last.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\pager\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\pager\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\panel\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\toolbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\treegrid\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\treegrid\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\treegrid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\tree\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\tree\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\tree\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\tree\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\window\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\skin.css" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\arrow.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\arrow_down.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\arrow_up.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\btn-hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\btn-pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\btn.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\date.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\icon1.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\buttonedit\text-bg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\button\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\button\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\button\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\calendar\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\calendar\footer.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\calendar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\grid\footer.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\grid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\layout\east.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\layout\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\layout\north.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\layout\south.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\layout\west.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\listbox\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\menu\hmenu.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\menu\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\menu\menu-hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\menu\menu.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\menu\pressed.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\navbar\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\navbar\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\navbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\pager\first.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\pager\last.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\pager\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\pager\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\panel\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tabs\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tabs\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tabs\tab.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\toolbar\toolbar.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tools\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tools\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tools\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\treegrid\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\treegrid\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\treegrid\file.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\treegrid\folder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\treegrid\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tree\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tree\folder-open.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tree\folder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tree\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tree\leaf.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\tree\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\images\window\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue\skin.css" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\button.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\date.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\down.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\error.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\hover.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\icon1.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\icon2.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\pressed.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\up.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\buttonedit\_icon3.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\button.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\disabled.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\hover.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\icons.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\menu_arrow.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\pressed.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\split-allow-bottom.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\button\split_arrow.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\calendar\button.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\calendar\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\calendar\months.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\calendar\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\calendar\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\datepicker\date - 副本.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\datepicker\date.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\dragdrop\drop-add.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\dragdrop\drop-between.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\dragdrop\drop-no.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\dragdrop\drop-over.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\dragdrop\drop-under.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\dragdrop\drop-yes.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_blue_down.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_blue_left.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_blue_right.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_blue_up.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_red_down.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_red_left.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_red_right.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\arrow_red_up.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\baseline-milestone.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\constraint-finish.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\constraint-start.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\finished.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\gvdp.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\header_bg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\milestone-red.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\milestone.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\ms-task.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\notes.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\offday.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\summary-top.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\summary.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\summary2.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\taskbg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\taskbg2.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\taskstatus.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\title_bg.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\gantt\warning.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\dirty.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\footer.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\icons.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\resize.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\sort_asc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\grid\sort_desc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\layout\east.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\layout\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\layout\north.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\layout\south.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\layout\west.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\listbox\error.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\listbox\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\arrow.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\bottom-arrow.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\checked.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\hallow.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\hmenubg.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\item.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\menubg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\pressed.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\menu\top-arrow.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\messagebox\icon-error.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\messagebox\icon-info.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\messagebox\icon-question.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\messagebox\icon-warning.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\messagebox\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\mygantt\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\navbar\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\pager\first.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\pager\last.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\pager\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\pager\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\pager\reload.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\panel\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\panel\resize.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\rgantt\bg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\rgantt\cancel.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\rgantt\hdbg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\rgantt\pc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\rgantt\pc_03.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\buttons.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\mini-bottom.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\mini-left.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\mini-right.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\mini-top.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\resize.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\splitter\resize_h.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\btn.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\col-move-bottom.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\col-move-top.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\datagrid_header_bg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\datagrid_row_collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\datagrid_row_expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\datagrid_sort_asc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\datagrid_sort_desc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\datagrid_title_bg.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\dirty.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\header-hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\header-pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\invalid_line.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\no.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\ok.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\rowselected.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\row_collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\row_expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\sort_asc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\sort_desc.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\title_bg.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supergrid\——header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\arrows.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\file.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\folder-open.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\folder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\supertree\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tabs\allow_left.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tabs\allow_right.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tabs\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tabs\hover.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tabs\tab.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\textboxlist\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\textboxlist\error.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\textboxlist\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\textbox\error.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\toolbar\toolbar.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\max.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\min.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\refresh.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\restore.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tools\search.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\treegrid\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\treegrid\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\treegrid\file.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\treegrid\folder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\treegrid\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\arrows.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\button.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\collapseLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\expandLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\file.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\firstAndlastcollapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\firstAndlastexpand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\firstCollapseNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\firstExpandNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\folder-open.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\folder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\hover.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\lastCollapseNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\lastExpandNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\lastline.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\leaf.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\treeline.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\tree\treeNodeLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\window\footer.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\window\header.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\_pager\first.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\_pager\last.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\_pager\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\images\_pager\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\default\miniui.css" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\buttonedit\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\buttonedit\error.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\buttonedit\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\buttonedit\icon1.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\buttonedit\icon2.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\buttonedit\icon3.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\button\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\button\disabled.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\button\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\button\menu_arrow.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\button\split-allow-bottom.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\button\split_arrow.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\calendar\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\calendar\months.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\calendar\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\calendar\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\grid\list.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\grid\loading.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\menu\arrow.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\menu\checked.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\menu\hallow.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\menu\menubg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\images\tools\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\gray\skin.css" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons.css" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\add.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\addfolder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\addnew.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\cancel.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\cut.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\date.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\downgrade.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\download.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\edit.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\filter.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\find.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\folder-open.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\folder.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\goto.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\help.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\help.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\lock.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\new.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\no.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\node.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\noimage.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\nowait.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\ok.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\open.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\print.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\redo.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\reload.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\remove.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\save.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\search.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\sort.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\split.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\tip.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\undo.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\unlock.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\upgrade.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\upload.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\user.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\wait.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\warning.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\zoomin.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\zoomout.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\icons\_help.png" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\arrowbg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\arrow_down.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\arrow_up.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\arrow_up_hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\arrow_up_pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\btn-hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\btn-pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\btn.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\icon3.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\button\button.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\button\disabled.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\button\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\button\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\calendar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\grid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\layout\east.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\layout\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\layout\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\layout\north.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\layout\south.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\layout\west.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\listbox\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\menu\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\menu\menu_bg.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\menu\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\navbar\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\navbar\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\navbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\pager\first.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\pager\last.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\pager\next.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\pager\prev.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\panel\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\splitter\splitter.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tabs\hover.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tabs\tab.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\toolbar\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\close.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\max.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\min.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\refresh.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\resume.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tools\search.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\treegrid\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\treegrid\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\treegrid\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\collapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\collapseLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\expand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\expandLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\firstAndlastcollapse.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\firstAndlastexpand.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\firstCollapseNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\firstExpandNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\lastCollapseNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\lastExpandNode.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\lastline.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\pressed.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\treeline.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\treeNodeLine.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\window\header.gif" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\skin.css" />
+    <Content Include="Scripts\PlusGantt\plusgantt\RGanttMenu.js" />
+    <Content Include="Scripts\PlusGantt\plusgantt\RGanttSchedule.js" />
+    <Content Include="Scripts\PlusGantt\plusgantt\ScheduleService.js" />
+    <Content Include="Scripts\ToDoList\line-bg.jpg" />
+    <Content Include="Scripts\ToDoList\style.css" />
+    <Content Include="Scripts\ToDoList\template-web.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Areas\Analysis\Models\" />
+    <Folder Include="Areas\Analysis\Views\Shared\" />
+    <Folder Include="Areas\Bidding\Models\" />
+    <Folder Include="Areas\Construction\Models\" />
+    <Folder Include="Areas\Contract\Models\" />
+    <Folder Include="Areas\Cooperation\Views\Shared\" />
+    <Folder Include="Areas\Documents\Models\" />
+    <Folder Include="Areas\Finance\Models\" />
+    <Folder Include="Areas\HSE\Models\" />
+    <Folder Include="Areas\Infrastructure\Views\BOMTemplate\" />
+    <Folder Include="Areas\Infrastructure\Views\BOQTemplate\" />
+    <Folder Include="Areas\Procurement\Models\" />
+    <Folder Include="Areas\Quality\Models\" />
+    <Folder Include="Areas\ReportAndAnalysis\Models\" />
+    <Folder Include="Areas\Warehouse\Models\" />
+    <Folder Include="Areas\Warehouse\Views\Shared\" />
+    <Folder Include="Scripts\PlusGantt\miniui\themes\gray\images\layout\" />
+    <Folder Include="Scripts\PlusGantt\miniui\themes\gray\images\panel\" />
+    <Folder Include="Scripts\PlusGantt\miniui\themes\gray\images\splitter\" />
+    <Folder Include="Scripts\PlusGantt\miniui\themes\gray\images\tabs\" />
+    <Folder Include="Scripts\PlusGantt\miniui\themes\gray\images\treegrid\" />
+    <Folder Include="Views\ProjectInputSelector\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BusinessModule\BaseLogic\Base.Logic\Base.Logic.csproj">
+      <Project>{ec8bb43b-4f2b-4e79-9be7-5521d4a86f62}</Project>
+      <Name>Base.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BusinessModule\BaseLogic\Workflow.Logic\Workflow.Logic.csproj">
+      <Project>{ed0d8a90-6a47-4092-802b-869e4a76b41d}</Project>
+      <Name>Workflow.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BusinessModule\Logic\Comprehensive.Logic\Comprehensive.Logic.csproj">
+      <Project>{A2BC424A-0D2D-48C8-9A77-E98FF2E3A354}</Project>
+      <Name>Comprehensive.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BusinessModule\Logic\EPC.Model\EPC.Model.csproj">
+      <Project>{3d6f7e9f-1903-418f-8772-e83bf0eb1766}</Project>
+      <Name>EPC.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_Layout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\Error.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\HSE\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Quality\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Quality\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\HSE\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\FolderTemplate\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\FolderTemplate\FolderConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\FolderTemplate\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\RoleSelector\Selector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\Mode\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\Mode\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\Mode\Config.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\MeunDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\MeunDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\MeunDefine\Authorize.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\RoleDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\RoleDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\WBSStructDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\WBSStructDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\OBSTemplate\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\OBSTemplate\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\WBSAttr\Edit.cshtml" />
+    <Content Include="Areas\Infrastructure\Views\WBSAttr\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Space\MainContent.cshtml" />
+    <Content Include="Areas\Manage\Views\Space\Index.cshtml" />
+    <Content Include="Areas\Manage\Views\Space\SubMenu.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Manage\Space\font\fontawesome-webfont.eot" />
+    <Content Include="Scripts\Manage\Space\font\fontawesome-webfont.ttf" />
+    <Content Include="Scripts\Manage\Space\font\fontawesome-webfont.woff" />
+    <Content Include="Scripts\Manage\Space\font\FontAwesome.otf" />
+    <Content Include="Scripts\Manage\Space\font\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\Manage\Space\font\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\Manage\Space\font\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\Manage\Space\font\glyphicons-halflings-regular.woff2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\WBSAttr\AttrEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\ProcurementContractSelector\ContractAndPaymentObjSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContractSelector\ContractReceiptSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\EquipmentMaterialCategory\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\EquipmentMaterialCategory\NodeEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\EquipmentMaterialCategory\PriceList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\PBSStructDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\PBSStructDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\CBSDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\CBSDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\CBSDefine\Config.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Bidding\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Bidding\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\BomExcel\ImportBidOfferExcel.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BOM\BomTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\BomConfig\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\BomConfig\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\BomConfig\Config.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\BomConfig\FieldEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\BomConfig\SettingsField.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BOM\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BOMSubmit\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Budget\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\Plan\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\PlanSubmit\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\Plan\Split.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\PlanReceipt\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\PlanReceipt\DelayEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\PlanReceipt\SplitEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\PBom\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BudgetBom\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BudgetBomSubmit\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Bid\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContractSelector\ContractAndReceiptObjSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\ProcurementContractSelector\ContractPaymentSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\ProcurementContractPaymentPlan\MultiContractPaymentObjAdd.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\BudgetSubmit\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\PBom\MainTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\PlanReceipt\ContractPlanReceiptList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Comparison\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Comparison\Comparison.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\EBomSelector\EBomSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Bidding\Views\BiddingOffer\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\PBS\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\PBSVersion\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ScheduleDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ScheduleDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WBSStructSelector\Selector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleVersion\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\Gantte.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\TaskList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\button\Thumbs.db" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\treegrid\Thumbs.db" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2003\images\tree\Thumbs.db" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\blue2010\images\treegrid\Thumbs.db" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\buttonedit\Thumbs.db" />
+    <Content Include="Scripts\PlusGantt\miniui\themes\olive2003\images\tree\Thumbs.db" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutRGantte.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\TaskSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\WorkSpace\DesignWorkSpace.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\WorkSpace\DesignWorkSpaceEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\WorkSpace\DesignWorkSpaceBatchAdd.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\WorkSpace\DesignWorkSapceUpgrade.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\SWFUpload\Upload.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\Cooperation\CooperationExe.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\Audit\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\FolderManager\Folder.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Document\DocumentManager.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Document\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Document\AttrPageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Document\Upgrade.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\DesignInput\Edit.cshtml" />
+    <Content Include="Areas\Design\Views\DesignInput\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\DesignInputDef\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\DesignInput\BusinessDocSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleTrace\TraceList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleTrace\Gantte.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\DrawingResultTrace\TraceList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleTrace\MainTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ISODefine\Edit.cshtml" />
+    <Content Include="Areas\Infrastructure\Views\ISODefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ISO\FileView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\EngineeringCashFlow\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Settlement\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Settlement\SettlementList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\Settlement\InSpaceTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\ControlSheet\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Document\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleFeedback\MainTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleFeedback\FeedbackList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerReport\CustomerInfoReport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerReport\CustomerNewContract.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\TaskTemplate\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\TaskTemplate\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\TaskTemplate\DetailList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\TaskTemplateImport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleComparison\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\ContractView.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\DeptContractInfo.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\DeptCostView.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\DeptIndicatorInfo.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\DeptMonthContractInfo.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\DeptMonthReceiptInfo.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\DeptReceiptInfo.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\DeptAnalysis\ProjectView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerReport\ContractSituationList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerReport\Index.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerReport\ProjectList.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerReport\ReceiptObjectList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerDistribute\List.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerDistribute\PieCharts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\BootStrap\css\bootstrap-theme.css.map" />
+    <Content Include="Scripts\BootStrap\css\bootstrap.css.map" />
+    <Content Include="Scripts\BootStrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\BootStrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\BootStrap\fonts\glyphicons-halflings-regular.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\ECharts\asset\css\bootstrap-theme.css.map" />
+    <Content Include="Scripts\ECharts\asset\css\bootstrap.css.map" />
+    <Content Include="Scripts\ECharts\asset\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\ECharts\asset\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\ECharts\asset\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\ECharts\asset\js\jquery-1.10.2.min.map" />
+    <Content Include="Scripts\ECharts\asset\js\jquery.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectInfo\ProjectInfoList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectInfo\index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectInfo\ReceiptList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectInfo\InvoiceList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\NodeTemplateSelector\Selector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\NodeTemplate\Config.cshtml" />
+    <Content Include="Areas\Infrastructure\Views\NodeTemplate\Edit.cshtml" />
+    <Content Include="Areas\Infrastructure\Views\NodeTemplate\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BOMPlan\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\PBom\PBomTrace.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectInfo\ProjectInfo.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectInfo\ProjectWorkHourInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ExpenseControl\Views\FinalReport\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Procurement\Views\ProcurementTrace\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\MarketOverView\MainPage.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CustomerChart\CustomerAnalysis.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ContractAnalysis\ContractAnalysisView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ContractAnalysis\ContractAnalysisChart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ProjectAnalysis\ProjectAnalysisChart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\BidResultAnalysis\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\SalesWorkReport\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\QBSStructDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\QBSStructDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Quality\Views\QBS\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Quality\Views\QBSVersion\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Quality\Views\QBS\QBSTree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\TreeList\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\WorkSpace\ShowVersion.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\CostAnalysis\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ConstructionQuantity\List.cshtml" />
+    <Content Include="Areas\Infrastructure\Views\ConstructionQuantity\NodeAddOrEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\OBS\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ScheduleDefine\ColDefine.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\HSE\Views\Rectify\Rectify.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\HSE\Views\SpecOperaPerson\BatchExit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\GoodProcurementState\Index.cshtml" />
+    <Content Include="Areas\ReportAndAnalysis\Views\QualityStatistics\Project.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\ConstructionLog\Log.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Warehouse\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\BOQ\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\Tab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\FbContractInfo\CList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\QBS\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\FbContractInfo\BOQSummary.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\ContractInfoSettlePeriod\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\BOQSubmit\PageView.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Quality\Views\QBS\TreeListSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\QualityStatistics\ProjectList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\CapitalPlanTemplate\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\CapitalCompanyPlan\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\CapitalPlanProject\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\CapitalCompanyAnalysis\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\CapitalCompanyPlan\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ScheduleDefine\NodeSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleWBS\Tab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleWBS\TreeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleWBS\Gantte.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleWBS\TaskSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleWBS\TaskTemplateImport.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleFeedback\FeedbackListWithWBS.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleTraceWithWBS\TraceList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleTraceWithWBS\MainTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ScheduleTraceWithWBS\Gantte.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ProjectList\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ProjectList\CategoryParamConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\FieldPhoto\PageView.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BudgetBOQ\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Design\Views\BudgetBOQSubmit\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Construction\Views\FieldPhoto\ViewBigImg.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\ImportProject.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ToDoListDefine\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ToDoListDefine\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ToDoListDefine\TreeConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\FolderManager\FolderSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\GisMap\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ReportAndAnalysis\Views\ToDoList\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\Document\ProjectGroupCustomSearch.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\DocumentCustomSearch\Project.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\DocumentCustomSearch\ProjectGroup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProcurementApplySelector\Selector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\FolderTemplate\MappingFieldConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ContractSelector\ContractAndCreditNoteReceiptSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ScheduleDefine\ExtendFieldConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CBSSelector\TreeSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\NetWork\Main.cshtml" />
+    <Content Include="Areas\Manage\Views\NetWork\Svg.cshtml" />
+    <Content Include="Areas\Manage\Views\NetWork\Work.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\PBSSelector\TreeSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\SpaceScheduleTrace\Gantte.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\SpaceScheduleTrace\MainTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\SpaceScheduleTrace\ModeTab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WBSSelector\TreeSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Infrastructure\Views\ParamSettings\Settings.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\Schedule\WBSDocEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\ParticipantUser\Tab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WBSSelector\WBSSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Documents\Views\ParticipantDocument\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\EngineeringVideo\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Main\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\WorkingContact\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\WorkingContact\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Problem\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Problem\ListView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Problem\Detail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Document\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Document\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Document\ViewList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Document\ReviewList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Video\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Video\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Image\ImgView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Main\LogView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\Main\LogList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Cooperation\Views\WorkingContact\AllList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProcurementApplySelector\DetailSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\EngineeringFundPlan\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\FundPlan\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WBSStructSelector\AllModeSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\EngineeringInvestPlan\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\InvestPlan\PageView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Finance\Views\InvestPlan\Report.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Analysis\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Analysis\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Analysis\Views\ContractReconciliation\InComeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Analysis\Views\ContractReconciliation\PayList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Manage\Views\CustomerInfo\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Analysis\Views\ProjectContractComprehensiveAnalysis\ColumnConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Analysis\Views\ProjectContractComprehensiveAnalysis\ColumnConfigVersionList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Contract\Views\ContractInfo\List.cshtml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

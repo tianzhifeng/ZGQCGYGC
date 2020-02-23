@@ -1,0 +1,272 @@
+﻿@{
+    ViewBag.Title = "ConfigLayout";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <a class="mini-button" iconcls="icon-save" onclick="saveConfig();" plain="true">
+                    保存
+                </a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">
+                    取消
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="dataForm">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="配置信息" region="east" width="500" showclosebutton="false" showspliticon="false" showcollapsebutton="false" allowresize="false">
+            <div class="mini-fit" style="padding-top: 5px;">
+                <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%; " borderstyle="border:0px">
+                    <div title="布局配置">
+                        <div id="layoutConfig" class="mini-layout" style="width: 100%; height: 100%; border: 0px">
+                            <div title="布局" region="north" height="200" showspliticon="false" showcollapsebutton="false" allowresize="false">
+                                <div class="mini-toolbar">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addRowConfig();" plain="true">增加行</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="removeRowConfig();" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="mini-fit">
+                                    <div id="Layout" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="false" showpager="false"
+                                         allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+                                         borderstyle="border-left:0px;border-right:0px;border-bottom:0px;">
+                                        <div property="columns">
+                                            <div type="indexcolumn" headeralign="center">序号</div>
+                                            <div field="ColumnNumber" width="90" headeralign="center" allowsort="false" align="center" vtype="int;required">
+                                                列数<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                            <div field="height" width="*" headeralign="center" allowsort="false" vtype="int;">
+                                                行高<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div title="center" region="center" style="border-left:0px;">
+                                <div class="mini-toolbar">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addColumnConfig();" plain="true">增加块</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="removeColumnConfig();" plain="true">删除</a>
+                                                <a class='mini-button' iconcls='icon-up' onclick='moveUp("Blocks");' visible='true'>上移</a>
+                                                <a class='mini-button' iconcls='icon-down' onclick='moveDown("Blocks");' visible='true'>下移</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="mini-fit">
+                                    <div id="Blocks" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="false" showpager="false"
+                                         allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+                                         oncellcommitedit="onColumnCellCommitEdit"
+                                         borderstyle="border-left:0px;border-right:0px;border-bottom:0px;">
+                                        <div property="columns">
+                                            <div type="indexcolumn" headeralign="center">序号</div>
+                                            <div field="Config" width="50" headeralign="center" allowsort="false">
+                                                详细
+                                            </div>
+                                            <div field="Name" width="120" headeralign="center" allowsort="false" align="center" vtype="required">
+                                                块名称<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                            <div field="BlockTypeName" width="120" headeralign="center" allowsort="false" align="center" vtype="required">
+                                                类别
+                                            </div>
+                                            <div field="RowIndex" width="30" headeralign="center" allowsort="false" align="right" vtype="int;required">
+                                                行<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                            <div field="ColumnIndex" width="30" headeralign="center" allowsort="false" align="right" vtype="int;required">
+                                                列<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                            <div field="ColSpan" width="40" headeralign="center" allowsort="false" align="right" vtype="int;required">
+                                                跨列<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                            <div field="RowSpan" width="40" headeralign="center" allowsort="false" align="right" vtype="int;required">
+                                                跨行<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                            <div field="Style" width="150" headeralign="center" allowsort="false">
+                                                自定义样式<input property="editor" class="mini-textbox" style="width:100%;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div title="基本信息">
+                        <input name="ID" class="mini-hidden" />
+                        <div style="padding-left: 20px; padding-top: 10px;">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                                <tr>
+                                    <td width="15%">名称</td>
+                                    <td width="35%;" style="padding-right: 40px;">
+                                        <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                    </td>
+                                    <td width="15%">编号</td>
+                                    <td width="35%;" style="padding-right: 40px;">
+                                        <input name="Code" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>描述</td>
+                                    <td colspan="3" style="padding-right: 40px;">
+                                        <input name="Remark" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:100" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="预览信息" region="center">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px;">
+                <div title="预览" url="/MvcConfig/UI/BI/PageView?TmplCode=@ViewBag.TmpCode&IsPrew=True">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("ConnEnum");
+</script>
+<script type="text/javascript">
+    var id = getQueryString("ID");
+
+    addGridButton("DataSource", "Name", {
+        onButtonClick: function (row) {
+            var url = "DataSourceSetting";
+            openWindow(url, {
+                data: row,
+                refresh: false, title: "块配置", width: "50%", height: "70%",
+                onDestroy: function (data) {
+                    if (data && data != "close") {
+                        var dataGrid = mini.get("DataSource");
+                        dataGrid.updateRow(row, data);
+                    }
+                }
+            });
+        }
+    });
+
+    addGridButton("Blocks", "Config", {
+        linkText: '配置', onButtonClick: function (row) {
+            var url = "";
+            var url = row.BlockType + "Settings";
+            var title = row.Name + "配置";
+            openWindow(url, {
+                width: "85%", title: title, data: row["Settings"], onDestroy: function (data) {
+                    if (data != "close")
+                        row["Settings"] = mini.encode(data);
+                }
+            });
+        }
+    });
+
+    function onFormSetData(dataForm) {
+        var dataSourceConfig = mini.decode(dataForm.DataSource);
+        var layoutInfo = mini.decode(dataForm.Layout);
+        var dataGrid = mini.get("Layout");
+        dataGrid.setData(layoutInfo);
+
+        var blockGrid = mini.get("Blocks");
+        blockGrid.setData(mini.decode(dataForm.Blocks));
+    }
+
+    function saveConfig() {
+        var dataGrid = mini.get("Layout");
+        dataGrid.commitEdit();
+        var layoutInfo = dataGrid.getData();
+
+        var blockGrid = mini.get("Blocks");
+        blockGrid.commitEdit();
+        var blocks = blockGrid.getData();
+
+        var form = new mini.Form("#dataForm");
+        form.validate();
+        if (form.isValid() == false) return;
+        var _formData = form.getData();
+        _formData.Layout = mini.encode(layoutInfo);
+        _formData.Blocks = mini.encode(blocks);
+        addExecuteParam("FormData", mini.encode(_formData));
+        execute("Save", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var tabs = mini.get("mainTab");
+                tabs.reloadTab(tabs.getActiveTab());
+            }, validateForm: false
+        });
+    }
+
+    function addRowConfig() {
+        var dataGrid = mini.get("Layout");
+        var row = { ColumnNumber: 4, Style: "" };
+        dataGrid.addRow(row);
+    }
+
+
+    function removeRowConfig() {
+        var dataGrid = mini.get("Layout");
+        var row = dataGrid.getSelected();
+        if (row) {
+            dataGrid.removeRow(row);
+        }
+    }
+
+    function onColumnCellCommitEdit(e) {
+        var field = e.field;
+    }
+
+    function addColumnConfig() {
+        var columnGrid = mini.get("Blocks");
+        var url = "Selector";
+        openWindow(url, {
+            refresh: false, title: "组建选择", width: 1300, height: "90%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    var columnRow = {
+                        BlockTypeName: item.Name,
+                        Name: item.Name,
+                        BlockType: item.Code,
+                        ColSpan: 1,
+                        RowSpan: 1,
+                        Style: ""
+                    };
+                    columnGrid.addRow(columnRow);
+                }
+            }
+        });
+    }
+
+    function removeColumnConfig() {
+        var columnGrid = mini.get("Blocks");
+        var row = columnGrid.getSelected();
+        if (row) {
+            columnGrid.removeRow(row);
+        }
+    }
+
+    function moveUp(gridId) {
+        var dataGrid = mini.get(gridId);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+    function moveDown(gridId) {
+        var dataGrid = mini.get(gridId);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+
+</script>

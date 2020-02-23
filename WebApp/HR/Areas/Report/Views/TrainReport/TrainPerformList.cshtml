@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "培训完成率统计";
+}
+<div class="mini-toolbar" style="border-bottom: 0; padding: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+            </td>
+            <td style="white-space: nowrap;">
+            <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入承办部门' onenter="quickSearch('DeptName');" onbuttonclick="quickSearch('DeptName');" />
+                <a class="mini-button" onclick="quickSearch('DeptName');">查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class='mini-fit' id='divGrid'>
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowresize="true"
+        url="GetTrainPerformList" idfield="DeptID" multiselect="true">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div type="checkcolumn">
+            </div>
+            <div field="Trainyear" width="80" headeralign="center" allowsort="true" align="center">
+                培训年度</div>
+            <div field="DeptName" width="120" headeralign="center" allowsort="true" align="center">
+                承办部门</div>
+            <div field="TotalCountScale" width="120" headeralign="center" align='right' allowsort="true">
+                总体项目完成率(%)</div>
+            <div field="TotalHoursScal" width="120" headeralign="center" align='right' allowsort="true">
+                总体学时完成率(%)</div>
+            <div header="公司级培训" headeralign="center">
+                <div property="columns">
+                    <div field="PlanProjectCount"  width="80" align='right' >
+                        计划项目总数</div>
+                    <div field="CompleteProjectCount" width="80" align='right' >
+                        完成项目总数</div>
+                    <div field="CompleteScale" align="right" width="80" align='right' >
+                        项目完成率</div>
+                    <div field="outPlanProjectCount" width="80"align='right' >
+                        计划外项目数</div>
+                    <div field="TotalCompleteScale"  width="80"align='right' >
+                        总项目完成率</div>
+                    <div field="PlanProjectHours" width="80"align='right' >
+                        计划学时总数</div>
+                    <div field="Accumulathours" width="80"align='right' >
+                        完成学时总数</div>
+                    <div field="CompleteHoursScale"  width="80" align='right' >
+                        学时完成率</div>
+                    <div field="outAccumulathours" width="80"align='right' >
+                        计划外学时数</div>
+                    <div field="TotalCompleteHoursScale" width="80"align='right' >
+                        总学时完成率</div>
+                </div>
+            </div>
+            <div header="部门级培训" headeralign="center">
+                <div property="columns">
+                    <div field="PlanProjectCount_Dept" width="80" align='right' >
+                        计划项目总数</div>
+                    <div field="PerformProjectCount_Dept" width="80"align='right' >
+                        完成项目总数</div>
+                    <div field="PerformProjectScale"   align="right" width="80" >
+                        项目完成率</div>
+                    <div field="OutPlanProjectCount_Dept" width="80" align='right' >
+                        计划外项目数</div>
+                    <div field="TotalPerformProjectCountScale_Dept"   align="right"  width="80" >
+                        总项目完成率</div>
+                    <div field="PlanProjectHours_Dept" width="80" align='right' >
+                        计划学时总数</div>
+                    <div field="PerformProjectHours_Dept" width="80" align='right' >
+                        完成学时总数</div>
+                    <div field="PerformHoursScale_Dept"   align="right" width="80" >
+                        学时完成率</div>
+                    <div field="OutPlanProjectHours_Dept" width="80">
+                        计划外学时数</div>
+                    <div field="TotalPerformProjectHoursScale_Dept"   align="right" width="80"  >
+                        总学时完成率</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    
+    
+</script>

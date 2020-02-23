@@ -1,0 +1,845 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6C28D6CF-8405-429D-845B-8D72781C21AE}</ProjectGuid>
+    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PortalLTE</RootNamespace>
+    <AssemblyName>PortalLTE</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="JWT, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\JWT.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicInfo\PicNews.aspx.cs">
+      <DependentUpon>PicNews.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Global.asax" />
+    <Content Include="icons.html" />
+    <Content Include="Images\ad.png" />
+    <Content Include="Images\arrowleft.png" />
+    <Content Include="Images\arrowright.png" />
+    <Content Include="Images\banner21.jpg" />
+    <Content Include="Images\banner31.jpg" />
+    <Content Include="Images\banner41.jpg" />
+    <Content Include="Images\bg.jpg" />
+    <Content Include="Images\bgImage\BanGong.jpg" />
+    <Content Include="Images\bgImage\BanGongLogin.jpg" />
+    <Content Include="Images\bgImage\GongYe.jpg" />
+    <Content Include="Images\bgImage\GongYeLogin.jpg" />
+    <Content Include="Images\bgImage\JieGouZhuYi.jpg" />
+    <Content Include="Images\bgImage\JieGouZhuYiLogin.jpg" />
+    <Content Include="Images\bgImage\JiHe.jpg" />
+    <Content Include="Images\bgImage\JiHeLogin.jpg" />
+    <Content Include="Images\bgImage\MuWen.jpg" />
+    <Content Include="Images\bgImage\MuWenLogin.jpg" />
+    <Content Include="Images\bgImage\SuiPian.jpg" />
+    <Content Include="Images\bgImage\SuiPianLogin.jpg" />
+    <Content Include="Images\bgImage\TianKong.jpg" />
+    <Content Include="Images\bgImage\TianKongLogin.jpg" />
+    <Content Include="Images\bgImage\WuHou.jpg" />
+    <Content Include="Images\bgImage\WuHouLogin.jpg" />
+    <Content Include="Images\bgImage\XianDai.jpg" />
+    <Content Include="Images\bgImage\XianDaiLogin.jpg" />
+    <Content Include="Images\bgImage\YangWang.jpg" />
+    <Content Include="Images\bgImage\YangWangLogin.jpg" />
+    <Content Include="Images\BLheaderBG.png" />
+    <Content Include="Images\bt-left-on.png" />
+    <Content Include="Images\bt-left.png" />
+    <Content Include="Images\bt-right-on.png" />
+    <Content Include="Images\bt-right.png" />
+    <Content Include="Images\BWheaderBG.png" />
+    <Content Include="Images\circle.png" />
+    <Content Include="Images\circle_img_1.png" />
+    <Content Include="Images\clear-w.png" />
+    <Content Include="Images\close.png" />
+    <Content Include="Images\cloud-w.png" />
+    <Content Include="Images\dot-off.png" />
+    <Content Include="Images\dot-on.png" />
+    <Content Include="Images\index-01time.png" />
+    <Content Include="Images\index-02user.png" />
+    <Content Include="Images\index-03view.png" />
+    <Content Include="Images\index-04text.png" />
+    <Content Include="Images\jhlogo.png" />
+    <Content Include="Images\jhlogoW.png" />
+    <Content Include="Images\login-more.png" />
+    <Content Include="Images\loginclose.png" />
+    <Content Include="Images\loginpassword.png" />
+    <Content Include="Images\loginuser.png" />
+    <Content Include="Images\mist-w.png" />
+    <Content Include="Images\more.png" />
+    <Content Include="Images\new.gif" />
+    <Content Include="Images\new.png" />
+    <Content Include="Images\Portal\Blue\banner-ny-new.jpg" />
+    <Content Include="Images\Portal\Blue\banner-ny.jpg" />
+    <Content Include="Images\Portal\Blue\banner-ny2.jpg" />
+    <Content Include="Images\Portal\Blue\banner.jpg" />
+    <Content Include="Images\Portal\Blue\banner2.jpg" />
+    <Content Include="Images\Portal\Blue\banner3.jpg" />
+    <Content Include="Images\Portal\Blue\banner4.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner-5.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner1.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner2.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner3.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner4.jpg" />
+    <Content Include="Images\Portal\Blue\bg.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\BanGong.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\BanGongLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\bgBW.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\bgRW.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\GongYe.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\GongYeLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\JieGouZhuYi.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\JieGouZhuYiLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\JiHe.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\JiHeLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\MuWen.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\MuWenLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\SuiPian.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\SuiPianLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\TianKong.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\TianKongLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\WuHou.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\WuHouLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\XianDai.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\XianDaiLogin.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\YangWang.jpg" />
+    <Content Include="Images\Portal\Blue\bgImage\YangWangLogin.jpg" />
+    <Content Include="Images\Portal\Blue\BLheaderBG.png" />
+    <Content Include="Images\Portal\Blue\bt-left-on.png" />
+    <Content Include="Images\Portal\Blue\bt-left.png" />
+    <Content Include="Images\Portal\Blue\bt-right-on.png" />
+    <Content Include="Images\Portal\Blue\bt-right.png" />
+    <Content Include="Images\Portal\Blue\BWheaderBG.png" />
+    <Content Include="Images\Portal\Blue\circle.png" />
+    <Content Include="Images\Portal\Blue\circle_img_1.png" />
+    <Content Include="Images\Portal\Blue\copyright.png" />
+    <Content Include="Images\default.jpg" />
+    <Content Include="Images\defaultLogin.jpg" />
+    <Content Include="Images\dot.png" />
+    <Content Include="Images\favicon.ico" />
+    <Content Include="Images\index_228.png" />
+    <Content Include="Images\index_229.png" />
+    <Content Include="Images\line.png" />
+    <Content Include="Images\line_down.png" />
+    <Content Include="Images\line_left.png" />
+    <Content Include="Images\line_middle.png" />
+    <Content Include="Images\logo.png" />
+    <Content Include="Images\no-msg.png" />
+    <Content Include="Images\no-news.jpg" />
+    <Content Include="Images\no-news.png" />
+    <Content Include="Images\point.png" />
+    <Content Include="Images\Portal\Blue\Banner\banner-1.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner-2.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner-3.jpg" />
+    <Content Include="Images\Portal\Blue\Banner\banner-4.jpg" />
+    <Content Include="Images\Portal\Blue\clear.png" />
+    <Content Include="Images\Portal\Blue\cloud.png" />
+    <Content Include="Images\Portal\Blue\default.jpg" />
+    <Content Include="Images\Portal\Blue\defaultLogin.jpg" />
+    <Content Include="Images\Portal\Blue\dot.png" />
+    <Content Include="Images\Portal\Blue\favicon.ico" />
+    <Content Include="Images\Portal\Blue\foot-logo.jpg" />
+    <Content Include="Images\Portal\Blue\foot-logo.png" />
+    <Content Include="Images\Portal\Blue\haze.png" />
+    <Content Include="Images\Portal\Blue\index_228.png" />
+    <Content Include="Images\Portal\Blue\index_229.png" />
+    <Content Include="Images\Portal\Blue\jhlogo.png" />
+    <Content Include="Images\Portal\Blue\line.png" />
+    <Content Include="Images\Portal\Blue\line_down.png" />
+    <Content Include="Images\Portal\Blue\line_left.png" />
+    <Content Include="Images\Portal\Blue\line_middle.png" />
+    <Content Include="Images\Portal\Blue\logo.png" />
+    <Content Include="Images\Portal\Blue\LogoPrinting.png" />
+    <Content Include="Images\Portal\Blue\mainfrom-bg.png" />
+    <Content Include="Images\Portal\Blue\mainleft-bg.jpg" />
+    <Content Include="Images\Portal\Blue\new.gif" />
+    <Content Include="Images\Portal\Blue\new.png" />
+    <Content Include="Images\Portal\Blue\no-msg.png" />
+    <Content Include="Images\Portal\Blue\no-news.jpg" />
+    <Content Include="Images\Portal\Blue\no-news.png" />
+    <Content Include="Images\Portal\Blue\point.png" />
+    <Content Include="Images\Portal\Blue\RWheaderBG.png" />
+    <Content Include="Images\Portal\Blue\shortcut-left.png" />
+    <Content Include="Images\Portal\Blue\shortcut-right.png" />
+    <Content Include="Images\Portal\Blue\shortcut_choice.png" />
+    <Content Include="Images\Portal\Blue\shortcut_choiceon.png" />
+    <Content Include="Images\Portal\Blue\shortcut_close.png" />
+    <Content Include="Images\Portal\Blue\shortcut_delete.png" />
+    <Content Include="Images\Portal\Blue\shortcut_down.png" />
+    <Content Include="Images\Portal\Blue\shortcut_edit.png" />
+    <Content Include="Images\Portal\Blue\shortcut_set.png" />
+    <Content Include="Images\Portal\Blue\shortcut_sort.png" />
+    <Content Include="Images\Portal\Blue\shortcut_up.png" />
+    <Content Include="Images\Portal\Blue\skinyellowbg.jpg" />
+    <Content Include="Images\Portal\Blue\skinyellowbg01.jpg" />
+    <Content Include="Images\Portal\Blue\skinyellowbg02.jpg" />
+    <Content Include="Images\Portal\Blue\skinyellowbglogo.jpg" />
+    <Content Include="Images\Portal\Blue\user-bg.jpg" />
+    <Content Include="Images\Portal\Blue\user-bg.png" />
+    <Content Include="Images\Portal\Blue\user-bgRW.jpg" />
+    <Content Include="Images\Portal\Blue\user.png" />
+    <Content Include="Images\Portal\Blue\user1-128x128.jpg" />
+    <Content Include="Images\Portal\Images\banner.jpg" />
+    <Content Include="Images\Portal\Images\banner2.jpg" />
+    <Content Include="Images\Portal\Images\banner3.jpg" />
+    <Content Include="Images\Portal\Images\banner4.jpg" />
+    <Content Include="Images\Portal\Images\bg.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\BanGong.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\BanGongLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\bgBW.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\bgRW.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\GongYe.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\GongYeLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\JieGouZhuYi.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\JieGouZhuYiLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\JiHe.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\JiHeLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\MuWen.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\MuWenLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\SuiPian.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\SuiPianLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\TianKong.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\TianKongLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\WuHou.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\WuHouLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\XianDai.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\XianDaiLogin.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\YangWang.jpg" />
+    <Content Include="Images\Portal\Images\bgImage\YangWangLogin.jpg" />
+    <Content Include="Images\Portal\Images\BLheaderBG.png" />
+    <Content Include="Images\Portal\Images\bt-left-on.png" />
+    <Content Include="Images\Portal\Images\bt-left.png" />
+    <Content Include="Images\Portal\Images\bt-right-on.png" />
+    <Content Include="Images\Portal\Images\bt-right.png" />
+    <Content Include="Images\Portal\Images\BWheaderBG.png" />
+    <Content Include="Images\Portal\Images\circle.png" />
+    <Content Include="Images\Portal\Images\circle_img_1.png" />
+    <Content Include="Images\Portal\Images\clear.png" />
+    <Content Include="Images\Portal\Images\close.png" />
+    <Content Include="Images\Portal\Images\closeon.png" />
+    <Content Include="Images\Portal\Images\cloud.png" />
+    <Content Include="Images\Portal\Images\copyright.png" />
+    <Content Include="Images\Portal\Images\default.jpg" />
+    <Content Include="Images\Portal\Images\defaultLogin.jpg" />
+    <Content Include="Images\Portal\Images\dot.png" />
+    <Content Include="Images\Portal\Images\favicon.ico" />
+    <Content Include="Images\Portal\Images\foot-logo.jpg" />
+    <Content Include="Images\Portal\Images\index_228.png" />
+    <Content Include="Images\Portal\Images\index_229.png" />
+    <Content Include="Images\Portal\Images\jhlogo.png" />
+    <Content Include="Images\Portal\Images\line.png" />
+    <Content Include="Images\Portal\Images\line_down.png" />
+    <Content Include="Images\Portal\Images\line_left.png" />
+    <Content Include="Images\Portal\Images\line_middle.png" />
+    <Content Include="Images\Portal\Images\logo.png" />
+    <Content Include="Images\Portal\Images\LogoPrinting.png" />
+    <Content Include="Images\Portal\Images\mist.png" />
+    <Content Include="Images\Portal\Images\new.gif" />
+    <Content Include="Images\Portal\Images\new.png" />
+    <Content Include="Images\Portal\Images\no-msg.png" />
+    <Content Include="Images\Portal\Images\no-news.jpg" />
+    <Content Include="Images\Portal\Images\no-news.png" />
+    <Content Include="Images\Portal\Images\point.png" />
+    <Content Include="Images\Portal\Images\rain.png" />
+    <Content Include="Images\Portal\Images\RWheaderBG.png" />
+    <Content Include="Images\Portal\Images\shortcut-left.png" />
+    <Content Include="Images\Portal\Images\shortcut-right.png" />
+    <Content Include="Images\Portal\Images\skinyellowbg.jpg" />
+    <Content Include="Images\Portal\Images\skinyellowbg01.jpg" />
+    <Content Include="Images\Portal\Images\skinyellowbg02.jpg" />
+    <Content Include="Images\Portal\Images\skinyellowbglogo.jpg" />
+    <Content Include="Images\Portal\Images\snow.png" />
+    <Content Include="Images\Portal\Images\thunderstorm.png" />
+    <Content Include="Images\Portal\Images\user-bg.jpg" />
+    <Content Include="Images\Portal\Images\user-bgRW.jpg" />
+    <Content Include="Images\Portal\Images\user.png" />
+    <Content Include="Images\Portal\Images\user1-128x128.jpg" />
+    <Content Include="Images\Portal\Yellow\banner-ny.jpg" />
+    <Content Include="Images\Portal\Yellow\banner.jpg" />
+    <Content Include="Images\Portal\Yellow\banner2.jpg" />
+    <Content Include="Images\Portal\Yellow\banner3.jpg" />
+    <Content Include="Images\Portal\Yellow\banner4.jpg" />
+    <Content Include="Images\Portal\Yellow\Banner\banner-2.jpg" />
+    <Content Include="Images\Portal\Yellow\Banner\banner-3.jpg" />
+    <Content Include="Images\Portal\Yellow\Banner\banner-4.jpg" />
+    <Content Include="Images\Portal\Yellow\Banner\banner-5.jpg" />
+    <Content Include="Images\Portal\Yellow\bg.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\BanGong.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\BanGongLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\bgBW.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\bgRW.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\GongYe.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\GongYeLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\JieGouZhuYi.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\JieGouZhuYiLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\JiHe.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\JiHeLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\MuWen.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\MuWenLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\SuiPian.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\SuiPianLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\TianKong.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\TianKongLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\WuHou.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\WuHouLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\XianDai.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\XianDaiLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\YangWang.jpg" />
+    <Content Include="Images\Portal\Yellow\bgImage\YangWangLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\BLheaderBG.png" />
+    <Content Include="Images\Portal\Yellow\bt-left-on.png" />
+    <Content Include="Images\Portal\Yellow\bt-left.png" />
+    <Content Include="Images\Portal\Yellow\bt-right-on.png" />
+    <Content Include="Images\Portal\Yellow\bt-right.png" />
+    <Content Include="Images\Portal\Yellow\BWheaderBG.png" />
+    <Content Include="Images\Portal\Yellow\circle.png" />
+    <Content Include="Images\Portal\Yellow\circle_img_1.png" />
+    <Content Include="Images\Portal\Yellow\clear.png" />
+    <Content Include="Images\Portal\Yellow\cloud.png" />
+    <Content Include="Images\Portal\Yellow\copyright.png" />
+    <Content Include="Images\Portal\Yellow\default.jpg" />
+    <Content Include="Images\Portal\Yellow\defaultLogin.jpg" />
+    <Content Include="Images\Portal\Yellow\dot.png" />
+    <Content Include="Images\Portal\Yellow\favicon.ico" />
+    <Content Include="Images\Portal\Yellow\foot-logo.jpg" />
+    <Content Include="Images\Portal\Yellow\haze.png" />
+    <Content Include="Images\Portal\Blue\mist.png" />
+    <Content Include="Images\Portal\Blue\rain.png" />
+    <Content Include="Images\Portal\Blue\snow.png" />
+    <Content Include="Images\Portal\Blue\thunderstorm.png" />
+    <Content Include="Images\Portal\Yellow\index_228.png" />
+    <Content Include="Images\Portal\Yellow\index_229.png" />
+    <Content Include="Images\Portal\Yellow\jhlogo.png" />
+    <Content Include="Images\Portal\Yellow\line.png" />
+    <Content Include="Images\Portal\Yellow\line_down.png" />
+    <Content Include="Images\Portal\Yellow\line_left.png" />
+    <Content Include="Images\Portal\Yellow\line_middle.png" />
+    <Content Include="Images\Portal\Yellow\logo-HR.png" />
+    <Content Include="Images\Portal\Yellow\logo.png" />
+    <Content Include="Images\Portal\Yellow\LogoPrinting.png" />
+    <Content Include="Images\Portal\Yellow\mainfrom-bg.png" />
+    <Content Include="Images\Portal\Yellow\mainleft-bg.jpg" />
+    <Content Include="Images\Portal\Yellow\mist.png" />
+    <Content Include="Images\Portal\Yellow\new.gif" />
+    <Content Include="Images\Portal\Yellow\new.png" />
+    <Content Include="Images\Portal\Yellow\no-msg.png" />
+    <Content Include="Images\Portal\Yellow\no-news.jpg" />
+    <Content Include="Images\Portal\Yellow\no-news.png" />
+    <Content Include="Images\Portal\Yellow\point.png" />
+    <Content Include="Images\Portal\Yellow\rain.png" />
+    <Content Include="Images\Portal\Yellow\RWheaderBG.png" />
+    <Content Include="Images\Portal\Yellow\shortcut-left.png" />
+    <Content Include="Images\Portal\Yellow\shortcut-right.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_choice.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_choiceon.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_close.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_delete.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_down.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_edit.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_set.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_sort.png" />
+    <Content Include="Images\Portal\Yellow\shortcut_up.png" />
+    <Content Include="Images\Portal\Yellow\skinyellowbg.jpg" />
+    <Content Include="Images\Portal\Yellow\skinyellowbg01.jpg" />
+    <Content Include="Images\Portal\Yellow\skinyellowbg02.jpg" />
+    <Content Include="Images\Portal\Yellow\skinyellowbglogo.jpg" />
+    <Content Include="Images\Portal\Yellow\snow.png" />
+    <Content Include="Images\Portal\Yellow\thunderstorm.png" />
+    <Content Include="Images\Portal\Yellow\user-bg.jpg" />
+    <Content Include="Images\Portal\Yellow\user-bg.png" />
+    <Content Include="Images\Portal\Yellow\user-bgRW.jpg" />
+    <Content Include="Images\Portal\Yellow\user.png" />
+    <Content Include="Images\Portal\Yellow\user1-128x128.jpg" />
+    <Content Include="Images\rain-w.png" />
+    <Content Include="Images\RWheaderBG.png" />
+    <Content Include="Images\shortcut-left.png" />
+    <Content Include="Images\shortcut-right.png" />
+    <Content Include="Images\skinyellowbg.jpg" />
+    <Content Include="Images\skinyellowbg01.jpg" />
+    <Content Include="Images\skinyellowbg02.jpg" />
+    <Content Include="Images\skinyellowbglogo.jpg" />
+    <Content Include="Images\snow-w.png" />
+    <Content Include="Images\thunderstorm-w.png" />
+    <Content Include="Images\top-bg.png" />
+    <Content Include="Images\top-bgw.png" />
+    <Content Include="Images\user-bg.jpg" />
+    <Content Include="Images\user-bgRW.jpg" />
+    <Content Include="Images\user.png" />
+    <Content Include="Images\user1-128x128.jpg" />
+    <Content Include="Images\window-down.png" />
+    <Content Include="Images\window-up.png" />
+    <Content Include="OpenFlash\ChromeOpenFlash.files\image001.png" />
+    <Content Include="OpenFlash\ChromeOpenFlash.files\image002.png" />
+    <Content Include="OpenFlash\ChromeOpenFlash.files\image003.png" />
+    <Content Include="OpenFlash\ChromeOpenFlash.files\image004.png" />
+    <Content Include="OpenFlash\ChromeOpenFlash.files\image005.png" />
+    <Content Include="OpenFlash\ChromeOpenFlash.files\image006.jpg" />
+    <Content Include="OpenFlash\ChromeOpenFlash.htm" />
+    <Content Include="OpenFlash\FirefoxOpenFlash.files\image001.png" />
+    <Content Include="OpenFlash\FirefoxOpenFlash.files\image002.png" />
+    <Content Include="OpenFlash\FirefoxOpenFlash.files\image003.png" />
+    <Content Include="OpenFlash\FirefoxOpenFlash.files\image004.png" />
+    <Content Include="OpenFlash\FirefoxOpenFlash.htm" />
+    <Content Include="OpenFlash\HowToDo.htm" />
+    <Content Include="OpenFlash\IEOpenFlash.files\image001.png" />
+    <Content Include="OpenFlash\IEOpenFlash.files\image002.png" />
+    <Content Include="OpenFlash\IEOpenFlash.files\image003.png" />
+    <Content Include="OpenFlash\IEOpenFlash.files\image004.png" />
+    <Content Include="OpenFlash\IEOpenFlash.files\image005.png" />
+    <Content Include="OpenFlash\IEOpenFlash.htm" />
+    <Content Include="portalLTE2018BL.css" />
+    <Content Include="portalLTE2018BY.css" />
+    <Content Include="portalLTE2018WL.css" />
+    <Content Include="PublicInfo\css\new.css" />
+    <Content Include="PublicInfo\css\old.css" />
+    <Content Include="PublicInfo\images\photo-titlebg.png" />
+    <Content Include="Scripts\Custom\index2018.css" />
+    <Content Include="Scripts\Custom\index2018BY.css" />
+    <Content Include="Scripts\Custom\index2018WL.css" />
+    <Content Include="Scripts\Custom\portal.css" />
+    <Content Include="Scripts\Custom\portalBY.css" />
+    <Content Include="Scripts\jQueryUI\jquery.mousewheel.js" />
+    <Content Include="Scripts\plugins\Encrypt.js" />
+    <Content Include="portalLTE.css" />
+    <Content Include="portalLTEBL.css" />
+    <Content Include="portalLTEBW.css" />
+    <Content Include="PortalLTEInc.js" />
+    <Content Include="portalLTERW.css" />
+    <Content Include="PublicInfo\images\bottom.png" />
+    <Content Include="PublicInfo\images\iconbg.png" />
+    <Content Include="PublicInfo\images\iconbg2.png" />
+    <Content Include="PublicInfo\images\top.png" />
+    <Content Include="PublicInfo\Pic.swf" />
+    <Content Include="PublicInfo\PicNews.aspx" />
+    <Content Include="Scripts\bootstrap\css\bootstrap.css" />
+    <Content Include="Scripts\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\bootstrap\js\bootstrap.js" />
+    <Content Include="Scripts\bootstrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\bootstrap\js\npm.js" />
+    <Content Include="Scripts\Custom\animate.min.css" />
+    <Content Include="Scripts\Custom\index.css" />
+    <Content Include="Scripts\Custom\login.css" />
+    <Content Include="Scripts\dist\css\AdminLTE.css" />
+    <Content Include="Scripts\dist\css\AdminLTE.min.css" />
+    <Content Include="Scripts\dist\css\font-awesome.min.css" />
+    <Content Include="Scripts\dist\css\ionicons.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-black-light.css" />
+    <Content Include="Scripts\dist\css\skins\skin-black-light.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-black.css" />
+    <Content Include="Scripts\dist\css\skins\skin-black.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-blue-light.css" />
+    <Content Include="Scripts\dist\css\skins\skin-blue-light.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-blue.css" />
+    <Content Include="Scripts\dist\css\skins\skin-blue.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-green-light.css" />
+    <Content Include="Scripts\dist\css\skins\skin-green-light.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-green.css" />
+    <Content Include="Scripts\dist\css\skins\skin-green.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-purple-light.css" />
+    <Content Include="Scripts\dist\css\skins\skin-purple-light.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-purple.css" />
+    <Content Include="Scripts\dist\css\skins\skin-purple.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-red-light.css" />
+    <Content Include="Scripts\dist\css\skins\skin-red-light.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-red.css" />
+    <Content Include="Scripts\dist\css\skins\skin-red.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-yellow-light.css" />
+    <Content Include="Scripts\dist\css\skins\skin-yellow-light.min.css" />
+    <Content Include="Scripts\dist\css\skins\skin-yellow.css" />
+    <Content Include="Scripts\dist\css\skins\skin-yellow.min.css" />
+    <Content Include="Scripts\dist\css\skins\_all-skins.css" />
+    <Content Include="Scripts\dist\css\skins\_all-skins.min.css" />
+    <Content Include="Scripts\dist\fonts\fontawesome-webfont.svg" />
+    <Content Include="Scripts\dist\img\avatar.png" />
+    <Content Include="Scripts\dist\img\avatar04.png" />
+    <Content Include="Scripts\dist\img\avatar2.png" />
+    <Content Include="Scripts\dist\img\avatar3.png" />
+    <Content Include="Scripts\dist\img\avatar5.png" />
+    <Content Include="Scripts\dist\img\boxed-bg.jpg" />
+    <Content Include="Scripts\dist\img\boxed-bg.png" />
+    <Content Include="Scripts\dist\img\credit\american-express.png" />
+    <Content Include="Scripts\dist\img\credit\cirrus.png" />
+    <Content Include="Scripts\dist\img\credit\mastercard.png" />
+    <Content Include="Scripts\dist\img\credit\mestro.png" />
+    <Content Include="Scripts\dist\img\credit\paypal.png" />
+    <Content Include="Scripts\dist\img\credit\paypal2.png" />
+    <Content Include="Scripts\dist\img\credit\visa.png" />
+    <Content Include="Scripts\dist\img\default-50x50.gif" />
+    <Content Include="Scripts\dist\img\icons.png" />
+    <Content Include="Scripts\dist\img\photo1.png" />
+    <Content Include="Scripts\dist\img\photo2.png" />
+    <Content Include="Scripts\dist\img\photo3.jpg" />
+    <Content Include="Scripts\dist\img\photo4.jpg" />
+    <Content Include="Scripts\dist\img\user1-128x128.jpg" />
+    <Content Include="Scripts\dist\img\user2-160x160.jpg" />
+    <Content Include="Scripts\dist\img\user3-128x128.jpg" />
+    <Content Include="Scripts\dist\img\user4-128x128.jpg" />
+    <Content Include="Scripts\dist\img\user5-128x128.jpg" />
+    <Content Include="Scripts\dist\img\user6-128x128.jpg" />
+    <Content Include="Scripts\dist\img\user7-128x128.jpg" />
+    <Content Include="Scripts\dist\img\user8-128x128.jpg" />
+    <Content Include="Scripts\dist\js\app.js" />
+    <Content Include="Scripts\dist\js\app.min.js" />
+    <Content Include="Scripts\dist\js\demo.js" />
+    <Content Include="Scripts\dist\js\pages\dashboard.js" />
+    <Content Include="Scripts\dist\js\pages\dashboard2.js" />
+    <Content Include="Scripts\jQueryUI\jquery-ui.js" />
+    <Content Include="Scripts\jQueryUI\jquery-ui.min.js" />
+    <Content Include="Scripts\jQuery\jQuery-2.2.0.min.js" />
+    <Content Include="Scripts\jQuery\jquery.nicescroll.min.js" />
+    <Content Include="Scripts\plugins\iCheck\all.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\aero%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\aero.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\aero.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\blue%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\blue.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\blue.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\flat%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\flat.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\flat.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\green%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\green.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\green.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\grey%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\grey.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\grey.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\orange%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\orange.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\orange.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\pink%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\pink.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\pink.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\purple%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\purple.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\purple.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\red%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\red.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\red.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\yellow%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\yellow.css" />
+    <Content Include="Scripts\plugins\iCheck\flat\yellow.png" />
+    <Content Include="Scripts\plugins\iCheck\flat\_all.css" />
+    <Content Include="Scripts\plugins\iCheck\futurico\futurico%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\futurico\futurico.css" />
+    <Content Include="Scripts\plugins\iCheck\futurico\futurico.png" />
+    <Content Include="Scripts\plugins\iCheck\icheck.js" />
+    <Content Include="Scripts\plugins\iCheck\icheck.min.js" />
+    <Content Include="Scripts\plugins\iCheck\line\aero.css" />
+    <Content Include="Scripts\plugins\iCheck\line\blue.css" />
+    <Content Include="Scripts\plugins\iCheck\line\green.css" />
+    <Content Include="Scripts\plugins\iCheck\line\grey.css" />
+    <Content Include="Scripts\plugins\iCheck\line\line%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\line\line.css" />
+    <Content Include="Scripts\plugins\iCheck\line\line.png" />
+    <Content Include="Scripts\plugins\iCheck\line\orange.css" />
+    <Content Include="Scripts\plugins\iCheck\line\pink.css" />
+    <Content Include="Scripts\plugins\iCheck\line\purple.css" />
+    <Content Include="Scripts\plugins\iCheck\line\red.css" />
+    <Content Include="Scripts\plugins\iCheck\line\yellow.css" />
+    <Content Include="Scripts\plugins\iCheck\line\_all.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\aero%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\aero.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\aero.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\blue%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\blue.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\blue.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\green%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\green.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\green.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\grey%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\grey.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\grey.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\minimal%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\minimal.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\minimal.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\orange%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\orange.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\orange.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\pink%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\pink.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\pink.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\purple%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\purple.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\purple.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\red%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\red.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\red.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\yellow%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\yellow.css" />
+    <Content Include="Scripts\plugins\iCheck\minimal\yellow.png" />
+    <Content Include="Scripts\plugins\iCheck\minimal\_all.css" />
+    <Content Include="Scripts\plugins\iCheck\polaris\polaris%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\polaris\polaris.css" />
+    <Content Include="Scripts\plugins\iCheck\polaris\polaris.png" />
+    <Content Include="Scripts\plugins\iCheck\square\aero%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\aero.css" />
+    <Content Include="Scripts\plugins\iCheck\square\aero.png" />
+    <Content Include="Scripts\plugins\iCheck\square\blue%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\blue.css" />
+    <Content Include="Scripts\plugins\iCheck\square\blue.png" />
+    <Content Include="Scripts\plugins\iCheck\square\green%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\green.css" />
+    <Content Include="Scripts\plugins\iCheck\square\green.png" />
+    <Content Include="Scripts\plugins\iCheck\square\grey%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\grey.css" />
+    <Content Include="Scripts\plugins\iCheck\square\grey.png" />
+    <Content Include="Scripts\plugins\iCheck\square\orange%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\orange.css" />
+    <Content Include="Scripts\plugins\iCheck\square\orange.png" />
+    <Content Include="Scripts\plugins\iCheck\square\pink%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\pink.css" />
+    <Content Include="Scripts\plugins\iCheck\square\pink.png" />
+    <Content Include="Scripts\plugins\iCheck\square\purple%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\purple.css" />
+    <Content Include="Scripts\plugins\iCheck\square\purple.png" />
+    <Content Include="Scripts\plugins\iCheck\square\red%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\red.css" />
+    <Content Include="Scripts\plugins\iCheck\square\red.png" />
+    <Content Include="Scripts\plugins\iCheck\square\square%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\square.css" />
+    <Content Include="Scripts\plugins\iCheck\square\square.png" />
+    <Content Include="Scripts\plugins\iCheck\square\yellow%402x.png" />
+    <Content Include="Scripts\plugins\iCheck\square\yellow.css" />
+    <Content Include="Scripts\plugins\iCheck\square\yellow.png" />
+    <Content Include="Scripts\plugins\iCheck\square\_all.css" />
+    <Content Include="Scripts\Portal\custom.png" />
+    <Content Include="Scripts\Portal\r1c2.png" />
+    <Content Include="Scripts\Portal\r1c3.png" />
+    <Content Include="Scripts\Portal\select.png" />
+    <Content Include="Scripts\Portal\switch.png" />
+    <Content Include="test.htm" />
+    <Content Include="Views\Main\Template\default.js" />
+    <Content Include="Views\Main\Template\image.js" />
+    <Content Include="Views\Main\Template\linkUrl.js" />
+    <Content Include="Views\Main\Template\news.js" />
+    <Content Include="Views\Main\Template\normal.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Filters\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Main\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenFlash\FlashPlayer.zip" />
+    <Content Include="Images\bgImage\Thumbs.db" />
+    <Content Include="Images\Portal\Blue\Thumbs.db" />
+    <Content Include="Images\Portal\Yellow\Thumbs.db" />
+    <None Include="Scripts\bootstrap\css\bootstrap.css.map" />
+    <None Include="Scripts\bootstrap\css\bootstrap.min.css.map" />
+    <None Include="Scripts\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="Scripts\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="Scripts\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="Scripts\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Views\Main\board1.cshtml" />
+    <None Include="Scripts\dist\fonts\fontawesome-webfont.eot" />
+    <None Include="Scripts\dist\fonts\fontawesome-webfont.ttf" />
+    <None Include="Scripts\dist\fonts\fontawesome-webfont.woff" />
+    <None Include="Scripts\dist\fonts\fontawesome-webfont.woff2" />
+    <None Include="Scripts\dist\fonts\FontAwesome.otf" />
+    <Content Include="Views\Main\board10.cshtml" />
+    <None Include="Views\Main\board2.cshtml" />
+    <None Include="Views\Main\board3.cshtml" />
+    <None Include="Views\Main\board4.cshtml" />
+    <None Include="Views\Main\board5.cshtml" />
+    <Content Include="Views\Main\Login.cshtml" />
+    <Content Include="Views\Main\board6.cshtml" />
+    <Content Include="Views\Main\board7.cshtml" />
+    <Content Include="Views\Main\board8.cshtml" />
+    <Content Include="Views\Main\board9.cshtml" />
+    <Content Include="Views\Main\forgetPwd.cshtml" />
+    <Content Include="Views\Main\Portal.cshtml" />
+    <Content Include="Views\Main\Index02.cshtml" />
+    <Content Include="Views\Main\MailList.cshtml" />
+    <Content Include="Views\Main\Task.cshtml" />
+    <Content Include="Views\Main\Navigition.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BusinessModule\BaseLogic\Base.Logic\Base.Logic.csproj">
+      <Project>{ec8bb43b-4f2b-4e79-9be7-5521d4a86f62}</Project>
+      <Name>Base.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>6097</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

@@ -1,0 +1,224 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" onclick="startPlan();" iconcls="icon-add" plain="true">计划安排</a>
+                <a class="mini-button" onclick="startFetchDat();" iconcls="icon-add" plain="true">启动资料提交</a>
+            </td>
+            <td style="white-space: nowrap;">
+                展开至：<input name="PBSType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="PBSType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;&nbsp;&nbsp;
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="treeSearch"
+                       onbuttonclick="treeSearch" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="treeArea">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true" multiselect="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowcellwrap="true" iconfield="NodeType"
+         expandonload="true" onload="onload" ondrawcell="onDrawingCell" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="false"
+         allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn"></div>
+            <div field="FetchState" width="50" align="center" headeralign="center" allowsort="false">已提资</div>
+            <div name="Name" field="Name" width="270" headeralign="center" allowsort="false">名称</div>
+            <div field="MajorName" width="70" headeralign="center" allowsort="false" align="center">专业分类</div>
+            <div field="PlanFetchDate" dateformat="yyyy-MM-dd" width="90" headeralign="center" allowsort="false" align="center">计划提资</div>
+            <div field="FactFetchDate" dateformat="yyyy-MM-dd" width="90" headeralign="center" allowsort="false" align="center">实际提资</div>
+            <div name="Attachment" field="Attachment"
+                 displayfield="AttachmentName" width="120" headeralign="center" allowsort="false"
+                 align="left" visible="true" renderer='onFileRender'>
+                规格书
+                <input property="editor" class="mini-fileupload" style="width: 100%;"
+                       flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                       uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+            </div>
+            <div name="ReturnDatFile" field="ReturnDatFile"
+                 displayfield="ReturnDatFileName" width="120" headeralign="center" allowsort="false"
+                 align="left" visible="true" renderer='onFileRender'>
+                返回资料
+                <input property="editor" class="mini-fileupload" style="width: 100%;"
+                       flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                       uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+            </div>
+            <div field="Model" width="200" headeralign="center" allowsort="false">规格及参数</div>
+            <div field="Branding" width="90" headeralign="center" allowsort="false">品牌</div>
+            <div field="Material" width="90" headeralign="center" allowsort="false">材质</div>
+            <div field="Unit" width="50" headeralign="center" allowsort="false" align="center">单位</div>
+            <div field="Quantity" width="40" align="right" headeralign="center" allowsort="false">数量</div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+</script>
+
+
+
+<style type="text/css">
+    .DivTab {
+        border-top: 0px !important;
+    }
+
+    .ShowStatus {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+    }
+
+    .Finish {
+        background: url(/EPC/Scripts/Images/green.gif) no-repeat;
+    }
+
+     .Processing {
+        background: url(/EPC/Scripts/Images/yellow.gif) no-repeat;
+    }
+
+    .UnFinish {
+        background: url(/EPC/Scripts/Images/red.gif) no-repeat;
+    }
+</style>
+
+<script type="text/javascript">
+    @Html.GetEnum("Base.PBSType")
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var url = "GetTreeList?EngineeringInfoID=" + engineeringInfoID;
+    $("#dataTree").attr("url", url);
+    normalParamSettings.gridId = "dataTree";
+
+    addGridButton("dataTree", "FactFetchDate", {
+        onButtonClick: function (row) {
+            if (!row.FetchPacthID) { msgUI("没有关联设备提资确认单，无法查看"); return; }
+            var url = "/MvcConfig/UI/Form/PageView?TmplCode=BomFetchData&FuncType=View&ID=" + row.FetchPacthID;
+            openWindow(url, {
+                refresh: false, title: "设备清单版本查看", width: "75%", height: "90%",
+                onDestroy: function (data) {
+                }
+            });
+        }
+    });
+
+    function onload() {
+        collapseLevel();
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("PBSType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        if (level == "Root") {
+            tree.collapseLevel(0);
+        }
+        else if (level == "SubProject") {
+            tree.collapseLevel(1);
+        } else if (level == "Module") {
+            tree.collapseLevel(2);
+        }
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType != "Detail") {
+            e.cellStyle = "font-weight:bolder;";
+        }
+        else if (record.NodeType == "Detail") {
+            if (field == "FetchState") {
+                var toolTip = "未完成";
+                if (e.value == "Finish") {
+                    toolTip = "已完成";
+                }
+                e.cellHtml = "<span title='" + toolTip + "' class='ShowStatus " + e.value + "' style='float:center;'></span>";
+            }
+        }
+    }
+
+    function startPlan() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            msgUI("请选择设备");
+            return;
+        }
+        var data = new Array();
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (node.NodeType != "Detail") {
+                continue;
+            }
+            data.push(node);
+        }
+        var url = "/EPC/Design/BomFetchPlan/PageView?TmplCode=BomFetchPlan&FlowCode=BomFetchPlan&EngineeringInfoID=" + engineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "设备提资计划", width: "75%", height: "90%",
+            data: data,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    dataTree.reload();
+                }
+            }
+        });
+    }
+
+    function startFetchDat() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            msgUI("请选择设备");
+            return;
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (node.NodeType != "Detail") {
+                msgUI("只能选择设备材料记录进行返资操作"); return;
+            }
+        }
+        var url = "/EPC/Design/BomFetchData/PageView?TmplCode=BomFetchData&FlowCode=BomFetchData&EngineeringInfoID=" + engineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "设备提资确认", width: "75%", height: "90%",
+            data: nodes,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    dataTree.reload();
+                }
+            }
+        });
+    }
+
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+</script>

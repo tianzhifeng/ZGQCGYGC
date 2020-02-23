@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "WBS策划";
+}
+            <div class="mini-toolbar" style="padding: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="addRow" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveWBS" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         allowcelledit="true" allowcellselect="true" showpager="false" editnextonenterkey="true" editnextrowcell="true" allowunselect="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div name="function" field="delete" width="60" headeralign="center" align="center" allowsort="false">
+                删除
+            </div>
+            <div field="Name" vtype=" required" width="*" headeralign="center" allowsort="false">
+                名称<input property="editor" class="mini-textbox" required="true" style="width: 100%;" />
+            </div>
+            <div field="Code" width="100" headeralign="center" allowsort="false" align="center">
+                编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="100" headeralign="center" allowsort="false" align="center" vtype="float">
+                定额工<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    addGridButton("dataGrid", "delete", {
+        actionTitle: "删除", onButtonClick: function (row, settings, sender) {
+            delRow(row);
+        }
+    });
+
+    var wbsType = getQueryString("Type");
+    var parentIDs = getQueryString("ParentIDs");
+    function saveWBS() {
+        var grid = mini.get("dataGrid"); grid.commitEdit();
+        var rows = grid.getData();
+        addExecuteParam("WBSType", wbsType);
+        addExecuteParam("Children", mini.encode(rows));
+        addExecuteParam("ParentIDs", parentIDs);
+        execute("AddChild", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                closeWindow(data);
+            }, validateForm: true
+        });
+
+    }
+
+    function addRow() {
+        var grid = mini.get("dataGrid");
+        var newRow = { WBSType: wbsType };
+        var index = grid.getData().length;
+        grid.addRow(newRow, index);
+    }
+</script>

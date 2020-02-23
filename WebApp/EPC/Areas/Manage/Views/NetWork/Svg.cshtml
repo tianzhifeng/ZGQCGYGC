@@ -1,0 +1,159 @@
+﻿<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" id="splitter" vertical="true">
+        <div size="45" showcollapsebutton="false" borderstyle="0px" style="background-color: #fff;">
+            <div class="mini-toolbar" id="btnSvgDiv" style="text-align: right; height: 30px;">
+                <table>
+                    <tr>
+                        <td>时间刻度:</td>
+                        <td style="text-align: center;">
+                            <input class="mini-radiobuttonlist" name="TimeFormat" value="md" data="dateList" onvaluechanged="onTimeFormatValueChanged"></input>
+                        </td>
+                        <td><span class="separator"></span></td>
+                        <td>间距:</td>
+                        <td style="text-align: center;">
+                            <input class="mini-radiobuttonlist" name="GAP" value="variable" onvaluechanged="onGapValueChanged" data="gapList"></input>
+                        </td>
+                        <td><span class="separator"></span></td>
+                        <td>表格宽度:</td>
+                        <td style="text-align: center;">
+                            <input class="mini-radiobuttonlist" name="Multiple" onvaluechanged="onMultipleChanged" data="multipleList"></input>
+                        </td>
+                        <td><span class="separator"></span></td>
+                        <td>显示虚线:</td>
+                        <td style="text-align: center;">
+                            <input class="mini-checkbox" name="Line" value="true" onvaluechanged="isShowLine();"></input>
+                        </td>
+                        <td><span class="separator"></span></td>
+                        <td style="text-align: center;">
+                            <a class="mini-button" iconcls="icon-down" onclick="svgExport()">导出</a>
+                        </td>
+           @*             <td><span class="separator"></span></td>
+                        <td style="text-align: center;">
+                            <a class="mini-button" iconcls="icon-refresh" onclick="refresh()">优化</a>
+                        </td>*@
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div showcollapsebutton="false">
+            <iframe id="Iframe" frameborder="0px" style="border: 0px; width: 100%; height: 100%"></iframe>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var gapList = [{ value: 'standard', text: '标准间距' }, { value: 'variable', text: '可变间距' }];
+    var dateList = [{ value: 'md', text: '月日' }, { value: 'april', text: '月旬' }, { value: 'ym', text: '年月' }];
+    var multipleList = [{ value: '2', text: '两倍' }, { value: '3', text: '三倍' }, { value: '4', text: '四倍' }, { value: '5', text: '五倍' }];
+</script>
+<script type="text/javascript">
+    var workJson = @Html.Raw(ViewBag.workJson);
+    var relation = @Html.Raw(ViewBag.relation);
+
+    var frame = document.getElementById("Iframe");
+    var url = "/EPC/Manage/NetWork/Main?beginWorkTime=" + getQueryString("BeginWorkTime") + "&projectID=" + getQueryString("ProjectID") + "&optimize=" + getQueryString("optimize");
+    
+    function gTimeScale(){
+        var year_month = [], min_month, max_month;
+        if(workJson.length > 0 || (workJson.nodes && workJson.nodes.length > 0)){
+            max_month = workJson.nodes[0].datatime;
+            for (var i = 0; i < workJson.nodes.length; i++) {
+                //比较大小   
+                var temp = workJson.nodes[i].datatime;
+                if (max_month < temp) {
+                    max_month = temp;
+                } else {
+                    min_month = temp;
+                }
+                if (year_month.indexOf(temp.substring(0, 7)) < 0) {
+                    year_month.push(temp.substring(0, 7));
+                }
+            }
+        }
+        var type = dateList[0].value, years = [];
+        for (var i = 0; i < year_month.length; i++) {
+            var year = year_month[i].substring(0, 4);
+            if (years.indexOf(year) <= -1) {
+                years.push(year);
+            }
+        }
+        if(years.length > 2){
+            type = dateList[2].value;
+        }else if(year_month.length > 2 && years.length <= 2){
+            type = dateList[1].value;
+        } 
+        mini.getbyName("TimeFormat").setValue(type);
+        return url + "&gap=" + gapList[1].value + "&dateType=" + type;
+    }
+
+    function pageLoad(){
+        frame.src = gTimeScale();
+    }
+
+    //是否显示虚线
+    function isShowLine() {
+        var isShow = mini.getbyName("Line").getValue();
+        var childWindow = $("#Iframe")[0].contentWindow;
+        if (isShow == 'true') {
+            childWindow.gLine(childWindow.$("#svg"));//线绘制 
+        } else {
+            childWindow.$("#svg #lines").remove();
+        }
+    }
+
+    //间距
+    function onGapValueChanged(e) {
+        var childWindow = $("#Iframe")[0].contentWindow;
+        var dateType = mini.getbyName("TimeFormat").getValue();
+        var multiple = mini.getbyName("Multiple").getValue();
+        function frameMsg(msg){
+            msgUI(msg, 2, function (action) {
+                if (action == "ok") {
+                    frame.src = url + "&gap=" + e.value + "&dateType=" + dateType + "&multiple=" + multiple;
+                }else{
+                    mini.getbyName("GAP").setValue(gapList[1].value);
+                }
+            });
+        }
+        if(childWindow.year_month.length > 2 && e.value == gapList[0].value && dateList[0].value == dateType){
+            frameMsg("月度跨越了两个月以上,建议使用可变间距,是否继续?");
+        }else{
+            var years = [];
+            for (var i = 0; i < childWindow.year_month.length; i++) {
+                var year = childWindow.year_month[i].substring(0, 4);
+                if (years.indexOf(year) <= -1) {
+                    years.push(year);
+                }
+            }
+
+            if(years.length > 2  && e.value == gapList[0].value && dateList[2].value == dateType){
+                frameMsg("时间跨越了两年以上,建议使用可变间距,是否继续?");
+            }else{
+                frame.src = url + "&gap=" + e.value + "&dateType=" + dateType + "&multiple=" + multiple;}
+        }
+    }
+
+    function onMultipleChanged(e){
+        var gap = mini.getbyName("GAP").getValue();
+        var dateType = mini.getbyName("TimeFormat").getValue();
+        frame.src = url + "&gap=" + gap + "&dateType=" + dateType + "&multiple=" + e.value;
+    }
+
+    function onTimeFormatValueChanged(e){
+        var gap = mini.getbyName("GAP").getValue();
+        var multiple = mini.getbyName("Multiple").getValue();
+        frame.src = url + "&gap=" + gap + "&dateType=" + e.value + "&multiple=" + multiple;
+    }
+
+    //导出PDF
+    function svgExport(type){
+        var childWindow = $("#Iframe")[0].contentWindow;
+        childWindow.svgExport(type); 
+    }
+
+    function refresh(){
+        msgUI("是否继续优化路径？", 2, function (result) {
+            if (result != "ok") { return; }
+            window.parent.refresh(true);
+        });    
+    }
+</script>

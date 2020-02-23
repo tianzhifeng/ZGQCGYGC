@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "质量分析";
+}
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="north" region="north" height="300" showspliticon="false" showheader="false">
+        <div class="mini-fit">
+            <div id="subLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+                <div title="east" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+                    <div id="columnChartContainer" class="mini-fit">
+                    </div>
+                </div>
+                <div title="west" region="west" style="border-top: 0; border-bottom: 0; border-left: 0;"
+                    width="600px" showheader="false" showspliticon="false">
+                    <div id="pieChartContainer" class="mini-fit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-right: 0; border-bottom: 0; border-left: 0;">
+        <div class="mini-fit">
+            <div id="mygrid" url="" showpager="false" class="mini-datagrid" style="width: 100%;
+                height: 100%;" idfield="ID" multiselect="true" borderstyle="border:0;" showsummaryrow="true"
+                ondrawsummarycell="onDrawSummaryCell">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="MajorName" width="150" headeralign="center">
+                        专业
+                    </div>
+                    @{
+                        foreach (var item in ViewBag.MistakeLevel)
+                        {
+                            var len = item.Name.Length * 12+ 20;
+                        <div field="@item.Code" width="@len" headeralign="center" align="right" renderer="onLinkRender" summarytype="sum">
+                            @item.Name
+                        </div>
+                        }
+                    }
+                    <div field="Summary" width="80" headeralign="center" align="right" summarytype="sum">
+                        合计
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function pageLoad() {
+        loadData();
+    }
+
+    function loadData() {
+        execute("GetList", {
+            onComplete: function (responseData) {
+                var dataGrid = mini.get("mygrid");
+                dataGrid.loadData(responseData.data);
+                $('#pieChartContainer').highcharts(responseData.PieChart);
+                $('#columnChartContainer').highcharts(responseData.ColumnChart);
+            }
+        });
+    }
+
+    function onLinkRender(e) {
+        var cls = "";
+        var uid = e.record._uid;
+        var s = '<a ' + cls + 'href="javascript:void(0)" onclick="onGridLink(\'' + uid + '\',\'' + e.field + '\',\'' + e.sender.id + '\');">' + e.value + '</a>';
+        return s;
+    }
+
+    function onGridLink(UID, field, GridID) {
+        var dataGrid = mini.get(GridID);
+        var row = dataGrid.getRowByUID(UID);
+        queryData = {};
+        queryData["$EQ$MajorCode"] = row.MajorValue;
+        queryData["$EQ$ProjectInfoID"] = getQueryString("ProjectInfoID");
+        var url = "DetailList?MistakeType=" + field + "&MajorCode=" + row.MajorValue; var width = 600; var height = 550;
+        openWindow(url, { data: queryData, width: width, height: height, title: "专业质量问题人员统计" });
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        //服务端汇总计算
+        if (e.field == "MajorName") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: left;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+    }
+</script>

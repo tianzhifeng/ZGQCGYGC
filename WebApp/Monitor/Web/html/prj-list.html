@@ -1,0 +1,179 @@
+<div class="head">
+    <button class="left" onclick="$monitor.goback(this)">
+        <i class="glyphicon glyphicon-menu-left"></i>
+    </button>
+    <span class="title">在建项目信息</span>
+    <button class="right" onclick='showProjectSearchPage("listProjectSearch")'>
+        <i class="glyphicon glyphicon-search"></i>
+    </button>
+</div>
+<div class="filter un-prj-search bindParentData">
+    <div class="custom-select big-width" data-id="filter2" onclick="$monitor.showFilter(this)">
+        <span id="orderFilter">健康度排序</span><i class="glyphicon"></i>
+    </div>
+    <div class="custom-select" data-id="filter1" onclick="$monitor.showFilter(this)">
+        <span>筛选</span><i class="glyphicon"></i>
+    </div>
+    <div class="total">
+        共<span way-data="projectSum"></span>个</div>
+</div>
+<!-- 过滤：页面 -->
+<div class="filter-content md-ttb" id="filter1">
+    <div class="search-prj">
+        <div class="un-prj-model" data-id="PhaseValue">
+            <div class="title">
+                所属阶段： <i class="glyphicon glyphicon-menu-up" onclick="hideOrShow(this)"></i>
+            </div>
+            <ul class="model-4 for-use">
+                <li onclick="selectThisCondition(this)" data-id="ZHX">
+                    <div>
+                        专项规划</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="ZIX">
+                    <div>
+                        咨询规划</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="FA">
+                    <div>
+                        方案</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="CBSJ">
+                    <div>
+                        初步设计</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="SGT">
+                    <div>
+                        施工图</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="HQFW">
+                    <div>
+                        后期服务</div>
+                </li>
+            </ul>
+        </div>
+        <div class="un-prj-model" data-id="ProjectClass">
+            <div class="title">
+                业务类型： <i class="glyphicon glyphicon-menu-up" onclick="hideOrShow(this)"></i>
+            </div>
+            <ul class="model-4">
+                <li onclick="selectThisCondition(this)" data-id="建筑设计">
+                    <div>
+                        建筑设计</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="市政园林设计">
+                    <div>
+                        市政园林设计</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="咨询规划">
+                    <div>
+                        咨询规划</div>
+                </li>
+            </ul>
+        </div>
+        <div class="un-prj-model" data-id="ProjectLevel">
+            <div class="title">
+                项目规模： <i class="glyphicon glyphicon-menu-up" onclick="hideOrShow(this)"></i>
+            </div>
+            <ul class="model-4">
+                <li onclick="selectThisCondition(this)" data-id="10">
+                    <div>
+                        小型</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="20">
+                    <div>
+                        中型</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="30">
+                    <div>
+                        大型</div>
+                </li>
+            </ul>
+        </div>
+        <div class="un-prj-model" data-id="p.State">
+            <div class="title">
+                项目状态： <i class="glyphicon glyphicon-menu-up" onclick="hideOrShow(this)"></i>
+            </div>
+            <ul class="model-4">
+                <li class="state-use" onclick="selectThisCondition(this)" data-id="Plan">
+                    <div>
+                        策划</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="Pause">
+                    <div>
+                        暂停</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="Terminate">
+                    <div>
+                        终止</div>
+                </li>
+                <li onclick="selectThisCondition(this)" data-id="Finish">
+                    <div>
+                        完成</div>
+                </li>
+            </ul>
+        </div>
+        <div class="un-prj-unset" onclick="unsetChoose()">
+            重置</div>
+    </div>
+    <div class="footer" onclick="confirmSelect()">
+        确认</div>
+</div>
+<!-- 过滤：下拉框 -->
+<div class="filter-content md-ttb" id="filter2">
+    <ul class="model-1">
+        <li class="active" onclick="orderByCondition('HealthDegree',this)">健康度排序</li>
+        <li onclick="orderByCondition('ProjectTime',this)">立项时间排序</li>
+    </ul>
+    <div class="mark">
+    </div>
+</div>
+<!-- 填写内容 -->
+<div class="content has-filter content-list scroll">
+    <div class="scroll-content">
+        <!--外层循环-->
+        <div class="list-model waves-effect" onclick="EnterProjectInfo(this)" way-css="StateCss">
+            <div class="rememberCls" way-data="ID">
+            </div>
+            <div class="triangle">
+            </div>
+            <div class="badge-text" way-data="State">
+            </div>
+            <div class="detail">
+                <div class="title" way-data="Name">
+                    <i class="glyphicon glyphicon-menu-right"></i>
+                </div>
+                <div class="span-icon icon-no code-cls">
+                    <span way-data="Code"></span>
+                </div>
+                <div class="span-icon icon-user user-cls">
+                    <span way-data="ChargeUserName"></span>
+                </div>
+                <p>
+                    <span class="span-icon icon-time" way-data="PlanStartDate" way-transform="dateFormatter">
+                    </span>至 <span class="pl-5 endtime" way-data="PlanEndDate" way-transform="dateFormatter">
+                    </span>
+                </p>
+            </div>
+            <!--里程碑-->
+            <ul class="time-line" way-scope-break="true">
+                <li>
+                    <div class="desc">
+                        <div>
+                            <span way-data="Name"></span><span class="miston" way-css="MistonState" way-data="State">
+                            </span>
+                        </div>
+                        <div class="plan-cls">
+                            <div class="left-date">
+                                计划完成<span way-data="PlanFinishDate" way-transform="dateFormatter"></span></div>
+                            <div>
+                                实际完成<span way-data="FactFinishDate" way-transform="dateFormatter"></span></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="show-milestone" onclick="showMilestone(this,event)">
+                <i class="glyphicon glyphicon-menu-down"></i><span>查看</span>项目里程碑
+            </div>
+        </div>
+    </div>
+</div>

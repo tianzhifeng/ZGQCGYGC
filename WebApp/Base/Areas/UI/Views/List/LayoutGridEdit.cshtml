@@ -1,0 +1,246 @@
+﻿<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="38" showspliticon="false" showheader="false" allowresize="false" splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveLayout({action:'SaveLayoutGrid'});">保存</a>
+                    </td>
+                    <td id="btnRight">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <form id="dataForm" method="post" url="GetLayoutGrid">
+        <div class="formDiv">
+            <fieldset>
+                <legend>基本属性</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="50%">
+                            </td>
+                            <td width="50%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                树形列表：
+                            </td>
+                            <td>
+                                <input name="isTreeGrid" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否多选：
+                            </td>
+                            <td>
+                                <input name="multiSelect" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示列菜单：
+                            </td>
+                            <td>
+                                <input name="showColumnsMenu" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示斑马纹：
+                            </td>
+                            <td>
+                                <input name="allowAlternating" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                锁定开始列：
+                            </td>
+                            <td>
+                                <input name="frozenStartColumn" class="mini-textbox" style="width: 100%;" vtype="int;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                锁定截至列：
+                            </td>
+                            <td>
+                                <input name="frozenEndColumn" class="mini-textbox" style="width: 100%;" vtype="int;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示汇总行：
+                            </td>
+                            <td>
+                                <input name="showSummaryRow" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                表头列筛选：<span style="color:orange"><b>New</b></span>
+                            </td>
+                            <td>
+                                <input name="showFilterRow" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单元格换行：
+                            </td>
+                            <td>
+                                <input name="allowCellWrap" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单元格编辑：<a href="javascript:$('#trAllowCellEditHelp').show()">说明</a>
+                            </td>
+                            <td>
+                                <input name="allowCellEdit" class="mini-combobox" value="false" data="yesNo" style="width: 100%" onvaluechanged="onvaluechange"/>
+                            </td>
+                        </tr>
+                        <tr id="trAllowCellEditHelp" style="display:none">
+                            <td colspan="2">
+                                只有在基本信息页填写【涉及到的表】，才能单元格编辑<br />
+                                【单元格选择】为是，才能单元格编辑<br />
+                                允许单元格编辑后：不能标签式查询，不能表头列筛选，当不分页时，客户端排序、快查；不能详查；
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单元格选择：
+                            </td>
+                            <td>
+                                <input name="allowCellSelect" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否分页：
+                            </td>
+                            <td>
+                                <input name="showPager" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否虚加载：
+                            </td>
+                            <td>
+                                <input name="virtualScroll" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>树形属性</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="50%">
+                            </td>
+                            <td width="50%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                ID列：
+                            </td>
+                            <td>
+                                <input name="idField" class="mini-combobox" data="fieldEnum" valuefield="field" textfield="header" shownullitem="true" allowinput="true" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                上级列：
+                            </td>
+                            <td>
+                                <input name="parentField" class="mini-combobox" data="fieldEnum" valuefield="field" textfield="header" shownullitem="true" allowinput="true" style="width: 100%"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否展开：
+                            </td>
+                            <td>
+                                <input name="expandOnLoad" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示节点图标：
+                            </td>
+                            <td>
+                                <input name="showTreeIcon" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                节点类型字段：
+                            </td>
+                            <td>
+                                <input name="NodeTypeField" class="mini-textbox" value="false" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>事件属性</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="50%">
+                            </td>
+                            <td width="50%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                绘制单元格时发生：
+                            </td>
+                            <td>
+                                <input name="ondrawcell" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var yesNo = [{ "value": "true", "text": "是" }, { "value": "false", "text": "否" }];
+    var fieldEnum =@Html.Raw(ViewBag.FieldEnum)
+    function onFormSetData(data) {
+        if (!data.TableNames)
+            mini.getbyName("allowCellEdit").setEnabled(false);
+        else
+            mini.getbyName("allowCellEdit").setEnabled(true);
+    }
+    function onvaluechange(e) {
+        if (e.value == "true") {
+            mini.getbyName("allowCellSelect").setValue("true");
+        }
+    }
+    function saveLayout(e)
+    {
+        var isTreeGrid = mini.getbyName("isTreeGrid").getValue();
+        if (isTreeGrid == "true") {
+            var parentField = mini.getbyName("parentField").getValue();
+            if (typeof (parentField) == "undefined" || parentField == "") {
+                msgUI("树形列表必须设置上级列!");
+                return;
+            }
+        }
+        save(e);
+    }
+</script>

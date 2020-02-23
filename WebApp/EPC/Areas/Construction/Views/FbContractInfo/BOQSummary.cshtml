@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "工程量清单汇总";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <div class="mini-toolbar gw-grid-toolbar" style="border-left: 0px">
+        <table>
+            <tr>
+                @*<td>
+                    <a class="mini-button" iconcls="icon-excel" onclick="excelExport" plain="true">导出Excel</a>
+                </td>*@
+                <td></td>
+                <td class="gw-toolbar-right">
+                    <input id="EntityGridKey" class="mini-buttonedit gw-searchbox" emptytext="编号或名称"
+                           onenter="quickSearch('Name,Code', { gridId: 'dataGrid', queryBoxId: 'EntityGridKey' });"
+                           onbuttonclick="quickSearch('Name,Code', { gridId: 'dataGrid', queryBoxId: 'EntityGridKey' });" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<div class="mini-fit">
+    <form id="excelForm" action="/" method="post">
+        <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect='true'
+             borderstyle="border-left:0px" url="" allowcellvalid="true" fitcolumns="false"
+             multiselect="true" allowcelledit="true" >
+            <div property="columns">
+                <div field="Code" width="110" headeralign="center">
+                    清单编号
+                </div>
+                <div field="Name" width="130" headeralign="center">
+                    项目名称
+                </div>
+                <div field="Property" width="150" headeralign="center">
+                    项目特征
+                </div>
+                <div field="Unit" width="60" align="center" headeralign="center">
+                    单位
+                </div>
+                <div headeralign="center">
+                    原始版
+                    <div property="columns">
+                        <div field="ZeroQuantity" width="60" headeralign="center" align="right">
+                            数量
+                        </div>
+                        <div field="ZeroUnitPrice" width="80" headeralign="center" datatype="currency" align="right">
+                            单价
+                        </div>
+                        <div field="ZeroPrice" width="90" headeralign="center" datatype="currency" numberformat="n" align="right">
+                            合价
+                        </div>
+                    </div>
+                </div>
+                <div headeralign="center">
+                    累计变更
+                    <div property="columns">
+                        <div field="QuantityDelta" width="60" headeralign="center" align="right">
+                            数量
+                        </div>
+                        <div field="UnitPriceDelta" width="80" headeralign="center" datatype="currency" align="right">
+                            单价
+                        </div>
+                        <div field="PriceDelta" width="90" headeralign="center" datatype="currency" align="right">
+                            合价
+                        </div>
+                    </div>
+                </div>
+                <div headeralign="center">
+                    最终版
+                    <div property="columns">
+                        <div field="Quantity" width="60" headeralign="center" align="right">
+                            数量
+                        </div>
+                        <div field="UnitPrice" width="80" headeralign="center" datatype="currency" align="right">
+                            单价
+                        </div>
+                        <div field="Price" width="90" headeralign="center" datatype="currency" align="right">
+                            合价
+                        </div>
+                    </div>
+                </div>
+                <div headeralign="center">
+                    已计量
+                    <div property="columns">
+                        <div field="CheckQuantityTotal" width="60" headeralign="center" align="right">
+                            数量
+                        </div>
+                        <div field="CheckPriceTotal" width="90" headeralign="center" datatype="currency" align="right">
+                            合价
+                        </div>
+                    </div>
+                </div>
+                <div field="Percent" width="90" align="right" headeralign="center">
+                    完成百分比(%)
+                </div>
+                <div field="Remark" width="80" headeralign="center">
+                    备注
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var contractInfoID = getQueryString('ContractInfoID');
+    var url = "GetBOQSummary?ContractInfoID=" + contractInfoID;
+    $(function () {
+        var grid = mini.get("dataGrid");
+       
+        grid.setUrl(url);
+        grid.load();
+    })
+    
+</script>
+

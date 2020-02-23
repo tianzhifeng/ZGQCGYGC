@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "成果列表";
+}
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetVersionList"
+        multiselect="true" borderstyle="border-left:0;border-right:0;">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Code" width="100" allowsort="true" align="center">
+                成果编号</div>
+            <div field="Name" width="*" allowsort="true" align="left">
+                成果名称</div>
+            <div field="FileType" width="60" allowsort="true" align="center">
+                类型</div>
+            <div field="Version" width="60" allowsort="true" align="center">
+                版本号</div>
+          @*  <div field="AuditState" width="80" allowsort="true" allowsort="true" align="center">
+                校审状态</div>*@
+            @*<div field="CoSignState" width="60" allowsort="true" align="center">
+                会签状态</div>
+            <div field="PrintState" width="60" allowsort="true" align="center">
+                出图状态</div>*@
+            <div field="CreateUser" width="60" allowsort="true" align="center">
+                提交人</div>
+            <div field="SubmitDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                提交日期
+            </div>
+            <div field="AuditState" width="80" allowsort="true" allowsort="true" align="center" headeralign="center">
+                校审状态
+            </div>
+            <div field="CoSignState" width="80" allowsort="true" allowsort="true" align="center" headeralign="center">
+                会签状态
+            </div>
+            <div field="ArchiveDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                归档日期
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.ProductFileType");
+    @Html.GetEnum("Project.AuditState")
+      @Html.GetEnum(typeof(Project.Logic.CoSignState));
+      @Html.GetEnum("Project.PrintState");
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "FileType", "ProductFileType");
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    //    addGridEnum("dataGrid", "CoSignState", "CoSignState");
+    //    addGridEnum("dataGrid", "PrintState", "PrintState");
+
+    addGridLink('dataGrid', 'Name', 'Edit?ID={ProductID}&VersionID={ID}', { funcType: 'view', height: 380, width: 700 });
+    
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    addGridButton("dataGrid", "AuditState", {
+        onButtonClick: function (row) {
+            var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + row.AuditID + "&FuncType=FlowTrace";
+            openWindow(url, {
+                refresh: true, title: "流程跟踪", width: "70%", height: "70%"
+            });
+        },
+        onFilter: function (e) {
+            return e.row["AuditID"];
+        }
+    });
+
+    addGridEnum("dataGrid", "CoSignState", "CoSignState");
+    addGridButton("dataGrid", "CoSignState", {
+        onButtonClick: function (row) {
+            var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + row.CounterSignAuditID + "&FuncType=FlowTrace";
+            openWindow(url, {
+                refresh: true, title: "流程跟踪", width: "70%", height: "70%"
+            });
+        },
+        onFilter: function (e) {
+            return e.row["CounterSignAuditID"];
+        }
+    });
+</script>

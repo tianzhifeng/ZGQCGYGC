@@ -1,0 +1,72 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="save({onComplete:function(){closeWindow('ok'); }});">保存</a>
+                @*<a class="mini-button" id="btnDelete" plain="true" iconcls="icon-remove" onclick="del({onComplete:function(){closeWindow('ok'); }})">删除</a>*@
+                <a class="mini-button" id="btnCancel" plain="true" iconcls="icon-cancel" onclick="closeWindow('close')">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" id="btnHelp" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" style="top: 30px; position: relative;">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        名称
+                    </td>
+                    <td colspan="3">
+                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Url
+                    </td>
+                    <td colspan="3">
+                        <input name="Url" class="mini-textbox" style="width: 100%" enabled='false' />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        图标
+                    </td>
+                    <td colspan="3">
+                        <input name="IconImage" textname="IconImage" class="mini-buttonedit" onbuttonclick="selectIcon();" style="width: 100%;" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    function selectIcon() {
+        openWindow('/PortalLTE/icons.html', { title: "选择图标", onDestroy: function (data) {
+            if (data != "close") {
+                var btn = mini.getbyName("IconImage");
+                btn.setValue(data);
+                btn.setText(data);
+            }
+        }
+        });
+    }
+</script>

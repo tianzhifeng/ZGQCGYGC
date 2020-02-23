@@ -1,0 +1,311 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+@using Config.Logic;
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="380" expanded="true" showspliticon="false" showheader="false" allowresize="false"
+         style="border-top:0px;border-bottom:0px;">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="addRoot();" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="edit({width:700, height: 500 });" plain="true">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 borderstyle="border-right:0px;border-bottom:0px;" showpager="false" onselectionchanged="onSelectionChanged">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="100" headeralign="center" align="center">
+                        名称
+                    </div>
+                    <div field="MeunDefineType" width="80" headeralign="center" align="center">
+                        类型
+                    </div>
+                    <div field="NavWBSType" width="80" headeralign="center" align="center">
+                        WBS入口
+                    </div>                    
+                    <div field="SortIndex" width="70" headeralign="center" align="right">
+                        排序号
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0px; border-bottom: 0px;">
+        <div id="subLayout" class="mini-layout" style="width: 100%; height: 100%;">
+            <div title="west" region="west" width="250" expanded="true" showspliticon="false" style="border-top: 0px; border-bottom: 0px;"
+                 showheader="false" allowresize="false">
+                <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+                    enablehottrack="false" parentfield="ParentID" resultastree="false" iconfield="MeunType" expandonload="3" onnodeselect="onNodeSelect"
+                    contextmenu="#treeMenu" contextmenu="#treeMenu"
+                    allowdrag="true" allowdrop="true" allowleafdropin="false" ongivefeedback="onGiveFeedback"
+                    ondrop="onNodeDrop"></ul>
+            </div>
+            <div title="center" region="center" style="border-top: 0px; border-bottom: 0px; border-right:0px;">
+                <div class="mini-toolbar" id="btnDiv" style="padding: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save({closeWindow:false});">
+                                    保存
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <form id="dataForm" method="post" autogetdata="false">
+                    <input name="ID" class="mini-hidden" />
+                    <input name="ParentID" class="mini-hidden" />
+                    <input name="ModeID" class="mini-hidden" />
+                    <input name="MeunType" class="mini-hidden" />
+                    <div style="padding-left: 20px; padding-top: 10px;">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                            <tr>
+                                <td></td>
+                                <td colspan="3" style="padding-right: 40px;"></td>
+                            </tr>
+                            <tr>
+                                <td width="15%">名称</td>
+                                <td width="35%;" style="padding-right: 40px;">
+                                    <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                </td>
+                                <td width="15%">类型</td>
+                                <td width="35%;" style="padding-right: 40px;">
+                                    <input name="MeunDefineType" class="mini-combobox" data="SpaceDefineType" style="width: 100%;"
+                                           onvaluechanged="onDefineTypeChanged"
+                                           textfield="text" valuefield="value" allowinput="false" required="true" />
+                                </td>
+                            </tr>
+                            @if (System.Configuration.ConfigurationManager.AppSettings["IsUseMultilingual"] == "True")
+                            {
+                                <tr>
+                                    <td>名称(英文)</td>
+                                    <td colspan="3" style="padding-right: 40px;">
+                                        <input name="NameEN" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                                    </td>
+                                </tr>
+                            }
+                            @if (EPC.Logic.Domain.S_T_DefineParams.Params.GetValue("ShowWBSNav") == "true")
+                            {
+                                <tr>
+                                    <td>WBS类型</td>
+                                    <td colspan="3" style="padding-right: 40px;">
+                                        <input name="NavWBSType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                               data="WBSType" allowinput="false" />
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td>URL链接</td>
+                                <td colspan="3" style="padding-right: 40px;">
+                                    <input name="LinkUrl" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>排序号</td>
+                                <td style="padding-right: 40px;">
+                                    <input name="SortIndex" style="width: 100%" class="mini-textbox" required="true" vtype="float" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>数据源类别</td>
+                                <td style="padding-right:40px;">
+                                    <input name="DataSourceType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="SpaceDataSourceType" allowinput="false" />
+                                </td>
+                                <td>数据库连接</td>
+                                <td style="padding-right:40px;">
+                                    <input name="ConnName" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="ConnEnum" allowinput="false" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>数据源SQL</td>
+                                <td colspan="3" style="padding-right:40px;">
+                                    <input name="DataSourceSQL" class="mini-textarea" style="width: 100%;height:150px;" vtype="maxLength:2000" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>条件SQL</td>
+                                <td colspan="3" style="padding-right:40px;">
+                                    <input name="ConditionSQL" class="mini-textarea" style="width: 100%;height:150px;" vtype="maxLength:2000" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="addSpace" iconcls="icon-add" onclick="addSpace">增加空间</li>
+    <li name="addMenu" iconcls="icon-add" onclick="addMenu">增加菜单</li>
+    <li name="delGroup" iconcls="icon-remove" onclick="delnode">删除</li>
+</ul>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.SpaceDefineType))
+    @Html.GetEnum(typeof(EPC.Logic.SpaceDataSourceType))
+    @Html.GetEnum(typeof(Config.ConnEnum))
+    @Html.GetEnum("Base.WBSType")
+</script>
+<script type="text/javascript">
+
+
+    addGridEnum("dataGrid", "NavWBSType", "WBSType");
+    addGridEnum("dataGrid", "MeunDefineType", "SpaceDefineType");
+
+    function addRoot() {
+        var modeID = getQueryString("ModeID");
+        var url = "Edit?ModeID=" + modeID + "&MeunType=Root&MeunDefineType=Static"
+        var settings = { url: url, width: 700, height: 500 };
+        add(settings);
+    }
+
+    function addSpace() {
+        var modeID = getQueryString("ModeID");
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        var url = "Edit?ModeID=" + modeID + "&MeunType=Space&ParentID=" + node.ID + "&MeunDefineType=Static";
+        openWindow(url, {
+            title: "增加空间", width: 700, height: 500, onDestroy: function (data) {
+                mini.get("dataTree").load(mini.get("dataTree").url);
+            }
+        });
+    }
+
+    function addMenu() {
+        var modeID = getQueryString("ModeID");
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        var url = "Edit?ModeID=" + modeID + "&MeunType=Meun&ParentID=" + node.ID + "&MeunDefineType=Static";
+        openWindow(url, {
+            title: "增加菜单", width: 700, height: 500, onDestroy: function (data) {
+                mini.get("dataTree").load(mini.get("dataTree").url);
+            }
+        });
+    }
+
+    function delnode() {
+        var tree = mini.get("dataTree");
+        msgUI("您确定需要删除吗？", 2, function (data) {
+            if (data != "ok") return;
+            var node = tree.getSelectedNode();
+            addExecuteParam("ListIDs", node.ID);
+            execute("Delete", {
+                onComplete: function (data) {
+                    tree.removeNode(node);
+                }
+            });
+        });
+    }
+
+
+    function onSelectionChanged(e) {
+        if (e.selected) {
+            var url = "GetDefineTree?ID=" + e.selected.ID;
+            mini.get("dataTree").load(url);
+        }
+        else {
+            mini.get("dataTree").load("");
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var addSpaceItem = mini.getbyName("addSpace", menu);
+        var addMenuItem = mini.getbyName("addMenu", menu);
+        var delGroupItem = mini.getbyName("delGroup", menu);
+
+        addSpaceItem.show();
+        addMenuItem.show();
+        delGroupItem.show();
+        if (node.MeunType == "Root") {
+            delGroupItem.hide();
+        }
+        else if (node.MeunType == "Meun") {
+            addSpaceItem.hide();
+        }
+    }
+
+    function onLoadComplete(e) {
+        var row = e.source.getRow(0);
+        e.source.select(row);
+    }
+
+    $("#btnDiv").hide();
+    function onNodeSelect(e) {
+        var node = e.node;
+        if (node) {
+            var form = new mini.Form("#dataForm");
+            form.setData(node);
+            if (node.ParentID) {               
+                if (mini.getbyName("NavWBSType")) {
+                    setFormItemDisabled("NavWBSType");
+                    mini.getbyName("NavWBSType").setRequired(false);
+                }
+            }
+            else {            
+                if (mini.getbyName("NavWBSType")) {
+                    setFormItemEditabled("NavWBSType");
+                    mini.getbyName("NavWBSType").setRequired(true);
+                }
+            }
+            $("#btnDiv").show();
+        }
+        else {
+            $("#btnDiv").hide();
+        }
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false
+        });
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+    }
+
+</script>
+<style type="text/css">
+    .Root {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif) no-repeat;
+    }
+
+    .Meun {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+
+    .Space {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/module.png) no-repeat;
+    }
+</style>

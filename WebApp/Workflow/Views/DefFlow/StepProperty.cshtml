@@ -1,0 +1,403 @@
+﻿<div class="mini-fit">
+    <form id="dataForm" method="post" url="GetStepProperty" autogetdata="false">
+        <input name="ID" class="mini-hidden" />
+        <div class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-right:0px">
+            <div title="基本信息">
+                <table style="width: 100%">
+                    <tr class="hideRow">
+                        <td width="35%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            环节编号
+                        </td>
+                        <td>
+                            <input name="Code" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            环节名称
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox" style="width: 100%" required="true" onvaluechanged="setNodeTile()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            环节名称(英文)
+                        </td>
+                        <td>
+                            <input name="NameEN" class="mini-textbox" style="width: 100%" onvaluechanged="setNodeTile()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            流转阶段
+                        </td>
+                        <td>
+                            <input name="Phase" class="mini-combobox" style="width: 100%" allowinput="true" data="FlowPhase" maxLength="25" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            协作方式
+                        </td>
+                        <td>
+                            <input name="CooperationMode" class="mini-combobox" style="width: 100%" required="true" data="TaskCooperationMode" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            等待环节
+                        </td>
+                        <td>
+                            <input name="WaitingStepIDs" class="mini-combobox" style="width: 100%" multiselect="true" data="FlowStep" shownullitem="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            空执行跳转
+                        </td>
+                        <td>
+                            <input name="EmptyToStep" class="mini-combobox" style="width: 100%" multiselect="false" data="FlowStep" shownullitem="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            打回签字
+                        </td>
+                        <td>
+                            <input name="DoBackSignField" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            排序号
+                        </td>
+                        <td>
+                            <input name="SortIndex" class="mini-textbox" style="width: 100%" required="true" vtype="float" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            保存权限
+                        </td>
+                        <td>
+                            <input name="SaveVariableAuth" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            子表单
+                        </td>
+                        <td>
+                            <input name="SubFormID" class="mini-combobox" style="width: 100%" data="SubForms" shownullitem="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            超时通知（时）
+                        </td>
+                        <td>
+                            <input name="TimeoutNotice" class="mini-textbox" style="width: 100%" vtype="int" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            超时警告（时）
+                        </td>
+                        <td>
+                            <input name="TimeoutAlarm" class="mini-textbox" style="width: 100%" vtype="int" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            超时通过（时）
+                        </td>
+                        <td>
+                            <input name="TimeoutAutoPass" class="mini-textbox" style="width: 100%" vtype="int" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            超时过期（时）
+                        </td>
+                        <td>
+                            <input name="TimeoutDeadline" class="mini-textbox" style="width: 100%" vtype="int" />
+                        </td>
+                    </tr>
+                    <tr id="trDoBackButtonText">
+                        <td>
+                            打回、直送按钮模板
+                        </td>
+                        <td>
+                            <input name="DoBackButtonText" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="AllowSave" class="mini-checkbox" style="width: 100%">
+                                可暂存
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="AllowDelegate" class="mini-checkbox" style="width: 100%">
+                                可委托
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="AllowCirculate" class="mini-checkbox" style="width: 100%">
+                                可传阅
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="AllowAsk" class="mini-checkbox" style="width: 100%">
+                                可加签
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="AllowDoBackFirst" class="mini-checkbox" style="width: 100%">
+                                允许驳回首环节
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="AllowDoBackFirstReturn" class="mini-checkbox" style="width: 100%">
+                                首环节直送驳回人
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="DoBackSave" class="mini-checkbox" style="width: 100%">
+                                驳回时不保存表单
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="KeepWhenEnd" class="mini-checkbox" style="width: 100%">
+                                流程结束时保留进行中的任务
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="AllowToMobile" class="mini-checkbox" style="width: 100%">
+                                推送到移动通
+                            </div>
+                            <div name="HideAdvice" class="mini-checkbox" style="width: 100%">
+                                隐藏意见框
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                            <br />
+                            流转阶段：表单的流转阶段，用于FlowPhase字段
+                            <br />
+                            等待环节：等待指向该环节的所有环节都已经结束，该等待环节才能开始执行。
+                            <br />
+                            保存权限：根据变量判断是否出现保存按钮，如 flag='1'
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="字段控制">
+                <div class="mini-fit">
+                    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect="true" allowcelledit="true" showpager="false">
+                        <div property="columns">
+                            <div field="fieldCode" visible="false">
+                                字段名称
+                            </div>
+                            <div field="description">
+                                字段名称
+                            </div>
+                            <div type="checkboxcolumn" field="Hidden" truevalue="true" falsevalue="false" width="20">
+                                <a id="Hidden" href="javascript:void(0);" onclick="chkClick(this);">隐藏</a>
+                            </div>
+                            <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="20">
+                                <a id="Visible" href="javascript:void(0);" title="控件为附件时:
+1.显示与只读都打勾表示文件只读能下载。
+2.显示打勾或两个都不打勾时可上传下载。
+3.显示不打勾只读打勾表示只读不能下载。" onclick="chkClick(this);">显示</a>
+                            </div>
+                            <div type="checkboxcolumn" field="Editable" truevalue="true" falsevalue="false" width="20">
+                                <a id="Editable" href="javascript:void(0);" onclick="chkClick(this);">编辑</a>
+                            </div>
+                            <div type="checkboxcolumn" field="Disable" truevalue="true" falsevalue="false" width="20">
+                                <a id="Disable" href="javascript:void(0);" onclick="chkClick(this);">只读</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div title="其它控制">
+                <table style="width: 100%">
+                    <tr class="hideRow">
+                        <td width="35%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            隐藏元素
+                        </td>
+                        <td>
+                            <input name="HiddenElements" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            显示元素
+                        </td>
+                        <td>
+                            <input name="VisibleElements" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            编辑元素
+                        </td>
+                        <td>
+                            <input name="EditableElements" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            只读元素
+                        </td>
+                        <td>
+                            <input name="DisableElements" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                            <br />
+                            隐藏元素：当前环节设置元素隐藏
+                            <br />
+                            显示元素：当前环节设置元素显示
+                            <br />
+                            编辑元素：当前环节设置元素可编辑
+                            <br />
+                            只读元素：当前环节设置元素只读
+                            <br />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Workflow.Logic.TaskCooperationMode));
+    @Html.GetEnum("FlowPhase");
+    @Html.ClearEnumCache("FlowStep", Request["defFlowID"])
+    @Html.GetEnum("FlowStep", "FlowStep", Request["defFlowID"]);
+</script>
+<script type="text/javascript">
+    var SubForms=@Html.Raw(@ViewBag.SubForms);
+</script>
+<script type="text/javascript">
+    var form = null;
+    var grid = null;
+    function getData(onlyChanged) {
+        var id = getQueryString("ID");
+        if (form == null || (onlyChanged && form.isChanged() == false && grid.isChanged() == false && isGridChecked == false)) {
+            return null;
+        }
+        var data = form.getData();
+        data["dataGrid"] = mini.encode(grid.getData());
+        var result = {};
+        result["ID"] = id;
+        result["Data"] = data;
+        result["Type"] = "Step";
+
+        return result;
+    }
+
+    function setNodeTile() {
+        var id = getQueryString("ID");
+        if (window.parent.nodes[id]) {
+            var data = form.getData();
+            var name = mini.getbyName("Name").getValue().replace("<", "＜").replace(">", "＞");
+            window.parent.nodes[id].textContent = name;
+        }
+    }
+    $(function () {
+        var id = getQueryString("ID");
+        var data = window.parent.getData(id, "Step");
+
+        if (!data["dataGrid"]) {
+            $.ajax({
+                url: "/Workflow/DefFlow/GetStepFieldList?ID=" + id,
+                type: "post",
+                cache: false,
+                async: false,
+                success: function (text) {
+                    //增加新版报错分支
+                    if (text && typeof(text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(text);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    data["dataGrid"] = text;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var msg = getErrorFromHtml(jqXHR.responseText);
+                    msgUI(msg);
+                }
+            });
+        }
+
+        if (form == null) {
+            form = new mini.Form("#dataForm");
+        }
+        if (grid == null) {
+            grid = mini.get("dataGrid");
+        }
+        //设置表单数据
+        form.setData(data);
+        form.setChanged(false);
+
+        if (getQueryString("editable") != 1)
+            setFormDisabled();
+
+        //解决combobox的BUG
+        var fields = form.getFields();
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            if (field.type == "combobox") {
+                var v = field.getValue();
+                var t = field.getText();
+                if (t == "")
+                    field.setText(v);
+            }
+        }
+
+        //设置字段控制列表数据
+        grid.setData(mini.decode(data["dataGrid"]));
+
+        $(".mini-grid-vscroll").hide();
+        $(".mini-resizer-trigger").hide();
+    });
+</script>
+<script type="text/javascript">
+    var isGridChecked = false;
+    function chkClick(e) {
+
+        if (getQueryString("editable") != 1)
+            return;
+
+        if (e.value == undefined)
+            e.value = true;
+        else
+            e.value = !e.value;
+        var grid = mini.get("dataGrid");
+        var l = grid.getData().length;
+
+        for (var i = 0; i < l; i++) {
+            var row = grid.getRow(i);
+            row[e.id] = e.value.toString();
+            grid.updateRow(row);
+        }
+        isGridChecked = true;
+    }
+
+</script>

@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "设计成果";
+}
+<style type="text/css">
+    #west
+    {
+        background-color: #fff;
+    }
+</style>
+<div class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="west" width="250" expanded="true" showspliticon="true" showheader="false"
+        style="border-top: 0; border-bottom: 0;">
+        <div class="mini-toolbar" style="border-left: 0; border-right: 0; border-top: 0;">
+            <table style="width: 100%">
+                <tr>
+                    <td align="right">
+                        <input id="treekey" class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="searchTree();"
+                            onbuttonclick="searchTree();" style="width: 99%" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="mytree" class="mini-tree" url="" style="width: 100%; height: 100%;" showtreeicon="true"
+                textfield="Name" iconfield="WBSType" idfield="ID" enablehottrack="false" parentfield="ParentID"
+                resultastree="false" expandonload="0" onnodeselect="onNodeSelect">
+            </ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;"
+        class="tree-backcolor">
+        <div class="mini-toolbar" style="padding: 0px; border: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%">
+                        @Html.ExportButton()
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入成果名称或编号" onenter="quickSearch('Code,Name');"
+                            onbuttonclick="quickSearch('Code,Name');" />
+                        <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');">详细查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url=""
+                idfield="ID" borderstyle="border-left:0;border-right:0;border-bottom:0;" sizelist='[25,50,100,200,400,500]'
+                pagesize='25'>
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="Code" width="150" allowsort="true" align="center">
+                        成果编号</div>
+                    <div field="Name" width="240" allowsort="true" align="left">
+                        成果名称</div>
+                    <div field="FileType" width="80" allowsort="true" align="center">
+                        文件类型</div>
+                    <div field="Version" width="60" allowsort="true" align="center">
+                        版本号</div>
+                    <div field="AuditState" width="100" allowsort="true" allowsort="true" align="center">
+                        校审状态</div>
+                    <div field="CoSignState" width="100" allowsort="true" align="center">
+                        会签状态
+                    </div>
+                    <div field="PrintState" width="100" allowsort="true" align="center">
+                        出图状态</div>
+                    <div field="ArchiveState" width="80" allowsort="true" align="center">
+                        归档状态</div>
+                    <div field="CreateUser" width="100" allowsort="true" align="center">
+                        提交人</div>
+                    <div field="AuditInfo" name="AuditInfo" width="100" allowsort="false" align="center">
+                        校审单信息
+                    </div>
+                    <div field="MettingInfo" name="MettingInfo" width="100" allowsort="false" align="center">
+                        会签单信息
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 240px;">
+            <div class="queryDiv">
+                <form id="queryForm" method="post">
+                <table>
+                    <tr>
+                        <td width="15%" align="center">
+                            成果名称
+                        </td>
+                        <td width="35%">
+                            <input name="$LK$Name" class="mini-textbox" style="width: 85%;" />
+                        </td>
+                        <td width="15%" align="center">
+                            成果编号
+                        </td>
+                        <td width="35%">
+                            <input name="$LK$Code" class="mini-textbox" style="width: 85%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            专业
+                        </td>
+                        <td align="left">
+                            <input name="$EQ$MajorValue" class="mini-combobox" data="Major" valuefield="value"
+                                textfield="text" style="width: 85%" shownullitem="true" />
+                        </td>
+                        <td align="center">
+                            文件类型
+                        </td>
+                        <td align="left">
+                            <input name="$EQ$FileType" class="mini-combobox" data="ProductFileType" valuefield="value"
+                                textfield="text" style="width: 85%" shownullitem="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            校审状态
+                        </td>
+                        <td align="left">
+                            <input name="$EQ$AuditState" class="mini-combobox" data="AuditState" valuefield="value"
+                                textfield="text" style="width: 85%" shownullitem="true" />
+                        </td>
+                        <td align="center">
+                            会签状态
+                        </td>
+                        <td align="left">
+                            <input name="$EQ$IsCoSign" class="mini-combobox" data="CoSignState" valuefield="value"
+                                textfield="text" style="width: 85%" shownullitem="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            出图状态
+                        </td>
+                        <td align="left">
+                            <input name="$EQ$PrintState" class="mini-combobox" data="PrintState" valuefield="value"
+                                textfield="text" style="width: 85%" shownullitem="true" />
+                        </td>
+                        <td align="center">
+                            归档状态
+                        </td>
+                        <td align="left">
+                            <input name="$EQ$ArchiveState" class="mini-combobox" data="ProductArchiveState" valuefield="value"
+                                textfield="text" style="width: 85%" shownullitem="true" />
+                        </td>
+                    </tr>
+                </table>
+                </form>
+                <div>
+                    <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                        查询</a> <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    @Html.GetEnum("Project.ProductFileType")
+    @Html.GetEnum("Project.Major")
+   @Html.GetEnum(typeof(Project.Logic.AuditState));
+   @Html.GetEnum(typeof(Project.Logic.CoSignState));
+   @Html.GetEnum("Project.PrintState");
+    @Html.GetEnum("Project.ProductArchiveState");
+      var defaultViewType ="@Html.Raw(ViewBag.DefaultViewType)";
+</script>
+<script type="text/javascript" language="javascript">
+    addGridLink("dataGrid", "Code", "../../Extend/Product/Edit?ID={ID}", { funcType: 'view', height: 320, width: 700 });
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    addGridEnum("dataGrid", "CoSignState", "CoSignState");
+    addGridEnum("dataGrid", "PrintState", "PrintState");
+    addGridEnum("dataGrid", "ArchiveState", "ProductArchiveState");
+
+    addGridButton("dataGrid", "AuditInfo", {
+        linkText: '校审单信息', onButtonClick: function (row) {
+            var auditID = row["AuditID"];
+            if (!auditID) return msgUI("该成果没有关联的校审单信息");
+            var url = "/Project/AutoUI/AuditView/PageView?TmplCode=ProjectExecutive_Auditor&FuncType=View&ID=" + auditID;
+            openWindow(url, { refresh: false, title: "校审单信息", width: "70%", height: "80%" });
+        }
+    });
+
+    addGridButton("dataGrid", "MettingInfo", {
+        linkText: '会签单信息', onButtonClick: function (row) {
+            var mettingID = row["CounterSignAuditID"];
+            if (!mettingID) return msgUI("该成果没有关联的会签单信息");
+            var url = "/Project/AutoUI/MettingSign/PageView?TmplCode=Project_MettingSign&FuncType=View&ID=" + mettingID;
+            openWindow(url, { refresh: false, title: "会签单信息", width: "70%", height: "80%" });
+        }
+    });
+
+    function pageLoad() {
+
+        var url = "GetTree?GroupInfoID=" + getQueryString("GroupInfoID") + "&SpaceCode=" + getQueryString("SpaceCode");
+        mini.get("mytree").setUrl(url);
+    }
+
+    function onNodeSelect(e) {
+        var url = "";
+        wbsType = e.node.WBSType;
+        if (e.node.ID) {
+            wbsID = e.node.ID;
+            url = "GetList?ProjectInfoID=" + e.node.ProjectInfoID + "&WBSID=" + wbsID;
+        } else if (e.node.VirtualID) {
+            url = "GetList?ProjectInfoID=" + e.node.ProjectInfoID + "&MajorName=" + escape(e.node.Name);
+        }
+
+        var grid = mini.get("dataGrid");
+        grid.setUrl(url);
+        grid.load();
+    }
+
+    function searchTree() {
+        var tree = mini.get("mytree");
+        var key = mini.get("treekey").getValue();
+        tree.filter(function (node) {
+            if (node.Name.indexOf(key) != -1) return true;
+        });
+    }
+</script>

@@ -1,0 +1,72 @@
+﻿<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%; text-align: left">
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <input name="ParentID" class="mini-hidden" />
+    <input name="FullPathID" class="mini-hidden" />
+    <input name="IsDeleted" class="mini-hidden" />
+    <div class="basediv">
+        <h1 align="center">
+            节点信息
+        </h1>
+        <table width="100%" class="formTable" cellspacing="0">
+            <tr>
+                <td width="15%">节点名称
+                </td>
+                <td width="85%">
+                    <input name="Name" class="mini-textbox" style="width: 100%;" required="true" vtype="maxLength:500;" />
+                </td>
+            </tr>
+            <tr>
+                <td>节点编号
+                </td>
+                <td>
+                    <input name="Code" style="width: 100%" class="mini-textbox" vtype="maxLength:50"/>
+                </td>
+            </tr>
+            @*<tr>
+                <td>是否继承
+                </td>
+                <td>
+                    <input name="IsInherit" class="mini-combobox asLabel" style="width: 100%;" textfield="text" valuefield="value" emptytext="请选择..." data="TrueOrFalse" required="true" allowinput="false" shownullitem="true" nullitemtext="请选择..." readonly/>
+                </td>
+            </tr>*@
+            <tr>
+                <td>排序值
+                </td>
+                <td>
+                    <input name="SortIndex" class="mini-spinner" maxvalue="9999" style="width: 100%"/>
+                </td>
+            </tr>
+            <tr>
+                <td>层级
+                </td>
+                <td>
+                    <input name="Level" class="mini-spinner asLabel" maxvalue="9999" style="width: 100%" readonly/>
+                </td>
+            </tr>
+            <tr>
+                <td>是否作废
+                </td>
+                <td>
+                    <input name="IsValid" class="mini-combobox asLabel" style="width: 100%;" textfield="text" valuefield="value" emptytext="请选择..." data="IsValid" allowinput="false" shownullitem="true" nullitemtext="请选择..." readonly/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script type="text/javascript">
+    @Html.GetEnum("System.TrueOrFalse")
+    @Html.GetEnum("System.IsValid")
+</script>

@@ -1,0 +1,710 @@
+﻿@{
+    ViewBag.Title = "非项目类诉讼案件审批";
+}
+@Html.GetFlowbar()
+<form id="dataForm" method="post" style="top: 30px; position: relative;">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv" style="background-color: #fff;">
+    <div class="mini-tabs" id="mainTab" style="width: 100%; height: 1700px;" activeindex="0">
+        <div title="诉讼申请单">
+            <h1 align="center">
+                诉讼申请单
+            </h1>
+            <fieldset class="formDiv">
+                <legend>基本信息</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                申请人
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='Applicant' textname='ApplicantName' class='mini-buttonedit' style='width: 100%'
+                                    enabled='false' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                申请日期
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='DateOfApplication' class='mini-datepicker' style='width: 100%' enabled='false' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交单位
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='TransferingUnit' textname='TransferingUnitName' class='mini-buttonedit'
+                                    required='true' allowinput='false' style='width: 100%;' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交日期
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='DateOfTransfer' class='mini-datepicker' required='true' allowinput='true'
+                                    style='width: 100%;' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                诉讼类型
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='TypesOfLitigation' class='mini-combobox' required='true' allowinput='false'
+                                    multiselect='false' shownullitem='false' valuefromselect='true' onvaluechanged='onLitigationTypeChange'
+                                    style='width: 100%;' data='LitigationType' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                <br />
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                被诉单位名称
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='NameRespondent' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                我方合同主体名称
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='NameOfOurContractSubject' class='mini-checkboxlist' required='true'
+                                    allowinput='true' multiselect='true' data='OurContractSubjectName' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv" id='projectInfo'>
+                <legend>事项信息</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr class="firstRow">
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案件名称
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='NameOfCase' class='mini-textbox' required='true' allowinput='true' style='width: 100%;'
+                                    maxlength='200' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案情简介
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='BriefIntroductionOfTheCase' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='200' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交理由
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='ReasonsForTransfer' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                预期目标
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='ExpectedTarget' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='200' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                我方违约情况
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='OurBreach' class='mini-textarea' required='true' allowinput='true' style='width: 100%;
+                                    height: 50px;' maxlength='500' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv" id='summonProjectInfo'>
+                <legend>传票及项目信息</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                我方被诉部门单位
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='OurSuedDepartment' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                <br />
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                收文名称
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='ReceiptName' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='200' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案情简介
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='BriefIntroductionToTheCaseOfSubpoena' class='mini-textarea' required='true'
+                                    allowinput='true' style='width: 100%; height: 50px;' maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                关键问题描述
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='DescriptionOfKeyIssues' class='mini-textarea' required='true' allowinput='true'
+                                    style='width: 100%; height: 50px;' maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                证据资料要求
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='EvidentialDataRequirements' class='mini-textarea' required='true' allowinput='true'
+                                    style='width: 100%; height: 50px;' maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                法律文书扫描件
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='ScanningCopyOfLegalDocuments' class='mini-multifile' required='true'
+                                    src='Temp' style='width: 100%;' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>审批意见</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr class="firstRow">
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交单位正职领导
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='TransferToTheHeadOfTheUnit' class='mini-auditsign' style='width: 100%' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                法务部签字
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='LeaderInChargeOfTransferUnit' class='mini-auditsign' style='width: 100%' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交单位指定对接人员
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='DesignatedDockingPersonnelOfHandoverUnit' textname='DesignatedDockingPersonnelOfHandoverUnitName'
+                                    class='mini-buttonedit' required='true' allowinput='false' style='width: 100%;' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                联系电话
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='ContactNumber' class='mini-textbox' required='true' allowinput='true'
+                                    style='width: 100%;' maxlength='500' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+        <div title="证据资料移交清单">
+            <h1 align="center">
+                证据资料移交清单
+            </h1>
+            <fieldset class="formDiv">
+                <div style="padding-left: 20px;">
+                    【★/☆】 实心与空心是等效的。区别仅在于，空心表示“如果存在某事项，则其资料需要提供”。例如，项目经过了招投标程序，则下表中“项目招投标资料”需要提供，项目没有经过招投标程序则不提供该资料。<br />
+                    &nbsp &nbsp &nbsp &nbsp &nbsp 三星 表示重大，对案件有决定性影响，不提供相关资料将无法开展下步工作。<br />
+                    &nbsp &nbsp &nbsp &nbsp &nbsp 二星 表示重要，对案件有重要影响，不提供相关资料将对下步工作产生很大不良影响。<br />
+                    &nbsp &nbsp &nbsp &nbsp &nbsp 一星 表示一般，对案件有帮助，不提供相关资料可能产生不良影响，但通常不是决定性影响。<br />
+                </div>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;" colspan="4">
+                                <div id='toolbarTransferDetail' class='mini-toolbar' style='height: 25px; border-bottom: 0px;'>
+                                </div>
+                                <div id='ListOfEvidenceTransfer' multiselect='true' allowalternating='false' showsummaryrow='true'
+                                    showindexcolumn='true' showcheckcolumn='false' pagesize='50' style='width: 100%;
+                                    height: 1400px;' class='mini-datagrid' allowcellvalid='true' multiselect='true'
+                                    allowcelledit='true' allowcellselect='true' showpager='false' allowunselect='false'
+                                    sortmode='client' allowcellwrap='true'>
+                                    <div property='columns'>
+                                        <div name='Number' field='Number' header='序号' visible='true' autoshowpopup='true'
+                                            readonly='true' width='50px' align="center" allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='NeedFile' field='NeedFile' header='需提供资料' visible='true' autoshowpopup='true'
+                                            readonly='true' allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='BreachOfContractInformation' field='BreachOfContractInformation' header='违约类案件资料违约侵权竞合'
+                                            readonly='true' visible='true' autoshowpopup='true' allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='InformationOnInfringementCases' field='InformationOnInfringementCases'
+                                            readonly='true' header='侵权类案件资料' visible='true' autoshowpopup='true' allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='InformationOnOtherCases' field='InformationOnOtherCases' header='其他案件资料'
+                                            readonly='true' visible='true' autoshowpopup='true' allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='Level' field='Level' header='重要等级' visible='true' autoshowpopup='true'
+                                            readonly='true' align="center" width='80px' allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='ProvideType' field='ProvideType' header='提供方式' visible='true' autoshowpopup='true'
+                                            readonly='true' allowsort='true'>
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                        <div name='ActualDesc' field='ActualDesc' header='实际提供情况' visible='true' autoshowpopup='true'
+                                            allowsort='true' vtype="required">
+                                            <input property='editor' class='mini-textbox' style='width: 100%' />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+        <div title="诉讼案件评议表单">
+            <fieldset class="formDiv">
+                <legend>移交信息</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交单位
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='CommentOnTheTransferUnit' textname='CommentOnTheTransferUnitName' class='mini-buttonedit'
+                                    required='false' allowinput='false' style='width: 100%;' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                暂定编号
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='ProvisionalNumbering' class='mini-textbox' style='width: 100%' maxlength='200' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                被诉单位名称
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='NameOfRespondent' class='mini-textbox' style='width: 100%' maxlength='200'
+                                    enabled='false' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                我方合同主体名称
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='CommentOnTheNameOfOurContractSubject' class='mini-checkboxlist' required='false'
+                                    allowinput='true' multiselect='true' enabled='false' data='OurContractSubjectName' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案件名称
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='CaseName' class='mini-textbox' style='width: 100%' maxlength='200' enabled='false' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案情简介
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='PYBriefIntroductionOfTheCase' class='mini-textbox' style='width: 100%'
+                                    maxlength='200' enabled='false' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>案情基本分析</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                移交资料达标情况
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='ComplianceOfTransferredData' class='mini-textbox' style='width: 100%'
+                                    maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                是否满足起诉条件
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='WhetherTheTransferMeetsTheProsecutionConditions' class='mini-radiobuttonlist'
+                                    required='false' allowinput='true' data='Bool' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                诉讼时效是否超过
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='WhetherTheLimitationOfActionExceeds' class='mini-textbox' style='width: 100%'
+                                    maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                是否满足起诉条件
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='WhetherTheLitigationMeetsTheProsecutionConditions' class='mini-radiobuttonlist'
+                                    required='false' allowinput='true' data='Bool' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                付款节点是否达到
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='WhetherThePaymentNodeReaches' class='mini-textbox' style='width: 100%'
+                                    maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                是否满足起诉条件
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='WhetherThePaymentMeetsTheProsecutionConditions' class='mini-radiobuttonlist'
+                                    required='false' allowinput='true' data='Bool' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                有无重点付款障碍
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='AreThereAnyKeyPaymentObstacles' class='mini-textbox' style='width: 100%'
+                                    maxlength='200' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                是否满足起诉条件
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='WhetherTheProsecutionConditionsAreMet' class='mini-radiobuttonlist'
+                                    required='false' allowinput='true' data='Bool' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                相关数额初步计算
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='PreliminaryCalculationOfRelevantAmount' class='mini-spinner' style='width: 100%' />
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                预计诉讼成本费用
+                            </td>
+                            <td style="width: 35%;">
+                                <input name='EstimatedLitigationCosts' class='mini-spinner' style='width: 100%' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案情综合分析评估
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='ComprehensiveAnalysisAndEvaluationOfTheCase' class='mini-textarea' style='width: 100%'
+                                    maxlength='500' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>重要影响因素分析</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr class="firstRow">
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                我方责任分析评估
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='OurResponsibilityAnalysisAndEvaluation' class='mini-textarea' style='width: 100%'
+                                    maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                对方能力初步分析
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='PreliminaryAnalysisOfTheOpponentsAbility' class='mini-textarea' style='width: 100%'
+                                    maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                案件周期与难易程度分析
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='AnalysisOnTheCycleAndDifficultyOfCases' class='mini-textarea' style='width: 100%'
+                                    maxlength='500' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>评估结论及审批意见</legend>
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr class="firstRow">
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                            </td>
+                            <td style="width: 35%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                评估结论意见
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='EvaluationConclusion' class='mini-textarea' allowinput='true' style='width: 100%;
+                                    height: 50px;' maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                中介机构主要意见
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='MainOpinionsOfIntermediary' class='mini-textarea' style='width: 100%'
+                                    maxlength='500' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                处理意见
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='HandlingOpinions' class='mini-textarea' allowinput='true' style='width: 100%;
+                                    height: 50px;' maxlength='500' />
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                法务部部门正职领导
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='DepartmentHead' class='mini-auditsign' style='width: 100%' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%; padding-left: 20px; text-align: left;">
+                                发起部门主管领导
+                            </td>
+                            <td style="width: 35%;" colspan="3">
+                                <input name='DepartmentLeaderInCharge' class='mini-auditsign' style='width: 100%' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+</div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+    });
+</script>
+<script type="text/javascript">
+
+    function onFormSetData(data) {
+        onLitigationTypeChange();
+        setDetail();
+    }
+
+</script>
+<script type='text/javascript'>
+
+    function onLitigationTypeChange() {
+
+        var type = mini.getbyName("TypesOfLitigation").getValue();
+
+        var project = $("#projectInfo");
+        var summonProject = $("#summonProjectInfo");
+
+        if (type == "主动起诉") {
+            project.show();
+            summonProject.hide();
+            setProjectTrue();
+            setSummonProjectFalse();
+        } else if (type == "被动应诉") {
+            project.hide();
+            summonProject.show();
+            setProjectFalse();
+            setSummonProjectTrue();
+        } else {
+            setProjectFalse();
+            setSummonProjectFalse();
+            project.hide();
+            summonProject.hide();
+        }
+
+        flowLoadMenubar();
+    }
+
+    function setProjectFalse() {
+        mini.getbyName("NameOfCase").setRequired(false);
+        mini.getbyName("BriefIntroductionOfTheCase").setRequired(false);
+        mini.getbyName("ReasonsForTransfer").setRequired(false);
+        mini.getbyName("ExpectedTarget").setRequired(false);
+        mini.getbyName("OurBreach").setRequired(false);
+    }
+
+    function setProjectTrue() {
+        mini.getbyName("NameOfCase").setRequired(true);
+        mini.getbyName("BriefIntroductionOfTheCase").setRequired(true);
+        mini.getbyName("ReasonsForTransfer").setRequired(true);
+        mini.getbyName("ExpectedTarget").setRequired(true);
+        mini.getbyName("OurBreach").setRequired(true);
+    }
+
+    function setSummonProjectFalse() {
+        mini.getbyName("OurSuedDepartment").setRequired(false);
+        mini.getbyName("ReceiptName").setRequired(false);
+        mini.getbyName("BriefIntroductionToTheCaseOfSubpoena").setRequired(false);
+        mini.getbyName("DescriptionOfKeyIssues").setRequired(false);
+        mini.getbyName("EvidentialDataRequirements").setRequired(false);
+        mini.getbyName("ScanningCopyOfLegalDocuments").setRequired(false);
+    }
+    function setSummonProjectTrue() {
+        mini.getbyName("OurSuedDepartment").setRequired(true);
+        mini.getbyName("ReceiptName").setRequired(true);
+        mini.getbyName("BriefIntroductionToTheCaseOfSubpoena").setRequired(true);
+        mini.getbyName("DescriptionOfKeyIssues").setRequired(true);
+        mini.getbyName("EvidentialDataRequirements").setRequired(true);
+        mini.getbyName("ScanningCopyOfLegalDocuments").setRequired(true);
+    }
+</script>
+<script type="text/javascript">
+
+    function setDetail() {
+        var transferDetail = mini.get("ListOfEvidenceTransfer");
+
+        var cells =
+        [
+            { rowIndex: 0, columnIndex: 6, rowSpan: 17, colSpan: 1 },
+
+            { rowIndex: 0, columnIndex: 0, rowSpan: 2, colSpan: 1 },
+            { rowIndex: 0, columnIndex: 1, rowSpan: 2, colSpan: 1 },
+            { rowIndex: 0, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 1, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+
+            { rowIndex: 2, columnIndex: 0, rowSpan: 3, colSpan: 1 },
+
+            { rowIndex: 5, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 6, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 5, columnIndex: 0, rowSpan: 2, colSpan: 1 },
+
+            { rowIndex: 7, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+
+            { rowIndex: 8, columnIndex: 3, rowSpan: 1, colSpan: 2 },
+
+            { rowIndex: 9, columnIndex: 0, rowSpan: 3, colSpan: 1 },
+            { rowIndex: 9, columnIndex: 1, rowSpan: 3, colSpan: 1 },
+            { rowIndex: 9, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 10, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 11, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+
+            { rowIndex: 12, columnIndex: 0, rowSpan: 3, colSpan: 1 },
+            { rowIndex: 12, columnIndex: 1, rowSpan: 3, colSpan: 1 },
+            { rowIndex: 12, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 13, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+            { rowIndex: 14, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+
+            { rowIndex: 15, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+
+            { rowIndex: 16, columnIndex: 2, rowSpan: 1, colSpan: 3 },
+        ];
+
+        transferDetail.mergeCells(cells);
+    }
+
+</script>
+<script type="text/javascript">
+
+    addSingleOrgSelector('TransferingUnit',{ returnParams:'value:ID,text:Name',UrlParams:''});
+    addSingleUserSelector('DesignatedDockingPersonnelOfHandoverUnit',{returnParams:'value:ID,text:Name',UrlParams:''});
+    addSingleOrgSelector('CommentOnTheTransferUnit',{ returnParams:'value:ID,text:Name',UrlParams:''});
+
+    @Html.GetEnum("OA.LitigationType")
+    @Html.GetEnum("OA.OurContractSubjectName")
+    @Html.GetEnum("System.Bool")
+</script>

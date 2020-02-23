@@ -1,0 +1,190 @@
+﻿<meta content="IE=10.000" http-equiv="X-UA-Compatible">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>@ViewBag.tittle</title>
+<link href="/OfficeAuto/CusStyle/images_files/jquery-ui-1.10.3.custom.css" rel="stylesheet"
+    type="text/css">
+<link href="/OfficeAuto/CusStyle/images_files/templatemo_style.css" rel="stylesheet"
+    type="text/css">
+<link href="/OfficeAuto/CusStyle/images_files/default.css" rel="stylesheet" type="text/css">
+<link href="/OfficeAuto/CusStyle/images_files/qt.css" rel="stylesheet" type="text/css">
+<link href="/OfficeAuto/CusStyle/images_files/mysurvey.css" rel="stylesheet" type="text/css">
+<meta name="GENERATOR" content="MSHTML 10.00.9200.16897">
+<div id="body_wrapper">
+    <div class="wrapper">
+        <div id="m-content">
+            <div class="m-content-right">
+                <div class="content-right-title">
+                </div>
+                <div class="m-content-right-body">
+                    <div class="content-list">
+                        <div class="r_surveyTitle">
+                            <h2>
+                                @ViewBag.tittle
+                            </h2>
+                        </div>
+                        <div class="r_handler">
+                            <ul class="catalog_path">
+                                <li>发布人：<a>@ViewBag.Writer</a>&nbsp;&nbsp;<span style="color: rgb(232, 232, 232);">|</span>&nbsp;&nbsp;</li>
+                                <li>此调查<span id="curSurveyState"></span>&nbsp;&nbsp;<span style="color: rgb(232, 232, 232);">|</span>&nbsp;&nbsp;</li>
+                                <li>当前投票人：<span id="curUser"></span>&nbsp;&nbsp;<span style="color: rgb(232, 232, 232);">|</span>&nbsp;&nbsp;</li>
+                                <li>当前时间：<span id="curTime"></span></li>
+                                <li style="float: right;">附件：@Html.Raw(ViewBag.Attachment)</li>
+                            </ul>
+                            <div style="clear: both;">
+                            </div>
+                        </div>
+                        <div class="r_tabs">
+                        </div>
+                        <table width="100%" id="content-tableList" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                @Html.Raw(ViewBag.htr)
+                            </tbody>
+                        </table>
+                        <div id="btnSubmit" class="btn" style="display: none;">
+                            <div class="btn001" onclick="Submit();">
+                                提交调查问卷
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetBasicInfo(true);
+
+    function pageLoad() {
+        var surveyState = getQueryString("SurveyState");
+        var functype = getQueryString("FuncType");
+        $('#curSurveyState').html(surveyState);
+        $('#curUser').html(user["UserName"]);
+        $('#curTime').html(new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString());
+
+        if (functype != "view") {
+            document.getElementById("btnSubmit").style.display = "";
+        }
+    }
+
+    var QuestIDs = "@ViewBag.QuestIDs";
+        var url = "";
+        function Submit() {                                     //提交投票结果
+            execute("Check", { closeWindow: false, onComplete: IsVote });
+        }
+
+        function IsVote(data, execSettings) {
+            var flag = data.Flag;
+            if (flag == "false") {
+                msgUI("您已投票，无法再次投票");
+                return;
+            }
+            if (CheckNull() == "F") {
+                msgUI("有未选择的项");
+                return;
+            }
+            msgUI("确认提交吗？(每人只有一次投票机会)", 2, function (action) {
+                if (action != "ok") return;
+                var arr = new Array();
+                arr = QuestIDs.split(",");
+                var chkObjs;
+                var flag = "";
+                for (var i = 0; i < arr.length; i++) {
+                    flag = arr[i].split('|')[1];
+                    chkObjs = document.getElementsByName(arr[i].split('|')[0]);
+                    for (var j = 0; j < chkObjs.length; j++) {
+                        if (flag == "文本") {
+                            addExecuteParam("quesID", chkObjs[j].name);
+                            addExecuteParam("Comment", chkObjs[j].value);
+                            if (j + 1 == chkObjs.length)
+                                execute("SaveMsg", { closeWindow: true });
+                            else
+                                execute("SaveMsg", { closeWindow: false });
+                            break;
+                        }
+                        else if (flag == "单选") {
+                            if (chkObjs[j].checked) {
+                                addExecuteParam("ID", chkObjs[j].id);
+                                if (j + 1 == chkObjs.length)
+                                    execute("SaveVote", { closeWindow: true });
+                                else
+                                    execute("SaveVote", { closeWindow: false });
+                                break;
+                            }
+                        }
+                        else if (flag == "多选") {
+                            if (chkObjs[j].checked) {
+                                addExecuteParam("ID", chkObjs[j].id);
+                                if (j + 1 == chkObjs.length)
+                                    execute("SaveVote", { closeWindow: true });
+                                else
+                                    execute("SaveVote", { closeWindow: true });
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function OpenComment(id) {                                               //打开添加评论窗口
+            execute("Check", { closeWindow: false, onComplete: IsOpenComment });
+            url = "/OfficeAuto/Survey/Comment?QuesID=" + id;
+
+        }
+        function IsOpenComment() {
+            var functype = getQueryString("FuncType");
+            openWindow(url, { FuncType: functype, title: '添加评论', width: 650, height: 510 });
+        }
+
+        function CheckNull()      //检测未选择项
+        {
+            var arr = QuestIDs.split(",");
+            var chkObjs;
+            var flag = "";
+            var Flag = "T";
+            var F_1 = "";
+            clearCss();
+            for (var i = 0; i < arr.length; i++) {
+                flag = arr[i].split('|')[1];
+                F_1 = "";
+                chkObjs = document.getElementsByName(arr[i].split('|')[0]);
+                for (var j = 0; j < chkObjs.length; j++) {
+
+                    if (flag == "文本") {
+                        if (arr[i].split('|')[2] == "1") {
+                            if (chkObjs[j].value != "") {
+                                F_1 = "T";
+                            }
+                        }
+                        else {
+                            F_1 = "T";
+                        }
+                        break;
+                    }
+                    else if (flag == "单选") {
+                        if (chkObjs[j].checked) {
+                            F_1 = "T";
+                        }
+                    }
+                    else if (flag == "多选") {
+                        if (chkObjs[j].checked) {
+                            F_1 = "T";
+                        }
+                    }
+                }
+                if (F_1 == "") {
+                    document.getElementById(arr[i].split('|')[0] + "_1").style.backgroundColor = "#FF0000";
+                    Flag = "F";
+                }
+            }
+            return Flag;
+        }
+
+        function clearCss()     //清除样式
+        {
+            var arr = new Array();
+            arr = QuestIDs.split(",");
+            for (var i = 0; i < arr.length; i++) {
+                document.getElementById(arr[i].split('|')[0] + "_1").style.backgroundColor = "";
+            }
+        }
+</script>

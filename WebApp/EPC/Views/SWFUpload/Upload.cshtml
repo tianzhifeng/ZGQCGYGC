@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Upload";
+}
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="returnValue();" plain="true">确认上传</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm" autogetdata="false">
+            <input name="ID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td colspan="4" style="padding-right: 40px;">
+                            <div name="FileListInfo" class="mini-multifile" style="width:100%"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function returnValue() {
+        var files = mini.getbyName("FileListInfo").getValue();
+        closeWindow(files);
+    }
+</script>

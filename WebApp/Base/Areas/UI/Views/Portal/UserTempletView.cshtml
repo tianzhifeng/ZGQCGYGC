@@ -1,0 +1,49 @@
+﻿        <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+            <table>
+                <tr>
+                    <td>
+                    </td>
+                    <td class="gw-toolbar-right">
+                     <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入帐号或姓名" onenter="doSearch" onbuttonclick="doSearch" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetUserTemplet" style="width: 100%; height: 100%;" allowmovecolumn="false">
+        <div property="columns">
+            <div type="indexcolumn" width="60">
+            </div>
+            <div field="Account" width="80" headeralign="center" allowsort="true" align="left">
+                帐号
+            </div>
+            <div field="Name" headeralign="center" align="center"allowsort="true"
+                align="right">
+                姓名
+            </div>
+            <div field="DeptName" headeralign="center" align="center" width="120" allowsort="true">
+                组织部门
+            </div>
+            <div field="TempletName" headeralign="center" align="center" width="120" allowsort="true">
+                门户模板
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function doSearch() {
+        var data = {};
+        var keyCo = mini.get("key");
+
+        var keys = "Account,Name".split(',');
+        for (i = 0, len = keys.length; i < len; i++) {
+            data[keys[i]] = keyCo.getValue();
+        }
+        var grid = mini.get("dataGrid");
+        grid.load({searchKey : mini.encode(data)});
+    }
+
+</script>

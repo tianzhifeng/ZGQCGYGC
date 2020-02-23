@@ -1,0 +1,201 @@
+﻿@{
+    ViewBag.Title = "WBS策划";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+         splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="saveWBS();">确定</a>
+                    </td>
+                    <td id="btnRight">
+                        <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <form id="dataForm" method="post">
+            <input name="Type" class="mini-hidden" />
+            <input name="ParentIDs" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>策划<span>@ViewBag.NameTitle</span></legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="10%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="40%"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <a class="mini-button" onclick="checkall();">全选</a>
+                                    <a class="mini-button" onclick="uncheckall();">取消选中</a>
+                                </td>
+                            </tr>
+                            @{
+                                var wbsType = ViewBag.WBSType;
+                                if (wbsType == "Major")
+                                {
+                                    <tr>
+                                        <td>
+                                            <span>@ViewBag.ProjectClassName</span><span>@ViewBag.NameTitle</span>
+                                        </td>
+                                        <td colspan="3">
+                                            <div name="childNodes" class="mini-checkboxlist" repeatitems="4" repeatlayout="table" textfield="text"
+                                                 valuefield="value" data="defAttr" required="false" showallcheckbox="true">
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                }
+                            }
+                            <tr>
+                                <td>
+                                    全部<span>@ViewBag.NameTitle</span>
+                                </td>
+                                <td colspan="3">
+                                    <div name="allChildNodes" class="mini-checkboxlist" repeatitems="4" repeatlayout="table" textfield="text"
+                                         valuefield="value" data="allDefineAttr" required="false" showallcheckbox="true">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var defAttr=@Html.Raw(ViewBag.DefineAttr);
+    var allDefineAttr=@Html.Raw(ViewBag.AllDefineAttr);
+    var existedMajorValues = getQueryString("ExistedMajorValues");
+    var wbsType = "@Html.Raw(ViewBag.WBSType)";
+</script>
+<script type="text/javascript">
+
+    function onFormSetData() {
+        var childNodesOxc = mini.getbyName("childNodes");
+        var allChildNodesOxc = mini.getbyName("allChildNodes");
+        if (existedMajorValues) {
+            var aExistedMajorValues = existedMajorValues.split(',');
+            var defAttrValue = getValues(defAttr,"value");
+            var filterMajorValues = "";
+            for (var i = 0; i < aExistedMajorValues.length; i++) {
+                var isExisted = isValueExisted(aExistedMajorValues[i],defAttrValue);
+                if (isExisted == false)
+                {
+                    if (filterMajorValues == "")
+                        filterMajorValues=aExistedMajorValues[i];
+                    else
+                        filterMajorValues=filterMajorValues+","+aExistedMajorValues[i];
+                }
+            }
+            if (childNodesOxc)
+                childNodesOxc.setValue(existedMajorValues);
+            allChildNodesOxc.setValue(filterMajorValues);
+        }
+        else{
+            if (childNodesOxc)
+                childNodesOxc.selectAll();
+        }
+    }
+
+    function saveWBS() {
+
+        var childNodesOxc = mini.getbyName("childNodes");
+        var allChildNodesOxc = mini.getbyName("allChildNodes");
+        var childNodes = "";
+        if (childNodesOxc) 
+            childNodes=childNodesOxc.getValue();
+        var allChildNodes = allChildNodesOxc.getValue();
+        var selectNodeValues = childNodes;
+        var selectNodeTexts = "";
+
+        if (selectNodeValues=="") {
+            selectNodeValues = allChildNodes;
+        }
+        else
+        {
+            if (allChildNodes&&allChildNodes!="") {
+                var aAllChildNodes = allChildNodes.split(',');
+                for (var i = 0; i < aAllChildNodes.length; i++) {
+                    var isExisted=  isValueExisted(aAllChildNodes[i],selectNodeValues);
+                    if (isExisted == false)
+                        selectNodeValues=selectNodeValues+','+aAllChildNodes[i];
+
+                }
+            }
+        }
+
+        if (selectNodeValues &&selectNodeValues!="") {
+            var  aSelectNodeValues = selectNodeValues.split(',');
+            for (var i = 0; i < aSelectNodeValues.length; i++) {
+                var selectNodeValue = aSelectNodeValues[i];
+                var selectNodeText = getEnumDescription(allDefineAttr,selectNodeValue);
+                if (selectNodeText) {
+                    if (selectNodeTexts=="")
+                        selectNodeTexts = selectNodeText;
+                    else
+                        selectNodeTexts = selectNodeTexts+","+selectNodeText;
+
+                }
+            }
+        }
+        if (wbsType == "Major"){
+
+            var returnData = {"value":selectNodeValues,"text":selectNodeTexts};
+            closeWindow(returnData);
+        }
+        if (wbsType == "Phase") {
+            var form = new mini.Form("dataForm");
+            form.validate(); if (form.isValid() == false) return;
+            addExecuteParam("Children", mini.encode(form.getData()));
+            execute("AddChildWithDefAttr", {showLoading:true,  refresh: false, onComplete: function (data) {
+                closeWindow(data);
+            }
+            });
+        }
+
+    }
+
+    function getEnumDescription(definedEnum,singleEnumItemValue) {
+        var returnValue = "";
+        if(definedEnum&&definedEnum.length>0)
+        {
+            for (var i = 0; i < definedEnum.length; i++) {
+                var singleEnumItem = definedEnum[i];
+                if (singleEnumItem["value"] == singleEnumItemValue)
+                    return singleEnumItem["text"];
+            }
+        }
+    }
+
+    function isValueExisted(source,dest) {
+        if (!dest) return false;
+        var aDest = dest.split(',');
+        for (var i = 0; i < aDest.length; i++) {
+            var singleDest = aDest[i];
+            if (singleDest == source)
+                return true;
+        }
+        return false;
+    }
+
+
+    function checkall() {
+        mini.getbyName("childNodes").selectAll();
+        mini.getbyName("allChildNodes").selectAll();
+    }
+
+    function uncheckall() {
+        mini.getbyName("childNodes").deselectAll();
+        mini.getbyName("allChildNodes").deselectAll();
+    }
+</script>

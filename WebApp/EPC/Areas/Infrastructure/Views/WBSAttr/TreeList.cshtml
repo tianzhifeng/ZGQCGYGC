@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="550" expanded="true" showheader="false" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="add({width:'50%',height:'40%'})" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="edit({ width: '50%', height: '40%' })" plain="true">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+                 onselectionchanged="onselectionchanged"
+                 borderstyle="border-right:0px;">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="90" headeralign="center" allowsort="true" align="center">
+                        节点类型
+                    </div>
+                    <div field="Code" width="90" headeralign="center" allowsort="true" align="center">
+                        类型编码
+                    </div>
+                    <div field="Class" width="70" headeralign="center" allowsort="true"
+                         align="center">
+                        分类
+                    </div>
+                    <div field="SortIndex" width="70" headeralign="center" allowsort="true"
+                         align="center">
+                        排序
+                    </div>
+                    <div field="IsEnum" headeralign="center" width="70" allowsort="true" align="center">
+                        是否枚举节点
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="addAttr" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="modifyAttr" plain="true">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delAttr" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="detailGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+             borderstyle="border-right:0px;">
+            <div property="columns">
+                <div type="checkcolumn">
+                </div>
+                <div field="Name" width="90" headeralign="center" allowsort="true" align="center">
+                    名称
+                </div>
+                <div field="Code" width="90" headeralign="center" allowsort="true" align="center">
+                    编码
+                </div>
+                <div field="SortIndex" width="90" headeralign="center" allowsort="true" align="center">
+                    排序
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var TrueOrFalse = [{ text: "是", value: true }, { text: "否", value: false }];
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "IsEnum", "TrueOrFalse");
+
+    function onselectionchanged(e) {
+        var grid = mini.get("detailGrid");
+        if (e.selected) {
+            var url = "GetEnumList?TypeDefineID=" + e.selected.ID;
+            grid.setUrl(url);
+            grid.reload();
+        }
+    }
+
+    function addAttr() {
+        var node = mini.get("dataGrid").getSelected();
+        if (!node) { msgUI("请选择一个节点类型"); return; }
+        if (!node.IsEnum) { msgUI("只有枚举类的节点才能增加属性"); return; }
+        var settings = {
+            width: "40%", height: "40%", url: "AttrEdit?TypeDefineID=" + node.ID, onDestroy: function (data) {
+                if (data == "close") return;
+                mini.get("detailGrid").reload();
+            }
+        };
+        add(settings);
+    }
+
+    function modifyAttr() {
+        var detailGrid = mini.get("detailGrid");
+        var row = detailGrid.getSelected();
+        if (!row) { return; }
+        var settings = {
+            width: "40%", height: "40%", url: "AttrEdit?ID=" + row.ID, onDestroy: function (data) {
+                if (data == "close") return;
+                mini.get("detailGrid").reload();
+            }
+        };
+        add(settings);
+    }
+
+    function delAttr() {
+        var grid = mini.get("detailGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择记录"); return; }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") return;
+            var rowIDs = getValues(rows, "ID");
+            addExecuteParam("rowIDs", rowIDs)
+            execute("DeleteAttr", {
+                onComplete: function () {
+                    msgUI("删除成功！");
+                    grid.reload();
+                }
+            });
+        });
+
+    }
+</script>

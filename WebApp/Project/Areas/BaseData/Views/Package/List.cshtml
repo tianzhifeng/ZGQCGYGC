@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "工作包定义";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addRow();">增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveList();">保存</a>
+                @Html.ExportButton()
+                @Html.ImportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="tabSearch();"
+                       onbuttonclick="tabSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList"
+         multiselect="true" allowresize="false"
+         allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Code" width="80" allowsort="true" align="center">
+                工作包编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Name" width="*" allowsort="true">
+                工作包名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PackageType" type="comboboxcolumn" autoshowpopup="true" width="80" allowsort="true" align="center">
+                工作包类型<input property="editor" valuefield="value" textfield="text" class="mini-combobox" style="width: 100%;"
+                            data="PackageType" />
+            </div>
+            <div field="MajorCode" displayfield="MajorName" type="comboboxcolumn" autoshowpopup="true" width="80" allowsort="true" align="center">
+                专业<input property="editor" valuefield="value" textfield="text" class="mini-combobox" style="width: 100%;"
+                         data="Major" />
+            </div>
+            <div field="PhaseCode" displayfield="PhaseName" type="comboboxcolumn" autoshowpopup="true" width="80" allowsort="true" align="center">
+                阶段<input property="editor" valuefield="value" textfield="text" class="mini-combobox" style="width: 100%;"
+                         data="Phase" />
+            </div>
+            <div field="ProjectClass" width="80" autoshowpopup="true" allowsort="true" align="center">
+                项目类型<input property="editor" valuefield="value" textfield="text" class="mini-combobox" style="width: 100%;"
+                           data="ProjectClass" />
+            </div>
+            <div field="AuditLevel" type="comboboxcolumn" autoshowpopup="true" width="80" allowsort="true" align="center">
+                校审级别<input property="editor" valuefield="value" textfield="text" class="mini-combobox" style="width: 100%;"
+                           data="AuditLevel" />
+            </div>
+            <div field="WorkLoad" width="80" allowsort="true" align="right" vtype="float">
+                额定工时<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="DrawingCount" width="80" allowsort="true" align="right" vtype="float">
+                折合A1数<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Major");
+    @Html.GetEnum("Project.Phase");
+    @Html.GetEnum("Project.PackageType");
+    @Html.GetEnum("Project.ProjectClass");
+    @Html.GetEnum("Project.AuditLevel");
+
+    addGridEnum("dataGrid", "MajorCode", "Major");
+    addGridEnum("dataGrid", "PhaseCode", "Phase");
+    addGridEnum("dataGrid", "PackageType", "PackageType");
+    addGridEnum("dataGrid", "ProjectClass", "ProjectClass");
+    addGridEnum("dataGrid", "AuditLevel", "AuditLevel");
+
+    normalParamSettings.searchFields = "Name,Code";
+
+    //addGridLink('dataGrid', 'Name', 'Edit?ID={ID}', { funcType: 'view', height: 600 });
+
+    function addRow() {
+        var tabData = GetTabsData();
+        var major = ""; var majorText = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var data = tabData[i];
+            if (data.queryfield == "MajorCode") {
+                major = data.value;
+                majorText = data.value;
+            }                
+        }
+        var row = {};
+        if (major) {
+            row.MajorCode = major;
+            row.MajorName = majorText;
+        }
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.addRow(row);
+    }
+
+</script>

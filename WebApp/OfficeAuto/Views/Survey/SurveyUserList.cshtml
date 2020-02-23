@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "投票人列表";
+}
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetSurveyUserList" style="width: 100%;
+        height: 100%;" allowMoveColumn="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            @*<div field="UserID" headeralign="center" width="120" allowsort="true" align="center">
+                投票人ID</div>*@
+            <div field="UserName" width="100" headeralign="center" allowsort="true" align="center" >
+                投票人姓名</div>
+            <div field="VoteDate" width="90" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd HH:mm:ss">
+                投票时间</div>
+        </div>
+    </div>
+</div>

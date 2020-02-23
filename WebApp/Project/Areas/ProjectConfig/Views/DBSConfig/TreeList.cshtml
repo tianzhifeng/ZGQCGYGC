@@ -1,0 +1,345 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+}
+<div id="spaceLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="" showheader="false" region="west" width="200" expanded="true" showspliticon="false"
+        style="border-top: 0; border-bottom: 0;">
+        <ul id="mytree" class="mini-tree" url="GetTree" style="width: 100%; height: 100%;"
+            contextmenu="#treeMenu" showtreeicon="true" textfield="Name" iconfield="Type"
+            idfield="ID" enablehottrack="false" parentfield="ParentID" resultastree="false"
+            expandonload="3" onnodeselect="onNodeSelect">
+        </ul>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+        <div class="mini-fit">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+                borderstyle="border:0;">
+                <div title="目录属性">
+                    <div class="mini-toolbar" id="btnDiv" style="padding: 0px;">
+                        <table>
+                            <tr>
+                                <td>
+                                    <a class="mini-button" plain="true" iconcls="icon-save" onclick="saveNode();">保存</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <form id="dataForm" method="post">
+                    <input name="ID" class="mini-hidden" />
+                    <input name="ParentID" class="mini-hidden" />
+                    <input name="ModeID" class="mini-hidden" />
+                    <input name="DBSType" class="mini-hidden" />
+                    <div class="formDiv">
+                        <fieldset>
+                            <legend>基本信息</legend>
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td width="15%">
+                                            名称
+                                        </td>
+                                        <td width="35%" style="padding-right: 40px;">
+                                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                                        </td>
+                                        <td width="15%">
+                                            编号
+                                        </td>
+                                        <td width="35%" style="padding-right: 40px;">
+                                            <input name="DBSCode" class="mini-textbox" style="width: 100%" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            目录类别
+                                        </td>
+                                        <td style="padding-right: 40px;">
+                                            <input id="DBSType" name="DBSType" class="mini-combobox" style="width: 100%;" textfield="text"
+                                                valuefield="value" data="DBSType" allowinput="false" required="true" />
+                                        </td>
+                                        <td>
+                                            映射类别
+                                        </td>
+                                        <td style="padding-right: 40px;">
+                                            <input name="MappingType" class="mini-combobox" style="width: 100%;" textfield="text"
+                                                valuefield="value" data="DBSMappingType" allowinput="false" showNullItem="true"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            归档目录
+                                        </td>
+                                        <td style="padding-right: 40px;">
+                                            <input name="ArchiveFolder" textname="ArchiveFolderName" class="mini-combobox" style="width: 100%;"
+                                                textfield="text" valuefield="value" data="DocNodeConfig" allowinput="false" showNullItem="true"/>
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td style="padding-right: 40px;">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                        <fieldset id="ArchiveFolderConfigArea">
+                            <legend>归档结构信息</legend>
+                            <table>
+                                <tr>
+                                    <td style="padding-right: 40px;" colspan="4">
+                                        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                            <table style="width: 100%;">
+                                                <tr>
+                                                    <td style="width: 100%;">
+                                                        <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="addRow({},{gridId:'ProductStruct'});">
+                                                            增加 </a><a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="delRow({gridId:'ProductStruct'});">
+                                                                移除</a> <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                                                        <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+                                                    </td>
+                                                    <td style="white-space: nowrap;">
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div id="ProductStruct" class="mini-datagrid" style="width: 100%; height: 250px;"
+                                            idfield="ID" showpager="false" allowcelledit="true" allowcellselect="true" multiselect="false">
+                                            <div property="columns">
+                                                <div type="checkcolumn">
+                                                </div>
+                                                <div field="FieldName" width="*" headeralign="center" allowsort="true">
+                                                    所属字段<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                </div>
+                                                <div field="EnumKey" width="120" headeralign="center" allowsort="true" align="center">
+                                                    枚举KEY<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                </div>
+                                                <div type="comboboxcolumn" field="ArchiveFolder" autoshowpopup="true" displayfield="ArchiveFolderName"
+                                                    textfield="ArchiveFolderName" width="200" headeralign="center" allowsort="true"
+                                                    align="center">
+                                                    归档目录<input property="editor" class="mini-combobox" textfield="text" valuefield="value"
+                                                        shownullitem="true" style="width: 100%;" data="DocNodeConfig" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </div>
+                    </form>
+                </div>
+                <div title="DBS权限设置">
+                    <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 220px">
+                                    <div id="RoleType" class="mini-radiobuttonlist" onvaluechanged="onRoleValueChanged" name="roleType" repeatitems="4"
+                                        textfield="text" valuefield="value" value="ProjectRoleType" data="roleType">
+                                    </div>
+                                </td>
+                                <td style="width: auto;">
+                                    <a class="mini-button" iconcls="icon-add" onclick="inhertAuth();" plain="true">继承父目录权限</a>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="dataGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 100%;"
+                            idfield="ID" multiselect="true" oncellclick="onCellclick" allowcelledit="true"
+                            allowcellselect="true" multiselect="true" editnextonenterkey="true" editnextrowcell="true">
+                            <div property="columns">
+                                <div type="indexcolumn">
+                                </div>
+                                <div field="RoleName" width="*" headeralign="center" allowsort="true">
+                                    角色名称
+                                </div>
+                                <div type="checkboxcolumn" field="FullControlAuth" truevalue="True" falsevalue="False"
+                                    width="60">
+                                    完全控制
+                                </div>
+                                <div type="checkboxcolumn" field="WriteAuth" truevalue="True" falsevalue="False"
+                                    width="80">
+                                    读写权限
+                                </div>
+                                <div type="checkboxcolumn" field="ViewAuth" truevalue="True" falsevalue="False" width="60">
+                                    只读权限
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="addGroup" iconcls="icon-add" onclick="add">增加</li>
+    <li name="delGroup" iconcls="icon-remove" onclick="del">删除</li>
+</ul>
+<script type="text/javascript">
+    var DBSType=@Html.Raw(this.ViewBag.DBSType);
+    @Html.GetEnum(typeof(Project.Logic.DBSMappingType));
+    @Html.GetEnum(typeof(Project.Logic.FolderAuthType));
+    @Html.GetEnum(typeof(Config.ConnEnum));
+    //
+    @Html.GetEnum("System.DocNodeConfig")
+</script>
+<script type="text/javascript">
+    var roleType = [{ text: "项目角色", value: "ProjectRoleType" }, { text: "系统角色", value: "SysRoleType" }, { text: "组织角色", value: "OrgRoleType" }];
+</script>
+<script type="text/javascript">
+
+    function add() {
+        var modeID = getQueryString("ModeID");
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        var url = "Edit?ModeID=" + modeID + "&ParentID=" + node.ID + "&ParentDBSType=" + node.DBSType;
+        var settings = { url: url, height: 300, paramFrom: "mytree",
+            onDestroy: function (data) {
+                if (data != "close") {
+                    mini.get("mytree").reload();
+                }
+            }
+        };
+        nodeAdding(settings);
+    }
+
+    function del() {
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个目录"); return; }
+        msgUI("您确定需要删除吗？", 2, function (data) {
+            if (data != "ok") return;
+            addExecuteParam("ListIDs", node.ID);
+            execute("Delete", { showLoading: true, onComplete: function (data) {
+                tree.removeNode(node);
+                var form = new mini.Form("dataForm");
+                form.clear(); $("#btnDiv").hide();
+            }
+            });
+        });
+    }
+
+    function inhertAuth() {
+        var node = mini.get("mytree").getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        addExecuteParam("DBSNodeID", node.ID);
+        execute("InhertAuth", { showLoading: true, onComplete: function (data) {
+            msgUI("继承成功。");
+            mini.get("dataGrid").reload();
+        }
+        });
+    }
+
+    function saveNode() {
+        var form = new mini.Form("dataForm");
+        form.validate(); if (form.isValid() == false) return;
+        var data = form.getData();
+        data["ProductStruct"] = mini.get("ProductStruct").getData();
+        addExecuteParam("FormData", mini.encode(data));
+        execute("save", { showLoading: true, onComplete: function (data) {
+            var tree = mini.get("mytree");
+            tree.load(tree.url);
+        }
+        });
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var addGroupItem = mini.getbyName("addGroup", menu); ;
+        var delGroupItem = mini.getbyName("delGroup", menu);
+        addGroupItem.show();
+        delGroupItem.show();
+        if (node.DBSType == "Root") {
+            delGroupItem.hide(); ;
+        }
+    }
+
+    $("#btnDiv").hide();
+    function onNodeSelect(e) {
+        var node = e.node;
+        if (!node) { $("#btnDiv").hide(); return; }
+        else {
+            $("#btnDiv").show();
+            var form = new mini.Form("#dataForm");
+            form.setData(node);
+            mini.get("ProductStruct").setData(mini.decode(node.ProductStruct));
+            var url = "GetAuthList?DBSDefineID=" + node.ID+"&RoleType="+mini.get("RoleType").getValue();
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load();
+            if (node.DBSType == "Cloud") {
+                mini.get("DBSType").setReadOnly(true);
+            }
+            else
+                mini.get("DBSType").setReadOnly(false);
+        }
+    }
+    
+    function onRoleValueChanged(e) {
+        mini.get("dataGrid").load({ RoleType: e.value });
+    }
+
+    function onCellclick(e) {
+        var node = mini.get("mytree").getSelectedNode();
+        if (!node) { msgUI("请选择一个DBS节点"); return; };
+        if ((e.field == "ViewAuth" || e.field == "FullControlAuth" || e.field == "WriteAuth") && e.value != undefined) {
+            var viewAuth = e.record.ViewAuth;
+            var fullControlAuth = e.record.FullControlAuth;
+            var writeAuth = e.record.WriteAuth;
+            addExecuteParam("RoleCode", e.record.RoleCode);
+            addExecuteParam("RoleName", e.record.RoleName);
+            addExecuteParam("DBSDefineID", node.ID);
+            addExecuteParam("RoleType", mini.get("RoleType").getValue());
+            var method = "SetAuth";
+            if (viewAuth == "False" && fullControlAuth == "False" && writeAuth == "False") method = "RemoveAuth";
+            if (e.field == "ViewAuth") addExecuteParam("authType", "ReadOnly");
+            else if (e.field == "WriteAuth")
+                addExecuteParam("authType", "ReadAndWrite");
+            else addExecuteParam("authType", "FullControl");
+            execute(method, { showLoading: true, onComplete: function (data) {
+                mini.get("dataGrid").reload();
+            }
+            });
+        }
+    }
+
+    function moveUp() {
+        var dataGrid = mini.get("ProductStruct");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("ProductStruct");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+</script>
+<style type="text/css">
+    .Root
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif) no-repeat;
+    }
+    
+    .Catalog
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/subproject.gif) no-repeat;
+    }
+    
+    .Feature
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+    .readonlyStyle
+    {
+        background: #ffff88;
+    }
+</style>

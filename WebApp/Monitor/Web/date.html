@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+    <title>Mobiscroll</title>
+
+    <script src="js/jquery-1.10.2.js"></script>
+
+    <script src="js/date.min.js"></script>
+	<link href="css/date.min.css" rel="stylesheet" type="text/css" />
+    
+    <script>
+		$(function () {
+		    var now = new Date();
+		    $('#demo_date').mobiscroll().date({
+		        theme: 'mobiscroll',
+		        lang: 'zh',
+		        display: 'bottom',
+		        dateOrder: 'yymm',
+		        dateFormat: 'yy年mm月',
+		        startYear: now.getFullYear()-10,
+		        endYear: now.getFullYear() + 10,
+		        minWidth: 100
+		    });
+
+		    $('#demo_date').change(function(){
+		    	alert(1);
+		    })
+		});
+    </script>
+</head>
+
+<body>
+    <!-- <div data-role="fieldcontain" class="demo-cont" id="demo_cont_date"> -->
+        <input type="text" id="demo_date" />  
+    <!-- </div> -->
+</body>
+</html>

@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2F7C2956-01DE-4E1F-AB40-013F9E35552C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DocSystem.Logic</RootNamespace>
+    <AssemblyName>DocSystem.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="MvcAdapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\MvcAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessFacade\Base\DDLHelper.cs" />
+    <Compile Include="BusinessFacade\Base\DocConfigHelper.cs" />
+    <Compile Include="BusinessFacade\Base\DataAdapter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BusinessFacade\Base\DocInstanceHepler.cs" />
+    <Compile Include="BusinessFacade\Base\HtmlGenerator.cs" />
+    <Compile Include="BusinessFacade\Base\Tool.cs" />
+    <Compile Include="BusinessFacade\Control\BaseControl.cs" />
+    <Compile Include="BusinessFacade\Control\const.cs" />
+    <Compile Include="BusinessFacade\Control\ControlGenrator.cs" />
+    <Compile Include="BusinessFacade\Control\IControl.cs" />
+    <Compile Include="BusinessFacade\Control\Layout\Form.cs" />
+    <Compile Include="BusinessFacade\Control\Layout\Table.cs" />
+    <Compile Include="BusinessFacade\Control\Layout\TableCell.cs" />
+    <Compile Include="BusinessFacade\Control\Layout\TableRow.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniCheckBox.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniComboBox.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniDataGrid.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniDatePicker.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniFileMulti.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniFileSingle.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniGridColumn.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniHidden.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniLayout.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniTextArea.cs" />
+    <Compile Include="BusinessFacade\Control\MiniUI\MiniTextBox.cs" />
+    <Compile Include="BusinessFacade\Enums\CarInfoEnums.cs" />
+    <Compile Include="Domain.partial\Base\S_C_File.cs" />
+    <Compile Include="Domain.partial\Base\S_C_FileAttr.cs" />
+    <Compile Include="Domain.partial\Base\S_C_Node.cs" />
+    <Compile Include="Domain.partial\Base\S_C_NodeAttr.cs" />
+    <Compile Include="Domain.partial\Base\S_C_QueryParam.cs" />
+    <Compile Include="Domain.partial\Base\S_C_Space.cs" />
+    <Compile Include="Domain.partial\Base\S_C_TreeConfig.cs" />
+    <Compile Include="Domain.partial\Base\Xml\DataEnum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\DataForm.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\DataItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\DataList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\DataNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\DataParam.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\DataStore.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\Base\Xml\Function.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain.partial\FormInstance\T_Borrow.cs" />
+    <Compile Include="Domain.partial\FormInstance\T_Download.cs" />
+    <Compile Include="Domain\Base\BaseModelExtend.cs" />
+    <Compile Include="Domain\Base\const.cs" />
+    <Compile Include="Domain\Base\Config\S_C_File.cs" />
+    <Compile Include="Domain\Base\Config\S_C_FileAttr.cs" />
+    <Compile Include="Domain\Base\Config\S_C_ListConfig.cs" />
+    <Compile Include="Domain\Base\Config\S_C_ListConfigDetail.cs" />
+    <Compile Include="Domain\Base\Config\S_C_Node.cs" />
+    <Compile Include="Domain\Base\Config\S_C_NodeAttr.cs" />
+    <Compile Include="Domain\Base\Config\S_C_NodeStruct.cs" />
+    <Compile Include="Domain\Base\Config\S_C_QueryParam.cs" />
+    <Compile Include="Domain\Base\Config\S_C_Space.cs" />
+    <Compile Include="Domain\Base\Instance\S_Attachment.cs" />
+    <Compile Include="Domain\Base\Instance\S_BaseEntity.cs" />
+    <Compile Include="Domain\Base\Instance\S_FileInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\Base\Instance\S_NodeInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\DocConst.cs">
+      <DependentUpon>DocConst.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Domain\DocConfig.cs">
+      <DependentUpon>DocConfig.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Domain\DocConst.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DocConst.cs</LastGenOutput>
+    </None>
+    <None Include="Domain\EF.Reverse.POCO.Core.ttinclude" />
+    <None Include="Domain\EF.Reverse.POCO.ttinclude" />
+    <None Include="Domain\DocConfig.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DocConfig.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

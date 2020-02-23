@@ -1,0 +1,211 @@
+﻿@{
+    ViewBag.Title = "TabIndex";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<style>
+    .mini-panel-border .mini-grid-border
+    {
+        border: 1px solid #ccc;
+        border-left: 0px !important;
+    }
+</style>
+<div class="mini-fit" id="fitTab">
+    <div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="6">
+        <div region="west" width="550px" expanded="true" showspliticon="false" showheader="false"
+            style="border-top: 0; border-bottom: 0;">
+            <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入员工姓名或员工工号" onenter="tabSearch({searchFields:'Name,Code',IsOrRelation:'false'});"
+                                onbuttonclick="tabSearch({searchFields:'Name,Code',IsOrRelation:'false'});" />
+                            <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" class="mini-datagrid" url="GetList" style="width: 100%; height: 100%;"
+                    allowresize="false" idfield="id" pagesize="20" onselectionchanged="onDataGridRowClick"
+                    frozenstartcolumn="0" frozenendcolumn="1">
+                    <div property="columns">
+                        <div type="indexcolumn" width="30px">
+                        </div>
+                        <div field="Name" headeralign="center" width="80" allowsort="true" align="center">
+                            员工姓名</div>
+                        <div field="Code" headeralign="center" width="80" allowsort="true" align="center">
+                            员工工号</div>
+                        <div field="JobNames" width="100" headeralign="center" allowsort="true" align="left">
+                            职务</div>
+                        <div field="PositionalTitles" width="130" headeralign="center" allowsort="true" align="left">
+                            职称</div>
+                        <div field="QualificationName" width="120" headeralign="center" allowsort="true"
+                            align="left">
+                            执业资格</div>
+                        <div field="Educational" width="70" headeralign="center" allowsort="true" align="center">
+                            学历</div>
+                        <div field="EngageMajor" width="120" headeralign="center" allowsort="true" align="left">
+                            从事专业</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center" showheader="false" style="border-top: 0; border-bottom: 0;
+            border-right: 0;" class="tree-backcolor">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+                borderstyle="border:0;" tabposition="top" onbeforeactivechanged="tabClick">
+                <div title="工作业绩" name="Performance" url="">
+                </div>
+                <div title="个人荣誉" name="Honour" url="">
+                </div>
+                <div title="执业资格" name="Qualification" url="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 650px; height: 200px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+        <table>
+            <tr>
+                <td width="15%" style="padding-left: 10px">
+                    员工工号
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input id="Code" name="$LK$Code" class="mini-textbox" style='width: 100%' />
+                </td>
+                <td width="15%" style="padding-left: 20px">
+                    员工姓名
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input id="Name" name="$LK$Name" class="mini-textbox" style='width: 100%' />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" style="padding-left: 10px">
+                    学历
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input id="Educational" name="$LK$Educational" class="mini-textbox" style='width: 100%' />
+                </td>
+                <td width="15%" style="padding-left: 20px">
+                    执业资格
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input id="QualificationName" name="$EQ$QualificationName" class="mini-textbox" style='width: 100%' />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" style="padding-left: 10px">
+                    从事专业
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input id="EngageMajor" name="$LK$EngageMajor" class="mini-textbox" style='width: 100%' />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick='tabSearch({IsOrRelation:"false"})' iconcls='icon-find'
+                style='margin-right: 20px;'>查询</a> <a class='mini-button' onclick='clearQueryForm()'
+                    iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+@Html.GetEnum("Project.Major")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "EngageMajor", "Major");
+
+    function pageLoad() {
+        var tabs = mini.get("mainTab");
+        tabs.activeTab("Performance");
+    }
+
+    function onDataGridRowClick(e) {
+        if (e.selected) {
+            var employeeID = e.selected.ID;
+            if (!employeeID) return;
+
+            if (mini.get("mainTab").getActiveTab().name == "Performance")
+                mini.get("mainTab").loadTab("/MvcConfig/UI/List/PageView?TmplCode=Employee_WorkPerformance&FuncType=View&EmployeeID=" + employeeID, mini.get("mainTab").tabs[0])
+            else if (mini.get("mainTab").getActiveTab().name == "Honour")
+                mini.get("mainTab").loadTab("/MvcConfig/UI/List/PageView?TmplCode=Employee_Honour&FuncType=View&EmployeeID=" + employeeID, mini.get("mainTab").tabs[1])
+            else if (mini.get("mainTab").getActiveTab().name == "Qualification")
+                mini.get("mainTab").loadTab("/MvcConfig/UI/List/PageView?TmplCode=Employee_Qualification&FuncType=View&EmployeeID=" + employeeID, mini.get("mainTab").tabs[2])
+        }
+    }
+    function tabClick(e) {
+        if (e) {
+            var dataGrid = mini.get("dataGrid");
+            var row = dataGrid.getSelected();
+            if (!row) return;
+
+            var employeeID = row.ID;
+            var userID = row.UserID;
+
+            if (e.name == "Performance")
+                mini.get("mainTab").loadTab("/MvcConfig/UI/List/PageView?TmplCode=Employee_WorkPerformance&FuncType=View&EmployeeID=" + employeeID, mini.get("mainTab").tabs[0])
+            else if (e.name == "Honour")
+                mini.get("mainTab").loadTab("/MvcConfig/UI/List/PageView?TmplCode=Employee_Honour&FuncType=View&EmployeeID=" + employeeID, mini.get("mainTab").tabs[1])
+            else if (e.name == "Qualification")
+                mini.get("mainTab").loadTab("/MvcConfig/UI/List/PageView?TmplCode=Employee_Qualification&FuncType=View&EmployeeID=" + employeeID, mini.get("mainTab").tabs[2])
+        }
+    }
+
+    function cusTabSearch(tabData, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+        }
+        var projectClass = "";
+        var phaseName = "";
+        var projectLevel = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "ProjectClass") {
+                projectClass = tabDataInfo.value;
+                continue;
+            }
+            else if (tabDataInfo.queryfield == "PhaseName") {
+                phaseName = tabDataInfo.value;
+                continue;
+            }
+            else if (tabDataInfo.queryfield == "ProjectLevel") {
+                projectLevel = tabDataInfo.value;
+                continue;
+            }
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({
+                queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData), ProjectClass: projectClass,
+                PhaseName: phaseName, ProjectLevel: projectLevel
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+
+</script>

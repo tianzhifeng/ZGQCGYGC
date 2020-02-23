@@ -1,0 +1,1 @@
+Monitor.Quartz.exe uninstall

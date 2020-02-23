@@ -1,0 +1,77 @@
+﻿<div id="{|ID|}" class="box box-primary" style="height:{|Height|}">
+        <div class="box-header">
+            <h3 class="box-title">
+                {|Title|}
+            </h3>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" v-show="isLock()" data-widget="remove" onclick="$('#{|ID|}').data('hidden', 'true');dashboardChanged('{|ID|}');">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="box-body" id="FriendLinkList">
+            <ul class="list-group">
+                <li class="list-item list-item-task" v-for="item in list">
+                    <div style="cursor: pointer;" v-on:click="openWindow(item);">
+                        <div class="item-head" style="cursor: pointer;">
+                            <div class="taskno">
+                                {{item.SortIndex}}
+                            </div>
+                            <div class="tasktitle nowrap">
+                                {{item.Name}}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+</div>
+
+<script>
+    var FriendLinkList = new Vue({
+        el: '#{|ID|}',
+        data: {
+            list: [],
+            list1: []
+        },
+        methods: {
+            openWindow: function (item) {
+                if (NoPopupLayer && NoPopupLayer != "true")
+                    open(item.Url);
+                else
+                    window.open(item.Url);
+            },
+            isLock: function (item) {
+                return getCache('isLockPortal') == 'false' || window.location.href.indexOf('/Base/UI/Portal/Portal') > 0;
+            }
+        }
+    });
+    (function () {
+        $.ajax({
+            url: "/PortalLTE/Main/GetFriendLink",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var data = $.parseJSON(data);
+                if (data.length > 0) {
+                    FriendLinkList._data.list = data;
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    })();
+
+
+
+</script>

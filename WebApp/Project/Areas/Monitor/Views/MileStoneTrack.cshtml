@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "MileStoneTrack";
+}
+
+<div class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;">
+    <div title="项目里程碑跟踪"  url="TrackList?ProjectInfoID=@Request["ProjectInfoID"]">
+    </div>
+    <div title="互提里程碑跟踪" url="CooperationTrackTree?ProjectInfoID=@Request["ProjectInfoID"]">
+    </div>
+</div>
+<style type="text/css">
+    .mini-tabs-bodys
+    {
+        padding: 0 0 0 0;
+    }
+    
+    .mini-tab-active
+    {
+        border-bottom-color: #999999;
+    }
+</style>

@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addNode()" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="editNode()" plain="true">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delNode()" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;"
+         url="" showtreeicon="true" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+         expandonload="true"
+         allowresize="false" fitcolumns="true">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="*" headeralign="center">名称</div>
+            <div field="Code" width="150" headeralign="center">编号</div>
+            <div field="NodeType" width="120" headeralign="center" align="center">节点类型</div>
+            <div field="CanSynToWBS" width="100" headeralign="center" align="center">允许同步WBS</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("System.TrueOrFalse")
+    @Html.GetEnum("Base.PBSType")
+</script>
+<script type="text/javascript">
+    var modeID = getQueryString("ModeID");
+    var url = "GetTree?ModeID=" + modeID;
+    $("#dataTree").attr("url", url);
+    var TrueOrFalse = [{ value: true, text: "是" }, { value: false, text: "否" }];
+    addGridEnum("dataTree", "NodeType", "PBSType");
+    addGridEnum("dataTree", "CanSynToWBS", "TrueOrFalse");
+
+
+    function addNode() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        var url = "Edit?ParentID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "PBS节点编辑", width: 700, height: 400,
+            onDestroy: function () {
+                dataTree.reload();
+            }
+        });
+    }
+
+    function editNode() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        var url = "Edit?ID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "PBS节点编辑", width: 700, height: 400,
+            onDestroy: function () {
+                dataTree.reload();
+            }
+        });
+    }
+
+    function delNode() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ID", node.ID);
+            execute("DeleteNode", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataTree.removeNode(node);
+                }, validateForm: false
+            });
+        });
+    }
+
+</script>

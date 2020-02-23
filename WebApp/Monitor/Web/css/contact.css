@@ -1,0 +1,437 @@
+.contact-title{
+	width: 100%;
+	height: 178px;
+    padding: 18px 15px 20px 15px;
+}
+.money-middle-cls{
+    color: #507ee9;
+    font-size: 16px;
+}
+.contact-title .left{
+	width: 50%;
+	height: 130px;
+	float: left;
+	text-align: center;
+}
+.contract-m .left-1{
+    margin-top: 7px;
+    font-size: 14px;
+    color: #e63236;
+}
+.contract-m .left-1 .left-11{
+    font-size: 11px !important;
+}
+.ji-left-1 {
+    font-size: 12px;
+    color: #e63236;
+}
+.ji-span-1{
+    font-size: 10px;
+    color: #e63236;
+}
+.ji-left-2 {
+    color: #E63236;
+    font-size: 22px;
+    font-weight: bold;
+}
+.contract-m .left-2{
+    padding-top: 5px;
+    color: #E63236;
+    font-size: 24px;
+    font-weight: bolder;
+    margin: 0 0 13px 0;
+}
+.left-decimal-2{
+    color: #E63236;
+    font-size: 22px !important;
+    padding-left: 0 !important;
+}
+.left-middle-decimal-2{
+    color: #000000;
+    font-size: 14px !important;
+    padding-left: 0 !important;
+    font-weight: bold;
+}
+.wanyuan-cls{
+    color: #000000 !important;
+    font-size: 13px !important;
+}
+.left-little-decimal-2{
+    color: #E63236;
+    font-size: 14px !important;
+    padding-left: 0 !important;
+}
+.left-integer-2{
+    font-size: 33px !important;
+    padding-right: 0 !important;
+}
+.left-middle-integer-2{
+    font-size: 22px;
+    font-weight: bold;
+    color: #000000 !important;
+}
+.left-little-integer-2{
+    padding-right: 0 !important;
+}
+.contract-m .rate-cls{
+    width: 80%;
+    height: 12px;
+    font-size: 10px;
+    text-align: left;
+    padding-left: 25%;
+}
+.contract-m p{
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	color:#aaa;
+    height: 25px;
+    line-height: 25px;
+}
+.contract-m .little-one{
+    font-size: 14px;
+    margin-left: 10px;
+}
+.contract-m .daokuan .bishu span{
+	padding: 0 4px;
+    font-size: 16px;
+    color: #e63236;
+}
+
+.contact-title .right{
+	width: 50%;
+	height: 130px;
+	float: left;
+	text-align: left;
+	overflow: hidden;
+}
+.contact-title .name-div .name {
+    font-size: 16px;
+    line-height: 16px;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    float: left;
+} .contact-title .name-div{
+      height: 20px;
+      width: 100%;
+  }
+.shoukuan .name{
+    font-size: 14px;
+    line-height: 25px;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.shoukuan .code{
+    height: 12px !important;
+    font-size: 12px !important;
+    line-height: 12px !important;
+    color: #999;
+    margin-bottom: 10px;
+}
+.contact-title .unit{
+    font-size: 10px;
+    line-height: 25px;
+    color: #999;
+    width: 20%;
+    float: right;
+}
+.contact-title .schedule-bar{
+    width: 125px;
+    height: 5px;
+    position: relative;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.contact-title .schedule-bar .complete-cls{
+    position: relative;
+    height: 100%;
+    background-color: #8ab230;
+    z-index: 1000;
+    border-radius: 6px;
+}
+.contact-title .schedule-bar .basic-bar-cls{
+    position: absolute;
+    height: 5px;
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 6px;
+}
+
+.contact-title .right .code{
+    font-size: 12px;
+    line-height: 12px;
+    color: #999999;
+    margin-bottom: 8px;
+}
+
+.contact-title .right p{
+    padding: 0;
+    margin: 0;
+    height: 25px;
+    line-height: 25px;
+    font-size: 13px;
+    color: #333333;
+}
+.contact-title .right p i{
+	margin-right: 5px;
+}
+.contact-tab{
+    width: 100%;
+    height: 50px;
+    background-color: #f0f0f0;
+    padding: 5px 15px;
+}
+
+.contact-tab div{
+    width: 100%;
+    height: 80%;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.contact-tab div button{
+    width: 50%;
+    height: 30px;
+    float: left;
+    outline: none;
+    border: none;
+    font-size: 16px;
+    background-color: #fff;
+}
+
+.contact-tab div button.active{
+    background-color: #387ef5;
+    border-radius: 5px;
+    color: #fff;
+}
+.contact-scroll{
+    width: 100%;
+    position: absolute;
+    top:230px;
+    bottom: 0;
+    overflow:hidden;
+}
+.contact-detail{
+    width: 100%;
+	padding: 0 15px;
+}
+
+.contact-detail li{
+	width: 100%;
+	padding: 10px 0;
+	border-bottom: 1px solid #cdcdcd;
+	clear: both;
+}
+
+.record-none{
+    font-style:italic;
+    color: #cdcdcd!important
+}
+
+.shoukuan li{
+	height: 125px;
+}
+
+.daokuan li{
+    height: 70px;
+}
+.daokuan .receiptObject{
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    color: #333333;
+}
+.contact-detail li .left,.contact-detail li .right{
+	width: 50%;
+	position: relative;
+	float: left;
+}
+
+.shoukuan input{
+	border:1px solid #cdcdcd;
+	height: 25px;
+    line-height: 25px;
+	text-indent: 5px;
+	position: relative;
+	width: 100%;
+    font-size: 14px;
+    border: none;
+}
+
+.is-edit input{
+    border-radius: 5px;
+    border: 1px solid rgb(205, 205, 205);
+}
+
+.shoukuan .input{
+	overflow: hidden;
+}
+.shoukuan .input div{
+	padding-left: 30px;
+	width: 100%;
+}
+.shoukuan .input div:before{
+	top:5px;
+}
+
+.is-edit:after{
+    content: "\e252";
+    font-family: 'Glyphicons Halflings';
+    position: absolute;
+    top:-1px;
+    right: 10px;
+    color: #666;
+}
+
+
+.shoukuan li .left div{
+	height: 28px;
+	line-height: 28px;
+	width: 100%;
+	position: relative;
+}
+
+.contact-detail li .left div:nth-child(1){
+	font-size: 16px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.contact-detail .span-icon:before {
+    top: -1px;
+    width: 18px;
+    height: 18px;
+}
+.contact-detail li .right{
+    margin-top: 4px;
+    text-align: right;
+}
+
+.right .contract-m p{
+	height: 20px;
+	line-height: 20px;
+	font-size: 14px;
+}
+.contract-m .receipt-value{
+    color:#387ef5;
+    padding-right: 0 !important;
+}
+.contract-m .receipt-decimal-value{
+    font-size: 11px;
+    padding-left: 0px !important;
+}
+.contact-detail li:nth-last-child(1){
+	border-bottom: none;
+}
+
+.daokuan .bishu{
+	float: left;
+	width: 20%;
+	text-align: left;
+}
+
+.daokuan .receipt-info-cls .jine{
+    float: right;
+    width: 45%;
+    text-align: right;
+    color: #E73236;
+    line-height: 30px;
+}
+.daokuan .receipt-info-cls{
+    height: 30px;
+    width: 100%;
+}
+
+.daokuan .receipt-info-cls .shijian{
+    float: left;
+    width: 45%;
+    text-align: left;
+    line-height: 30px;
+    font-size: 12px;
+    color: #999999;
+}
+.daokuan .receipt-info-cls .jine span{
+	font-size: 22px;
+}
+.span-icon-special{
+    padding-right: 5px;
+    padding-left: 22px;
+    position: relative;
+}
+.span-new-icon{
+    padding-right: 5px;
+    padding-left: 22px;
+    position: relative;
+}
+.span-clock-icon{
+    padding-right: 5px;
+    padding-left: 22px;
+    position: relative;
+}
+.span-clock-icon:before{
+    content: '';
+    position: absolute;
+    top: -1.5px;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    background-size: 100%;
+}
+.span-new-icon:before{
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    background-size: 100%;
+}
+.span-icon-special:before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    background-size: 100%;
+}
+
+.span-change-icon{
+    padding-right: 10px;
+    padding-left: 28px;
+    position: relative;
+}
+.span-change-icon:before{
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    background-size: 100%;
+}
+.title-bar{
+    width: 125px;
+    font-size: 10px;
+    color: #666666;
+    padding: 0 3px;
+    height: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.title-bar .left-bar{
+    float: left;
+}
+.title-bar .right-bar{
+     float: right;
+ }

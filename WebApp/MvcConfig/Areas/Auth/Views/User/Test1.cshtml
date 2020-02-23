@@ -1,0 +1,60 @@
+﻿<div id="datagrid1" class="mini-datagrid" style="width: 750px; height: 250px;" allowresize="true" idfield="id" emptytext="数据为空，<a href='javascript:newRow()'>增加一条</a>" showemptytext="true">
+    <div property="columns">
+        <div name="action" width="120" headeralign="center" align="center" renderer="onActionRenderer" cellstyle="padding:0;">#</div>
+        <div field="Code" width="150" allowsort="true">编号</div>
+        <div field="User" displayfield="UserName" width="250" allowsort="true">姓名
+            <input id="User" name="User" property="editor" class="mini-buttonedit" style="width: 100%;" />
+        </div>
+        <div field="Description" width="*">描述
+            <input property="editor" class="mini-textbox" style="width: 100%;" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function onActionRenderer(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var uid = record._uid;
+        var rowIndex = e.rowIndex;
+
+        var s = '<a class="New_Button" href="javascript:newRow()">New</a>'
+                    + ' <a class="Edit_Button" href="javascript:editRow(\'' + uid + '\')" >Edit</a>'
+                    + ' <a class="Delete_Button" href="javascript:delRow(\'' + uid + '\')">Delete</a>';
+
+        if (grid.isEditingRow(record)) {
+            s = '<a class="Update_Button" href="javascript:updateRow(\'' + uid + '\')">Update</a>'
+                    + '<a class="Cancel_Button" href="javascript:cancelRow(\'' + uid + '\')">Cancel</a>'
+        }
+        return s;
+    }
+
+    function newRow() {
+        var grid = mini.get("datagrid1");
+        var row = {};
+        grid.addRow(row, 0);
+        grid.cancelEdit();
+        grid.beginEditRow(row);
+    }
+    function editRow(row_uid) {
+        var grid = mini.get("datagrid1");
+        var row = grid.getRowByUID(row_uid);
+        if (row) {
+            grid.cancelEdit();
+            grid.beginEditRow(row);
+        }
+    }
+    function cancelRow(row_uid) {
+        var grid = mini.get("datagrid1");
+        grid.reload();
+    }
+    function delRow(row_uid) {
+        alert("delRow");
+    }
+
+    function updateRow(row_uid) {
+        alert("updateRow");
+    }
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("User", { returnParams: 'value:ID,text:Name,Code:Code,Description:Code' });
+</script>

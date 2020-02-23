@@ -1,0 +1,26 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-search" onclick="view();">查看</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入登录账户" onenter="quickSearch('UserName');" onbuttonclick="quickSearch('UserName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true">
+        <div property="columns">
+            <div field="ModifyUserName">账户</div>
+            <div field="ModifyTime" dateFormat="yyyy-MM-dd HH:mm" width="120">修改时间</div>
+            <div field="ClientIP">客户端IP</div>
+            <div field="UserHostAddress">代理IP</div>
+            <div field="ModifyMode">修改方式</div>
+            <div field="ConnName">数据库名</div>
+            <div field="TableName">表名</div>
+            <div width="*"></div>
+        </div>
+    </div>
+</div>

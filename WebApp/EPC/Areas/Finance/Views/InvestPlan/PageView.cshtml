@@ -1,0 +1,312 @@
+﻿@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+<form id="dataForm" method="post" align="center" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    @Html.Raw(ViewBag.HiddenHtml)
+    <div class="formDiv">
+        @Html.Raw(ViewBag.FormHtml)
+        <fieldset class="formDiv">
+            <legend>明细信息</legend>
+            <div class="mini-toolbar">
+                <table style="width:100%">
+                    <tr style="width:100%">
+                        <td style="width:50%">
+                            <a class="mini-button" id='btnGetLatestPlan' iconcls="icon-add" onclick="onGetLatestPlan" plain="true">生成汇总数据</a>
+                        </td>
+                        <td style="text-align:right;width:50%">
+                            <div id='EngineeringInfoName' class='mini-checkbox' text='按项目分组' checked='true' onvaluechanged='onGroupChange'></div>
+                            &emsp;&emsp;
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="dataGrid" class="mini-datagrid" style=" " url="" fitcolumns="false" showPager="false" allowCellEdit="false"
+                 allowCellSelect="true" ondrawgroup="onDrawGroup" ondrawcell="onDrawCell">
+            </div>
+        </fieldset>
+
+    </div>
+
+    @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+    {
+    <div style="margin-left: 35px; margin-right: 35px; margin-bottom: 65px;">
+        <fieldset>
+            <legend style="font-weight: bold;margin-left:35px;">操作信息</legend>
+            <div id="comment"></div>
+        </fieldset>
+    </div>
+
+    <script type="text/javascript">
+            function onCommentLoad(e) {
+                if (e.data.length == 0)
+                    $("#commentGrid").hide();
+            }
+    </script>
+    }
+</form>
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                    <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                </td>
+                <td id="btnRight"></td>
+            </tr>
+        </table>
+    </div>
+
+}
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.redFont',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                if (!tmp)
+                    return;
+
+                var el = e.element;
+                var form = new mini.Form("dataForm");
+                if (el.attributes["data-lastvalue"]) {
+                    var text = "新数据：" + el.attributes["data-lastvalue"].value;
+                    tip.setContent(text);
+                }
+                else if (el.className.indexOf('mini-combobox') > -1 || el.className.indexOf('mini-datepicker') > -1) {
+                    if (el.children.length > 1) {
+                        var name = el.children[1].name;
+                        var text = "新数据：" + tmp[name];
+                        tip.setContent(text);
+                    }
+                }
+                else if (el.children.length > 0 && el.children[0].children.length > 0) {
+                    var name = el.children[0].children[0].name;
+                    var text = "新数据：" + tmp[name];
+                    tip.setContent(text);
+                }
+            }
+        });
+
+    });
+
+</script>
+<script>
+    var ID = getQueryString("ID");
+    var tmp = [];
+    @Html.GetEnum("EPC.FundType")
+    var planMonths = @Html.Raw(ViewBag.planMonths);
+    var yearAndMonthColPre = '@Html.Raw(ViewBag.YearAndMonthColPre)';
+    var versionID = '@Html.Raw(ViewBag.VersionID)';
+    var flowEnd = "@Html.Raw(ViewBag.FlowEnd)";
+    var detailLoadFromProjList = "@Html.Raw(ViewBag.DetailLoadFromProjList)";
+
+    var splitBetweenDateAndType = '@Html.Raw(ViewBag.SplitBetweenDateAndType)';
+    var receiveColName = '@Html.Raw(ViewBag.ReceiveColName)';
+    var invoiceColName = '@Html.Raw(ViewBag.InvoiceColName)';
+    var guaranteeColName = '@Html.Raw(ViewBag.GuaranteeColName)';
+</script>
+<script>
+    function pageLoad()
+    {
+        setColumn();
+
+        if(ID){
+            setFormItemDisabled("ChargerDept");
+            var chargerDept = mini.getbyName("ChargerDept").getValue();
+            var makeYear = mini.getbyName("MakeYear").getValue();
+            var makeMonth = mini.getbyName("MakeMonth").getValue();
+
+
+            addExecuteParam("planMonths", mini.encode(planMonths));
+            addExecuteParam("InvestPlanID", ID);
+            execute("GetDetailList", {
+                showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                    tmp = data.LatestPlan;
+                    var grid = mini.get("dataGrid");
+                    grid.setData(data.DetailList);
+                    grouping();
+                }
+            });
+
+        }
+
+    }
+
+    function onFormSetData(data) {
+        if (data.FlowPhase == "Processing" || data.FlowPhase == "End") {
+            mini.get("btnGetLatestPlan").hide();
+        }
+
+    }
+
+    function onDeptChange() {
+        onGetLatestPlan();
+    }
+
+    //生成汇总数据
+    function onGetLatestPlan() {
+        setColumn();
+        var grid = mini.get("dataGrid");
+        var chargerDept = mini.getbyName("ChargerDept").getValue();
+        var makeYear = mini.getbyName("MakeYear").getValue();
+        var makeMonth = mini.getbyName("MakeMonth").getValue();
+        //var versionNumber = mini.getbyName("VersionNumber").getValue();
+
+        addExecuteParam("planMonths", mini.encode(planMonths));
+        addExecuteParam("MakeYear", makeYear);
+        addExecuteParam("MakeMonth", makeMonth);
+        addExecuteParam("ChargerDept", chargerDept);
+        //addExecuteParam("VersionNumber", versionNumber);
+        execute("GetLatestPlan", {
+            showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                grid.setData(data);
+                grouping();
+            }
+        });
+
+
+    }
+    function setColumn()
+    {
+        var columns = [
+            { type: "indexcolumn", width: 40 },
+            { field: "EngineeringInfoName",  name: "EngineeringInfoName", width: 250, headerAlign: "center", header: "项目", align: "left" },
+            { field: "FundType",  name: "FundType", type: "comboboxcolumn", width: 80, headerAlign: "center", header: "款项类型", align: "center",  editor: { type: "combobox", data: FundType} }
+        ];
+
+        for (i = 0; i < planMonths.length; i++) {
+            var tmp = planMonths[i];
+            columns.push({ field: tmp.ColumnName, name: tmp.ColumnName, width: 120, headerAlign: "center", align: "right", numberFormat: 'n', vtype:'float', required: true, allowSort: false, header: tmp.Year + '年' + tmp.Month+'月'  });
+        }
+        var dataGrid = mini.get('dataGrid');
+        dataGrid.set({ columns: columns });
+        dataGrid.frozenColumns(0,2);
+    }
+
+    //分组
+    function onGroupChange() {
+        grouping();
+    }
+    function grouping() {
+        var grid = mini.get("dataGrid");
+        var checked = mini.get("EngineeringInfoName").getChecked();
+        if (checked) {
+            grid.groupBy("EngineeringInfoName", "asc");
+        } else {
+            grid.clearGroup();
+        }
+    }
+    function onDrawGroup(e) {
+        e.cellHtml = e.value;
+    }
+
+
+    function onFormSaving() {
+        addExecuteParam("planMonths", planMonths);
+        return true;
+    }
+
+    function onFormSaved() {
+        setFormItemDisabled("ChargerDept");
+    }
+
+    function thisOpenWindow(url)
+    {
+        openWindow(url,{ width: '70%', height: '60%' });
+    }
+
+    function onDrawCell(e) {
+        var grid = e.sender;
+        var rec= e.record;
+        var field = e.field, value = e.value;
+        if (!tmp || tmp.length == 0) {
+            return;
+        }
+        var match = false;
+        var oldValue = "";
+        $.each(tmp, function (index, row) {
+            if (row.EngineeringInfo == rec.EngineeringInfo && row.FundType == rec.FundType) {
+                match = true;
+                oldValue = row[field];
+            }
+        });
+
+        if (match) {
+            if(field && field.substr(0,8) == "colMonth"){
+                if (parseFloat(oldValue) != parseFloat(value)) {
+                    e.cellStyle = "background:yellow;";
+                    e.cellHtml = '<span data-lastvalue="' + formatNumber(parseFloat(oldValue)) + '" class="redFont" style="color:red" data-placement="bottomleft">' + formatNumber(parseFloat(value)) + '</span>';
+                }
+
+            }
+
+        } else {
+            e.cellStyle = "background:#BBFFFF;";
+        }
+
+    }
+    function formatNumber(num) {
+        if (isNaN(num)) {
+            return "0.00";
+        }
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+    }
+
+</script>
+

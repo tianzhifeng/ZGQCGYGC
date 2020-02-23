@@ -1,0 +1,92 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="execute('DoVerifyFeedback',{closeWindow:true})">
+                    保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<div class="basediv" style="max-width: 850px">
+    <table width="100%" style="table-layout: fixed;">
+        <tr style="height: 0px">
+            <td width="15%">
+            </td>
+            <td width="35%">
+            </td>
+            <td width="15%">
+            </td>
+            <td width="35%">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                处理反馈
+            </td>
+            <td colspan="3">
+                <textarea class="mini-textarea" name="VerifyResult" style="width: 100%; height: 100px"
+                    required="true"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                处理确认
+            </td>
+            <td>
+                <input name="VerifyStatus" class="mini-combobox" required="true" style="width: 100%;"
+                    data="verifyStatus" />
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                标题
+            </td>
+            <td colspan='3'>
+                <input name="Title" style="width: 100%" class="mini-textbox" vtype="maxLength:50"
+                    enabled="false" required="true" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                反馈地址
+            </td>
+            <td colspan='3'>
+                <input class="mini-textbox" name="Url" style="width: 100%;" required="true" enabled="false"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                反馈内容
+            </td>
+            <td colspan='3'>
+                <textarea class="mini-textarea" name="Content" style="width: 100%; height: 88px"
+                    required="true" enabled="false"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                相关附件
+            </td>
+            <td colspan='3'>
+                <span name="Attachment" class="mini-multifile" disabled="true"></span>
+            </td>
+        </tr>
+    </table>
+</div>
+</form>
+<script type="text/javascript">
+    var verifyStatus = [
+        { value: "已解决", text: "已解决" },
+        { value: "未解决", text: "未解决" }
+    ];
+</script>

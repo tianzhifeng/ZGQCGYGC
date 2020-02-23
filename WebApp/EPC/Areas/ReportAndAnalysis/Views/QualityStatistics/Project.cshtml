@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "单项目质量分析";
+}
+
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+
+
+
+<div class="mini-splitter" vertical="true" style="width: 100%; height: 100%;" allowresize="false">
+    <div size="50%" showcollapsebutton="false">
+        <div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="false">
+            <div size="40%" showcollapsebutton="false" style="padding: 5px;">
+                <div id="xyQualityContainer" class="mini-fit">
+                </div>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-toolbar" style="padding: 0px; color: white">
+                    <table style="width: 100%; background-color: white">
+                        <tr>
+                            <td style="width: 100px">
+                                <input name="qualityLastYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                   value="@ViewBag.CurrentYear" data="@ViewBag.Years" onvaluechanged="reloadQualityData()" />&nbsp; &nbsp;
+                            <input name="qualityMonth" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                value="@ViewBag.CurrentMonth" data="viewMonth" onvaluechanged="reloadQualityData()" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="girdQualityContainer" class="mini-fit">
+                    <div id="dataGridQuality" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                        multiselect="false" showpager="false" onload="onQualityGridLoad" url="GetQualityList"
+                        ondrawcell="onDrawCellQ">
+                        <div property="columns">
+                            <div field="TypeName" width="120" headeralign="center" align="center">
+                                类型
+                            </div>
+                            <div headeralign="center">
+                                总问题数
+                            <div property="columns">
+                                <div field="QuestionCount" width="100" headeralign="center" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalQuestionCount" width="100" headeralign="center" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div headeralign="center">
+                                已关闭数
+                            <div property="columns">
+                                <div field="ClosedCount" headeralign="center" width="100" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalClosedCount" headeralign="center" width="100" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div field="For" headeralign="center" width="100" align="center">
+                                待关闭数
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="false">
+            <div size="40%" showcollapsebutton="false" style="padding: 5px;">
+                <div id="xyCheckContainer" class="mini-fit">
+                </div>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-toolbar" style="padding: 0px; color: white">
+                    <table style="width: 100%; background-color: white">
+                        <tr>
+                            <td style="width: 100px">
+                                <input name="checkLastYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                   value="@ViewBag.CurrentYear" data="@ViewBag.Years" onvaluechanged="reloadCheckData()" />&nbsp; &nbsp;
+                            <input name="checkMonth" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                value="@ViewBag.CurrentMonth" data="viewMonth" onvaluechanged="reloadCheckData()" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="girdCheckContainer" class="mini-fit">
+                    <div id="dataGridCheck" url="GetCheckList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                        multiselect="false" showpager="false" onload="onCheckGridLoad" ondrawcell="onDrawCellC">
+                        <div property="columns">
+                            <div field="TypeName" width="100" headeralign="center" align="center">
+                                类型
+                            </div>
+                            <div headeralign="center">
+                                验收数
+                            <div property="columns">
+                                <div field="MonthCheckCount" width="75" headeralign="center" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalCheckCount" width="75" headeralign="center" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div headeralign="center">
+                                合格数
+                            <div property="columns">
+                                <div field="MonthPassCount" headeralign="center" width="75" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalPassCount" headeralign="center" width="75" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div headeralign="center">
+                                不合格数
+                            <div property="columns">
+                                <div field="MonthNoPassCount" headeralign="center" width="75" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalNoPassCount" headeralign="center" width="75" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div field="OneTimePassRate" headeralign="center" width="100" align="center">
+                                一次验收合格率
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("EPC.ProblemType")
+    var qbsEnum = @Html.Raw(ViewBag.QBSEnum)
+</script>
+<script type="text/javascript">
+
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    addGridEnum("dataGridQuality", "TypeName", "ProblemType");
+    addGridEnum("dataGridCheck", "TypeName", "qbsEnum");
+
+    function onDrawCellQ(e) {
+        var field = e.field, value = e.value;
+        if (e.value > 0)
+            if (field != "TypeName")
+                e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + field + '\',\'' + e.row.TypeName + '\')">' + value + '</a>';
+    }
+
+    function viewDetailInfo(field, TypeName) {
+        var url = "";
+        var year = mini.getbyName("qualityLastYear").getValue();
+        var month = mini.getbyName("qualityMonth").getValue();
+        var cyear = mini.getbyName("checkLastYear").getValue();
+        var cmonth = mini.getbyName("checkMonth").getValue();
+        switch(field){
+            case "QuestionCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_TCMRectifyProblems&EngineeringInfoID=" + engineeringInfoID
+                    + "&ProType=" + TypeName + "&OpenYear=" + year + "&OpenMonth=" + month + "&CloseYear=&CloseMonth=&IsTotal=0";
+                break;
+            case "TotalQuestionCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_TCMRectifyProblems&EngineeringInfoID=" + engineeringInfoID
+                    + "&ProType=" + TypeName + "&OpenYear=" + year + "&OpenMonth=" + month + "&CloseYear=&CloseMonth=&IsTotal=1";
+                break;
+            case "ClosedCount":
+                closeY = year; closeM = month; isTotal = "0";
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_TCMRectifyProblems&EngineeringInfoID=" + engineeringInfoID
+                    + "&ProType=" + TypeName + "&OpenYear=&OpenMonth=&CloseYear=" + year + "&CloseMonth=" + month + "&IsTotal=0"
+                break;
+            case "TotalClosedCount":
+                closeY = year; closeM = month; isTotal = "1";
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_TCMRectifyProblems&EngineeringInfoID=" + engineeringInfoID
+                    + "&ProType=" + TypeName + "&OpenYear=&OpenMonth=&CloseYear=" + year + "&CloseMonth=" + month + "&IsTotal=1";
+                break;
+            case "For":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_TCMRectifyProblems&EngineeringInfoID=" + engineeringInfoID
+                    + "&ProType=" + TypeName + "&OpenYear=" + year + "&OpenMonth=" + month + "&CloseYear=&CloseMonth=&IsTotal=1&IsClosed=0";
+                break;
+                
+                //工程验收
+            case "MonthCheckCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_QBS&EngineeringInfoID=" + engineeringInfoID
+                    + "&NodeType=" + TypeName + "&Year=" + cyear + "&Month=" + cmonth + "&IsTotal=0";
+                break;
+            case "TotalCheckCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_QBS&EngineeringInfoID=" + engineeringInfoID
+                    + "&NodeType=" + TypeName + "&Year=" + cyear + "&Month=" + cmonth + "&IsTotal=1";
+                break;
+            case "MonthPassCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_QBS&EngineeringInfoID=" + engineeringInfoID
+                    + "&NodeType=" + TypeName + "&Year=" + cyear + "&Month=" + cmonth + "&IsTotal=0&State=Finish";
+                break;
+            case "TotalPassCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_QBS&EngineeringInfoID=" + engineeringInfoID
+                    + "&NodeType=" + TypeName + "&Year=" + cyear + "&Month=" + cmonth + "&IsTotal=1&State=Finish";
+                break;
+            case "MonthNoPassCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_QBS&EngineeringInfoID=" + engineeringInfoID
+                    + "&NodeType=" + TypeName + "&Year=" + cyear + "&Month=" + cmonth + "&IsTotal=0&State=Create";
+                break;
+            case "TotalNoPassCount":
+                url = "/MvcConfig/UI/List/PageView?TmplCode=Report_QBS&EngineeringInfoID=" + engineeringInfoID
+                    + "&NodeType=" + TypeName + "&Year=" + cyear + "&Month=" + cmonth + "&IsTotal=1&State=Create";
+                break;
+            
+        }
+        openWindow(url);
+    }
+
+    function onDrawCellC(e) {
+        var field = e.field, value = e.value;
+        if (e.value > 0)
+            if (field != "TypeName" && field != "OneTimePassRate")
+                e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + field + '\',\'' + e.row.TypeName + '\')">' + value + '</a>';
+    }
+
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var viewMonth = [
+         { text: "1月", value: "1" },
+         { text: "2月", value: "2" },
+         { text: "3月", value: "3" },
+         { text: "4月", value: "4" },
+         { text: "5月", value: "5" },
+         { text: "6月", value: "6" },
+         { text: "7月", value: "7" },
+         { text: "8月", value: "8" },
+         { text: "9月", value: "9" },
+         { text: "10月", value: "10" },
+         { text: "11月", value: "11" },
+         { text: "12月", value: "12" }
+    ];
+
+    function reloadQualityData() {
+        var selectYear = mini.getbyName("qualityLastYear").getValue();
+        var month = mini.getbyName("qualityMonth").getValue();
+
+        var dataGrid = mini.get("dataGridQuality");
+        var url = "GetQualityList?Year=" + selectYear + "&Month=" + month + "&EngineeringInfoID=" + getQueryString("EngineeringInfoID");
+        dataGrid.setUrl(url);
+        dataGrid.reload();
+    }
+
+    function onQualityGridLoad(e) {
+        if (e.result) {
+            $("#xyQualityContainer").highcharts(e.result.chartData);
+        }
+    }
+
+    function reloadCheckData() {
+        var selectYear = mini.getbyName("checkLastYear").getValue();
+        var month = mini.getbyName("checkMonth").getValue();
+
+        var dataGrid = mini.get("dataGridCheck");
+        var url = "GetCheckList?Year=" + selectYear + "&Month=" + month + "&EngineeringInfoID=" + getQueryString("EngineeringInfoID");
+        dataGrid.setUrl(url);
+        dataGrid.reload();
+    }
+
+    function onCheckGridLoad(e) {
+        if (e.result) {
+            $("#xyCheckContainer").highcharts(e.result.chartData);
+        }
+    }
+</script>

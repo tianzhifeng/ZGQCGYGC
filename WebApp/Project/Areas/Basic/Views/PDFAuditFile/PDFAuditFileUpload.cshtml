@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "附件信息";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+        splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="CloseWin();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div title="center" region="center">
+        <form id="dataForm" method="post" align="center" autogetdata="false">
+            <div class="formDiv">
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%">PDF校审文件</td>
+                            <td>
+                                <input name="Attachment" class="mini-singlefile" style="width: 100%;" filter="PDF|*.pdf" vtype="maxLength:100" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    function CloseWin() {
+        var productID = getQueryString("ID");
+        var auditStep = getQueryString("AuditStep");
+        var file = mini.getbyName("Attachment").file.toString();
+        if (file != "") {
+            addExecuteParam("ProductID", productID);
+            addExecuteParam("AuditStep", auditStep);
+            addExecuteParam("FileID", file);
+            msgUI("是否需要覆盖之前上传的校审文件？", 3, function (action) {
+                if (action == "ok") {
+                    addExecuteParam("IsOverride", true);
+                    execute("SaveAuditFile", {
+                        async: false, showLoading: true, refresh: false, onComplete: function (data) {
+                            closeWindow(data);
+                        }, validateForm: false
+                    });
+                }
+                else if (action == "no") {
+                    addExecuteParam("IsOverride", false);
+                    execute("SaveAuditFile", {
+                        async: false, showLoading: true, refresh: false, onComplete: function (data) {
+                            closeWindow(data);
+                        }, validateForm: false
+                    });
+                }
+            })
+        }
+    }
+</script>

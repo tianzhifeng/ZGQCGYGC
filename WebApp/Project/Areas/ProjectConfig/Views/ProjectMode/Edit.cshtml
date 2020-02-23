@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "项目模式编辑";
+}
+
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="36" showspliticon="false" showheader="false" allowresize="false"
+         splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                    <td id="btnRight">
+                        <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <form id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    名称
+                                </td>
+                                <td>
+                                    <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                                </td>
+                                <td style="padding-left:20px;">
+                                    编号
+                                </td>
+                                <td>
+                                    <input name="ModeCode" class="mini-textbox" required="true" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>默认模式</td>
+                                <td>
+                                    <input name="IsDefault" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="TrueOrFalse" allowinput="false" required="true" showNullItem="true"/>
+                                </td>
+                                <td style="padding-left:20px;">优先级</td>
+                                <td>
+                                    <input name="Priority" style="width: 100%" class="mini-textbox" required="true" vtype="int" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    描述
+                                </td>
+                                <td colspan="3">
+                                    <input name="Description" class="mini-textarea" style="width: 100%; height: 100px;"
+                                           vtype="maxLength:100" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>扩展配置</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+                            <tr>
+                                <td>里程碑是否获取上一版数据<br />（不根据模板）</td>
+                                <td>
+                                    <input name="Ext_MsDataIsFromLastVertion" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="TrueOrFalse" allowinput="false" required="false" showNullItem="true"/>
+                                </td>
+                                <td style="padding-left:20px;">工作包/卷册/图纸 应用设计变更</td>
+                                <td>
+                                    <input name="Ext_TaskWorkDesingChange" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="TrueOrFalse" allowinput="false" required="false" showNullItem="true"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>是否允许策划时变更项目模式</td>
+                                <td>
+                                    <input name="Ext_TemporaryMode" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                           data="TrueOrFalse" allowinput="false" required="false" showNullItem="true"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>立项条件</legend>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addRow({ Group: 'Group1' }, { gridId: 'Condition' })" plain="true">增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delRow({ gridId: 'Condition' })" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="Condition" class="mini-datagrid" style="width: 100%; height: auto" idfield="ID" showpager="false"
+                                     allowcelledit="true" allowcellselect="true" multiselect="true" editnextonenterkey="true" editnextrowcell="true">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div type="comboboxcolumn" autoshowpopup="true" field="FieldName" width="90" headeralign="center" allowsort="false" align="center">
+                                            字段名<input property="editor" class="mini-combobox" valuefield="value" , textfield="text" style="width:100%;" data="ProjectInfoColumn" />
+                                        </div>
+                                        <div type="comboboxcolumn" field="QueryMode" width="60" headeralign="center" allowsort="false" align="center" autoshowpopup="true">
+                                            运算符<input property="editor" class="mini-combobox" valuefield="value" textfield="text" data="queryModeEnum" style="width: 100%;"/>
+                                        </div>
+                                        <div field="Value" width="250" headeralign="center" allowsort="false" align="left">
+                                            值<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                        <div field="Group" width="70" headeralign="center" allowsort="false" align="center">
+                                            分组<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var queryModeEnum = [
+    { value: "Equal", text: "=" },
+    { value: "LessThan", text: "<" },
+    { value: "GreaterThan", text: ">" },
+    { value: "LessThanOrEqual", text: "<=" },
+    { value: "GreaterThanOrEqual", text: ">=" },
+    { value: "Like", text: "Like" },
+    { value: "In", text: "In" }];
+    @Html.GetEnum(typeof(Project.Logic.TrueOrFalse))
+    @Html.GetEnum("Project.ProjectInfoColumn")
+</script>
+
+<script type="text/javascript">
+    function pageLoad() {
+        $("#btnRight a").show();
+    }
+    function onFormSetData(data) {
+        if (data.ExtentionJson)
+        {
+            var extData = mini.decode(data.ExtentionJson);
+            var form = new mini.Form("#dataForm");
+            form.setData(extData, false);
+        }
+    }
+</script>

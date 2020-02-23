@@ -1,0 +1,560 @@
+﻿@if (ViewBag.IsShowNavRadioButton == 0)
+{
+    <div class="mini-splitter" vertical="true" style="width: 100%; height: 100%;" borderstyle="border-top:0px;border-bottom:0px">
+        <div size="43" showcollapsebutton="true">
+            <div class="mini-toolbar"  id="btnDiv">
+                <table>
+                    <tr>
+                        <td>
+                            <input class="mini-radiobuttonlist" name="ListType" textfield="text" valuefield="value" data="ListType" value="list" onvaluechanged="onListValueChanged" />
+                        </td>
+                         <td id="btnRight"><a class="mini-button" iconcls="icon-node" plain="true" onclick="preView();">预览</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div showcollapsebutton="true">
+            <div class="mini-splitter" vertical="false" style="width: 100%; height: 100%;" allowresize="false">
+                <div showcollapsebutton="true" borderstyle="border:0px" size="60%">
+                    <div class="mini-toolbar" id="btnDiv">
+                        <table>
+                            <tr>
+                                <td>
+                                    <a class="mini-button" iconcls="icon-add" onclick="addRow({Visible:'true'},{createId:true,isLast:true,gridId: 'filedDataGrid'})">添加</a>
+                                    <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId: 'filedDataGrid'});">移除</a>
+                                    <a class="mini-button" iconcls="icon-up" onclick="moveUp('filedDataGrid');">上移</a>
+                                    <a class="mini-button" iconcls="icon-down" onclick="moveDown('filedDataGrid');">下移</a>
+                                    <a class="mini-button" iconcls="icon-down" onclick="importField();">导入</a>
+                                    <a class="mini-button" iconcls="icon-save" id="btnSave" style="text-decoration: underline; color: #0000FF;" onclick="saveLayoutField();">保存</a>
+                                    @*                                <a class="mini-button" iconcls="icon-download" onclick="exportSQL();">导出SQL</a>*@
+                                    <a class="mini-button" iconcls="icon-node" plain="true" onclick="setting();">高级设置</a>
+                                </td>
+                                <td id="btnRight">
+                                    @*<a class="mini-button" iconcls="icon-node" plain="true" onclick="preView();">预览</a>*@
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="filedDataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false" url="GetLayoutField" onlycheckselection="true" onpreload="onPreLoad">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="Settings" width="35">
+                                </div>
+                                <div field="field" width="110" vtype="required;">
+                                    字段编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                <div field="header" width="150" vtype="required;">
+                                    字段名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                                {
+                                    <div field="HeaderEN" width="150" vtype="required;">
+                                        英文名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                }
+
+                                <div field="width" width="45">
+                                    列宽度
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                <div type="comboboxcolumn" field="align" width="50" autoshowpopup="true" align="center">
+                                    对齐
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="align" onitemclick="commitEdit('filedDataGrid')" />
+                                </div>
+                                <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="35">
+                                    显示
+                                </div>
+                                <div type="checkboxcolumn" field="allowSort" truevalue="true" falsevalue="false" width="35">
+                                    排序
+                                </div>
+                                <div type="checkboxcolumn" field="AllowSearch" truevalue="true" falsevalue="false" width="35">
+                                    快查
+                                </div>
+                                <div type="comboboxcolumn" field="ItemType" width="75" autoshowpopup="true" align="center">
+                                    查询控件
+                <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="ItemType" onitemclick="commitEdit('filedDataGrid')" onvaluechanged="itemTypeChanged" />
+                                </div>
+                                <div type="comboboxcolumn" field="QueryMode" width="58" autoshowpopup="true" align="center">
+                                    查询方式
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="queryModeEnum" onitemclick="commitEdit('filedDataGrid')" />
+                                </div>
+                                <div field="QuerySettings" width="68">
+                                    查询设置
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div showcollapsebutton="true" style="width: 100%; height: 100%;">
+                    <div class="mini-toolbar" id="btnDiv">
+                        <table>
+                            <tr>
+
+                                <td>
+                                    <a class="mini-button" iconcls="icon-add" onclick="addRow({Enabled:'true',Visible:'true'},{isLast:true,gridId: 'buttonDataGrid'});">添加</a>
+                                    <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId: 'buttonDataGrid'});">移除</a>
+                                    <a class="mini-button" iconcls="icon-up" onclick="moveUp('buttonDataGrid');">上移</a>
+                                    <a class="mini-button" iconcls="icon-down" onclick="moveDown('buttonDataGrid');">下移</a>
+                                    <a class="mini-button" iconcls="icon-save" onclick="saveLayoutButton();">保存</a>
+                                </td>
+
+                                <td class="gw-toolbar-right"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="buttonDataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false" url="GetLayoutButton">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="id" width="80">
+                                    按钮ID
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                <div field="text" width="80">
+                                    按钮名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                                {
+                                    <div field="TextEN" width="80">
+                                        英文名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                }
+                                <div field="URL" width="*">
+                                    URL
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                </div>
+                                <div type="comboboxcolumn" field="iconcls" width="60" autoshowpopup="true" align="center">
+                                    图标
+                <input property="editor" class="mini-combobox" style="width: 80%;" value="left" data="iconEnum" onitemclick="commitEdit('buttonDataGrid')" shownullitem="true" allowinput="true" />
+                                </div>
+                                <div type="checkboxcolumn" field="Enabled" truevalue="true" falsevalue="false" width="60">
+                                    是否可用
+                                </div>
+                                <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="60">
+                                    是否显示
+                                </div>
+                                <div field="Settings" width="45">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="mini-splitter" vertical="false" style="width: 100%; height: 100%;" borderstyle="border-top:0px;border-bottom:0px" >
+        <div showcollapsebutton="true" borderstyle="border:0px" size="60%">
+            <div class="mini-toolbar" id="btnDiv">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-add" onclick="addRow({Visible:'true'},{createId:true,isLast:true,gridId: 'filedDataGrid'})">添加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId: 'filedDataGrid'});">移除</a>
+                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('filedDataGrid');">上移</a>
+                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('filedDataGrid');">下移</a>
+                            <a class="mini-button" iconcls="icon-down" onclick="importField();">导入</a>
+                            <a class="mini-button" id="btnSave" iconcls="icon-save" style="text-decoration: underline; color: #0000FF;" onclick="saveLayoutField();">保存</a>
+                            <a class="mini-button" iconcls="icon-node" plain="true" onclick="setting();">高级设置</a>
+                        </td>
+                        <td id="btnRight">
+                            @if (ViewBag.IsShowNavRadioButton != 0){
+                            <a class="mini-button" iconcls="icon-node" plain="true" onclick="preView();">预览</a>
+                            }
+                         </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="filedDataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false" url="GetLayoutField" onlycheckselection="true" onpreload="onPreLoad">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Settings" width="35">
+                        </div>
+                        <div field="field" width="110" vtype="required;">
+                            字段编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="header" width="150" vtype="required;">
+                            字段名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                        {
+                            <div field="HeaderEN" width="150" vtype="required;">
+                                英文名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                            </div>
+                        }
+
+                        <div field="width" width="45">
+                            列宽度
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div type="comboboxcolumn" field="align" width="50" autoshowpopup="true" align="center">
+                            对齐
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="align" onitemclick="commitEdit('filedDataGrid')" />
+                        </div>
+                        <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="35">
+                            显示
+                        </div>
+                        <div type="checkboxcolumn" field="allowSort" truevalue="true" falsevalue="false" width="35">
+                            排序
+                        </div>
+                        <div type="checkboxcolumn" field="AllowSearch" truevalue="true" falsevalue="false" width="35">
+                            快查
+                        </div>
+                        <div type="comboboxcolumn" field="ItemType" width="75" autoshowpopup="true" align="center">
+                            查询控件
+                <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="ItemType" onitemclick="commitEdit('filedDataGrid')" onvaluechanged="itemTypeChanged" />
+                        </div>
+                        <div type="comboboxcolumn" field="QueryMode" width="58" autoshowpopup="true" align="center">
+                            查询方式
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="queryModeEnum" onitemclick="commitEdit('filedDataGrid')" />
+                        </div>
+                        <div field="QuerySettings" width="68">
+                            查询设置
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="true" style="width: 100%; height: 100%; ">
+            <div class="mini-toolbar" id="btnDiv">
+                <table>
+                    <tr>
+
+                        <td>
+                            <a class="mini-button" iconcls="icon-add" onclick="addRow({Enabled:'true',Visible:'true'},{isLast:true,gridId: 'buttonDataGrid'});">添加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId: 'buttonDataGrid'});">移除</a>
+                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('buttonDataGrid');">上移</a>
+                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('buttonDataGrid');">下移</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveLayoutButton();">保存</a>
+                        </td>
+
+                        <td class="gw-toolbar-right"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="buttonDataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false" url="GetLayoutButton">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="id" width="80">
+                            按钮ID
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="text" width="80">
+                            按钮名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                        {
+                            <div field="TextEN" width="80">
+                                英文名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                            </div>
+                        }
+                        <div field="URL" width="*">
+                            URL
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div type="comboboxcolumn" field="iconcls" width="60" autoshowpopup="true" align="center">
+                            图标
+                <input property="editor" class="mini-combobox" style="width: 80%;" value="left" data="iconEnum" onitemclick="commitEdit('buttonDataGrid')" shownullitem="true" allowinput="true" />
+                        </div>
+                        <div type="checkboxcolumn" field="Enabled" truevalue="true" falsevalue="false" width="60">
+                            是否可用
+                        </div>
+                        <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="60">
+                            是否显示
+                        </div>
+                        <div field="Settings" width="45">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style type="text/css">
+    #btnSave {
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+        #btnSave .icon-save {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+.mini-grid-border {
+    border: 0px solid #ccc;
+}
+</style>
+<script type="text/javascript">   
+    var iconEnum = @Html.Raw(ViewBag.IconEnum)
+</script>
+<script type="text/javascript">
+    var align = [{ value: "left", text: "靠左" }, { value: "center", text: "居中" }, { value: "right", text: "靠右"}];
+    var ListType = [{ value: "nav", text: "导航配置" }, { value: "list", text: "数据配置" }];
+    function saveLayout() {
+        addExecuteParam("Layout", mini.get("filedDataGrid").getData());
+        execute("SaveLayout", { actionTile: '保存'});
+    }
+</script>
+<script type="text/javascript">
+    function moveUp(grid) {
+        var dataGrid = mini.get(grid);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown(grid) {
+        var dataGrid = mini.get(grid);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+    function commitEdit(grid) {
+        var dataGrid = mini.get(grid);
+        dataGrid.commitEdit();
+    }
+
+    function itemTypeChanged(e) {
+        var grid = mini.get("filedDataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["QuerySettings"] = "";
+        var type = row["ItemType"];
+        if (type == "RadioButtonList" || type == "ComboBox" || type == "ButtonEdit" || type == "CheckBox")
+            row["QueryMode"] = "Equal";
+        else if (type == "CheckBoxList")
+            row["QueryMode"] = "In";
+        else if (type == "DatePicker")
+            row["QueryMode"] = "Between";
+        else if (type == "TextBox")
+            row["QueryMode"] = "Like";
+        else
+            row["QueryMode"] = "";
+        grid.updateRow(row);
+    }
+</script>
+<script type="text/javascript">
+    var queryModeEnum = [
+    { value: "Equal", text: "=" },
+    { value: "LessThan", text: "<" },
+    { value: "GreaterThan", text: ">" },
+    { value: "LessThanOrEqual", text: "<=" },
+    { value: "GreaterThanOrEqual", text: ">=" },
+    { value: "Like", text: "Like" },
+    { value: "In", text: "In" },
+    { value: "InLike", text: "InLike" },
+    { value: "StartsWith", text: "StartsWith" },
+    { value: "Between", text: "Between"}];
+
+    var ItemType = [
+        { value: 'TextBox', text: '单行文本框' },
+        { value: 'DatePicker', text: '日期选择框' },
+        { value: 'CheckBoxList', text: '多选框列表' },
+        { value: 'RadioButtonList', text: '单选框列表' },
+        { value: 'ComboBox', text: '组合下拉框' },
+        { value: 'ButtonEdit', text: '弹出选择框' },
+        { value: 'CheckBox', text: '复选框' }
+    ];
+</script>
+<script type="text/javascript">
+
+    addGridButton("filedDataGrid", "LayoutGrid", { linkText: '表格属性', onButtonClick: function (row) {
+        var url = "/Base/UI/List/LayoutGridEdit";
+        openWindow(url, { width: 350, title: "表格属性编辑", data: row["Settings"], onDestroy: function (data) {
+            if (data != "close")
+                row["LayoutGrid"] = mini.encode(data);
+        }
+        });
+    }
+    }); 
+    addGridButton("filedDataGrid", "Settings", { linkText: '详细', onButtonClick: function (row) {
+        var url = "/Base/UI/List/SettingsField";
+        openWindow(url, { width: 350, title: "列属性编辑", data: row["Settings"], onDestroy: function (data) {
+            if (data != "close")
+                row["Settings"] = mini.encode(data);
+        }
+        });
+    }
+    });
+    addGridButton("buttonDataGrid", "Settings", { linkText: '详细', onButtonClick: function (row) {
+        var url = "/Base/UI/List/SettingsButton";
+        openWindow(url, { width: 350, title: "按钮编辑", data: row["Settings"], onDestroy: function (data) {
+            if (data != "close")
+                row["Settings"] = mini.encode(data);
+        }
+        });
+    }
+    });
+    function getitemTypeText(value) {
+        for (var i = 0; i < ItemType.length; i++) {
+            if (ItemType[i]["value"] == value)
+                return ItemType[i]["text"];
+        }
+    }
+
+    addGridButton("filedDataGrid", "QuerySettings", { linkText: '查询设置', onButtonClick: function (row) {
+        var type = row["ItemType"];
+        if (!type) { msgUI('请先选择控件类型!'); return; }
+        var url = "/Base/UI/List/Settings" + type;
+        var title = getitemTypeText(type);
+        var width = 350;
+        openWindow(url, { width: width, title: title, data: row["QuerySettings"], onDestroy: function (data) {
+            if (data != "close")
+                row["QuerySettings"] = mini.encode(data);
+        }
+        });
+    }
+    });
+
+    function setting(){
+        var useID = getCache("_CacheUseID");
+        if (useID) {
+            var url = 'SettingsFlowList?ID=' + useID;
+            openWindow(url, {
+                title: '高级配置',width: 350,
+                onDestroy: function (data) {
+ 
+                }
+            });
+        }
+    }
+</script>
+<script type="text/javascript">
+    function isExistFiled(data, filed) {
+        var result = false;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].field == filed.field || data[i].header == filed.header)
+                result = true;
+        }
+        return result;
+    }
+
+    function onListValueChanged(e){
+        window.parent.getIframe(getQueryString("ID"), getQueryString("TmplCode"), ListType[0].value);
+
+    }
+
+    //function importFiled() {
+    //    msgUI("确认导入字段吗？", 2, function (act) {
+    //        if (act == "ok") {
+    //            execute("ImportField?ID=" + getCache("_CacheCategoryID"), { onComplete: function (result) {
+    //                var array = new Array();
+    //                var dataGrid = mini.get("filedDataGrid");
+    //                var data = array = dataGrid.getData();
+    //                if(result && result.length > 0){
+    //                    var resultData = mini.decode(result);
+    //                    for (var i = 0; i < resultData.length; i++) {
+    //                        if (data.length > 0) {
+    //                            if (!isExistFiled(data, resultData[i])) {
+    //                                array.push(resultData[i]);
+    //                            }
+    //                        } else {
+    //                            array.push(resultData[i]);
+    //                        }
+    //                    }
+    //                }
+    //                dataGrid.setData(array);
+    //            }
+    //            });
+    //        }
+    //    });
+    //}
+
+    function importField() {
+        msgUI("确认导入字段吗？", 2, function (act) {
+            if (act == "ok") {
+                execute("ImportField", { onComplete: function (data) {
+                    var grid = mini.get("filedDataGrid");
+                    grid.setData(mini.decode(data));
+                }
+                });
+            }
+        });
+    }
+
+    function onPreLoad(e) {
+        if (e.data.length < 1) {
+            execute("ImportField", { onComplete: function (data) {
+                var grid = mini.get("filedDataGrid");
+                grid.setData(mini.decode(data));
+            }
+            });
+        }
+    }
+    function saveLayoutField() {
+        var dataGrid = mini.get("filedDataGrid");
+        addExecuteParam("layoutField", dataGrid.getData());
+        execute("SaveLayoutField", { actionTitle: "保存", onComplete: function (result) {
+            msgUI("保存成功");
+            dataGrid.reload();
+        }});
+    }
+    function saveLayoutButton() {
+        var dataGrid = mini.get("buttonDataGrid")
+        addExecuteParam("layoutButton", dataGrid.getData());
+        execute("SaveLayoutButton", { actionTitle: "保存", onComplete: function (result) {
+            msgUI("保存成功");
+            dataGrid.reload();
+        }});
+    }
+    //function onRowClick(e){
+    //    var dataGrid = mini.get("buttonDataGrid")
+    //    var record = e.record, row = e.row;
+    //    if(record && record.Type == Type[2].value){
+    //        addExecuteParam("ID", record.ID);
+    //        execute("GetLayoutButton", { onComplete: function (data) {
+    //            dataGrid.setData(mini.decode(data));
+    //        }});
+    //    }else{
+    //        dataGrid.reload();
+    //    }
+    //}
+    var IsLists = @ViewBag.IsShowNavRadioButton;
+    function preView() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode={TmplCode}";
+        if(IsLists == 0)
+        {
+            url = "/MvcConfig/UI/Layout/LayoutView?TmplCode={TmplCode}";
+        }
+        openWindow(url, { title: '预览', width: 1000, addQueryString:false });
+    }
+
+    function exportSQL() {
+        var url = "/Base/UI/ExportSql/SqlFile?DefID=" +  getQueryString("ID") + "&FileCode=List_" +  getQueryString("ID") + "&TableName=";    
+        if(IsLists == 0)
+        {
+            url += "S_UI_Layout";
+        }else{
+            url += "S_UI_List";
+        }
+        window.open(url);
+    }
+</script>

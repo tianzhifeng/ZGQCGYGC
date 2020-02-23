@@ -1,0 +1,106 @@
+#content-tableList tr:hover {
+	background: rgb(241, 241, 241);
+}
+#content-tableList tr td {
+	padding: 0px;
+}
+.r-qu-body-title {
+	background: white; color: rgb(153, 153, 153) !important;
+}
+.r-qu-body-title p {
+	background: white; color: rgb(153, 153, 153) !important;
+}
+.r-qu-body-title span {
+	background: white; color: rgb(153, 153, 153) !important;
+}
+.r-qu-body-title {
+	
+}
+.surveyResultQu {
+	margin-bottom: 15px;
+}
+.ui-corner-all {
+	border-radius: 0px; border: currentColor; -moz-border-radius: 0px; -khtml-border-radius: 0px; -webkit-border-radius: 0px;
+}
+.ui-corner-left {
+	border-radius: 0px; border: currentColor; -moz-border-radius: 0px; -khtml-border-radius: 0px; -webkit-border-radius: 0px;
+}
+.progressbarDiv {
+	background: rgb(232, 232, 232);
+}
+.progress0 .ui-progressbar-value {
+	background: rgb(0, 185, 245) !important; border-bottom-color: rgb(0, 185, 245); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.progress1 .ui-progressbar-value {
+	background: rgb(255, 44, 73) !important; border-bottom-color: rgb(255, 44, 73); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.progress2 .ui-progressbar-value {
+	background: rgb(0, 129, 183) !important; border-bottom-color: rgb(0, 129, 183); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.progress3 .ui-progressbar-value {
+	background: rgb(255, 204, 0) !important; border-bottom-color: rgb(255, 204, 0); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.progress4 .ui-progressbar-value {
+	background: rgb(100, 163, 29) !important; border-bottom-color: rgb(100, 163, 29); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.progress5 .ui-progressbar-value {
+	background: rgb(191, 159, 255) !important; border-bottom-color: rgb(191, 159, 255); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.progress6 .ui-progressbar-value {
+	background: rgb(128, 222, 198) !important; border-bottom-color: rgb(128, 222, 198); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.m-content-right-body {
+	border-width: 0px 0px 0px; border-style: none solid solid; border-color: currentColor rgb(227, 227, 227) rgb(227, 227, 227); padding: 10px 30px 0px !important; background-color: rgb(255, 255, 255);
+}
+#m-content {
+	
+}
+.r_surveyTitle {
+	
+}
+.r_surveyTitle h2 {
+	background: url("../images/all.png") no-repeat -270px 12px; margin: 5px 0px; padding-left: 26px; font-family: "Microsoft Yahei","Î¢ÈíÑÅºÚ","SimHei","ºÚÌå"; font-size: 28px; font-weight: normal; display: block;
+}
+.r_handler {
+	
+}
+.r_tabs {
+	padding: 5px; text-align: right; border-bottom-color: rgb(232, 232, 232); border-bottom-width: 1px; border-bottom-style: solid;
+}
+#content-tableList tr td {
+	border: currentColor;
+}
+.r-qu-body-content {
+	font: 12px/20px "Microsoft Yahei", "Î¢ÈíÑÅºÚ", "SimSun", "ËÎÌå", "Arial Narrow", HELVETICA; color: rgb(108, 108, 108); padding-left: 10px; font-size-adjust: none; font-stretch: normal;
+}
+.r-qu-body-title {
+	padding: 4px 0px; line-height: 26px;
+}
+.r-qu-body-title {
+	font: 14px/20px "Microsoft Yahei", "Î¢ÈíÑÅºÚ", "SimSun", "ËÎÌå", "Arial Narrow", HELVETICA; color: rgb(0, 0, 0) !important; font-size-adjust: none; font-stretch: normal;
+}
+.r-qu-body-title p {
+	font: 14px/20px "Microsoft Yahei", "Î¢ÈíÑÅºÚ", "SimSun", "ËÎÌå", "Arial Narrow", HELVETICA; color: rgb(0, 0, 0) !important; font-size-adjust: none; font-stretch: normal;
+}
+.r-qu-body-title span {
+	font: 14px/20px "Microsoft Yahei", "Î¢ÈíÑÅºÚ", "SimSun", "ËÎÌå", "Arial Narrow", HELVETICA; color: rgb(0, 0, 0) !important; font-size-adjust: none; font-stretch: normal;
+}
+.suQuTable tr td {
+	height: 20px !important;
+}
+.m-content-right-body a {
+	color: rgb(103, 172, 194);
+}
+.r_tabs a {
+	margin: 5px 10px; color: rgb(0, 129, 204); font-size: 14px;
+}
+a.gray_color {
+	color: gray;
+}
+.suQuTable { width:100%;}
+
+.RedFont
+{
+    color:Red;
+    font-weight:bold;
+}

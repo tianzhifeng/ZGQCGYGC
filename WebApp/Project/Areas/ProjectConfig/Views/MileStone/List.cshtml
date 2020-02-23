@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "里程碑定义列表";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<link href="~/Scripts/Menu/Style.css" rel="stylesheet" type="text/css" />
+<div class="mini-fit">
+
+    <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-bottom: 0;">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 100%;">
+                    <a class="mini-button" iconcls="icon-add" onclick="addNew()" plain="true">增加</a>
+                    <a class="mini-button" iconcls="icon-remove" onclick="del();" plain="true">删除</a>
+                    <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                </td>
+                <td class="gw-toolbar-right" style="white-space: nowrap;">
+                    <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="tabSearch();" onbuttonclick="tabSearch();" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="mini-fit">
+        <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%;height: 100%;" idfield="ID" multiselect="true" allowcelledit="true"
+             oncellbeginedit="OnCellBeginEdit" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" showpager="false"
+             ondrawcell="onDrawingCell">
+            <div property="columns">
+                <div type="checkcolumn">
+                </div>
+                <div field="MileStoneName" vtype="required" width="250">
+                    名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div name="MileStoneType" autoshowpopup="true" field="MileStoneType" vtype="required" width="120" autoshowpopup="true" align="center">
+                    里程碑类别
+                    <input property="editor" class="mini-combobox" multiselect="false" style="width: 100%;"
+                           data="MileStoneType" />
+                </div>
+                <div field="ProjectClass" autoshowpopup="true" vtype="required" width="250" autoshowpopup="true" align="left">
+                    业务类型
+                    <input property="editor" class="mini-combobox" multiselect="true" style="width: 100%;"
+                           data="BusinessType" />
+                </div>
+                <div field="PhaseValue" autoshowpopup="true" vtype="required" width="100" autoshowpopup="true" align="center">
+                    阶段
+                    <input property="editor" class="mini-combobox" multiselect="true" style="width: 100%;"
+                           data="Phase" />
+                </div>
+                <div name="weight" field="Weight" vtype="int" width="80" align="right">
+                    默认权重
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="SortIndex" vtype="required;int" width="70" align="right">
+                    排序<input property="editor" class="mini-textbox" style="width: 100%;" vtype="int" />
+                </div>
+                <div name="outmajors" autoshowpopup="true" type="comboboxcolumn" field="OutMajors" width="250" align="center">
+                    提出专业
+                    <input property="editor" class="mini-combobox" multiselect="true" style="width: 100%;"
+                           data="Major" />
+                </div>
+                <div name="inmajors" autoshowpopup="true" type="comboboxcolumn" field="InMajors" width="250">
+                    接收专业
+                    <input property="editor" class="mini-combobox" multiselect="true" style="width: 100%;"
+                           data="MajorWithAll" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.MileStoneType), "MileStoneType")
+    @Html.GetEnum(typeof(Project.Logic.TrueOrFalse), "TrueOrFalse")
+    var Major = @Html.Raw(ViewBag.Major);
+    var MajorWithAll = @Html.Raw(ViewBag.MajorWithAll);
+    @Html.GetEnum("Base.ProjectClass")
+    @Html.GetEnum("Project.Phase")
+    var MileStoneLevel = [{ "text": "项目里程碑", "value": "Project" }, { "text": "专业里程碑", "value": "Major" }];
+
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "Necessity", "TrueOrFalse");
+    addGridEnum("dataGrid", "MileStoneType", "MileStoneType");
+    addGridEnum("dataGrid", "MileStoneLevel", "MileStoneLevel");
+    addGridEnum("dataGrid", "ProjectClass", "BusinessType");
+    addGridEnum("dataGrid", "PhaseValue", "Phase");
+    var modeID = getQueryString("ModeID");
+    var WBSStructID;
+
+    normalParamSettings.searchFields = "MileStoneName";
+
+    function OnCellBeginEdit(e) {
+        var field=e.field;var record = e.record;
+        if(field=="OutMajors"||field=="InMajors"){
+            if(record.MileStoneType!="Cooperation"){
+                e.cancel=true;
+            }
+        }
+    }
+
+    function addNew() {
+        var dataGrid = mini.get("dataGrid");
+        var mileStone = { ModeID: modeID, MileStoneType: "Normal"};
+        dataGrid.addRow(mileStone);
+    }
+
+    function del() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) msgUI("当前没有选择要操作的记录，请重新确认！", 1)
+        else {
+            msgUI("您确定要删除选中记录吗？", 2, function (data) {
+                if (data != "ok") return;
+                addExecuteParam("List", mini.encode(rows));
+                execute("Delete", {
+                    validateForm: false, showLoading: true, onComplete: function (data) {
+                        dataGrid.removeRows(rows);
+                    }
+                });
+            });
+        }
+    }
+
+    function save() {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.validate();
+        if (!dataGrid.isValid()) {
+            msgUI("输入的信息有错误，请检查输入的数据格式");
+            dataGrid.clearSelect();
+            return;
+        }
+        var rows = dataGrid.getChanges();
+        if (rows.length == 0) { return; }
+        var gridData = dataGrid.getData();
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("SaveList", {
+            showLoading: true, onComplete: function (data) {
+                msgUI("保存成功。");
+                dataGrid.reload();
+            }
+        });
+    }
+
+
+    function onDrawingCell(e) {
+        var record = e.record;
+        var field = e.field;
+        if(record.MileStoneType!="Cooperation")
+        {
+            if(field=="OutMajors"||field=="InMajors")
+            {
+                e.cellStyle = "background:#F0F0F0";
+            }
+        }
+    }
+</script>

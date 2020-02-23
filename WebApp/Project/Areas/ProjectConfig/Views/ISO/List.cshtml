@@ -1,0 +1,294 @@
+﻿@{
+    ViewBag.Title = "ISO单定义列表";
+}
+<div id="Name" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="400" expanded="true" showheader="false" showspliticon="true">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="add({ width: '60%', height: '60%' });" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" borderstyle="border-bottom:0px;border-right:0px;border-left:0px;" onselectionchanged="onSelectionChanged"
+                 class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="false" showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="*" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="Code" width="120" headeralign="center" allowsort="true" align="center">
+                        ISO编码
+                    </div>
+                    <div field="SortIndex" width="120" headeralign="center" allowsort="true"
+                         align="center">
+                        排序号
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div id="formToolBar" class="mini-toolbar" style="position: fixed; top: 0; width: 100%; z-index: 100; padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">保存</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="dataForm" style="margin-top:25px;">
+            <input name="ID" class="mini-hidden" />
+            <input name="ModeID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="20%">名称</td>
+                            <td width="30%;" style="padding-right: 40px;">
+                                <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+
+                            </td>
+                            <td width="20%">ISO编码</td>
+                            <td width="30%;" style="padding-right: 40px;">
+                                <input name="Code" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>排序号</td>
+                            <td style="padding-right:40px;">
+                                <input name="SortIndex" style="width: 100%" class="mini-textbox" required="true" vtype="int" />
+                            </td>
+                            <td>允许自定义新增</td>
+                            <td style="padding-right:40px;">
+                                <input name="CanAddNewForm" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                       data="trueOrFalse" allowinput="false" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>分类</td>
+                            <td style="padding-right:40px;">
+                                <input name="Catagory" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                       data="catagory" allowinput="false" />
+                            </td>
+                            <td></td>
+                            <td style="padding-right:40px;"></td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset id="configArea">
+                    <legend>配置信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="20%">相关数据库</td>
+                            <td width="30%;" style="padding-right: 40px;">
+                                <input name="ConnName" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                       data="ConnEnum" allowinput="false" />
+                            </td>
+                            <td width="20%">相关数据表</td>
+                            <td width="30%;" style="padding-right: 40px;">
+                                <input name="TableName" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>名称解释表达式</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="NameFieldInfo" style="width: 100%" class="mini-textbox" vtype="maxLength:500;" required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>表单链接URL</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="LinkFormUrl" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>归档附件字段(逗号分隔)</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="ArchiveFields" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>是否属于项目动态</td>
+                            <td style="padding-right:40px;">
+                                <div name="SendNotice" class="mini-radiobuttonlist" repeatitems="2" repeatlayout="table" repeatdirection="horizontal"
+                                     textfield="text" valuefield="value" value="False" data="trueOrFalse">
+                                </div>
+                            </td>
+                            <td>表单定义编号</td>
+                            <td style="padding-right:40px;">
+                                <input name="FormCode" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span data-tooltip='项目级表示项目的所有参与人员能收到；
+                                      专业级表示专业内人员能收到；
+                                      流程级表示流程的参与人员能收到；' data-placement='right'>
+                                    级别
+                                    <img src='/CommonWebResource/Theme/Default/MiniUI/icons/help.png' />
+                                </span>
+                            </td>
+                            <td style="padding-right:40px;">
+                                <input name="Level" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="level" allowinput="false" onvaluechanged="onLevelChange" />
+                            </td>
+                            <td>专业编号字段</td>
+                            <td style="padding-right:40px;">
+                                <input name="MajorField" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>流程启动内容</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="StartNoticeContent" style="width: 100%" class="mini-textbox" vtype="maxLength:500;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>环节中内容</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="StepNoticeContent" style="width: 100%" class="mini-textbox" vtype="maxLength:500;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>流程结束内容</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="EndNoticeContent" style="width: 100%" class="mini-textbox" vtype="maxLength:500;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>项目动态链接URL</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="LinkViewUrl" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>失效天数</td>
+                            <td style="padding-right: 40px;">
+                                <input name="ExpiresDate" style="width: 100%" class="mini-textbox" vtype="int" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset id="enumArea">
+                    <legend>枚举信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding-right: 40px;">
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addRow();" plain="true">增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="removeRow();" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="EnumFieldInfo" class="mini-datagrid" style="width: 100%; height: 200px;" idfield="ID" multiselect="true"
+                                     allowcelledit="true" allowcellselect="true"
+                                     editnextonenterkey="true" editnextrowcell="true"
+                                     showpager="false">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="FieldName" width="200" headeralign="center">
+                                            字段<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                        <div field="EnumKey" width="200" headeralign="center">
+                                            枚举Key<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var level = [{ text: "项目级", value: "Project" }, { text: "专业级", value: "Major" }, { text: "流程级", value: "Flow" }];
+    var trueOrFalse = [{ text: "是", value: "True" }, { text: "否", value: "False" }];
+    var catagory = [{ text: "项目立项", value: "项目立项" }, { text: "项目策划", value: "项目策划" }, { text: "项目执行", value: "项目执行" }, { text: "项目收尾", value: "项目收尾" }];
+    @Html.GetEnum(typeof(Config.ConnEnum))
+</script>
+<script type="text/javascript">
+    var modeID = getQueryString("ModeID");
+    $("#dataGrid").attr("url", "GetList?ModeID=" + modeID);
+    $("#formToolBar").hide();
+
+    function onLevelChange() {
+        var level = mini.getbyName("Level").getValue();
+        if (level == "Major")
+            mini.getbyName("MajorField").setRequired(true);
+        else
+            mini.getbyName("MajorField").setRequired(false);
+    }
+
+    function onSelectionChanged(e) {
+        var form = new mini.Form("dataForm");
+        if (e.selected) {
+            form.setData(e.selected);
+            var dataGrid = mini.get("EnumFieldInfo");
+            dataGrid.setData(mini.decode(e.selected.EnumFieldInfo));
+            $("#formToolBar").show();
+        }
+        else {
+            form.clearData();
+            $("#formToolBar").hide();
+        }
+        onLevelChange();
+    }
+
+    function saveData() {
+        save({
+            onComplete: function (data) {
+                var dataGrid = mini.get("dataGrid");
+                var row = dataGrid.getSelected();
+                dataGrid.updateRow(row, data);
+            }
+        });
+    }
+
+
+    function addRow() {
+        var dataGrid = mini.get("EnumFieldInfo");
+        var newRow = {};
+        dataGrid.addRow(newRow, 0);
+    }
+
+    function removeRow() {
+        var dataGrid = mini.get("EnumFieldInfo");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.removeRows(rows);
+    }
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '[data-tooltip]'
+        });
+    });
+</script>
+
+<style type="text/css">
+
+</style>

@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "DBS目录编辑";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+        splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <input name="ParentID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td width="15%">
+                            名称
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                        <td width="15%">
+                            编号
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="DBSCode" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%">
+                            目录类别
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="DBSType" class="mini-combobox" style="width: 100%;" textfield="text"
+                                valuefield="value" data="DBSType" allowinput="false" required="true" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var DBSType = [{ text: "子目录", value: "Folder" }, { text: "外部协作目录", value: "Cloud" }];
+    
+</script>
+<script type="text/javascript">
+    function onFormSetData() {
+        var dbsType = getQueryString("ParentDBSType");
+        if (dbsType == "Cloud") {
+            mini.getbyName("DBSType").setValue(dbsType);
+            setFormItemDisabled("DBSType");
+        }
+    }
+</script>

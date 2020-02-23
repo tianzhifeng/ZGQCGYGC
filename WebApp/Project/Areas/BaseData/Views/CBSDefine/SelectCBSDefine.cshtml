@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "选择CBS";
+}
+<div id="miniToolBar" class="mini-toolbar" style="width: 100%; border-left: 0; border-right: 0;
+    border-top: 0; padding: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" plain="true" onclick="returnValue()">选择</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td style="white-space: nowrap;">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+        allowmovecolumn="false" allowresize="true" multiselect="true" url="GetList" pagesize="20"
+        onselectionchanged="onSelectoinChanged" sortfield="SortIndex" sortorder="asc"
+        borderstyle="border:0">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="CBSName" headeralign="center" width="100" allowsort="true" align="center">
+                名称</div>
+            <div field="CBSCode" headeralign="center" width="100" allowsort="true" align="left">
+                编码</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var selectMaps = {};
+    function returnValue() {
+        var data = [];
+        for (var pageIndex in selectMaps) {
+            var rows = selectMaps[pageIndex];
+            data.addRange(rows);
+        }
+        closeWindow(data);
+    }
+
+    function onSelectoinChanged(e) {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        selectMaps[grid.getPageIndex()] = rows;
+    }
+
+</script>

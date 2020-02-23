@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "PlanList";
+}
+<div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+     borderstyle="border-left:0px;" onactivechanged="onTabLoad">
+    <div title="互提计划" name="detailPlanTab">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+            <table>
+                <tr>
+                    <td style="width: 100%">
+                        <a class="mini-button" iconcls="icon-add" onclick="addRow();">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveCooperation();">保存</a>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入资料名称" onenter="quickSearch('CooperationContent');"
+                               onbuttonclick="quickSearch('CooperationContent');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" style="height: 100px;">
+            <div id="dataGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;"
+                 allowresize="false" idfield="id" multiselect="true" allowcellvalid="true" allowcelledit="true"
+                 oncellbeginedit="cellBeginEdit(e);" sortorder="asc" allowcellselect="true" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;"
+                 showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="CooperationContent" width="*" vtype="required" headeralign="center" allowsort="true"
+                         align="left">
+                        资料名称
+                        <input property="editor" class="mini-textbox" style="width: 100%;">
+                    </div>
+                    <div field="OutMajorValue" width="100" headeralign="center" allowsort="true" align="center"
+                         vtype="required">
+                        提出专业
+                        <input property="editor" class="mini-combobox" style="width: 100%;" data="Major">
+                    </div>
+                    <div field="InMajorValue" width="200" vtype="required" headeralign="center" allowsort="true"
+                         align="left">
+                        接收专业
+                        <input property="editor" multiselect="true" class="mini-combobox" style="width: 100%;"
+                               data="[]">
+                    </div>
+                    <div field="PlanFinishDate" width="100" vtype="required" headeralign="center" allowsort="true"
+                         align="center" dateformat="yyyy-MM-dd">
+                        计划完成日期
+                        <input property="editor" class="mini-datepicker" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="互提矩阵表" name="mileStoneTab">
+        <div class="mini-fit">
+            <div id="mileStoneGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;"
+                 allowresize="false" idfield="id" allowcellvalid="true" showpager="false" allowcelledit="true"
+                 allowcellselect="true" ondrawcell="onDrawingCell" borderstyle="border-bottom: 0; border-left: 0; border-right: 0; border-top:0;"
+                 fitcolumns="false">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="MajorName" width="100" headeralign="center" align="center">
+                        专业
+                    </div>
+                    @{
+                        var majors = ViewBag.SubProjectMajorEnum as List<Dictionary<string, object>>;
+                        foreach (var major in majors)
+                        {
+                            var field = major["value"].ToString() + "_PlanFinishDate";
+                            <div field="@field" width="90" headeralign="center" dateformat="yyyy-MM-dd">
+                                @major["text"].ToString()
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Phase");
+    var Major = @Html.Raw(ViewBag.SubProjectMajor);
+</script>
+<script type="text/javascript">
+    addGridEnum("subProjectGrid", "PhaseCode", "Phase");
+    addGridEnum("dataGrid", "OutMajorValue", "Major");
+    addGridEnum("dataGrid", "InMajorValue", "Major");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var spaceCode = getQueryString("SpaceCode");
+    var authType = getQueryString("AuthType");
+    var subProjectID = getQueryString("SubProjectID");
+    if(subProjectID=="")
+        subProjectID="@ViewBag.RootWBSID";
+
+    $("#dataGrid").attr("url", "GetList?ProjectInfoID="+projectInfoID+"&SchemeWBSID=" + subProjectID);
+    $("#mileStoneGrid").attr("url", "GetMileStoneList?ProjectInfoID="+projectInfoID+"&SchemeWBSID=" + subProjectID);
+
+    function onTabLoad() {
+        mini.get("dataGrid").reload();
+        mini.get("mileStoneGrid").reload();
+    }
+
+    function addRow() {
+        var grid = mini.get("dataGrid");
+        var row = { ProjectInfoID: projectInfoID, SchemeWBSID: subProjectID };
+        grid.addRow(row, 0);
+        grid.beginEditCell(row, "CooperationContent");
+    }
+
+    function saveCooperation() {
+        if (!subProjectID) { msgUI("请选择一个子项"); return; }
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.validate();
+        if (dataGrid.isValid() == false) {
+            var error = dataGrid.getCellErrors()[0];
+            dataGrid.beginEditCell(error.record, error.column);
+            return;
+        }
+        var list = dataGrid.getChanges();
+        addExecuteParam("List", mini.encode(list));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("ValidCoopPlan", {
+            onComplete: function (result) {
+                if(result.IsShow){
+                    msgUI(result.Content+"是否继续？", 2, function(r) {
+                        if(r=="ok"){
+                            saveCoopPlan(list);
+                        }
+                    })
+                }
+                else{
+                    saveCoopPlan(list);
+                }
+            }
+        });
+    }
+
+    function saveCoopPlan(list) {
+        addExecuteParam("List", mini.encode(list));
+        addExecuteParam("SchemeWBSID", subProjectID);
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        addExecuteParam("LinkRoot", getQueryString("LinkRoot"));
+        execute("SaveCoopPlan", {
+            onComplete: function () {
+                msgUI("保存成功。"); 
+                onTabLoad();
+            }
+        });
+    }
+
+    function onDrawingCell(e) {
+        var field = e.field; var record = e.record;
+        var readOnly = false;
+        if (field == "MajorName")
+            readOnly = true;
+        else if (!field) readOnly = true;
+        else {
+            if (field) {
+                var majorValue = field.split('_')[0];
+                if (!majorValue) readOnly = true;
+                if (majorValue == record.MajorValue) readOnly = true;
+                var planFinishDate = record[field];
+                if (planFinishDate) {
+                    var planFinishArray = planFinishDate.split(',');
+                    var html = "";
+                    for (var i = 0; i < planFinishArray.length; i++) {
+                        var mileStoneID = planFinishArray[i].split('_')[0];
+                        var planFinishDate = planFinishArray[i].split('_')[1];
+                        html += "<a href=\"javascript:view('" + mileStoneID + "')\">" + planFinishDate + "</a><br/>";
+                    }
+                    e.cellHtml = html;
+                }
+            }
+        }
+        if (readOnly)
+            e.cellStyle = "background:#F0F0F0";
+    }
+
+    function view(mileStoneID) {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=CooperationExecuteInPlanList&MileStoneID=" + mileStoneID;
+        openWindow(url, { refresh: false, title: "专业互提列表", width: "70%", height: "50%",
+            onDestroy: function (data) {
+
+            }
+        });
+    }
+
+    function cellBeginEdit(e) {
+        var field = e.field;
+        var record = e.record;
+
+        if (field == "InMajorValue") {
+            if (record.OutMajorValue == "" || record.OutMajorValue == null) {
+                msgUI("请先选择提出专业！");
+                return;
+            }
+            var InMajor = [];
+            for (var i = 0; i < Major.length; i++) {
+                if (Major[i].value != record.OutMajorValue)
+                    InMajor.push(Major[i]);
+            }
+            e.editor.setData(InMajor);
+        }
+    }
+</script>
+<style type="text/css">
+    .mini-layout-proxy {
+        border-top: 0px;
+        border-left: 0px;
+    }
+</style>

@@ -1,0 +1,42 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+
+            <div size="100%" minsize="100px" showcollapsebutton="false" style="border-right: 0px">
+                <div class="mini-toolbar gw-grid-toolbar" style="border-left: 0px; border-right: 0px">
+                    <table>
+                        <tr>
+                            <td>
+                                <a id="btnAddEnumItem" class="mini-button" iconcls="icon-add" onclick="add({ url: 'MobileEnumEdit?EnumCode=MobileMenuGroup', gridId: 'enumItemGrid', height: '500px' });">增加</a>
+                                <a id="btnEditEnumItem" class="mini-button" iconcls="icon-edit" onclick="edit({ url: 'MobileEnumEdit?ID={ID}', gridId: 'enumItemGrid', height: '500px' });">编辑</a>
+                                <a id="btnDeleteEnumItem" class="mini-button" iconcls="icon-remove" onclick="del({ action: 'RemoveMenuGroupEnum', gridId: 'enumItemGrid' });">删除</a>
+                            </td>
+                            <td class="gw-toolbar-right">
+                                @*                                <input id="keyEnumItem" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name',{gridId:'enumItemGrid',queryBoxId:'keyEnumItem'});" onbuttonclick="quickSearch('Code,Name',{gridId:'enumItemGrid',queryBoxId:'keyEnumItem'});" />
+                                *@
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+
+                    <div id="enumItemGrid" url="GetMenuGroupEnum?EnumCode=MobileMenuGroup" borderstyle="border-left:0px;border-right:0px;border-bottom:0px" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true">
+                        <div property="columns">
+                            <div type="checkcolumn">
+                            </div>
+                            <div id="itemCode" field="Code" allowsort="true">
+                                编号
+                            </div>
+                            <div field="Name" allowsort="true">
+                                名称
+                            </div>
+                            @if (System.Configuration.ConfigurationManager.AppSettings["IsUseMultilingual"] == "True")
+                            {
+                                <div field="NameEN" allowsort="true">
+                                    名称(英语)
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+

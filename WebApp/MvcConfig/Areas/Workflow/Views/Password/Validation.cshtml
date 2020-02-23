@@ -1,0 +1,81 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/miniui.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/CommonWebResource/Theme/Default/MiniUI/miniui.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("/CommonWebResource/Theme/Default/MiniUI/icons.css")" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && e.keyCode == 27) {
+                closeWindow();
+            }
+        }
+        window.parent.document.onkeydown = document.onkeydown;
+    </script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td style="width: 60px; text-align: right;">
+                <label for="pwd$text">
+                    密码：</label>
+            </td>
+            <td>
+                <input id="pwd" name="pwd" class="mini-password" style="width: 100%;" onenter="onOkClick" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td style="padding-top: 5px;">
+                <a onclick="onOkClick" class="mini-button" style="width: 60px;">确定</a>
+                <a onclick="onCancelClick" class="mini-button" style="width: 60px;">取消</a>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        function closeWindow(data) {
+            setTimeout(function () {
+                if (window.CloseOwnerWindow) return window.CloseOwnerWindow(data, true);
+                else window.close();
+            }, 10);
+        }
+        var result = false;
+        function getData() {
+            return result;
+        }
+        function onOkClick() {
+            $.ajax({
+                url: 'ValidatePwd',
+                type: 'post',
+                data: { pwd: mini.get('pwd').getValue() },
+                dataType: 'text',
+                success: function (text) {
+                    //增加新版报错分支
+                    if (text && typeof(text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(text);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    result = text;
+                    closeWindow('ok');
+                }
+            });
+        }
+        function onCancelClick() {
+            closeWindow('cancel');
+        }
+        mini.parse();
+        mini.get("pwd").focus();
+    </script>
+</body>
+</html>

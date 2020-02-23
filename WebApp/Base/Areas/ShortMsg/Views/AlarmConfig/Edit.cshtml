@@ -1,0 +1,227 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <form id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td>名称</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:200" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%">数据库连接</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Connection" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                        </td>
+                        <td width="15%">数据表名称</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="TableName" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>计划完成时间字段</td>
+                        <td style="padding-right:40px;">
+                            <input name="PlanDateTimeField" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                        </td>
+                        <td>实际完成时间字段</td>
+                        <td style="padding-right:40px;">
+                            <input name="FinishDateTimeField" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>提醒模式</td>
+                        <td style="padding-right: 40px;">
+                            <input name="AlarmMode" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="AlarmMode" allowinput="false" required="true" />
+                        </td>
+                        <td>提醒周期</td>
+                        <td style="padding-right: 40px;">
+                            <input name="Frequency" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="AlarmFrequency" allowinput="false" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>是否重要</td>
+                        <td style="padding-right:40px;">
+                            <input name="IsImportant" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="YesOrNo" allowinput="false" required="true" />
+                        </td>
+                        <td>是否紧急</td>
+                        <td style="padding-right:40px;">
+                            <input name="IsUrgency" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="YesOrNo" allowinput="false" required="true" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>项目ID字段</td>
+                        <td style="padding-right:40px;">
+                            <input name="ProjectIDField" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                        <td>接收人ID字段</td>
+                        <td style="padding-right:40px;">
+                            <input name="ReceiverIDField" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>标题</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="Title" required="true" class="mini-textbox" style="width: 100%;" vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>内容模板</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="ContentTemplate" required="true" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>链接</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="LinkURL" class="mini-textbox" style="width: 100%;" vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>条件</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="Condition" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:500" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="padding-right: 40px;">
+                            <fieldset>
+                                <legend>提醒对象</legend>
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addRoles">增加角色</a>
+                                                <a class="mini-button" iconcls="icon-add" onclick="addUsers">增加人员</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delReceivers">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="Receivers" class="mini-datagrid" style="width: 100%; height: 200px;" idfield="ID" multiselect="true" allowcelledit="true" allowcellselect="true"
+                                     showpager="false">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="Name" width="300" headeralign="center" allowsort="true">
+                                            名称
+                                        </div>
+                                        <div field="Type" width="120" headeralign="center" allowsort="true" align="center">
+                                            类别
+                                        </div>
+                                        <div field="MajorField" width="120" headeralign="center" allowsort="true" align="center">
+                                            专业字段<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var AlarmMode = [{ text: "系统提醒", value: "Alarm" }];
+    @*@Html.GetEnum(typeof(Base.Logic.AlarmMode))*@
+    @Html.GetEnum(typeof(Base.Logic.AlarmFrequency))
+
+</script>
+
+<script type="text/javascript">
+    var roleType = [
+        { text: "系统角色", value: "SysRole" },
+        { text: "组织角色", value: "OrgRole" },
+        { text: "项目角色", value: "ProjectRole" },
+        { text: "用户", value: "User" }
+    ];
+
+    var YesOrNo = [
+        { text: "是", value: "1" },
+        { text: "否", value: "0" }
+    ];
+
+    addGridEnum("Receivers", "Type", "roleType");
+
+    function addRoles() {
+        var url = "/MvcConfig/Auth/Role/Selector?SelectMode=Multi&IsWorkflowSetting=true";
+        var dataGrid = mini.get("Receivers");
+        openWindow(url, {
+            refresh: false, title: "角色选择", width: 750, height: 600,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                for (var i = 0; i < data.length; i++) {
+                    var item = dataGrid.findRow(function (row) {
+                        if (row.ID == data[i].ID) { return true; }
+                    });
+                    if (item) continue;
+                    var Type = "";
+                    if (data[i].RoleType) Type = data[i].RoleType;
+                    else if (data[i].Type) Type = data[i].Type;
+                    else Type = "ProjectRole";
+                    item = { ID: data[i].ID, Name: data[i].Name, Code: data[i].Code, Type: Type };
+                    dataGrid.addRow(item);
+                }
+            }
+        });
+    }
+
+    function addUsers() {
+        var url = "/MvcConfig/Auth/User/MultiSelector";
+        var dataGrid = mini.get("Receivers");
+        openWindow(url, {
+            refresh: false, title: "用户选择", width: 750, height: 600,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                for (var i = 0; i < data.length; i++) {
+                    var item = dataGrid.findRow(function (row) {
+                        if (row.ID == data[i].ID) { return true; }
+                    });
+                    if (item) continue;
+                    var Type = "User";
+                    item = { ID: data[i].ID, Name: data[i].Name, Code: data[i].Code, Type: Type };
+                    dataGrid.addRow(item);
+                }
+            }
+        });
+    }
+
+    function delReceivers() {
+        var dataGrid = mini.get("Receivers");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI(""); return; }
+        dataGrid.removeRows(rows);
+    }
+</script>
+
+<style type="text/css">
+    .mini-layout-region-body {
+        overflow: auto;
+        position: relative;
+    }
+</style>

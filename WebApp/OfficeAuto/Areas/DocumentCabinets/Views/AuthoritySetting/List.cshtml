@@ -1,0 +1,274 @@
+﻿@{
+    ViewBag.Title = "文件资料柜权限设置列表";
+}
+<div class="mini-fit">
+    <div class='mini-toolbar'>
+        <table>
+            <tr>
+                <td style="width: 100%;">
+                    <a class="mini-button" id="btnChooseRole" iconcls="icon-user" onclick="doChoose('Role')" plain="true">选角色</a>
+                    <a class="mini-button" id="btnChooseOrg" iconcls="icon-dept" onclick="doChoose('Org')" plain="true">选部门</a>
+                    <a class="mini-button" id="btnChooseUser" iconcls="icon-user" onclick="doChoose('User')" plain="true">选人</a>
+                    @*<a class="mini-button" id="btnDel" iconcls="icon-remove" onclick="delRole" plain="true">删除</a>*@
+                </td>
+                <td id="btnRight" style="white-space: nowrap">
+                    类型：
+                    <input name="RoleType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" emptytext="请选择..." data="RoleType" allowinput="false" shownullitem="true" onvaluechanged="roleTypeChanged" />
+                    <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称" style="width: 200px;"
+                           onenter="quickSearch('Name');" onbuttonclick="quickSearch('Name');" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="mini-fit">
+        <div id="dataGrid" class="mini-datagrid" url="GetList" idfield="ID" style="width: 100%; height: 100%;" multiselect="true"
+             allowmovecolumn="false" showpager="false" pagesize="0" sortfield="ID" sortorder="desc" borderstyle="border-left:0;"
+             allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+             oncellbeginedit="cellbeginedit" ondrawcell="ondrawcell" onlycheckselection="true">
+            <div property="columns">
+                <div type="checkcolumn" headeralign="center">
+                </div>
+                <div field="Name" headeralign="center" width="120" allowsort="true" align="center">
+                    名称
+                </div>
+                <div field="RoleType" headeralign="center" width="120" allowsort="true" align="center">
+                    类型
+                </div>
+                <div header="权限设置" headeralign="center">
+                    <div property="columns">
+                        <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="ReadOnly" headeralign="center" width="100" align="center">
+                            只读权限<input type="checkbox" onclick="selectAll('ReadOnly')" title="全选只读权限" />
+                        </div>
+                        <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="CanWrite" headeralign="center" width="100" align="center">
+                            操作权限<input type="checkbox" onclick="selectAll('CanWrite')" title="全选操作权限" />
+                        </div>
+                        <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="FullControl" headeralign="center" width="100" align="center">
+                            完全控制<input type="checkbox" onclick="selectAll('FullControl')" title="全选完全控制" />
+                        </div>
+                    </div>
+                </div>
+                <div field="Del" headeralign="center" width="120" allowsort="true" align="center" renderer="onDelRenderer">
+                    删除
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    var RoleType = @Html.Raw(ViewBag.RoleType);
+    var AuthType = [{"text":"只读权限","value":"ReadOnly"},{"text":"操作权限","value":"CanWrite"},{"text":"完全控制","value":"FullControl"}];
+    var isInherit = "@ViewBag.IsInherit";
+
+    addGridEnum("dataGrid", "RoleType", "RoleType");
+
+    var grid;
+    var documentInfoID;
+    var level;
+    function pageLoad() {
+        grid = mini.get("#dataGrid");
+        documentInfoID = getQueryString("DocumentInfoID");
+        level = getQueryString("Level");
+        //if (level == 0 || isInherit == "1") {
+        //    mini.get("btnInherit").hide();
+        //}
+    }
+
+    var authTypeArray = ["ReadOnly", "CanWrite", "FullControl"];
+    function cellbeginedit(e) {
+        var record = e.record;
+        var row = grid.getRowByUID(record._uid);
+        if (row.IsParentAuth == 1)
+            e.cancel = true;
+        else {
+            var field = e.field;
+            if (authTypeArray.indexOf(field) >= 0 && e.value == "1") {
+                e.cancel = true;
+            }
+            if (authTypeArray.indexOf(field) >= 0 && e.value == "0") {
+                row.AuthType = field;
+                row._state = "modified";
+                grid.updateRow(row);
+                saveList({ actionTitle: "" });
+            }
+        }
+    }
+
+    function ondrawcell(e) {
+        var record = e.record;
+        var row = grid.getRowByUID(record._uid);
+        if (row.IsParentAuth == 1)
+            e.cellStyle = "background:#F0F0F0";
+    }
+
+    function delRole() {
+        var list = grid.getSelecteds();
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].IsParentAuth == 1) {
+                return msgUI("继承自上层节点的授权不能删除");
+            }
+        }
+        del();
+    }
+
+    function selectAll(obj) {
+        var list = grid.getList();
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].IsParentAuth != 1) {
+                list[i]._state = "modified";
+                list[i].AuthType = obj;
+            }
+        }
+        saveList({ actionTitle: "" });
+    }
+
+    function onDelRenderer(e) {
+        var record = e.record;
+        var thtml = record.IsParentAuth == 1 ? "" : "<a href=\"javascript:doDelRow('" + record._uid + "')\">删除</a>";
+        return thtml;
+    }
+
+    function doDelRow(uid) {
+        msgUI("是否确认删除？", 2, function (action) {
+            if (action == "ok") {
+                var row = grid.getRowByUID(uid);
+                if (row) {
+                    grid.removeRow(row);
+                    saveList({ actionTitle: "" });
+                }
+            }
+        });
+    }
+
+    function doChoose(type) {
+        var url;
+        var title;
+        var rows;
+        var selectedData;
+        var selectedIds;
+        var i;
+        var authType = "ReadOnly";//默认给只读权限
+        if (type == "Role") {
+            url = "/OfficeAuto/DocumentCabinets/AuthoritySetting/RoleSelector?SelectMode=Multi&GroupID=";
+            title = "选择角色";
+            rows = grid.findRows(function (row) {
+                if (row.RoleType == "SysRole" || row.RoleType == "OrgRole") return true;
+                return false;
+            });
+            selectedData = new Array(rows.length);
+            selectedIds = new Array(rows.length);
+            for (i = 0; i < rows.length; i++) {
+                selectedData[i] = { ID: rows[i].RoleCode };
+                selectedIds[i] = rows[i].RoleCode;
+            }
+            openWindow(url, {
+                width: 720, height: 580, title: title, data: selectedData, onDestroy: function (data) {
+                    if (data && data != "close") {
+                        for (i = 0; i < data.length; i++) {
+                            if (selectedIds.indexOf(data[i].ID) < 0) {
+                                var row = {
+                                    DocumentInfoID: documentInfoID, AuthType: authType, RoleType: data[i].Type,
+                                    RoleCode: data[i].ID, Name: data[i].Name, IsParentAuth: 0
+                                };
+                                grid.addRow(row);
+                            }
+                        }
+                        saveList({ actionTitle: "" });
+                    }
+                }
+            });
+        }
+        else if (type == "Org") {
+            url = urlConstant.multiOrg;
+            title = "选择部门";
+            rows = grid.findRows(function (row) {
+                if (row.RoleType == "Org") return true;
+                return false;
+            });
+            selectedData = new Array(rows.length);
+            selectedIds = new Array(rows.length);
+            for (i = 0; i < rows.length; i++) {
+                selectedData[i] = { ID: rows[i].RoleCode };
+                selectedIds[i] = rows[i].RoleCode;
+            }
+            openWindow(url, {
+                width: 320, height: 580, title: title, data: selectedData, onDestroy: function (data) {
+                    if (data && data != "close") {
+                        for (i = 0; i < data.length; i++) {
+                            if (selectedIds.indexOf(data[i].ID) < 0) {
+                                var row = {
+                                    DocumentInfoID: documentInfoID, AuthType: authType, RoleType: "Org",
+                                    RoleCode: data[i].ID, Name: data[i].Name, IsParentAuth: 0
+                                };
+                                grid.addRow(row);
+                            }
+                        }
+                        saveList({ actionTitle: "" });
+                    }
+                }
+            });
+        }
+        else if (type == "User") {
+            url = urlConstant.multiUser;
+            title = "选人";
+            rows = grid.findRows(function (row) {
+                if (row.RoleType == "User") return true;
+                return false;
+            });
+            selectedData = new Array(rows.length);
+            selectedIds = new Array(rows.length);
+            for (i = 0; i < rows.length; i++) {
+                selectedData[i] = { ID: rows[i].RoleCode };
+                selectedIds[i] = rows[i].RoleCode;
+            }
+            openWindow(url, {
+                width: 750, height: 595, title: title, data: selectedData, onDestroy: function (data) {
+                    if (data && data != "close") {
+                        for (i = 0; i < data.length; i++) {
+                            if (selectedIds.indexOf(data[i].ID) < 0) {
+                                var row = {
+                                    DocumentInfoID: documentInfoID, AuthType: authType, RoleType: "User",
+                                    RoleCode: data[i].ID, Name: data[i].Name, IsParentAuth: 0
+                                };
+                                grid.addRow(row);
+                            }
+                        }
+                        saveList({ actionTitle: "" });
+                    }
+                }
+            });
+        }
+    }
+
+    var selectedRoleType;
+    function roleTypeChanged(e) {
+        selectedRoleType = e.value;
+        quickSearch("Name");
+    }
+
+    function quickSearch(searchFields, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+
+        var grid = mini.get("#" + settings.gridId);
+
+        var data = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo == undefined) {
+            msgUI("当前快速查询文本框" + settings.queryBoxId + "不存在，请重新检查！", 1);
+            return;
+        }
+        var keys = searchFields.split(',');
+        for (i = 0, len = keys.length; i < len; i++) {
+            data["$IL$" + keys[i]] = keyCo.getValue();
+        }
+
+        if (selectedRoleType) {
+            data["$IL$RoleType"] = selectedRoleType;
+        }
+
+        data["IsOrRelation"] = "False"; //快速查询条件间为或关系
+
+        if (grid != undefined)
+            grid.load({ queryFormData: mini.encode(data) });
+    }
+</script>

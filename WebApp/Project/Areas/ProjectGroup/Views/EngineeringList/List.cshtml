@@ -1,0 +1,272 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div id="fitDiv" class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="north" region="north" showheader="false" height="42" showspliticon="true" splitsize="0px" style="border:0px;">
+            <div class="mini-toolbar" style="padding: 0px;  border-bottom:0px; ">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;"></td>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit searchbox" id="key" emptytext="请输入工程名称或工程编号" style="width: 250px;" onenter="tabSearch();"
+                                   onbuttonclick="tabSearch();" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div title="east" region="east" width="440px" showclosebutton="false" showspliticon="false" showheader="false" style="border:0px;">
+            <div id="projectGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showcolumns="false"
+                 showpager="false">
+                <div property="columns">
+                    <div field="Content" width="*" headeralign="center" allowsort="false" renderer="onProjectContentRenderer">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center" style="border:0px;">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showcolumns="false"
+                 onselectionchanged="onSelectionChanged" selectonload="true">
+                <div property="columns">
+                    <div field="Content" width="*" headeralign="center" allowsort="false" renderer="onContentRenderer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    normalParamSettings.searchFields = "Name,Code";
+
+    function onSelectionChanged(e) {
+        var row = e.selected;
+        if (row) {
+            var projectGrid = mini.get("projectGrid");
+            projectGrid.setUrl("GetProjectList?EngineeringID=" + row.ID);
+            projectGrid.reload();
+        }
+        else {
+            projectGrid.clearRows();
+        }
+    }
+
+    function onContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+        var $img = $("<img>").attr("width", "74px").attr("height", "16px").attr("border", "0px").attr("align", "absmiddle");
+
+        //第一行
+        var $tr1td = $("<td></td>").append($("<h3></h3>").text(rec.Name));
+        $tr1td.append($("<h4></h4>").text("（" + rec.Code + "）"));
+        var $tr1 = $("<tr></tr>").append($tr1td);
+        $table.append($("<tr></tr>").append($tr1));
+
+        //第二行
+        var title = $.trim(rec.Name);
+        var $tr2td = $("<td></td>");
+        $contractValue = $('<span>合同金额（元）:<span/><a href="javascript:void();" class="now" onclick="openMarketInfo(\'合同信息\',\'/MvcConfig/UI/List/PageView?TmplCode=ContractInfoList\',\'' + rec.ID + '\')">' + formatCurrency(rec.ContractValue) + '</a>');
+        $tr2td.append($contractValue);
+
+        $summaryReceiptValue = $('<span>已收款（元）:<span/><a href="javascript:void();" class="now" onclick="openMarketInfo(\'到款信息\',\'/MvcConfig/UI/List/PageView?TmplCode=EngineeringReceiptInfo\',\'' + rec.ID + '\')">' + formatCurrency(rec.SumReceiptValue) + '</a>');
+        $tr2td.append($summaryReceiptValue);
+
+        $canReceiptValue = $('<span>经营应收款（元）:<span/><a href="javascript:void();" class="now" onclick="openMarketInfo(\'可收款信息\',\'/MvcConfig/UI/List/PageView?TmplCode=EngineeringCanReciptList\',\'' + rec.ID + '\')">' + formatCurrency(rec.CanReceiptValue) + '</a>');
+        $tr2td.append($canReceiptValue);
+
+        $receiptRatio = $('<span>到款率：' + rec.ReceiptRatio.toFixed() + '%<span/>');
+        $tr2td.append($receiptRatio);
+        var $tr2 = $("<tr></tr>").append($tr2td);
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td = $("<td></td>");
+        (!rec.PhaseContent) ? rec.PhaseContent = "" : rec.PhaseContent = rec.PhaseContent;
+        (!rec.MainDeptName) ? rec.MainDeptName = "" : rec.MainDeptName = rec.MainDeptName;
+        (!rec.ChargerUserName) ? rec.ChargerUserName = "" : rec.ChargerUserName = rec.ChargerUserName;
+        $tr3td.append($("<h0></h0>").text("当前阶段：" + rec.PhaseContent));
+        $tr3td.append($("<h0></h0>").text("主要承担部门：" + rec.MainDeptName));
+        $tr3td.append($("<h0></h0>").text("负责人：" + rec.ChargerUserName));
+        $tr3td.append($("<h0></h0>").text("创建日期：" + mini.formatDate(rec.CreateDate, "yyyy-MM-dd")));
+        var $tr3 = $("<tr></tr>").append($tr3td);
+        $table.append($tr3);
+
+        //第四行
+        $engineeringInfo = $('<h0><a href="javascript:void();" class="now" onclick="openClickInfo(\'' + rec.Name + '\',\'/project/Engineering/EngineeringSpace/MainIndex\',\'' + rec.ID + '\')">打开工程空间</a></h0>');
+        var $tr4td = $("<td></td>");
+        $tr4td.append($engineeringInfo);
+
+        $product = $('<h0><a href="javascript:void();" class="now" onclick="openClickInfo(\'' + rec.Name + '\',\'/Project/Engineering/DesignResult/List\',\'' + rec.ID + '\')" >成果跟踪</a></h0>');
+        $tr4td.append($product);
+
+        $stateMan = $('<h0><a href="javascript:void();" class="now" onclick="openClickInfo(\'' + rec.Name + '\',\'/Project/Engineering/ProjectState/List\',\'' + rec.ID + '\')" >项目状态管理</a></h0>');
+        $tr4td.append($stateMan);
+
+        var $tr4 = $("<tr></tr>").append($tr4td);
+        $table.append($tr4);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+    function onProjectContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+        var $img = $("<img>").attr("width", "74px").attr("height", "16px").attr("border", "0px").attr("align", "absmiddle");
+        //第一行
+        var $tr1td = $("<td></td>").append($("<h3></h3>").text(rec.Name));
+        $tr1td.append($("<h4></h4>").text("（" + rec.Code + "）"));
+        var $tr1 = $("<tr></tr>").append($tr1td);
+        $table.append($("<tr></tr>").append($tr1));
+
+        //第二行
+        var $tr2td = $("<td></td>");
+        (!rec.ChargeDeptName) ? rec.ChargeDeptName = "" : rec.ChargeDeptName = rec.ChargeDeptName;
+        (!rec.ChargerUserName) ? rec.ChargerUserName = "" : rec.ChargerUserName = rec.ChargerUserName;
+        $tr2td.append($("<h0></h0>").text("负责人：" + rec.ChargerUserName));
+        $tr2td.append($("<h0></h0>").text("下达日期：" + mini.formatDate(rec.CreateDate, "yyyy-MM-dd")));
+        $tr2td.append($("<h0></h0>").text("责任部门：" + rec.ChargeDeptName));
+        var $tr2 = $("<tr></tr>").append($tr2td);
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td = $("<td></td>");
+        $tr3td.append($("<h0></h0>").text("累计出图：" + rec.PrintCount));
+        $tr3td.append($("<h0></h0>").text("参与专业：" + rec.Major));
+        var $tr3 = $("<tr></tr>").append($tr3td);
+        $table.append($tr3);
+
+        //第四行
+        $engineeringInfo = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/project/Engineering/EngineeringSpace/MainIndex\',\'' + rec.ID + '\')">打开项目空间</a></h0>');
+        var $tr4td = $("<td></td>");
+        $tr4td.append($engineeringInfo);
+
+        $product = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/ProductTrack/List\',\'' + rec.ID + '\')" >成果跟踪</a></h0>');
+        $tr4td.append($product);
+
+        $flowTrace = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/FlowTrace/List\',\'' + rec.ID + '\')" >流程跟踪</a></h0>');
+        $tr4td.append($flowTrace);
+
+        $ISOForm = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/ISO/FileView\',\'' + rec.ID + '\')" >ISO表单中心</a></h0>');
+        $tr4td.append($ISOForm);
+
+        $state = $('<span class="stateSpan ' + rec.State + '">' + rec.StateName + '</span>');
+        $tr4td.append($state);
+
+        var $tr4 = $("<tr></tr>").append($tr4td);
+        $table.append($tr4);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+    function openMarketInfo(Name, linkUrl, EngineerID) {
+        linkUrl.indexOf("?") >= 0 ? linkUrl += "&EngineeringInfo=" + EngineerID : linkUrl += "?EngineeringInfo=" + EngineerID;
+        openWindow(linkUrl, {
+            refresh: false, title: Name, width: "90%", height: "90%",
+            onDestroy: function () { }
+        });
+    }
+
+    function openClickInfo(Name, linkUrl, EngineerID) {
+        if (!EngineerID || !linkUrl) return;
+        addExecuteParam("RelateID", EngineerID);
+        execute("GetGroupInfoID", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                linkUrl.indexOf("?") >= 0 ? linkUrl += "&IsOpenForm=True&GroupInfoID=" + data.ID : linkUrl += "?IsOpenForm=True&GroupInfoID=" + data.ID;
+                openWindow(linkUrl, {
+                    refresh: false, title: Name, width: "90%", height: "90%",
+                    onDestroy: function () { }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function openProjectInfo(Name, linkUrl, ProjectInfoID) {
+        if (!ProjectInfoID || !linkUrl) return;
+        linkUrl.indexOf("?") >= 0 ? linkUrl += "&IsOpenForm=True&SpaceCode=Project&AuthType=FullControl&ProjectInfoID=" + ProjectInfoID : linkUrl += "?IsOpenForm=True&SpaceCode=Project&AuthType=FullControl&ProjectInfoID=" + ProjectInfoID;
+        openWindow(linkUrl, {
+            refresh: false, title: Name, width: "90%", height: "90%",
+            onDestroy: function () { }
+        });
+    }
+
+
+    function formatCurrency(num) {
+        num = num.toString().replace(/\$|\,/g, '');
+        if (isNaN(num))
+            num = "0";
+        sign = (num == (num = Math.abs(num)));
+        num = Math.floor(num * 100 + 0.50000000001);
+        cents = num % 100;
+        num = Math.floor(num / 100).toString();
+        if (cents < 10)
+            cents = "0" + cents;
+        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3) ; i++)
+            num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+            num.substring(num.length - (4 * i + 3));
+        return (((sign) ? '' : '-') + num + '.' + cents);
+    }
+
+</script>
+@section scripts{
+    <link href="@Url.Content("/Project/Scripts/MyProject/project.css")" rel="stylesheet" type="text/css" />
+}
+
+<style>
+    .mini-modal {
+        opacity: .9;
+        background: #ccc;
+    }
+
+    .stateSpan {
+        padding: 0px 8px !important;
+        float: right !important;
+        border-radius: 15px;
+        font-size: 12px;
+        background-color: transparent !important;
+        margin-right: 0px !important;
+    }
+
+    .Finish {
+        background-color: #FFF;
+        color: #e062c6;
+        border: 1px solid #e062c6;
+    }
+
+    .Create {
+        background-color: #FFF;
+        color: #82bf00;
+        border: 1px solid #82bf00;
+    }
+
+    .Execute {
+        background-color: #FFF;
+        color: #2b88d8;
+        border: 1px solid #2b88d8;
+    }
+
+    .Plan {
+        background-color: #FFF;
+        color: #02afbf;
+        border: 1px solid #02afbf;
+    }
+
+    .Terminate {
+        background-color: #FFF;
+        color: #c63c39;
+        border: 1px solid #c63c39;
+    }
+
+    .Pause {
+        background-color: #FFF;
+        color: #e89f41;
+        border: 1px solid #e89f41;
+    }
+</style>

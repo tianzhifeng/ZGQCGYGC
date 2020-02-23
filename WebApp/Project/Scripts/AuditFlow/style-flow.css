@@ -1,0 +1,39 @@
+/* 校审任务单 */
+body { margin:0px; padding:0px; border:0px;}
+.flow1444-header{ background:url(images/flow1444-header-bg.png) bottom repeat-x; font: 14px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; height:26px; line-height:26px;  border-bottom:1px solid #c8c8c8; width:100%; overflow:hidden;}
+.flow1444-top { background:url(images/flow1444-top-bg.png) #f4f6f8 bottom repeat-x; height:70px; width:100%; overflow:hidden;}
+.flow1444-top-table { height:70px;}
+.flow1444-top-bt {}
+.flow1444-top-bt-main {margin-left:5px}
+.flow1444-top-btbg { margin:0px 4px; width:56px; height:56px; background:url(images/flow1444-btbg1.png) no-repeat top center; float:left;text-align:center;}
+.flow1444-top-btbg img{ margin:0px; padding:0px;}
+.flow1444-top-btbg div{ margin:0px; padding:0px;font: 14px "Microsoft YaHei"; text-align:center; color:#FFF;}
+.flow1444-top-btbgt { margin:0px 4px; width:56px; height:56px; background:url(images/flow1444-btbg2.png) no-repeat top center; float:left;text-align:center;}
+.flow1444-top-btbgt img{ margin:0px; padding:0px;}
+.flow1444-top-btbgt div{ margin:0px; padding:0px;font: 14px "Microsoft YaHei"; text-align:center; color:#09589d;}
+.flow1444-top-left { margin-left:15px;}
+.flow1444-top-flow  { float:left; background:url(images/flow1444-top-flowbg.png) no-repeat; width:132px; height:38px;font: 15px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; line-height:17px; color:#085ea9; text-align:center;  position:  relative;}
+/*.flow1444-top-flow div  { background:url(images/flow1444-top-blue.png) no-repeat;  width:132px;;font: 14px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; color:#FFF; text-align:center; overflow:hidden; height:19px; width:20px; position: absolute; top:-5px; right:-5px; z-index:99;}
+*/.flow1444-top-flown  { float:left; background:url(images/flow1444-top-flowbgn.png) no-repeat; width:132px; height:38px;font: 15px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; line-height:17px; color:#fff; text-shadow:1px 1px 1px #045093; text-align:center;  position:  relative;}
+/*.flow1444-top-flown div  { background:url(images/flow1444-top-red.png) no-repeat;  width:132px;;font: 14px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; color:#FFF; text-align:center; overflow:hidden; height:19px; width:20px; position: absolute; top:-5px; right:-5px; z-index:99;}
+*/.flow1444-top-flowarrow { float:left; width:28px; height:38px; overflow:hidden;  background:url(images/flow1444-top-flowarrow.png) no-repeat;   position:  relative;}
+.flow1444-left  
+{
+    /*
+    border-bottom:1px solid #909090; 
+    border-top:1px solid #909090; 
+    border-right:1px solid #909090; 
+    */
+    background:#e7ebef; 
+    width:195px; 
+    padding:2px; 
+    float:left
+}
+.flow1444-left-mian { border:2px solid #c9d8e8; background:#f6f8fa; width:191px; float:left; padding-bottom:10px; margin-bottom:2px;margin-right:2px;}
+.flow1444-left-width { width:90%; margin:0 auto;}
+.flow1444-left-mian1 { width:100%; border-bottom:1px solid #a8a8a8; margin:5px 0px 3px 0px; overflow:hidden;}
+.flow1444-left-miant { float:left; font: bold 15px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; line-height:25px; color:#000; }
+.flow1444-left-mianspan { float:right; font: normal 12px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; line-height:20px; color:#999;}
+.flow1444-left-mianspanr { float:right;font: normal 12px "Microsoft YaHei", "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; line-height:20px; color:#d43434;}
+.flow1444-left-mian2 { width:100%;font:12px; font-size:12px; line-height:20px; color:#000; margin:2px 0px 0px 0px;}
+.mini-tooltip-inner{height:100%}

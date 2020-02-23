@@ -1,0 +1,275 @@
+﻿<div class="mini-splitter" vertical="true" style="width: 100%; height: 100%; border: 0px" handlersize="0" allowresize="false">
+    <div showcollapsebutton="false" borderstyle="border:0px" size="42">
+        <div class="mini-toolbar" id="btnDiv" style="border-top: 0px; border-left: 0px;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" id="createUse" iconcls="icon-add" plain="true" onclick="add">创建应用布局</a>
+                    </td>
+                    <td id="btnRight">
+
+                        <span style="margin-left: 3px; font-size: 13px;">切换:</span>
+                        <span style="margin-right: 5px; width: 200px;">
+                            <input name="HistoryUse" class="mini-combobox" shownullitem="false" onitemclick="onItemClickHistory" style="width: 235px; margin-left: 6px; margin-right: 6px;" shownullitem="true" allowinput="true" /></span>
+                        <a class="mini-button" iconcls="icon-remove" plain="true" onclick="del">删除</a>
+                      @*   <span class="separator"></span>
+                       <a class="mini-button" iconcls="icon-up" plain="true" onclick="prev();">上一步</a>
+                        <a class="mini-button" id="btnSelect" iconcls="icon-down" plain="true" onclick="next">下一步</a>*@
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div showcollapsebutton="false" borderstyle="border:0px">
+        <div id="divDes" style="font-family: 'Microsoft YaHei'; display: none; font-size: 25px; font-weight: bold; text-align: center; width: 100%; margin-top: 150px;">请创建一个应用试试吧!</div>
+        <iframe id="iframe" style="border: 0px" scrolling="no" width="100%" height="100%"></iframe>
+    </div>
+</div>
+
+<style type="text/css">
+    .list_button {
+        width: auto;
+        height: 19px;
+        display: block;
+        position: relative;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #ccc;
+        border-image: initial;
+        padding: 4px 22px 4px 1px;
+        overflow: hidden;
+        margin-top: 1px;
+    }
+
+    .mini-listbox {
+        position: relative;
+        background: #f9f9f9;
+        overflow: hidden;
+    }
+
+    .mini-popup {
+        background: white;
+        border: 1px solid #ccc;
+        overflow: auto;
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+    }
+
+    .mini-listbox td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        overflow: hidden;
+        line-height: 22px;
+        cursor: default;
+        padding-left: 4px;
+        padding-right: 2px;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+        text-align: left;
+        color: #000;
+    }
+
+    .mini-buttonedit-input {
+        background: none;
+        border: 0;
+        line-height: 19px;
+        font-family: Verdana;
+        font-size: 9pt;
+        padding: 0;
+        margin: 0;
+        outline: none;
+        z-index: 1;
+        cursor: text;
+        width: 100%;
+        height: 19px;
+        float: right;
+        _position: absolute;
+        _left: 2px;
+        _top: 0px;
+        cursor: pointer;
+        text-decoration: underline;
+        color: #0000ee;
+    }
+    .mini-splitter-pane1-vertical {
+        border: 0;
+    }
+    #createUse {
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+
+        #createUse .icon-add {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+    .mini-splitter-pane2-vertical {
+        border: 0;
+    }
+</style>
+
+<script type="text/javascript">
+    mini.parse();
+    var tabs = mini.get("tabs");
+    var ListType = [{ value: "nav", text: "导航配置" }, { value: "list", text: "数据配置" }];
+    var UseType = [
+        {text:"列表",value:"List"},
+        {text:"双列表",value:"Lists"},
+        {text:"导航Tab",value:"ListTabs"},
+        {text:"Tab",value:"Tabs"},
+        {text:"树导航自定义",value:"TreeCustom"},
+        {text:"树列表导航自定义",value:"TreeGridCustom"}
+    ];
+    function add() {
+        var categoryID = getCache("_CacheCategoryID");
+        var useCode = getCache("_CacheUseCode");
+        var categoryCode = getCache("_CacheCategoryCode");
+        var url = 'FlowUseEdit?CategoryID=' + categoryID + '&ConnName=' + useCode + '&CategoryCode=' + categoryCode;
+        openWindow(url, {
+            title: '应用布局配置',
+            width:'1020px',
+            onDestroy: function (data) {
+                if (data && data != "close") {
+                    setCache("_CacheUseID", data.ID);
+                    getIframe(data.ID, data.Code, data.Type);
+                    getUseList();
+                }
+            }
+        });
+    }
+    function pageLoad() {
+        getUseList();
+    }
+
+    function getIframe(id, code, type) {
+        if (type == UseType[1].value || type == ListType[0].value)
+            $("#iframe").attr("src", 'NavFieldEdit?ID=' + id + '&TmplCode=' + code);
+        else if(type == UseType[2].value || type == UseType[3].value)
+            $("#iframe").attr("src", 'TabNavFieldEdit?ID=' + id + '&TmplCode=' + code + '&UseType=' + type);
+        else if(type == UseType[4].value || type == UseType[5].value)
+            $("#iframe").attr("src", 'TreeNavFieldEdit?ID=' + id + '&TmplCode=' + code + '&UseType=' + type);
+        else
+            $("#iframe").attr("src", 'FlowUseTabs?ID=' + id + '&TmplCode=' + code);
+    }
+
+    function getUseList() {
+        var lists = [];
+        var categoryID = getCache("_CacheCategoryID");
+        var useID = getCache("_CacheUseID");
+        addExecuteParam("CategoryID", categoryID);
+        execute('GetUseLists', {
+            onComplete: function (result) {
+                if (result) {
+                    for (var i = 0; i < result.length; i++) {
+                        var c = result[i];
+                        lists.push({ value: c.ID, text: c.title, code: c.code, type: c.type });
+                    }
+                    mini.getbyName("HistoryUse").setData(lists);
+
+                    if (!useID && lists.length > 0) {
+                        useID = lists[0].value;
+                        setCache("_CacheUseID", useID);
+                    }
+                    if (lists.length == 0) {
+                        $("#iframe").hide();
+                        $("#divDes").show();
+                        $("#btnRight").hide();
+                    } else {
+                        $("#iframe").show();
+                        $("#divDes").hide();
+                        $("#btnRight").show();
+                    }
+                    for (var i = 0; i < lists.length; i++) {
+                        if (lists[i].value == useID) {
+                            mini.getbyName("HistoryUse").setValue(useID);
+                            mini.getbyName("HistoryUse").setText(lists[i].text);
+                            getIframe(lists[i].value, lists[i].code, lists[i].type);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    function onItemClickHistory(e) {
+        var useID = getCache("_CacheUseID");
+        if (useID != e.item.value) {
+            setCache("_CacheUseID", e.item.value);
+            if (e.item.value != '') {
+                getIframe(e.item.value, e.item.code, e.item.type);
+            }
+        }
+    }
+
+    function edit() {
+        var useID = getCache("_CacheUseID");
+        if (useID) {
+            var url = 'FlowUseEdit?ID=' + useID + "&CategoryID=" + getCache("_CacheCategoryID");
+            openWindow(url, {
+                title:'应用编辑',
+                onDestroy: function (data) {
+                    if (data != "close") {
+                        getUseList();
+                    }
+                }
+            });
+        }
+
+    }
+
+    function del() {
+        var useID = getCache("_CacheUseID");
+        if (useID) {
+            msgUI("确认删除应用吗？", 2, function (act) {
+                if (act == "ok") {
+                    addExecuteParam("ID", useID);
+                    execute("DeleteUseList", {
+                        onComplete: function (result) {
+                            removeCache("_CacheUseID");
+                            getUseList();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    $("span").each(function () {
+        if ($(this).hasClass("mini-buttonedit-border")) {
+            $(this).removeClass("mini-buttonedit-border");
+            $(this).addClass("list_button");
+        }
+    });
+    $("input").each(function () {
+        if ($(this).hasClass("mini-buttonedit-input")) {
+            $(this).attr("readonly", "readonly");
+        }
+    });
+    $(".mini-buttonedit-input").click(function () {
+        edit();
+    });
+
+    function next() {
+        setCache("_CacheRoleID", true);
+        window.parent.flowNavBar(window.parent.FlowRole);
+    }
+    function prev() {
+        window.parent.flowNavBar(window.parent.FlowDesign);
+    }
+
+    var IsLists = @ViewBag.IsShowNavRadioButton;
+</script>

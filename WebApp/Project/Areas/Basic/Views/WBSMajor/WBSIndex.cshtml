@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "WBSIndex";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="250" expanded="true" showspliticon="true"
+         showheader="false" style="border-top: 0px">
+        <ul id="dataTree" class="mini-tree" url="../Cooperation/GetSubProjectTree" style="width: 100%; height: 100%;"
+            showtreeicon="true" textfield="Name" iconfield="WBSType" idfield="VirtualID" enablehottrack="false"
+            parentfield="ParentID" resultastree="false" expandonload="1" onnodeselect="onTreeNodeSelected"></ul>
+    </div>
+    <div title="center" region="center" style="border-top: 0px">
+        <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+             borderstyle="border:0;">
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var wbsID = getQueryString("WBSID");
+    var tempCode = getQueryString("TmplCode");
+</script>
+
+<script type="text/javascript">
+
+    function onTreeNodeSelected(e) {
+        var node = e.node;
+        var wbsType = node.WBSType;
+        var id = node.ID;
+        var parentID = node.ID;
+        var tabs = mini.get("mainTab");
+        tabs.removeAll();
+        var tabUrl = "";
+        var title = "";
+        if ("Scheme_ProfessionalPlanningForm" == tempCode) {
+            tabUrl = "/MvcConfig/UI/Form/PageView?TmplCode=Scheme_ProfessionalPlanningForm&FlowCode=Scheme_ProfessionalPlanningForm&RelateField=SubProjectWBSID" + "&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id;
+            title = "专业人员安排单";
+        }
+        else if ("Execute_MajorPrincipleChange" == tempCode) {
+            tabUrl = "/MvcConfig/UI/Form/PageView?TmplCode=Execute_MajorPrincipleChange&FlowCode=Execute_MajorPrincipleChange&RelateField=SubProjectWBSID" + "&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id;
+            title = "专业设计负责人变更";
+        }
+        else if ("Execute_MajorDesignSchemeReview" == tempCode) {
+            tabUrl = "/MvcConfig/UI/Form/PageView?TmplCode=Execute_MajorDesignSchemeReview&FlowCode=Execute_MajorDesignSchemeReview&RelateField=SubProjectWBSID" + "&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id;
+            title = "专业设计方案评审";
+        }
+        else if ("Execute_InternalStrongStripRecord" == tempCode) {
+            tabUrl = "/MvcConfig/UI/List/PageView?TmplCode=Execute_InternalStrongStripRecord" + "&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id;
+            title = "内部强条备案";
+        }
+        else if ("ProjectExecutive_PublishApply" == tempCode) {
+            tabUrl = "/MvcConfig/UI/List/PageView?TmplCode=ProjectExecutive_PublishApply" + "&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id;
+            title = "出图申请";
+        }
+        if (wbsType == "SubProject") {
+            var tab = { title: title, url: tabUrl, refreshOnClick: true };
+            tabs.addTab(tab);
+            tabs.activeTab(0);
+        }
+    }
+</script>

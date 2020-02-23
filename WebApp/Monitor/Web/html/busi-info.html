@@ -1,0 +1,76 @@
+<div class="head">
+	<button class="left" onclick="$monitor.goback(this)"><i class="glyphicon glyphicon-menu-left"></i></button>
+	<span class="title">经营信息总览</span>
+	<button class="right"></button>
+</div>
+<div class="tab">
+	<div>
+		<button class="active" onclick="changeMenuIndex(0,this)">单月累计</button>
+		<button onclick="changeMenuIndex(1,this)">累计统计</button>
+	</div>
+</div>
+<div class="content has-tab scroll">
+	<div class="scroll-content">
+		<div class="busi-info">
+			<div class="busi-form">
+				<div id="busiform"></div>
+			</div>
+	        <div class="chart-info-div">
+                <div class="third-row">
+                    <div class="row-title" way-data="Title"></div>
+                    <div class="position-number">
+                        <div class="number">
+                            <span>¥</span>
+                            <span class="big" way-data="ActualValue" way-transform="transform-integer-data"></span>
+                            <span class="middle" way-data="ActualValue" way-transform="transform-decimal-data"></span>
+                            <span>万元</span>
+                        </div>
+               <!--         <div class="grow-rate">
+                            <span class="contractRate" way-data="GrowthRate"></span>
+                        </div>-->
+                    </div>
+                  <!--  <div class="rate-font">
+                        <div class="left">
+                            <span >完成度:</span><span way-data="FinishRate"></span>
+                        </div>
+                        <div class="right">
+                            <span >当年目标:</span><span class="font-num" way-data="GoalValue"></span><span >万元</span>
+                        </div>
+                    </div>-->
+                    <!--进度条-->
+                   <!-- <div class="index-schedule-bar">
+                        <div class="all"></div>
+                        <div class="complete-percent parameter"></div>
+                    </div>-->
+                </div>
+	        </div>
+			<div class="busi-detail">
+				<div class="line"><i class="before"></i><i class="after"></i></div>
+				<div class="year">
+					<p way-data="contractYears[4]"></p>
+					<p way-data="contractYears[3]"></p>
+					<p way-data="contractYears[2]"></p>
+					<p way-data="contractYears[1]"></p>
+					<p way-data="contractYears[0]"></p>
+					<p>同比增长</p>
+				</div>
+				<div class="data">
+					<ul class="time-model">
+						<li way-repeat="timeLineData.List">
+							<div class="date" way-data="month">
+							</div>
+							<div class="time-info">
+								<p><span class="busi-color3" way-data="one"></span>万元</p>
+								<p><span class="busi-color2" way-data="two"></span>万元</p>
+								<p><span class="busi-color1" way-data="three"></span>万元</p>
+								<p><span class="busi-color2" way-data="four"></span>万元</p>
+								<p><span class="busi-color1" way-data="five"></span>万元</p>
+								<p way-data="rate"></p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

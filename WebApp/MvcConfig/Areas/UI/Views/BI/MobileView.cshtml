@@ -1,0 +1,929 @@
+﻿@Styles.Render("~/Scripts/BI/css/index.css")
+@using Config.Logic;
+
+<script src="@Url.Content("/MvcConfig/Scripts/BI/template/templ/chartScript.js")" type="text/javascript"></script>
+<script src="@Url.Content("/MvcConfig/Scripts/BI/js/jquery.tmpl.js")" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/bootstrap/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $("body").css("background-color", "");
+</script>
+<style>
+    .head .title {
+        line-height: 50px;
+        font-size: 16px;
+    }
+    .BIcontent {
+        min-height: 250px;
+        min-width: 0px !important;
+        padding: 0px;
+        margin-right: auto;
+        margin-left: auto;
+        padding-top: 15px;
+    }
+
+    .transverse {
+        width: 18px;
+        height: 18px;
+        position: absolute;
+        top: 10px;
+        right: 6px;
+        background-color: #fff;
+        display: none;
+    }
+
+    .xnflow-wrap-list li .icon {
+        width: 36px;
+        min-height: 0px;
+        position: absolute;
+        left: 8px;
+        top: 5px;
+        font-size: 12px;
+        color: #999;
+        text-align: center;
+        background-color: #fff;
+    }
+
+    .main {
+        position: absolute;
+        left: 0;
+        top: 0px;
+        bottom: 0px;
+        width: 100%;
+        overflow: visible;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .xnflow-wrap {
+        background: url(../../Scripts/css/images/flow-linebg.png) repeat-y;
+        padding-top: 15px;
+        z-index: 98;
+        position: relative;
+        width: 100%;
+        background-color: #fff;
+        padding-bottom: 45px;
+        overflow: visible;
+    }
+
+    .BIinfo-box
+    {
+        display:block !important;
+        width:100% !important;
+        
+    }
+
+    a[onclick^="open"] {
+        text-decoration: underline !important;
+    }
+    /*icon*/
+[class^=icon-]{display:inline-block}
+.icon-back{width:44px;height:44px;line-height:44px;padding-top:20px}
+.icon-back::before{content:"";display:inline-block;width:12px;height:12px;vertical-align:middle;border-left:2px solid #29a1f7;border-bottom:2px solid #29a1f7;-webkit-transform:rotate(45deg);transform:rotate(45deg);-webkit-box-sizing:border-box;box-sizing:border-box}
+</style>
+<div id="mobileback" class="head" style="text-align:center">
+    <a  id="_task_detail_back" style="float:left">
+        <span class="icon-back"></span>
+    </a>
+    <span class="title" style="padding-right: 22px;font-weight: 600;">@ViewBag.Title</span>
+   
+</div>
+<div id="BIcontent-wrapper" class="content-wrapper">
+    @{
+        var title = ViewBag.PageTitle;
+        if (!String.IsNullOrEmpty(title))
+        {
+            <div class="content-header">
+                <h1>
+                    @title
+                </h1>
+            </div>
+        }
+    }
+    <div class="BIwrapper" @*style="display: -webkit-inline-box;"*@>
+        <div class="BIcontent-wrapper">
+            @{
+                var rowCount = Convert.ToInt32(ViewBag.RowsCount);
+                var columnCount = Convert.ToInt32(ViewBag.ColumnsCount);
+                var blocks = ViewBag.Blocks as List<Dictionary<string, object>>;
+                var gridStyle = "grid-template-rows:";
+                var layout = ViewBag.LayOutInfo as List<Dictionary<string, object>>;
+                var fullScreenStyle = ""; var gridSpacing = "border-spacing:12px 5px;";
+                if (ViewBag.FullScreen)
+                {
+                    fullScreenStyle = "padding:0px;";
+                    gridSpacing = "";
+                }
+                for (int i = 0; i < layout.Count; i++)
+                {
+                    var row = layout[i];
+                    if (String.IsNullOrEmpty(row.GetValue("height")))
+                    {
+                        gridStyle += " auto ";
+                    }
+                    else
+                    {
+                        gridStyle += row.GetValue("height") + "px ";
+                    }
+                }
+                gridStyle += ";";
+                for (int i = 0; i < columnCount; i++)
+                {
+                    if (i == 0)
+                    {
+                        gridStyle += "grid-template-columns:1fr ";
+                    }
+                    else
+                    {
+                        gridStyle += " 1fr";
+                    }
+                }
+                gridStyle += ";";
+
+                var unitColumnWidth = columnCount == 0 ? 0 : Math.Round(Convert.ToDecimal(100) / Convert.ToDecimal(columnCount), 2);
+            }
+
+            <div class="BIcontent" style="@fullScreenStyle">
+
+                @{
+                    for (int i = 0; i < rowCount; i++)
+                    {
+                        var rowI = i + 1;
+                        <div style="display: table; width: 100%; @gridSpacing">
+                            @for (int m = 0; m < columnCount; m++)
+                            {
+                                var columnM = m + 1;
+                                var block = blocks.FirstOrDefault(c => c.ContainsKey("ColumnIndex") && c.ContainsKey("RowIndex") && Convert.ToInt32(c["ColumnIndex"]) == columnM && Convert.ToInt32(c["RowIndex"]) == rowI);
+                                if (block != null)
+                                {
+                                    var colSpan = String.IsNullOrEmpty(block.GetValue("ColSpan")) ? 1 : Convert.ToInt32(block.GetValue("ColSpan"));
+                                    var colWidth = unitColumnWidth * colSpan;
+                                    <div class="BIinfo-box" style="display: table-cell; width:@colWidth%;" id="@block.GetValue("_id")" templatetype="@block.GetValue("BlockType")">
+                                        @Html.Raw(block.GetValue("divHtml"))
+                                    </div>
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    var blockTemplates = ViewBag.BlockTemplate as Dictionary<string, object>;
+    foreach (var item in blockTemplates.Keys)
+    {
+        var html = blockTemplates[item];
+        @Html.Raw(html)
+    }
+    foreach (var item in blockTemplates.Keys)
+    {
+        var html = blockTemplates[item];
+        @Html.Raw(html)
+    }
+}
+
+<script type="text/javascript">
+    var layoutInfo =@Html.Raw(ViewBag.LayOutJson);
+    var blocks =@Html.Raw(ViewBag.BlocksJson);
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //----------------------移动通专用start---------------------------
+        var $ydtHelper = {
+            rnConfig: {
+                doQRScan: "doQRScan", //触发二维码扫描 html->rn
+                doQRScanCallback: "doQRScanCallback", //触发二维码扫描回调 rn->html
+                closeWindow: "closeWindow", //关闭当前窗体 html->rn
+                selectImage: "selectImage", //触发选择照片，拍照 html->rn
+                selectImageCallback: "selectImageCallback", //触发选择照片，拍照 回调 rn->html
+            },
+            closeWindow: function (dataObj) {
+                var sendData = {
+                    actionType: this.rnConfig.closeWindow,
+                    info: dataObj ? dataObj : {}
+                };
+                if (window.WebViewBridge) {
+                    window.WebViewBridge.send(JSON.stringify(sendData));
+                };
+            }
+        }
+        if(document.referrer!=undefined&document.referrer!=null&& document.referrer!=""){          
+            $("#mobileback").click(function(){
+                history.go(-1);
+            })
+        }else{
+            $("#mobileback").click(function(){ 
+                $ydtHelper.closeWindow()
+            })
+        }
+        $("body").niceScroll({ cursorborder: "none" });
+    });
+
+    var templateCode= getQueryString("TmplCode");
+    for (var i = 0; i < blocks.length; i++) {
+        var block =  blocks[i];
+        if($("#"+block.BlockType).length==0){
+            continue;
+        }
+        var url = "/MvcConfig/UI/BI/GetBlockData";
+        if(!block.Settings)continue;
+        var settings =mini.decode(block.Settings);
+        if(!settings)continue;
+        if(settings.FilterInfo&&settings.FilterInfo.length>0&&settings.HasFilter=="true"){
+            for (var k = 0; k < settings.FilterInfo.length; k++) {
+                var filter =  settings.FilterInfo[k];
+                var enumList = mini.decode(filter.EnumData);
+                //for (var m = 0; m < enumList.length; m++) {
+                //    var enumInfo = enumList[m];
+                //    if(enumInfo.IsDefault=="true"){
+                //        addExecuteParam(filter.Field,enumInfo.value);
+                //        break;
+                //    }
+                //}
+            }
+        }
+
+        addExecuteParam("TmplCode", templateCode);
+        addExecuteParam("BlockID", mini.encode(block._id));
+        execute(url, {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                if (data) {
+                    if (data.State == "1") {
+                        if (data.Data) {
+                            $("#" + data.TemplateType).tmpl(data.Data).appendTo("#" + data.ID + " [name='content']");
+
+                            if (data.Data.chartData || data.DataGridData) {
+                                setChart(data.Data.chartId, data.Data.chartData, data.TemplateType, data.Data);
+                            } else {
+
+                                $("#" + data.ID + "datadiv").css("overflow", "auto");
+                                $("#" + data.ID + "datadiv").width(document.body.clientWidth - 20);
+                            }
+                        }
+                        else {
+                            $("<h2 style='color:#cdced2;font-size:16px'>暂无内容</h2>").appendTo("#" + data.ID + " [name='content']");
+                        }
+                    }
+                    else {
+                        $("<b>数据加载错误：" + data.Msg + "</b>").appendTo("#" + data.ID + " [name='content']");
+                    }
+                }
+                else {
+
+                }
+            }, onFail: function (msg) {
+            }, validateForm: false
+        });
+    }
+    function closefilter(){
+        $("#"+block._id+"Fillter").animate({ "right": -document.body.clientWidth-10+"px" }, 500);
+        $("#"+block._id+"FillterSearchm").animate({ "right": -document.body.clientWidth-10+"px" }, 500);
+        $("#"+block._id+"FillterClearm").animate({ "right": -document.body.clientWidth-10-(document.body.clientWidth*0.35)+"px" }, 500);
+        $("#"+block._id+"FillterCannelm").animate({ "right": -document.body.clientWidth-10-(document.body.clientWidth*0.35)+"px" }, 500);
+        $("#"+block._id+"queryFormm").animate({ "right": -document.body.clientWidth-10+"px" }, 500);
+        $("#"+block._id+"filterbackload").animate({ "right": -document.body.clientWidth-10+"px" }, 500);
+        $("#"+block._id+"Fillterbtnsm").animate({ "right": -document.body.clientWidth-10+"px" }, 500);
+        stopBodyScroll(false);
+    }
+    var Scrolltop = 0
+    function stopBodyScroll (isFixed) {
+        var bodyEl = document.body
+        if (isFixed) {
+            Scrolltop = window.scrollY
+            bodyEl.style.position = 'fixed'
+            bodyEl.style.top = -Scrolltop + 'px'
+        } else {
+            bodyEl.style.position = ''
+            bodyEl.style.top = ''
+            window.scrollTo(0, Scrolltop) // 回到原先的top
+        }
+    }
+    function toggleFilterClass(block_id){
+        $("#"+block_id+"datadiv").css("overflow","hidden");
+        $("#"+block_id+"Fillter").removeClass("display");
+        $("#"+block_id+"BIinfo-block-content").css("position","");
+        $("#"+block_id+"Fillter").height(document.body.clientHeight);
+        $("#"+block_id+"Fillter").css("height","100%");
+        $("#"+block_id+"Fillter").css("top","0");
+        $("#"+block_id+"Fillter").removeClass("mini-toolbar");
+        stopBodyScroll(true);
+
+        $("#"+block_id+"mobilefilter").height(document.body.clientHeight);
+        $("#"+block_id+"mobilefilter").width(document.body.clientWidth);
+        $("#"+block_id+"Fillter").css("right",-document.body.clientWidth-10-(document.body.clientWidth*0.35)+"px");
+        $("#"+block_id+"FillterSearchm").css("right",-document.body.clientWidth-10+"px");
+        $("#"+block_id+"FillterClearm").css("right",-document.body.clientWidth-10-(document.body.clientWidth*0.35)+"px");
+        $("#"+block_id+"FillterCannelm").css("right",-document.body.clientWidth-10-(document.body.clientWidth*0.35)+"px");
+        $("#"+block_id+"queryFormm").css("right",-document.body.clientWidth-10+"px");
+        $("#"+block_id+"filterbackload").css("right",-document.body.clientWidth-10+"px");
+        $("#"+block_id+"Fillterbtnsm").css("right",-document.body.clientWidth-10+"px");
+
+        $("#"+block_id+"mobilefilter").css("display","block");
+        $("#"+block_id+"pcfilter").css("display","none");
+
+        $("#"+block_id+"Fillter").animate({ "right": 0 }, 500);
+        $("#"+block_id+"Fillter").css("background","");
+        $("#"+block_id+"Fillter").css("background-color","");
+        $("#"+block_id+"FillterSearchm").animate({ "right": (document.body.clientWidth*0.37) }, 500);
+        $("#"+block_id+"FillterClearm").animate({ "right": (document.body.clientWidth*0.03)},500);
+        $("#"+block_id+"FillterCannelm").animate({ "right": (document.body.clientWidth*0.03) },500);
+        $("#"+block_id+"queryFormm").animate({ "right": 0 },500);
+        $("#"+block_id+"filterbackload").animate({ "right": (document.body.clientWidth*0.7) },500);
+        $("#"+block_id+"Fillterbtnsm").animate({ "right": 0 },500);
+}
+    function setChart(chartId,chartData,chartType,ResData) {
+        var data = {};
+        if(chartType=="TargetPie"){
+            data = jQuery.extend(true, {}, solidgaugeChart, chartData);
+            $('#'+chartId).highcharts(data,function (c) {
+            });
+        }
+        else if(chartType=="StandardPie"){
+            data = jQuery.extend(true, {}, standardPieChart, chartData);
+            $('#'+chartId).highcharts(data);
+        }
+        else if(chartType=="StandardColumn"){
+            data = jQuery.extend(true, {}, columnChart, chartData);
+            $('#'+chartId).highcharts(data);
+        }
+        else if(chartType=="ColumnGrid"){
+            data = jQuery.extend(true, {}, columnChart, chartData);
+            $('#'+chartId).highcharts(data);
+            setGrid(ResData);
+        }
+        else if(chartType=="Grid"){
+            setGrid(ResData);
+        }
+        var blockID
+        if(chartId!=undefined&&chartId!=""){
+            blockID = chartId.split('_')[0];
+        }else{
+            blockID = ResData.GridID.split('_')[0];
+        }
+        stopBodyScroll(false);
+        $("#" + blockID + "datadiv").css("overflow", "auto");
+        $("#" + blockID + "datadiv").width(document.body.clientWidth - 20);
+    }
+    var gridpages=new Array();
+    var fixed=false;
+    function setGrid(ResData) {
+
+        if(ResData.GridData&&ResData.ColumnDefine){
+            var reportgrid = null;
+            var reportgridtmp = null,hasgrid=false;;
+
+            gridpages.forEach(function (item, index) {
+                if (item.name == ResData.GridID) {
+                    hasgrid=true;
+                    gridpages.remove(item);
+                }
+            })
+            if(hasgrid){
+                reportgridtmp = {
+                    name: ResData.GridID,
+                    pageno: 0,
+                    pagesize: 10,
+                    pagetotal:-1,
+                    data:ResData
+                }
+            }else{
+                reportgridtmp = {
+                    name: ResData.GridID,
+                    pageno: 0,
+                    pagesize: 10,
+                    pagetotal:"",
+                    data:ResData
+                }
+            }
+            gridpages.push(reportgridtmp);
+            $("#"+ResData.GridID+"pagination").css("display","none");
+            var dataGrid = $("#"+ResData.GridID+"Data");
+            var dataGridTitle = $("#"+ResData.GridID+"Title");
+            dataGrid.css("height","100%");
+            $("#"+ResData.GridID+"Container").css("height","100%");
+            dataGrid.empty();
+            dataGridTitle.empty();
+            var titleRowDefine = $('<tr style="height:0px;"></tr>');
+            var indexDiv = $('<td style="padding-top:0px;padding-bottom:0px;margin-top:0;margin-bottom:0;height:0px; width:30px;" field="index"></td>');
+            var indexTh = $('<th style="cursor: default; text-align: center; padding-top: 4px; padding-bottom: 4px; width: 30px;"></th>');
+            titleRowDefine.append(indexDiv);
+            dataGridTitle.append(indexTh);
+            for (var m = 0; m < ResData.ColumnDefine.length; m++) {
+                var columnDefine = ResData.ColumnDefine[m];
+                var th=$(' <th style="cursor: default; text-align: center; padding-top: 4px; padding-bottom: 4px; width: '+columnDefine.Width+';" field="'+columnDefine.Field+'">'+columnDefine.Title+'</th>');
+                dataGridTitle.append(th);
+                var columnDiv = $('<td style="padding-top:0px;padding-bottom:0px;margin-top:0;margin-bottom:0;height:0px; width:'+columnDefine.Width+'" field="'+columnDefine.Field+'"></td>');
+                titleRowDefine.append(columnDiv);
+                dataGrid.append(titleRowDefine);
+            }
+            LoadData(ResData.dataSource[0].SQL, ResData.dataSource[0].ConnName, ResData);
+
+            document.getElementById(ResData.GridID + "Container").addEventListener('scroll', function () {
+
+
+            });
+            function LoadData(sql, connname, ResData) {
+                var reportgrids;
+                gridpages.forEach(function (item, index) {
+                    if (item.name == ResData.GridID) {
+                        reportgrids=item;
+                    }
+                });
+                var param = {
+                    PageIndex: reportgrids.pageno,
+                    PageSize: reportgrids.pagesize
+                }
+
+                addExecuteParam("qb", JSON.stringify(param));
+                addExecuteParam("paramsql", sql);
+                addExecuteParam("paramconnname", connname);
+                addExecuteParam("GridID", ResData.GridID);
+                var url = "/MvcConfig/UI/BI/GetGridPageData";
+                execute(url, {
+                    showLoading: false, refresh: false, onComplete: function (rdata) {
+                        if (!rdata.Error) {
+                            var reportgrid;
+                            var initpagetotal=0;
+                            var info = rdata.Data;
+                            gridpages.forEach(function (item, index) {
+                                if (item.name == rdata.GridID) {
+                                    reportgrid = item;
+                                    gridpages.remove(item);
+                                    initpagetotal=reportgrid.pagetotal;
+                                    reportgrid.pagetotal = info.total;
+                                }
+                            })
+                            gridpages.push(reportgrid);
+                            if (initpagetotal == "") {
+                                var loadmorehtml = '<div id="' + reportgrid.data.GridID + 'loading-more" class="loading-more" style=" transform-origin: 0px 0px 0px;text-align:center; opacity: 1; transform: scale(1, 1);">点击加载</div>';
+                                $("#" + reportgrid.data.GridID + "Container").remove("#" + reportgrid.data.GridID + "loading-more");
+                                $(loadmorehtml).appendTo("#" + reportgrid.data.GridID + "Container");
+                                $("#" + reportgrid.data.GridID + "loading-more").click(reportgrid.data,function(data){
+                                    var reportgriddata;
+                                    gridpages.forEach(function (item, index) {
+                                        if (item.name == data.data.GridID) {
+                                            reportgriddata = item;
+                                            gridpages.remove(item);
+                                        }
+                                    })
+                                    if ((reportgriddata.pageno + 1) * reportgriddata.pagesize < reportgriddata.pagetotal) {
+                                        $("#" + reportgriddata.data.GridID + "loading-more").html("加载中，请稍后...");
+                                        reportgriddata.isloading=true
+                                        reportgriddata.pageno += 1;
+                                        gridpages.push(reportgriddata);
+                                        LoadData(reportgriddata.data.dataSource[0].SQL, reportgriddata.data.dataSource[0].ConnName, reportgriddata.data);
+                                    }else{
+                                        gridpages.push(reportgriddata);
+                                    }
+                                });
+
+                            }
+                            if ((reportgrid.pageno + 1) * reportgrid.pagesize >= reportgrid.pagetotal) {
+                                $("#" + rdata.GridID + "loading-more").html("加载完成");
+                            }else{
+                                $("#" + rdata.GridID + "loading-more").html("点击加载");
+                            }
+
+                            for (var i = 0; i < info.data.length; i++) {
+                                var rowData = info.data[i];
+                                var rowID = rdata.GridID + "_Row_" + i;
+                                var rowHtml = $('<tr id="' + rowID + '"></tr>');
+                                var rowIndexDiv = $('<td style="padding-top:2px;padding-bottom:2px;text-align:center;"  field="index"><div style="position:relative;" class="mini-grid-cell-inner  mini-grid-cell-nowrap">' + (reportgrid.pageno * reportgrid.pagesize + i + 1) + '</div></td>');
+                                rowHtml.append(rowIndexDiv);
+                                for (var m = 0; m < reportgrid.data.ColumnDefine.length; m++) {
+                                    var columnDefine = reportgrid.data.ColumnDefine[m];
+                                    var defaultValue = columnDefine.DefaultValue;
+                                    var value = rowData[columnDefine.Field] != undefined && rowData[columnDefine.Field] != "undefined" ? rowData[columnDefine.Field] : defaultValue;
+                                    var title = value;
+                                    if (columnDefine.Format) {
+                                        var sValue = parseFloat(value);
+                                        if (!isNaN(sValue)) {
+                                            value = mini.formatNumber(sValue, columnDefine.Format)
+                                        }
+                                        else {
+
+                                        }
+                                    }
+                                    if (typeof (onTableCellRender) != "undefined") {
+                                        var eventParam = {};
+                                        eventParam.gridId = reportgrid.data.GridID;
+                                        eventParam.field = columnDefine.Field;
+                                        eventParam.value = value;
+                                        var cellhtml = onTableCellRender(eventParam);
+                                        rowHtml.append(columnDiv);
+                                    }
+                                    else {
+                                        if (columnDefine.LinkUrl) {
+                                            var linkUrl = columnDefine.LinkUrl.replace(/\{[0-9a-zA-Z_]*\}/g, function (field) {
+                                                var key = field.substring(1, field.length - 1);
+                                                //从当前行返回
+                                                if (rowData[key])
+                                                    return rowData[key];
+                                                //从地址栏返回
+                                                if (hasQueryString(key)) {
+                                                    return getQueryString(key);
+                                                }
+                                            });
+                                            value = '<a style="text-align: ' + columnDefine.Align + '; width:100%" href="javascript:void(0);" onclick="openUrl(\'' + linkUrl + '\')"><div  style="position:relative;" class="mini-grid-cell-inner  mini-grid-cell-nowrap">' + value + '</div></a>';
+                                        }
+                                        var columnID = reportgrid.data.GridID + "_Row_" + i + "_Column_" + m;
+                                        var columnDiv = $('<td title="' + title + '" style="cursor:default;padding-top:2px;padding-bottom:2px;text-align: ' + columnDefine.Align + ';"  id="' + columnID + '" field="' + columnDefine.Field + '"><div style="position:relative;" class="mini-grid-cell-inner  mini-grid-cell-nowrap">' +
+                                            value + '</div></td>');
+                                        rowHtml.append(columnDiv);
+                                    }
+                                }
+                                dataGrid.append(rowHtml);
+                            }
+                        } else {
+                            pagetotal = 0;
+                            $("#" + rdata.GridID + "Container").empty();
+                            $("<b>数据加载错误：" + rdata.msg + "</b>").appendTo("#" + rdata.GridID + "Container");
+                        }
+                        reportgrid.isloading=false;
+                    }
+                });
+            }
+
+
+            var containerHeight = $("#"+ResData.GridID+"Container").height();
+            var tableHeight= $("#"+ResData.GridID+"Container table").height();
+
+            var headerWidth =$("#"+ResData.ID+"_DataGrid").width();
+            var tableWidth= $("#"+ResData.GridID+"Container table").width();
+
+            if(containerHeight<tableHeight&&fixed==false){
+                if(headerWidth>tableWidth){
+                    fixed=true;
+                    $("#"+ResData.ID+"_DataGrid").width($("#"+ResData.ID+"_DataGrid").width()-14);
+                    $("#"+ResData.ID+"_DataGridSummary").width($("#"+ResData.ID+"_DataGridSummary").width()-15);
+                }
+            }
+        }
+    }
+
+    function onRadioLableClick(e) {
+        if($(e.parentNode).find("input[type='radio']").length>0)
+        {
+            $(e.parentNode).find("input[type='radio']").trigger("click");
+        }
+    }
+
+    function onSelectedChanged(e,chartID) {
+
+    }
+    function clearfilter(chartID,dataSourceName, is){
+        var queryForm =$("#"+block._id+" [name='queryForm']") ;
+        var filters=new Array();
+        if( queryForm.length>0){
+            var children = queryForm.children().children();
+            for (var m = 0; m < children.length; m++) {
+                var selector = children[m];
+                $(selector).val("");
+            }
+        }
+        reloadChart(chartID,dataSourceName, is);
+    }
+    function reloadChart(chartID,dataSourceName, is) {
+
+        var url = "/MvcConfig/UI/BI/GetBlockData";
+        var block =  null;
+        var blockID = chartID.split('_')[0];
+        for (var i = 0; i < blocks.length; i++) {
+            if(blocks[i]._id==blockID){
+                block =  blocks[i];
+                break;
+            }
+        }
+        if(block){
+            addExecuteParam("TemplateType", block.BlockType);
+            addExecuteParam("BlockID", blockID);
+            if(!is){
+                if(!dataSourceName){
+                    dataSourceName =  $("input[name='"+blockID+"_dataSourceName']:checked").val();
+                }
+                if(!dataSourceName){
+                    msgUI("必须指定一个数据源才能重新加载数据");return;
+                }
+                addExecuteParam("DataSourceName", dataSourceName);
+            }
+            closefilter();
+            var queryForm =$("#"+block._id+" [name='queryForm']");
+            var filters=new Array();
+            if( queryForm.length>0){
+                var children = queryForm.children().children();
+                for (var m = 0; m < children.length; m++) {
+                    var selector = children[m];
+                    var options=$(selector).val();
+                    if(selector.name&&options){
+                        filteritem={
+                            name:selector.name,
+                            value:options
+                        }
+                        filters.push(filteritem);
+                    }
+                }
+            }
+            if(filters.length>0){
+                $("#"+blockID+"FillterIcon").css("color","red");
+                addExecuteParam("filters", JSON.stringify(filters));
+            }else{
+                $("#"+blockID+"FillterIcon").css("color","black");
+            }
+            execute(url, {
+                showLoading: false, refresh: false, onComplete: function (data) {
+                    if(data){
+                        if(data.State=="1"){
+                            if(data.Data){
+                                if(data.Data.chartData){
+                                    setChart(data.Data.chartId,data.Data.chartData,data.TemplateType,data.Data);
+                                }
+                            }
+                            else{
+                                $("<h2 style='color:#cdced2;font-size:16px'>暂无内容</h2>").html("#"+data.ID+" [name='content']");
+                            }
+                        }
+                        else{
+                            $("<b>数据加载错误："+data.Msg+"</b>").html("#"+data.ID+" [name='content']");
+                        }
+                    }
+                    else{
+
+                    }
+                }, onFail:function(msg){
+                },validateForm: false
+            });
+        }
+    }
+
+    function downLoadFiles(fileID) {
+        if(!fileID){
+            msgUI("没有可下载的附件"); return;
+        }
+        DownloadFile(fileID);
+    }
+
+    function openUrl(url,title,width,height) {
+        url = addUrlSearch(url);
+        if(!width){width="80%"}
+        if(!height){height="90%"}
+        if(!title){title="详细信息";}
+        openWindow(url, { refresh: false, title: title, width: width, height: height,
+            onDestroy: function () {  }
+        });
+    }
+
+    function onTabClick(li) {
+        if ($(li).attr("class") == "active") return;
+        $(li).siblings().removeClass("active");
+        $(li).addClass("active");
+        var url = $(li).find("div").attr("data-url");
+        console.log(url);
+        var height = $(li).find("div").attr("iframeheight");
+        if (!height) height = "600px";
+        $(".iframe-container iframe").css("height", height);
+        $(".iframe-container iframe").attr("src", url);
+    }
+
+    function prevClick() {
+        console.log($(".BIinfo-block .bar .active").index() == "0")
+        if ($(".BIinfo-block .bar .active").index() == "0") {
+            return false;
+        }
+        $(".BIinfo-block .bar .active").removeClass("active").prev().trigger("click");
+    }
+
+    function nextClick() {
+        if ($(".BIinfo-block .bar .active").index() == ($(".BIinfo-block .bar li").length - 1)) {
+            return;
+        }
+        $(".BIinfo-block .bar .active").removeClass("active").next().trigger("click");
+    }
+
+    function groupSelect(chartID, event){
+        if(event.value){
+            var url = "/MvcConfig/UI/BI/GetBlockData";
+            var block =  null;
+            var blockID = chartID.split('_')[0];
+            for (var i = 0; i < blocks.length; i++) {
+                if(blocks[i]._id==blockID){
+                    block =  blocks[i];
+                    break;
+                }
+            }
+            if(block){
+                addExecuteParam("TemplateType", block.BlockType);
+                addExecuteParam("Block", mini.encode(block));
+                addExecuteParam("Group", event.value);
+                execute(url, {
+                    showLoading: false, refresh: false, onComplete: function (data) {
+                        if(data){
+                            if(data.State=="1"){
+                                if(data.Data){
+                                    var $_id = "#"+data.ID+" [name='content']";
+                                    $($_id).html("");
+                                    $("#"+data.TemplateType).tmpl(data.Data).appendTo($_id);
+                                }
+                            }
+                        }
+                    }, onFail:function(msg){
+                    },validateForm: false
+                });
+            }
+        }
+    }
+
+    function groupUpAndDown(groupCount, event){
+        var value = $(event).attr('value');
+        var ul = $(event).siblings('.list-group');
+        if(value == "0"){
+            $(ul).show();
+            $(event).attr('value', "1");
+            $(event).html('<i class="fa fa-fw fa-caret-up"></i>收起信息');
+        }else{
+            $(ul).hide();
+            $(event).attr('value', "0");
+            $(event).html('<i class="fa fa-fw fa-caret-down"></i>查看' + groupCount + '条信息');
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    @Html.Raw(ViewBag.Script)
+</script>
+
+<script type="text/javascript">
+
+    function setTargetPie(ResData) {
+        var containersRy = $("#" + ResData.chartId + " .container")[0];
+        var svg = $("#" + ResData.chartId + " .typeRange")[0];
+        var output = $("#" + ResData.chartId + " .output")[0];
+        var outline = $("#" + ResData.chartId + " .outline")[0];
+        var fill = $("#" + ResData.chartId + " .fill")[0];
+        var money = $("#" + ResData.chartId + " .money")[0];
+        var actual = $("#" + ResData.chartId + " .actual")[0];
+
+        var rad = Math.PI / 180;
+        var NS = "http:\/\/www.w3.org/2000/svg";
+
+        var W = parseInt(window.getComputedStyle(svg, null).getPropertyValue("width"));
+        var offset = 40;
+        var cx = ~~(W / 2);
+        var cy = 160;
+
+        var r1 = cx - offset;
+        var delta = ~~(r1 / 4);
+
+
+        var isDragging = false;
+
+        var x1 = cx + r1,
+          y1 = cy;
+        var r2 = r1 - delta;
+
+        var x2 = offset,
+          y2 = cy;
+        var x3 = x1 - delta,
+          y3 = cy;
+
+        function drawScale(quota) {
+            sr1 = r1 + 5;
+            sr2 = r2 - 5;
+            srT = r1 + 20;
+            var scale = $("#" + ResData.chartId + " .scale")[0];
+            clearRect(scale)
+            var index = 0, g = 6;
+            var n = quota / g;
+            for (var sa = -180; sa <= 0; sa += 180 / g) {
+                var sx1 = cx + sr1 * Math.cos(sa * rad);
+                var sy1 = cy + sr1 * Math.sin(sa * rad);
+                var sx2 = cx + sr2 * Math.cos(sa * rad);
+                var sy2 = cy + sr2 * Math.sin(sa * rad);
+                var sxT = cx + srT * Math.cos(sa * rad);
+                var syT = cy + srT * Math.sin(sa * rad);
+
+                var scaleLine = document.createElementNS(NS, "line");
+                var scaleLineObj = {
+                    class: "line-scale",
+                    x1: sx1,
+                    y1: sy1,
+                    x2: sx2,
+                    y2: sy2
+                };
+                setSVGAttributes(scaleLine, scaleLineObj);
+
+                scale.appendChild(scaleLine);
+
+                var scaleText = document.createElementNS(NS, "text");
+                var scaleTextObj = {
+                    class: "scale",
+                    x: sxT,
+                    y: syT,
+                };
+                setSVGAttributes(scaleText, scaleTextObj);
+                scaleText.textContent = index == g && parseFloat(quota) <= 0 ? "目标" : parseInt(n * index);
+                scale.appendChild(scaleText);
+
+                index++
+            }
+        }
+
+        function drawInput(cx, cy, r1, offset, delta, a, quota) {
+
+            var d1 = getD1(cx, cy, r1, offset, delta);
+            var d2 = getD2(cx, cy, r1, offset, delta, a);
+
+            drawScale(quota);
+
+            outline.setAttributeNS(null, "d", d1);
+            fill.setAttributeNS(null, "d", d2);
+
+        }
+
+        function updateInput(p, cx, cy, r1, offset, delta, quota, ResData) {
+
+            var x = p.x;
+            var y = p.y;
+            var lx = cx - x;
+            var ly = cy - y;
+
+            var a = Math.atan2(ly, lx) / rad - 180;
+            drawInput(cx, cy, r1, offset, delta, a, quota);
+            output.innerHTML = Math.round((a + 180) / 1.8);
+            if(ResData.TargetValue <= 0){
+                money.innerHTML = ResData.ActualValue + '<span class="unit">'+ ResData.chartUnit +'</span>';
+            }else{
+                money.innerHTML = ResData.CompletionAmount + '<span class="unit" style="padding-left: 3px;">%</span>';
+            }
+            actual.innerHTML = ResData.Content;
+            if(ResData.Tag && ResData.Tag.length > 0){
+                for (var i = 0; i < ResData.Tag.length; i++) {
+                    var target = $("#" + ResData.Tag[i].TargetID + "")[0];
+                    target.innerHTML = ResData.Tag[i].Value;
+                }
+
+            }
+        }
+
+        function getD1(cx, cy, r1, offset, delta) {
+
+            var x1 = cx + r1,
+              y1 = cy;
+            var x2 = offset,
+              y2 = cy;
+            var r2 = r1 - delta;
+            var x3 = x1 - delta,
+              y3 = cy;
+            var d1 =
+              "M " + x1 + ", " + y1 + " A" + r1 + "," + r1 + " 0 0 0 " + x2 + "," + y2 + " H" + (offset + delta) + " A" + r2 + "," + r2 + " 0 0 1 " + x3 + "," + y3 + " z";
+            return d1;
+        }
+
+        function getD2(cx, cy, r1, offset, delta, a) {
+            a *= rad;
+            var r2 = r1 - delta;
+            var x4 = cx + r1 * Math.cos(a);
+            var y4 = cy + r1 * Math.sin(a);
+            var x5 = cx + r2 * Math.cos(a);
+            var y5 = cy + r2 * Math.sin(a);
+
+            var d2 =
+              "M " + x4 + ", " + y4 + " A" + r1 + "," + r1 + " 0 0 0 " + x2 + "," + y2 + " H" + (offset + delta) + " A" + r2 + "," + r2 + " 0 0 1 " + x5 + "," + y5 + " z";
+            return d2;
+        }
+
+        function clearRect(node) {
+            while (node.firstChild) {
+                node.removeChild(node.firstChild);
+            }
+        }
+
+        function setSVGAttributes(elmt, oAtt) {
+            for (var prop in oAtt) {
+                elmt.setAttributeNS(null, prop, oAtt[prop]);
+            }
+        }
+
+        // events
+        var pa = ((parseFloat(ResData.CompletionAmount) > 100 ? 100 : ResData.CompletionAmount) * 1.8) - 180;
+        var targetValue = ResData.TargetValue;
+
+        if(ResData.TargetValue <= 0)
+        {
+            pa = (85 * 1.8) - 180;
+            targetValue = ResData.ActualValue + ResData.ActualValue * 0.15;
+        }
+        var p = {}
+        p.x = cx + r1 * Math.cos(pa * rad);
+        p.y = cy + r1 * Math.sin(pa * rad);
+        updateInput(p, cx, cy, r1, offset, delta, targetValue, ResData)
+    }
+
+</script>
+

@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Tab";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="企业资质" url="/MvcConfig/UI/List/PageView?TmplCode=Certificate">
+        </div>
+        <div title="企业获奖" url="/MvcConfig/UI/List/PageView?TmplCode=Award">
+        </div>
+        <div title="项目获奖" url="/MvcConfig/UI/List/PageView?TmplCode=AwardProject">
+        </div>
+        <div title="专利信息" url="/MvcConfig/UI/List/PageView?TmplCode=Patent">
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    body {
+        overflow: hidden;
+    }
+</style>

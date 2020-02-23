@@ -1,0 +1,116 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false" style="top: 30px; position: relative;">
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本属性</legend>
+                <div>
+                    <table style="width: 100%;">
+                        <tr class="hideRow">
+                            <td width="50%"></td>
+                            <td width="50%"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                允许一次识别多张：
+                            </td>
+                            <td>
+                                <input name="multiple" class="mini-combobox" value="0" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                  </div>
+              <legend>字段映射</legend>
+                <div>
+                    <table style="width: 100%;">
+                        <tr class="hideRow">
+                            <td width="50%"></td>
+                            <td width="50%"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                发票代码：
+                            </td>
+                            <td>
+                                <input name="invoceCode" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                发票编号：
+                            </td>
+                            <td>
+                                <input name="invoceNO" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                开票方：
+                            </td>
+                            <td>
+                                <input name="invoceSeller" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                发票名称：
+                            </td>
+                            <td>
+                                <input name="invoceName" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                开票日期：
+                            </td>
+                            <td>
+                                <input name="invoceDate" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                税价合计(元)：
+                            </td>
+                            <td>
+                                <input name="invoceSum" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                            <tr>
+                            <td>
+                               开票原图：
+                            </td>
+                            <td>
+                                <input name="invoceOriImg" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                说明：该功能为内测版本，需配合移动端接口设置服务商api和token，此处映射内容配置表单子表字段，如"Details.ApplyValue"。
+                                开票原图未设置表示不上传原图。
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    var yesNo = [{ "value": "1", "text": "是" }, { "value": "0", "text": "否" }];
+
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+        }
+    }
+
+</script>

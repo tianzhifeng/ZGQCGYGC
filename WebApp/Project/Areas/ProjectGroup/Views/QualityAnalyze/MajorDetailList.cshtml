@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "MajorDetailList";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="" 
+        class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+        showpager="false" borderstyle="border:0" showsummaryrow="true" sortField="Summary" sortOrder="desc"
+         ondrawsummarycell="onDrawSummaryCell" >>
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="wbsvalue" width="70" headeralign="center" allowsort="false">
+                专业</div>
+                    @{
+                        foreach (var item in ViewBag.MistakeLevel)
+                        {
+                            var len = item.Name.Length * 13 + 20;
+                            <div field="@item.Code" width="@len" headeralign="center" renderer="onLinkRender" align="right" summarytype="sum" allowsort="true">
+                                @item.Name
+                            </div>
+                        }
+                    }
+                    <div field="Summary" width="80" headeralign="center" align="right" summarytype="sum" allowsort="true">
+                        合计
+                    </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.MistakeLevel");
+    @Html.GetEnum("Project.Major");
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "wbsvalue", "Major");
+    var requestData = {};
+    function setData(queryData) {
+        requestData = $.extend({}, mini.clone(queryData), requestData);
+        var grid = mini.get("dataGrid");
+        var projectInfoID = getQueryString("ProjectInfoID");
+        grid.setUrl("GetMajorInfo?ProjectInfoID=" + projectInfoID);
+        grid.load({ "queryFormData": mini.encode(queryData) });
+    }
+
+    function onLinkRender(e) {
+        var cls = "";
+        var uid = e.record._uid;
+        var s = '<a ' + cls + 'href="javascript:void(0)" onclick="onGridLink(' + uid + ',\'' + e.field + '\',\'' + e.sender.id + '\');">' + e.value + '</a>';
+        return s;
+    }
+
+    function onGridLink(UID, field, GridID) {
+        var dataGrid = mini.get(GridID);
+        var row = dataGrid.getRowByUID(UID);
+        queryData = {};
+        queryData["$EQ$ProjectInfoID"] = getQueryString("ProjectInfoID");
+        queryData["$EQ$MajorCode"] = row.wbsvalue;
+        var url = "DetailList?MistakeType=" + field; var width = 600; var height = 550;
+        openWindow(url, { data: queryData, width: width, height: height, title: "查看" });
+    }
+
+    //计算合计
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        if (result.sumData && e.field) {
+            if (result.sumData[e.field] != undefined) {
+                e.cellHtml = result.sumData[e.field];
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+            else if (result.avgData[e.field] != undefined) {
+                e.cellHtml = "平均：" + result.avgData[e.field];
+                e.cellStyle = "text-align:center; color:Brown;datatype:currency";
+            }
+            else if (e.field == "Name") {
+                e.cellHtml = "合计：";
+                e.cellStyle = " text-align: left;color:Brown";
+            }
+            else {
+                e.cellHtml = "";
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+        }
+        else {
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+    }
+
+</script>

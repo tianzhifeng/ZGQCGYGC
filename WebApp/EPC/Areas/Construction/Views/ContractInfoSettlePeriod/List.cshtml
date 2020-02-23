@@ -1,0 +1,218 @@
+﻿@{
+    ViewBag.Title = "计量期";
+}
+
+<div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+    <table>
+        <tr>
+            <td>
+                <a class='mini-button' enabled='true' visible='true' text='选择' id='btnSelect' iconcls='icon-refer' onclick='returnSelected();'></a>
+                <a class='mini-button' id='btnAdd' iconcls='icon-add' text='增加' enabled='true' visible='true' onclick='addrow'></a>
+                <a class='mini-button' id='btnDelete' iconcls='icon-remove' text='删除' enabled='true' visible='true' onclick='thisDel'></a>
+                <a class='mini-button' id='btnModify' iconcls='icon-edit' text='保存' enabled='true' visible='true' onclick='saveAll'></a>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+<div class='mini-fit' id='divGrid'>
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%; height: 100%;' url='' allowcellselect='true'
+         allowcelledit="true" multiselect='false' showpager="false" allowalternating='false' oncellvalidation="cellvalidation" allowcellvalid="true" oncellbeginedit="cellbeginedit"
+         oncellendedit="cellendedit" ondrawcell="onDrawingCell">
+        <div property='columns'>
+            <div type='checkcolumn'></div>
+            <div name='PeriodNum' visible='true' field='PeriodNum' header='期号' allowsort='false' width='40' align='center'>
+            </div>
+            <div name='PeriodName' field='PeriodName' width='200' align='center' vtype="required" visible='true' allowsort='false'>
+                名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div name='BeginDate' field='BeginDate' width='120' align='center' vtype="required" visible='true' allowsort='false' dateformat='yyyy-MM-dd'>
+                结算起始时间
+                <input property="editor" class="mini-datepicker" ondrawdate="onDrawDate" style="width:100%;" />
+            </div>
+            <div name='EndDate' field='EndDate' width='120' align='center' vtype="required" visible='true' allowsort='false' dateformat='yyyy-MM-dd'>
+                结算截止时间
+                <input property="editor" class="mini-datepicker" ondrawdate="onDrawDate" style="width:100%;" />
+            </div>
+            <div name='BOQCheckCount' visible='true' header='计量单数' field='BOQCheckCount' width='60' align='center'>
+
+            </div>
+            <div name='Finished' visible='true' header='是否结束' field='Finished' renderer="onRenderer" width='60' align='center'>
+
+            </div>
+            <div name='Remark' visible='true' field='Remark' width='200' align='center'>
+                备注
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div name='ContractInfoID' field='ContractInfoID' header='ContractInfoID' align='left' visible='false' allowsort='false' header='ContractInfoID'></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    addGridLink('dataGrid', 'BOQCheckCount', '/MvcConfig/UI/List/PageView?TmplCode=FbContractInfoBOQCheckOfPeriod&SettlePeriodID={ID}');
+    normalParamSettings.searchFields = 'PeriodNum,PeriodName'
+    var contractInfoID = getQueryString('ContractInfoID');
+
+    function pageLoad() {
+        var url = "GetPeriodList?ContractInfoID=" + contractInfoID;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.reload();
+    }
+
+    function returnSelected() {
+        var list = mini.get('dataGrid').getSelecteds();
+        if (list.length != 1) {
+            msgUI('必须选中一行');
+            return;
+        }
+        return returnList();
+    }
+
+    function addrow() {
+        //addExecuteParam("ContractInfoID", contractInfoID);
+        //execute("AddPeriod", {
+        //    showLoading: true, refresh: false, onComplete: function (data) {
+        //        var grid = mini.get('dataGrid');
+        //        grid.reload();
+        //    }, validateForm: false
+        //});
+
+
+        var grid = mini.get('dataGrid');
+        var periodNum = 1;
+        var beginDate = "";
+        if (grid.data.length > 0) {
+            var last = grid.data[grid.data.length - 1];
+            beginDate = last.EndDate;
+            periodNum = parseInt(last.PeriodNum) + 1;
+        }
+
+        var newRowData = { ContractInfoID: contractInfoID, PeriodNum: periodNum, PeriodName: "第" + periodNum + "期", BeginDate: beginDate, EndDate: '' };
+        addRow(newRowData, { gridId: "dataGrid", isLast: true });
+    }
+
+    function onRenderer(e) {
+        if (e.row.Finished) {
+            return "是"
+        }
+        else {
+            return "否";
+        }
+    }
+
+    function cellbeginedit(e) {
+        if (e.row.Finished) {
+            e.cancel = true;
+        }
+    }
+
+    function cellendedit(e) {
+        //addExecuteParam("data", e.row);
+        //execute("UpdatePeriod", {
+        //    showLoading: true, refresh: false, onComplete: function (data) {
+        //        //var grid = mini.get('dataGrid');
+        //        //grid.reload();
+        //    }, validateForm: false
+        //});
+    }
+
+    function cellvalidation(e) {
+        //if (e.isValid) {
+        //    return true;
+        //}
+        //else
+        //{
+        //    msgUI(e.errorText);
+        //}
+    }
+
+    function thisDel() {
+        var grid = mini.get("dataGrid")
+        var period = grid.getSelected();
+
+        //都是刚加的数据 则不用走后台
+        if (period._state == 'added') {
+            grid.removeRow(period);
+        }
+        else {
+            addExecuteParam("dataID", period.ID);
+            execute("DeletePeriod", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    var grid = mini.get('dataGrid');
+                    grid.reload();
+                }, validateForm: false
+            });
+        }
+    }
+
+    function saveAll() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        grid.validate();
+        if (grid.isValid() == false) {
+            msgUI("输入数据有误！");
+            return;
+        }
+
+        saveList();
+    }
+
+    function onDrawingCell(e) {
+        if (e.row._state == "added") {
+            if (e.field == "PeriodName") {
+                e.cellHtml = e.record.PeriodName + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+            }
+        }
+    }
+
+    function onDrawDate(e) {
+        var row = mini.get('dataGrid').getCurrentCell()[0];
+        var colName = mini.get('dataGrid').getCurrentCell()[1].name;
+        var beginDate;
+        var endDate;
+        if (colName == 'BeginDate') {
+            if (row.EndDate != '') {
+                beginDate = e.date.getTime();
+                endDate = row.EndDate.getTime();
+            }
+        }
+        else if (colName == 'EndDate') {
+            if (row.BeginDate != '') {
+                beginDate = row.BeginDate.getTime();
+                endDate = e.date.getTime();
+            }
+        }
+
+        if (beginDate && endDate && beginDate > endDate) {
+            e.allowSelect = false;
+        }
+    }
+
+    $(function () {
+        //var grid = mini.get('dataGrid');
+        //grid.setUrl(url);
+        //grid.load();
+
+        var mode = getQueryString('mode');
+        if (mode && mode == 'Choose') {
+            mini.get('btnSelect').show();
+            mini.get('btnModify').hide();
+            mini.get('btnAdd').hide();
+            mini.get('btnDelete').hide();
+        }
+        else if (mode && mode == 'Edit') {
+            mini.get('btnSelect').hide();
+            mini.get('btnModify').show();
+            mini.get('btnAdd').show();
+            mini.get('btnDelete').show();
+        }
+        else {
+            msgUI("url需携带mode参数,Choose为选择模式,Edit为维护模式");
+        }
+    });
+    //var FixedFields = ["PERIODNUM", "PERIODNAME", "BEGINDATE", "ENDDATE", "BOQCHECKCOUNT", "REMARK"];
+</script>

@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-edit" onclick="multiSetPrice();" plain="true">批量调整单价</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="multiSetResource();" plain="true">批量调整资源等级</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入员工姓名或编号" style="width: 200px;" onenter="quickSearch('UserName,UserCode');"
+                       onbuttonclick="quickSearch('UserName,UserCode');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" sortfield="UserName"
+         frozenstartcolumn="0" frozenendcolumn="3" sortorder="asc" ondrawcell="onDrawCell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="UserName" width="60" headeralign="center" allowsort="true">
+                员工姓名
+            </div>
+            <div field="UserCode" width="80" headeralign="center" allowsort="true">
+                员工编号
+            </div>
+            <div field="DeptName" width="120" headeralign="center" allowsort="true">
+                所属部门
+            </div>
+            @{
+                for (int i = 1; i <= 12; i++)
+                            {
+                                var title = i + "月";
+                                var unitField = "UnitPrice_" + i;
+                                var resourceField = "ResourceCode_" + i;
+                        <div header="@title" headeralign="center">
+                            <div property="columns">
+                                <div field="@resourceField" headeralign="center" width="100" align="center">
+                                    资源等级
+                                </div>
+                                <div field="@unitField" datatype="currency" headeralign="center" width="60" align="right">
+                                    单价（元）
+                                </div>
+                            </div>
+                        </div>
+                            }
+            }
+            <div field="IsDeleted" width="40" headeralign="center" allowsort="true" align="center">
+                离职
+            </div>
+            <div field="ModifyUser" width="80" headeralign="center" align="center">
+                修订人
+            </div>
+            <div field="ModifyDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" align="center">
+                修订日期
+            </div>
+
+            @*<div field="ResourceCode" headeralign="center" width="120" align="center">
+                    资源等级
+                </div>
+                <div field="UnitPrice" headeralign="center" width="120" align="right">
+                    最新单价
+                </div>
+                <div field="StartDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" align="center">
+                    生效日期
+                </div>
+
+            *@
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 700px; " showmodal="true"
+     allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">员工姓名</td>
+                    <td width="23%" align="left">
+                        <input name="$LK$UserName" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                    </td>
+                    <td width="10%" align="center">员工编号</td>
+                    <td width="23%" align="left"><input name="$LK$UserCode" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                    <td width="10%" align="center">所属部门</td>
+                    <td width="23%" align="left"><input name="$LK$DeptName" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                </tr>
+                <tr>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var isDelete = [{ value: "0", text: "否" }, { value: "1", text: "是" }];
+    addGridEnum("dataGrid", "IsDeleted", "isDelete");
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var rec = e.record;
+        if (field && field.indexOf("UnitPrice") >= 0) {
+            var belongYear = rec["BelongYear"];
+            var belongMonth = field.split('_')[1];
+            e.cellHtml = '<a href="javascript:void()" onclick="upgrade(\'' + rec.HRUserID + '\',\'' + belongYear + '\',\'' + belongMonth + '\')">'
+                + mini.formatNumber(e.value, "n") + '</a>';
+        }
+    }
+
+    function upgrade(HRUserID, belongYear, belongMonth) {
+        var url = "Edit?HRUserID=" + escape(HRUserID) + "&BelongYear=" + belongYear + "&BelongMonth=" + belongMonth;
+        openWindow(url, {
+            refresh: false, title: "单价调整", width: 700, height: 350,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+
+    function multiSetPrice() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一个人员信息，进行批量设置"); return;
+        }
+        msgUI("批量设置单价后，最新单价将不再根据资源匹配，是否继续？", 2, function (result) {
+            if (result != "ok") {
+                return;
+            }
+            var url = "MultiSetPrice";
+            openWindow(url, {
+                refresh: false, title: "批量设置单价", width: 700, height: 350,
+                onDestroy: function (data) {
+                    if (!data || data == "close") { return; }
+                    addExecuteParam("UserInfo", mini.encode(rows));
+                    addExecuteParam("formData", mini.encode(data));
+                    execute("SetUserUnitPrice", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            msgUI("批量设置成功");
+                            dataGrid.reload();
+                        }, validateForm: false
+                    });
+                }
+            });
+        });
+
+    }
+
+    function multiSetResource() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一个人员信息，进行批量设置"); return;
+        }
+        msgUI("您确定要批量设置选中记录的资源等级吗？", 2, function (result) {
+            if (result != "ok") {
+                return;
+            }
+            var url = "MultiSetResourceCode";
+            openWindow(url, {
+                refresh: false, title: "批量设置等级", width: 700, height: 350,
+                onDestroy: function (data) {
+                    if (!data || data == "close") { return; }
+                    addExecuteParam("UserInfo", mini.encode(rows));
+                    addExecuteParam("formData", mini.encode(data));
+                    execute("SetUserResourceCode", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            msgUI("批量设置成功");
+                            dataGrid.reload();
+                        }, validateForm: false
+                    });
+                }
+            });
+        });
+    }
+
+</script>

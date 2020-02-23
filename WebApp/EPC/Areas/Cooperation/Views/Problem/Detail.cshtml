@@ -1,0 +1,354 @@
+﻿@{
+    ViewBag.Title = "问题整改单";
+}
+
+@{
+    int i = 0;
+}
+
+<script src="~/Scripts/Main/js/partial.js" type="text/javascript"></script>
+
+<center>
+    <form id="dataForm" method="post" style="top:30px;position:relative">
+        @*<input name="ID" class="mini-hidden" />
+            <input name="EngineeringInfo" class="mini-hidden" />
+            <input name="EngineeringInfoName" class="mini-hidden" />
+            <input name='SerialNumber' class="mini-hidden" />
+            <input name='Subcontractor' class="mini-hidden" />
+            <input name='SubcontractorName' class="mini-hidden" />*@
+
+
+        <div class="formDiv">
+            <h1 align="center">问题整改单</h1>
+
+            <table style="width:820px; border-collapse:collapse;" cellspacing="0" cellpadding="0" border="1">
+                <tbody>
+
+                    <tr>
+                        <td colspan="2">
+                            <table style="width:100%;text-align:left" cellpadding="2" border="0">
+                                <tr>
+                                    <td>问题名称：@ViewBag.Name</td>
+                                    <td>问题类型：@ViewBag.ProType</td>
+                                    <td rowspan="10" align="center" width="100px">
+                                        @{
+                                            var rectifyState = ViewBag.RectifyState as string;
+                                            switch (rectifyState)
+                                            {
+
+                                                case "Register"://待整改
+                                                    <br />
+                                                    <a class='plainBtn' href='javascript:void(0);' onclick='onEdit("@ViewBag.ID")'><div>修改</div></a>
+                                                    <br />
+                                                    <a class='plainBtn' href='javascript:void(0);' onclick='onDelete("@ViewBag.ID")'><div>删除</div></a>
+                                                    break;
+
+                                                case "Rectify"://已整改
+                                                    <br />
+                                                    <a class='plainBtn' href='javascript:void(0);' onclick='onReject("@ViewBag.ID")'><div>重新整改</div></a>
+                                                    <br />
+                                                    <a class='plainBtn' href='javascript:void(0);' onclick='onClose("@ViewBag.ID")'><div>关闭问题</div></a>
+                                                    break;
+
+                                                case "Closed"://已关闭
+
+                                                    break;
+                                            }
+
+                                        }
+                                        <br /><a class='plainBtn' href='javascript:void(0);' onclick='$onViewLog("@ViewBag.ID")'><div>日志</div></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">工作内容：@ViewBag.JobContent</td>
+
+                                </tr>
+                                <tr>
+                                    <td>检查人：@ViewBag.CheckerName</td>
+                                    <td>检查日期：@ViewBag.CheckDate</td>
+                                </tr>
+                                <tr>
+                                    <td>整改时间：@ViewBag.RectifyDate</td>
+                                    <td>关闭时间：@ViewBag.CloseDate</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="4" align="right">
+                                        <a class="mini-button" iconcls="icon-add" onclick="add();" id="btnAdd" visible="false">发起问题</a>
+
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td class="td1">
+                            整改前
+                        </td>
+                        <td class="td1">
+                            整改后
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" valign="top">
+                            @{
+                                i = 0;
+                            }
+
+                            @foreach (var item in ViewBag.BeforeImprovePictrueList as List<string>)
+                            {
+                                <br />
+                                <div class="divPic">
+                                    <img class="pic" src="/EPC/Cooperation/Image/GetPic?fieldId=@item" onclick="$onViewImages('@ViewBag.BeforeImprovePictrue', '@i')" />
+                                </div>
+
+                                i++;
+                            }
+                        </td>
+                        <td align="center" valign="top">
+                            @{
+                                i = 0;
+                            }
+
+                            @foreach (var item in ViewBag.AfterImprovePictrueList as List<string>)
+                            {
+                                <br />
+                                <div class="divPic">
+                                    <img class="pic" src="/EPC/Cooperation/Image/GetPic?fieldId=@item" onclick="$onViewImages('@ViewBag.AfterImprovePictrue', '@i')" />
+                                </div>
+                                i++;
+                            }
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+    </form>
+</center>
+
+<script type="text/javascript">
+    var EngineeringInfo = '@ViewBag.EngineeringInfo';
+    function pageLoad() {
+
+    }
+
+    //修改
+    function onEdit(ID) {
+        var url = "Edit?EngineeringInfo=" + EngineeringInfo + "&ID=" + ID;
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "60%", height: "80%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                window.location.reload();
+            }
+
+        });
+    }
+
+    //删除
+    function onDelete(ID) {
+        msgUI("您确定要重删除吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ID", ID);
+            execute("DeleteProblem", {
+                showLoading: true, refresh: false,
+                onComplete: function (data) {
+                    closeWindow(data);
+                }, validateForm: false
+            });
+
+
+        });
+
+    }
+
+    //整改处理
+    function onRectify(ID) {
+        var url = "Edit?EngineeringInfo=" + EngineeringInfo + "&ID=" + ID + "&actionType=Rectify";
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "80%", height: "70%", addQueryString: false
+        });
+    }
+
+    //重新整改
+    function onReject(ID) {
+        msgUI("您确定要重新整改吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ID", ID);
+            execute("Reject", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+
+        //var url = "Edit?ID=" + ID + "&actionType=Reject";
+        //openWindow(url, {
+        //    refresh: true, title: "问题整改单", width: "80%", height: "70%", addQueryString: false
+        //});
+
+    }
+
+    //关闭问题
+    function onClose(ID) {
+        msgUI("您确定要关闭问题吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ID", ID);
+            execute("Close", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+
+        });
+
+        //var url = "Edit?ID=" + ID + "&actionType=Close";
+        //openWindow(url, {
+        //    refresh: true, title: "问题整改单", width: "80%", height: "70%", addQueryString: false
+        //});
+    }
+</script>
+
+
+<style>
+    .td1 {
+        width: 50%;
+        text-align: center;
+        font-size: large;
+        padding: 5px;
+    }
+
+    .tdPic {
+    }
+
+
+    .divPic {
+        position: relative;
+        width: 400px;
+        height: 300px;
+    }
+
+    .pic {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .divButton {
+        width: 100px;
+        height: 120px;
+    }
+
+    .picTipLeft {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: white;
+        background-color: #42433D;
+        opacity: 0.5;
+        padding: 3px;
+    }
+
+    .picTipRight {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: white;
+        background-color: #42433D;
+        opacity: 0.5;
+        padding: 3px;
+    }
+
+    .Register {
+        color: red;
+    }
+
+    .Rectify {
+        color: green;
+    }
+
+    .Closed {
+    }
+
+
+
+    .plainBtn {
+        background: #bbdab0;
+        color: #3e6331;
+        width: 60px;
+        height: 20px;
+        line-height: 20px;
+        border-radius: 10px;
+        text-align: center;
+        display: block;
+        float: none;
+        text-decoration: none;
+        margin-top: -3px;
+    }
+
+    .mini-modal {
+        opacity: .9;
+        background: #ccc;
+    }
+
+    .stateSpan {
+        padding: 0px 8px !important;
+        float: right !important;
+        border-radius: 15px;
+        font-size: 12px;
+        background-color: transparent !important;
+        margin-right: 0px !important;
+    }
+
+    .Create {
+        background-color: #FFF;
+        color: #82bf00;
+        border: 1px solid #82bf00;
+    }
+
+    .Bid {
+        background-color: #FFF;
+        color: #27c9db;
+        border: 1px solid #27c9db;
+    }
+
+    .Plan {
+        background-color: #FFF;
+        color: #d6cc5c;
+        border: 1px solid #d6cc5c;
+    }
+
+    .Execute {
+        background-color: #FFF;
+        color: #2b88d8;
+        border: 1px solid #2b88d8;
+    }
+
+    .Finish {
+        background-color: #FFF;
+        color: #e062c6;
+        border: 1px solid #e062c6;
+    }
+
+    .Pause {
+        background-color: #FFF;
+        color: #e89f41;
+        border: 1px solid #e89f41;
+    }
+
+    .Terminate {
+        background-color: #FFF;
+        color: #c63c39;
+        border: 1px solid #c63c39;
+    }
+
+    .leftDistance {
+        padding-left: 20px;
+    }
+</style>

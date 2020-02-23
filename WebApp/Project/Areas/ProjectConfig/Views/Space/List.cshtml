@@ -1,0 +1,273 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="west" showheader="false" region="west" width="300" expanded="true" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 1px; border-top: 0;
+            border-left: 0; border-right: 0;">
+            <table>
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="addRoot();">增加</a> <a class="mini-button"
+                            iconcls="icon-edit" onclick="edit({height:300});">编辑</a> <a class="mini-button" iconcls="icon-remove"
+                                onclick="del();">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                idfield="ID" multiselect="true" borderstyle="border:0;" onselectionchanged="onSelectionChanged"
+                onload="onLoadComplete" showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="*" headeralign="center" allowsort="true">
+                        名称</div>
+                    <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                        编码</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="spaceLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+                <div title="" showheader="false" region="west" width="200" expanded="true" showspliticon="false"
+                    style="border-top: 0; border-bottom: 0;">
+                    <ul id="mytree" class="mini-tree" style="width: 100%; height: 100%;" contextmenu="#treeMenu"
+                        showtreeicon="true" textfield="Name" iconfield="Type" idfield="ID" enablehottrack="false"
+                        parentfield="ParentID" resultastree="false" expandonload="3" onnodeselect="onNodeSelect">
+                    </ul>
+                </div>
+                <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+                    <div class="mini-toolbar" id="btnDiv" style="padding: 0px;">
+                        <table>
+                            <tr>
+                                <td>
+                                    <a class="mini-button" plain="true" iconcls="icon-save" onclick="save({closeWindow:false});">
+                                        保存</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <form id="dataForm" method="post">
+                    <input name="ID" class="mini-hidden" />
+                    <input name="ParentID" class="mini-hidden" />
+                    <input name="ModeID" class="mini-hidden" />
+                    <input name="Type" class="mini-hidden" />
+                    <div class="formDiv">
+                        <fieldset>
+                            <legend>基本信息</legend>
+                            <div>
+                                <table>
+                                    <tr class="hideRow">
+                                        <td width="15%">
+                                        </td>
+                                        <td width="35%">
+                                        </td>
+                                        <td width="15%">
+                                        </td>
+                                        <td width="35%">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            名称
+                                        </td>
+                                        <td>
+                                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                                        </td>
+                                        <td>
+                                            编号
+                                        </td>
+                                        <td>
+                                            <input name="Code" class="mini-textbox" required="true" style="width: 100%" />
+                                        </td>
+                                    </tr>
+                                    @if(System.Configuration.ConfigurationManager.AppSettings["IsUseMultilingual"] == "True")
+                                    {
+                                        <tr>
+                                            <td>
+                                                名称(英文)
+                                            </td>
+                                            <td colspan="3">
+                                                <input name="NameEN" class="mini-textbox" style="width: 100%;" />
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td>
+                                            类别
+                                        </td>
+                                        <td>
+                                            <input name="DefineType" class="mini-combobox" data="SpaceDefineType" style="width: 100%;"
+                                                textfield="text" valuefield="value" enabled="false" allowinput="true" required="true" />
+                                        </td>
+                                        <td>
+                                            动态字段
+                                        </td>
+                                        <td>
+                                            <input name="DynamicDataFiled" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            排序
+                                        </td>
+                                        <td>
+                                            <input name="SortIndex" style="width: 100%" class="mini-textbox" vtype="int" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            URL链接
+                                        </td>
+                                        <td colspan="3">
+                                            <input name="LinkUrl" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="addGroup" iconcls="icon-add" onclick="addGroup">增加分组</li>
+    <li name="addFeature" iconcls="icon-add" onclick="addFeature">增加功能</li>
+    <li name="delGroup" iconcls="icon-remove" onclick="delnode">删除分组</li>
+    <li name="delFeature" iconcls="icon-remove" onclick="delnode">删除功能</li>
+</ul>
+<script type="text/javascript">
+@Html.GetEnum(typeof(Project.Logic.SpaceDefineType), "SpaceDefineType");
+</script>
+<script type="text/javascript">
+
+    function addRoot() {
+        var modeID = getQueryString("ModeID");
+        var url = "Edit?ModeID=" + modeID + "&Type=Root"
+        var settings = { url: url, height: 300 };
+        add(settings);
+    }
+
+    function addGroup() {
+        var modeID = getQueryString("ModeID");
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        var url = "Edit?ModeID=" + modeID + "&Type=Catalog&ParentID=" + node.ID + "";
+        openWindow(url, { title: "增加分组", width: 600, height: 300, onDestroy: function (data) {
+            mini.get("mytree").load(mini.get("mytree").url);
+        }
+        });
+    }
+
+    function delnode() {
+        var tree = mini.get("mytree");
+        msgUI("您确定需要删除吗？", 2, function (data) {
+            if (data != "ok") return;
+            var node = tree.getSelectedNode();
+            addExecuteParam("ListIDs", node.ID);
+            execute("Delete", { onComplete: function (data) {
+                tree.removeNode(node);
+            }
+            });
+        });
+    }
+
+    function addFeature() {
+        var url = "/Project/BaseData/Feature/SelectList";
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        openWindow(url, { title: "增加功能", width: 800, onDestroy: function (data) {
+            if (!data || data == "close" || data == "") return;
+            addExecuteParam("FeatureInfo", mini.encode(data));
+            addExecuteParam("SpaceDefineID", node.ID);
+            execute("AddFeature", { onComplete: function (data) {
+                var url = mini.get("mytree").url;
+                mini.get("mytree").load(url);
+            }
+            });
+        }
+        });
+    }
+
+    function onSelectionChanged(e) {
+        if (e.selected) {
+            var url = "GetDefineTree?ID=" + e.selected.ID;
+            mini.get("mytree").load(url);
+        }
+        else {
+            mini.get("mytree").load("");
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var addGroupItem = mini.getbyName("addGroup", menu);
+        var addFeatureItem = mini.getbyName("addFeature", menu);
+        var delGroupItem = mini.getbyName("delGroup", menu);
+        var delFeatureItem = mini.getbyName("delFeature", menu);
+        addGroupItem.show(); addFeatureItem.show();
+        delGroupItem.show(); delFeatureItem.show();
+        if (node.Type == "Root") {
+            delGroupItem.hide();
+            delFeatureItem.hide();
+        }
+        else if (node.Type == "Catalog") {
+            delFeatureItem.hide();
+        }
+        else {
+            addGroupItem.hide();
+            addFeatureItem.hide();
+            delGroupItem.hide();
+        }
+    }
+
+    function onLoadComplete(e) {
+        var row = e.source.getRow(0);
+        e.source.select(row);
+    }
+
+    $("#btnDiv").hide();
+    function onNodeSelect(e) {
+        var node = e.node;
+        if (node) {
+            var form = new mini.Form("#dataForm");
+            form.setData(node);
+            $("#btnDiv").show();
+        }
+        else {
+            $("#btnDiv").hide();
+        }
+    }
+
+</script>
+<style type="text/css">
+    .Root
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif) no-repeat;
+    }
+    .Catalog
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/subproject.gif) no-repeat;
+    }
+    .Feature
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+</style>

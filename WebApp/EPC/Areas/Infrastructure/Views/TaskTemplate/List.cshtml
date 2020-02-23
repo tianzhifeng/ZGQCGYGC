@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({'height':400,'width':700});" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ 'height': 400, 'width': 700 });" plain="true">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="copy()" plain="true">复制</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称" style="width: 200px;" onenter="quickSearch('Name');"
+                       onbuttonclick="quickSearch('Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="function" width="60" headeralign="center" allowsort="true">
+                维护
+            </div>
+            <div field="Name" width="200" headeralign="center" allowsort="true">
+                名称
+            </div>
+            <div field="ProjectClass" width="90" headeralign="center" allowsort="true">
+                项目类型
+            </div>
+            <div field="ProjectScale" width="90" headeralign="center" allowsort="true">
+                项目规模
+            </div>
+            <div field="ProjectType" headeralign="center" width="90" allowsort="true" align="center">
+                项目等级
+            </div>
+            <div field="ScheduleCode" headeralign="center" width="90" allowsort="true" align="center">
+                计划编号
+            </div>
+            <div field="ModifyUser" headeralign="center" width="80" allowsort="true" align="right">
+                修改人
+            </div>
+            <div field="ModifyDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                修改日期
+            </div>
+            <div field="Remark" headeralign="center" width="*" allowsort="true" align="center">
+                备注
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    addGridButton("dataGrid", "function", {
+        linkText: "维护",
+        onButtonClick: function (row) {
+            var url = "DetailList?TemplateID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: row.Name, width: "80%", height: "90%",
+                onDestroy: function () { }
+            });
+        }
+    });
+
+    function copy() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (row) {
+            addExecuteParam("TemplateID", row.ID);
+            execute("CopyTemplate", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+
+        }
+        else {
+            msgUI("请选择一条记录");
+        }
+    }
+</script>

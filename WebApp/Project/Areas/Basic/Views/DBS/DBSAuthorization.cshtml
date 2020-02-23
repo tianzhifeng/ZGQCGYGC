@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "DBSAuthorization";
+}
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 220px">
+                <div id="RoleType" class="mini-radiobuttonlist" onvaluechanged="onRoleValueChanged" name="roleType" repeatitems="4"
+                    textfield="text" valuefield="value" value="ProjectRoleType" data="roleType">
+                </div>
+            </td>
+            <td style="width: auto;">
+                <a class="mini-button" iconcls="icon-add" onclick="inhertAuth();" plain="true">继承父目录权限</a>
+            </td>
+            <td style="white-space: nowrap;">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetAuthList" showpager="false" style="width: 100%; height: 100%;"
+        idfield="ID" multiselect="true" oncellclick="onCellclick" allowcelledit="true" allowcellselect="true"
+        multiselect="true" editnextonenterkey="true" editnextrowcell="true" borderstyle="border:0">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="RoleName" width="*" headeralign="center" allowsort="true">
+                角色名称</div>
+            <div type="checkboxcolumn" field="FullControlAuth" truevalue="True" falsevalue="False" width="60">
+                完全控制
+            </div>
+            <div type="checkboxcolumn" field="WriteAuth" truevalue="True" falsevalue="False" width="80">
+                读写权限
+            </div>
+            <div type="checkboxcolumn" field="ViewAuth" truevalue="True" falsevalue="False" width="60">
+                只读权限
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var roleType = [{ text: "项目角色", value: "ProjectRoleType" }, { text: "系统角色", value: "SysRoleType" }, { text: "组织角色", value: "OrgRoleType" }];
+</script>
+<script type="text/javascript">
+    var dbsID = getQueryString("DBSID");
+    function inhertAuth() {
+        addExecuteParam("DBSID", dbsID);
+        execute("InhertAuth", { showLoading: true, onComplete: function (data) {
+            mini.get("dataGrid").reload();
+        }
+        });
+    }
+
+    function onRoleValueChanged(e) {
+        mini.get("dataGrid").load({ RoleType: e.value });
+    }
+
+    function onCellclick(e) {
+        if ((e.field == "ViewAuth" || e.field == "FullControlAuth" || e.field == "WriteAuth") && e.value != undefined) {
+            var viewAuth = e.record.ViewAuth;
+            var fullControlAuth = e.record.FullControlAuth;
+            var writeAuth = e.record.WriteAuth;
+            addExecuteParam("RoleCode", e.record.RoleCode);
+            addExecuteParam("RoleName", e.record.RoleName);
+            addExecuteParam("RoleType", mini.get("RoleType").getValue());
+            addExecuteParam("DBSID", dbsID);
+            var method = "SetAuth";
+            if (viewAuth == "False" && fullControlAuth == "False" && writeAuth == "False") method = "RemoveAuth";
+            if (e.field == "ViewAuth") addExecuteParam("authType", "ReadOnly");
+            else if (e.field == "WriteAuth")
+                addExecuteParam("authType", "ReadAndWrite");
+            else addExecuteParam("authType", "FullControl");
+            execute(method, { showLoading: true, onComplete: function (data) {
+                mini.get("dataGrid").reload();
+            }
+            });
+        }
+    }
+</script>

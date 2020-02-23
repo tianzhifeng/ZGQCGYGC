@@ -1,0 +1,23 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="add({url:'SubFormEdit',height:300});">添加</a>
+                <a class="mini-button" id="btnModify" iconcls="icon-edit" onclick="edit({url:'SubFormEdit',height:300});">修改</a>
+                <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="del({action:'DeleteSubForm'});">删除</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编名称" onenter="quickSearch('Name');" onbuttonclick="quickSearch('Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetSubFormList" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div field="Name" width="200" allowsort="true">名称</div>
+            <div field="FormUrl" allowsort="true">URL</div>          
+        </div>
+    </div>
+</div>

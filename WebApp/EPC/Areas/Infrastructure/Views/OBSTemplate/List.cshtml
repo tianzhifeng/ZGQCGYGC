@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addNode()" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="editNode()" plain="true">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="removeNode()" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;"
+         url="" showtreeicon="true" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+         expandonload="true" allowresize="false" fitcolumns="true"
+         allowdrag="true" allowdrop="true" allowleafdropin="true" ongivefeedback="onGiveFeedback"
+         ondrop="onNodeDrop">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="*" headeralign="center">角色名</div>
+            <div field="Code" width="150" headeralign="center">编号</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+</script>
+<script type="text/javascript">
+    var modeID = getQueryString("ModeID");
+    var url = "GetTree?ModeID=" + modeID;
+    $("#dataTree").attr("url", url);
+
+    function addNode() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        var url = "Edit?ParentID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "OBS编辑", width: 700, height: 400,
+            onDestroy: function () {
+                dataTree.reload();
+            }
+        });
+    }
+
+    function editNode() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        var url = "Edit?ID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "OBS编辑", width: 700, height: 400,
+            onDestroy: function () {
+                dataTree.reload();
+            }
+        });
+    }
+
+    function delNode() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ID", node.ID);
+            execute("DeleteNode", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataTree.removeNode(node);
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false
+        });
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+
+        //if (node.NodeType != "Detail") {
+        //    e.effect = "no";
+        //}
+        //else if (targetNode.NodeType == "Detail" && effect == "add") {
+        //    e.effect = "no";
+        //}
+        //else if ((effect == "after" || effect == "before") && targetNode.NodeType != "Detail") {
+        //    e.effect = "no";
+        //}
+        //else if (effect == "add" && targetNode.NodeType != deepNodeType) {
+        //    e.effect = "no";
+        //}
+        //if (flowEnd == "True") {
+        //    e.effect = "no";
+        //}
+    }
+
+</script>

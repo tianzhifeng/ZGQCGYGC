@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "ReceiptList";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetReceiptList" showsummaryrow="true" showpager="false" class="mini-datagrid"
+         style="width: 100%; height: 100%;" idfield="ID" multiselect="true" ondrawsummarycell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="ContractCode" width="150" headeralign="center" allowsort="true">
+                合同编号
+            </div>
+            <div field="ContractName" width="150" headeralign="center" allowsort="true">
+                合同名称
+            </div>
+            @*<div field="ReceiptType" width="120" headeralign="center" allowsort="true" align="center">
+                收款方式
+            </div>*@
+            <div field="Amount" summarytype="sum" width="100" datatype="currency" width="120" headeralign="center"
+                 allowsort="true" align="right">
+                到款金额
+            </div>
+            <div field="CreateDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                到款日期
+            </div>
+            @*<div field="Operator" width="120" headeralign="center" allowsort="true" align="center">
+                收款经办人
+            </div>*@
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+@Html.GetEnum("Base.InvoiceType")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "InvoiceType", "InvoiceType");
+    addGridLink("dataGrid", "InvoiceType", '/Market/Basic/Invoice/InvoiceEdit?ID={ID}', { funcType: 'view', height: '90%', width: '80%' });
+
+    function onDrawSummaryCell(e) {
+        e.cellStyle = " text-align: right;color:red";
+    }
+
+</script>

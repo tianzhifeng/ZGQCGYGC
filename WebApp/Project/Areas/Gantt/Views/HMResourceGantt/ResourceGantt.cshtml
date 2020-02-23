@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "部门资源甘特图";
+    Layout = "../Shared/_LayoutHMGantt.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                部门：
+                <input name="DeptID" class="mini-combobox" style="width: 150px;" textfield="Name" valuefield="ID"
+                    data="depts" allowinput="true" onvaluechanged="onValueChanged" />
+                <a class="mini-button" onclick="zoomIn()" iconcls="icon-zoomin" plain="true">放大</a>
+                <a class="mini-button" onclick="zoomOut()" iconcls="icon-zoomout" plain="true">缩小</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" style="width: 200px;" emptytext="请输入人员姓名" onenter="quickSearch('Name');"
+                    onbuttonclick="quickSearch('Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GanttDV">
+</div>
+<div id="pager" class="mini-pager" onpagechanged="onPageChanged" pagesize="10" style="width: 100%; background: #f0f3f7;"
+    sizelist="[5,10,20,50,100,200]">
+</div>
+<script type="text/javascript">
+    var depts=@Html.Raw(ViewBag.Depts);
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var gantt = initGantt();
+    gantt.render(document.getElementById("GanttDV"));
+    var pagerData = { pageSize: 10, pageIndex: 0 };
+    loadData();
+    function loadData(queryData) {
+        gantt.loading();
+        if (queryData) {
+            addExecuteParam("queryFormData", mini.encode(queryData));
+        }
+        addExecuteParam("DeptID", mini.getbyName("DeptID").getValue());
+        addExecuteParam("pageSize", pagerData.pageSize);
+        addExecuteParam("pageIndex", pagerData.pageIndex);
+        execute("GetList", { refresh: false, onComplete: function (responseData) {
+            gantt.loadData(responseData.data);
+            gantt.unmask();
+            mini.get("pager").update(responseData["CurrentPage"], pager.pageSize, responseData["Total"]);
+        }, validateForm: false
+        });
+    }
+
+    function initGantt() {
+        var gantt = new mini.RGantt();
+        gantt.setStyle("width:100%;height:100%;border:0px;");
+        gantt.setAllowResize(false);
+        gantt.setMultiSelect(true);
+        gantt.setTopTimeScale("month");
+        gantt.setBottomTimeScale("week");
+        var currentDate = new Date();
+        gantt.setTimeLines([
+      { date: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()), text: "当前日期", style: "width:2px;background:red;" }
+        ]);
+        new RGanttSchedule(gantt);
+        gantt.setColumns([
+           { header: "人员姓名", field: "Name", width: 200, headeralign: "center", align: "left", allowDrag: false, allowMove: false }
+       ]);
+        return gantt;
+    }
+    gantt.zoomIn();
+    gantt.on('itemtooltipneeded', function (e) {
+        var task = e.task;
+        e.tooltip = "<div>项目名称：" + task.Name + "</div>"
+                + "<div style='clear:both;'>计划完成日期：" + mini.formatDate(task.Start, 'yyyy-MM-dd') + "</div>"
+                + "<div>计划完成日期：" + mini.formatDate(task.Finish, 'yyyy-MM-dd') + "</div>";
+    });
+
+    gantt.on("drawitem", function (e) {
+        var item = e.item;
+        var cls = "myitem";
+        e.itemCls = cls;
+    });
+
+    function onPageChanged(e) {
+        pagerData["pageIndex"] = e.pageIndex;
+        pagerData["pageSize"] = e.pageSize;
+        loadData();
+    }
+
+    function quickSearch(searchFields) {
+        var data = {};
+        var keyCo = mini.get("key");
+        var keys = searchFields.split(',');
+        for (i = 0, len = keys.length; i < len; i++) {
+            data["$IL$" + keys[i]] = keyCo.getValue();
+        }
+        data["IsOrRelation"] = "True"; //快速查询条件间为或关系
+        loadData(data);
+    }
+
+    function onValueChanged(e) {
+        loadData();
+    }
+
+    function changeTopTimeScale(value) {
+        gantt.setTopTimeScale(value)
+    }
+
+    function changeBottomTimeScale(value) {
+        gantt.setBottomTimeScale(value)
+    }
+
+    function zoomIn() {
+        gantt.zoomIn();
+    }
+    function zoomOut() {
+        gantt.zoomOut();
+    }
+
+</script>
+<style type="text/css">
+    .mini-rgantt .mini-splitter-handler
+    {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+    }
+    
+    .mini-rgantt .myitem .mini-gantt-itembg
+    {
+        background: rgb(53, 144, 202);
+    }
+    
+    .mini-rgantt .mini-gantt-item .myitem .mini-gantt-percentcomplete
+    {
+        border-top-color: #404040;
+        border-left-color: #404040;
+        border-right-color: #404040;
+        border-bottom-color: #404040;
+        border: 1px;
+        background: #f9f9f9;
+    }
+</style>

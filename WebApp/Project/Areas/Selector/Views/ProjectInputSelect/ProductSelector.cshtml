@@ -1,0 +1,280 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+<link href="@Url.Content("/CommonWebResource/Theme/Default/Tab/images/style.css")" rel="stylesheet" type="text/css" />
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="项目信息" region="west" width="300" expanded="true" showspliticon="true">
+        <ul id="dataTree" url="" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+            enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="true" onnodeselect="onNodeSelected"></ul>
+    </div>
+    <div title="center" region="center">
+        <div id="divTabs" class="DivTab" style="width: 100%; overflow: none">
+            @{
+                if (ViewBag.Tab != null)
+                {
+                    var tab = ViewBag.Tab as Formula.Tab;
+                    var style = ""; var moreTabClass = "tab_menu_img_up";
+                    if (!tab.IsDisplay)
+                    {
+                        style = "display: none";
+                        moreTabClass = "tab_menu_img_down";
+                    }
+                    foreach (var category in tab.Categories)
+                    {
+                        var radio = "";
+                        if (!category.Multi)
+                        {
+                            radio = "T";
+                        }
+                        <div class="tab_menu_bg" style="@style" ;>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="tab_menu_left_w" valign="top">
+                                        <span class="tab_menu_left">@category.Name：</span>
+                                    </td>
+                                    <td>
+                                        <ul class="tab_menu_top" queryfield="@category.QueryField" querymethod="@category.Method">
+                                            @{
+                        foreach (var item in category.Items)
+                        {
+                            if (item.IsDefault)
+                            {
+                                var className = "current";
+                                if (item.Value == "All")
+                                {
+                                    className = "currentall";
+                                }
+                                <li>
+                                    <a class="@className" onclick="menuCheckd('@radio');" href="#" value="@item.Value">
+                                        <span></span>@item.Name
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a onclick="menuCheckd('@radio');" href="#" value="@item.Value"><span></span>@item.Name</a>
+                                </li>
+                            }
+
+                        }
+                                            }
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    }
+                    <div id="divMoreTabs" class="menu_indent" style="cursor: hand;">
+                        <div onclick="ShowHideMoreTabs()" class="@moreTabClass">
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">导入</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入成果编号或名称" style="width: 200px;" onenter="tabSearch();"
+                               onbuttonclick="tabSearch();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" style="height: 100px;" id="gridArea">
+            <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="200" headeralign="center" allowsort="true">
+                        成果名称
+                    </div>
+                    <div field="Code" width="120" headeralign="center" allowsort="true">
+                        成果编号
+                    </div>
+                    <div field="FileType" width="90" headeralign="center" allowsort="true" align="center">
+                        类型
+                    </div>
+                    <div field="MajorValue" headeralign="center" width="90" allowsort="true" align="center">
+                        所属专业
+                    </div>
+                    <div field="PhaseValue" headeralign="center" width="90" allowsort="true" align="center">
+                        所属阶段
+                    </div>
+                    <div field="AuditState" headeralign="center" width="90" allowsort="true" align="center">
+                        成果状态
+                    </div>
+                    <div field="CreateDate" width="120" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                        上传日期
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .DivTab {
+        border-right: 1px;
+        border-left: 1px;
+        border-top: 1px;
+        border-left-color: #909aa6;
+        border-top-color: #909aa6;
+        border-right-color: #909aa6;
+        border-top-style: solid;
+        border-left-style: solid;
+        border-right-style: solid;
+    }
+</style>
+
+<script type="text/javascript">
+    @Html.GetEnum("Project.AuditState")
+    @Html.GetEnum("Project.Major")
+    @Html.GetEnum("Project.Phase")
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    addGridEnum("dataGrid", "MajorValue", "Major");
+    addGridEnum("dataGrid", "PhaseValue", "Phase");
+
+    $(window).resize(function () {
+        SetGridHeight();
+    });
+
+    var projectInfoID = getQueryString("ProjectInfoID");
+    $("#dataTree").attr("url", "GetTree?ProjectInfoID=" + projectInfoID);
+
+    normalParamSettings.searchFields = "Name,Code";
+
+    //菜单选中取消
+    function menuCheckd(radio) {
+        var theEvent = window.event || arguments.callee.caller.arguments[0];
+        var srcElement = theEvent.srcElement || theEvent.target;
+        var $a = $(srcElement);
+        if ($a[0] && $a[0].nodeName.toLocaleLowerCase() == "span")
+            $a = $a.parent();
+        var $tab_menu = $a.parent().parent();
+        if ($a.attr("value") == "All") {
+            if (!($a.hasClass("currentall"))) {
+                //'全部'选中
+                $tab_menu.find("a[value='All']").addClass("currentall");
+                $tab_menu.find("a[value!='All']").removeClass("current");
+            }
+        }
+        else {
+            if ($a.hasClass("current")) {
+                //取消
+                $a.removeClass("current");
+                //如果都取消，则'全部'选中
+                if ($tab_menu.find("a.current").length == 0) {
+                    $tab_menu.find("a[value='All']").addClass("currentall");
+                }
+            }
+            else {
+                //单选则先取消所有
+                if (radio == "T") {
+                    $tab_menu.find("a[value!='All']").removeClass("current");
+                }
+                //选中
+                $a.addClass("current");
+                //取消'全部'
+                $tab_menu.find("a[value='All']").removeClass("currentall");
+            }
+        }
+        tabSearch();
+    }
+
+    function ShowHideMoreTabs() {
+        var img = $("#divMoreTabs").find("div");
+        var arrMoretabs = $("#divTabs").find("div.tab_menu_bg");
+        if ($(img).hasClass("tab_menu_img_down")) {
+            $(img).removeClass("tab_menu_img_down").addClass("tab_menu_img_up");
+            arrMoretabs.each(function (i) {
+                if (i >= 0)
+                    $(this).show();
+            });
+        }
+        else {
+            $(img).removeClass("tab_menu_img_up").addClass("tab_menu_img_down");
+            arrMoretabs.each(function (i) {
+                if (i >= 0)
+                    $(this).hide();
+            });
+        }
+        SetGridHeight();
+    }
+
+    function SetGridHeight() {
+        $(".mini-fit").each(function () {
+            var layout = mini.get("#" + $(this).attr("id"));
+            layout.doLayout();
+        });
+    }
+
+    //获取标签数据
+    function GetTabsData() {
+        var data = [];
+        $.each($("#divTabs").find("ul.tab_menu_top"), function (i, ulTab) {
+            if ($(ulTab).find("a.currentall").length == 0) {
+                var tabData = {};
+                tabData.queryfield = $(ulTab).attr("queryfield");
+                tabData.querymethod = $(ulTab).attr("querymethod");
+                var vals = [];
+                $(ulTab).find("a.current").each(function (i) {
+                    vals.push($(this).attr("value"));
+                });
+                tabData.value = vals.join(',');
+                data.push(tabData);
+            }
+        });
+        return data;
+    }
+
+    function tabSearch(normalSettings) {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node || !node.ProjectInfoID) return;
+        var data = {};
+        data["$EQ$ProjectInfoID"] = node.ProjectInfoID;
+        var tabData = GetTabsData();
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            var key = "$In$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#dataGrid");
+        grid.setUrl("GetProductList");
+        grid.load({
+            queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+            quickQueryFormData: mini.encode(quickSearchData)
+        });
+    }
+
+    function onNodeSelected(e) {
+        var tree = mini.get("dataTree");
+        if (e.node.ProjectInfoID) {
+            tabSearch();
+        }
+    }
+
+    function returnValue() {
+        var dataGrid = mini.get("dataGrid");
+        var products = dataGrid.getSelecteds();
+        closeWindow(products);
+    }
+</script>

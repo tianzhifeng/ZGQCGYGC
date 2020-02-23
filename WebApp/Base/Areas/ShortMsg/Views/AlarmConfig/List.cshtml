@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({ height: '80%', width: '50%' });">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ height: '80%', width: '50%' });">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()">删除</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="Valid();">禁用</a>
+                <a class="mini-button" iconcls="icon-ok" onclick="StartEnable()">启用</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入数据表名称" style="width: 200px;" onenter="quickSearch('TABLENAME');"
+                       onbuttonclick="quickSearch('TableName');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="300" headeralign="center" allowsort="true">
+                名称
+            </div>
+            <div field="Connection" width="90" headeralign="center" allowsort="true" align="center">
+                数据库连接
+            </div>
+            <div field="TableName" width="150" headeralign="center" allowsort="true" align="center">
+                数据表
+            </div>
+            <div field="Frequency" width="120" headeralign="center" allowsort="true" align="center">
+                提醒周期
+            </div>
+            <div field="AlarmMode" headeralign="center" width="100" allowsort="true" align="center">
+                提醒类型
+            </div>
+            <div field="State" headeralign="center" width="90" allowsort="true" align="center">
+                状态
+            </div>
+            <div field="LastAlarmDate" width="100" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss" allowsort="true" align="center">
+                最近提醒日期
+            </div>
+            <div field="CreateUserName" width="90" headeralign="center" allowsort="true" align="center">
+                创建人
+            </div>
+            <div field="CreateDate" width="100" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss" allowsort="true" align="center">
+                创建日期
+            </div>
+            <div field="ModifyUserName" width="90" headeralign="center" allowsort="true" align="center">
+                修订人
+            </div>
+            <div field="ModifyDate" width="100" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss" allowsort="true" align="center">
+                修订日期
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 70%; " showmodal="true"
+     allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryform" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">数据库链接名</td>
+                    <td width="23%" align="left">
+                        <input name="$LK$Connection" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                    </td>
+                    <td width="10%" align="center">数据表名称</td>
+                    <td width="23%" align="left"><input name="$LK$TableName" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                    <td width="10%" align="center">提醒方式</td>
+                    <td width="23%" align="left">
+                        <input name="$EQ$AlarmMode" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                               data="AlarmMode" allowinput="false" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">提醒周期</td>
+                    <td align="left">
+                        <input name="$EQ$Frequency" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                               data="AlarmFrequency" allowinput="false" />
+                    </td>
+                    <td align="center">最后提醒日期</td>
+                    <td align="left"><input name="$FR$LastAlarmDate" class="mini-datepicker" style="width: 100%" /></td>
+                    <td align="center">至</td>
+                    <td align="left"><input name="$TO$LastAlarmDate" class="mini-datepicker" style="width: 100%" /></td>
+                </tr>
+                <tr>
+                    <td align="center">状态</td>
+                    <td align="left">
+                        <input name="$EQ$State" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                               data="state" allowinput="false" />
+                    </td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.AlarmFrequency))
+    @Html.GetEnum(typeof(Base.Logic.AlarmMode))
+</script>
+<script type="text/javascript">
+
+    var state = [{ text: "运行", value: "Normal" },
+    { text: "禁用", value: "Valid" }
+    ];
+
+
+    addGridEnum("dataGrid", "Frequency", "AlarmFrequency");
+    addGridEnum("dataGrid", "AlarmMode", "AlarmMode");
+    addGridEnum("dataGrid", "State", "state");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: "80%", width: "50%" });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+    function Valid() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+
+        addExecuteParam("List", mini.encode(rows));
+        execute("Valid", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function StartEnable() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+
+        addExecuteParam("List", mini.encode(rows));
+        execute("Enable", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+</script>

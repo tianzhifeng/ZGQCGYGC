@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "文件列表";
+}
+<div class="mini-layout" style="height: 100%; width: 100%;">
+    <div showcollapsebutton="true">
+        <div class="mini-toolbar" id="tbDiv">
+            <table>
+                <tr>
+                    <td style="width: 100%;" id="btnTD">
+                        <a id="btnAdd" class="mini-button" iconcls="icon-add" onclick="doAdd"
+                            plain="true" enabled="false">增加</a> <a class="mini-button" id="btnEdit" iconcls="icon-edit" onclick="edit({url:width:950,height:'90%',addQueryString:false})" plain="true">编辑</a> <a class="mini-button" id="btnDel" iconcls="icon-remove" onclick="del" plain="true">删除</a> <a class="mini-button" id="btnBatchEdit" iconcls="icon-edit" onclick="doMultiEdit" plain="true">批量编辑</a> <a class="mini-button" id="btnCopy" iconcls="icon-copy" onclick="doCopy" plain="true">复制</a> @Html.ExportButton()
+                    </td>
+                    <td id="btnRight">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入图号或图名" style="width: 200px;"
+                            onenter="quickSearch('CODE,NAME');" onbuttonclick="quickSearch('CODE,NAME');" />
+                        <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="height: 100%; width: 100%;" url="GetList" idfield="ID" allowresize="true" pagesize="20" borderstyle="border:0;" multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn" width="45"></div>
+                    <div field="CODE" width="100" headeralign="center" headerstyle="cursor:pointer" allowsort="true" align="center">
+                        图号
+                    </div>
+                    <div field="NAME" width="200" headeralign="center" headerstyle="cursor:pointer" allowsort="true" align="left">
+                        图名
+                    </div>
+                    <div field="MAP" width="60" headeralign="center" headerstyle="cursor:pointer" allowsort="true" align="center">
+                        图幅
+                    </div>
+                    <div field="HASBASEMAP" width="70" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        是否含底图
+                    </div>
+                    <div field="CABINETCODE" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        柜号
+                    </div>
+                    <div field="PAGENUM" width="80" headeralign="center" align="right" headerstyle="cursor:pointer" allowsort="true">
+                        张数
+                    </div>
+                    <div field="STORENUM" width="80" headeralign="center" align="right" headerstyle="cursor:pointer" allowsort="true">
+                        份数
+                    </div>
+                    <div field="NOTEDATE" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true" dateformat="yyyy-MM-dd">
+                        日期
+                    </div>
+                    <div field="VERSION" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        版次
+                    </div>
+                    <div field="SECURITYLEVEL" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        密级
+                    </div>
+                    <div field="DEADLINE" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        保管期限
+                    </div>
+                    <div field="ARCHIVEDEPT" width="160" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        归档部门
+                    </div>
+                    <div field="ARCHIVEUSER" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        归档人
+                    </div>
+                    <div field="ARCHIVEDATE" width="80" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true" dateformat="yyyy-MM-dd">
+                        归档日期
+                    </div>
+                    <div field="BARCODE" width="120" headeralign="center" align="center" headerstyle="cursor:pointer" allowsort="true">
+                        条码号
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px;" showmodal="true" allowresize="false" allowdrag="true" allowmovecolumn="false">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="13%" align="center">图号
+                    </td>
+                    <td width="37%">
+                        <input name="$LK$CODE" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                    <td width="13%" align="center">图名
+                    </td>
+                    <td width="37%" align="left">
+                        <input name="$LK$NAME" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">图幅</td>
+                    <td width="37%" align="left">
+                        <input name="$LK$MAP" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                    <td align="center">柜号</td>
+                    <td align="left">
+                        <input name="$LK$CABINETCODE" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">是否含底图</td>
+                    <td align="left">
+                        <input name="$EQ$HASBASEMAP" class="mini-combobox" style="width: 88%;" textfield="text" valuefield="value" emptytext="请选择..." data="Bool" allowinput="false" shownullitem="true" nullitemtext="请选择..." />
+                    </td>
+                    <td>是否作废
+                    </td>
+                    <td>
+                        <input name="$EQ$ISVALID" class="mini-combobox" style="width: 88%;" textfield="text" valuefield="value" emptytext="请选择..." data="Bool" allowinput="false" shownullitem="true" nullitemtext="请选择..." />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">密级</td>
+                    <td align="left">
+                        <input name="$EQ$SECURITYLEVEL" class="mini-combobox" style="width: 88%;" textfield="text" valuefield="value" emptytext="请选择..." data="SecurityLevel" allowinput="false" shownullitem="true" nullitemtext="请选择..." />
+                    </td>
+                    <td align="center">保管期限</td>
+                    <td align="left">
+                        <input name="$EQ$DEADLINE" class="mini-combobox" style="width: 88%;" textfield="text" valuefield="value" emptytext="请选择..." data="Deadline" allowinput="false" shownullitem="true" nullitemtext="请选择..." />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">归档部门</td>
+                    <td align="left">
+                        <input name="ARCHIVEDEPTID" textname="$LK$ARCHIVEDEPT" class="mini-buttonedit" style="width: 88%;" />
+                    </td>
+                    <td align="center">归档人</td>
+                    <td align="left">
+                        <input name="ARCHIVEUSERID" textname="$EQ$ARCHIVEUSER" class="mini-buttonedit" style="width: 88%;" emptytext="请输入拼音..." />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">归档日期</td>
+                    <td align="left">
+                        <input name="$FR$ARCHIVEDATE" class="mini-datepicker" style="width: 88%;" />
+                    </td>
+                    <td align="center">至</td>
+                    <td align="left">
+                        <input name="$TO$ARCHIVEDATE" class="mini-datepicker" style="width: 88%;" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("DocSystem.Deadline")
+    @Html.GetEnum("DocSystem.SecurityLevel")
+    @Html.GetEnum("System.Bool")
+
+    addSingleUserSelector("ARCHIVEUSERID");
+    addSingleOrgSelector("ARCHIVEDEPTID");
+
+    addGridLink('dataGrid', 'CODE', 'Edit?ID={ID}', { funcType: 'view', width: 950, height: '90%' });
+
+    var grid;
+    var type;
+    var parentId;
+    var fullId;
+    function pageLoad() {
+        grid = mini.get('#dataGrid');
+        type = getQueryString("NodeType");
+        parentId = getQueryString("PARENTID");
+        fullId = getQueryString("FULLPATHID");
+        if (type != "Project" && type != "SubProject" && type != "ProjectData") {
+            var button = mini.get('btnAdd');
+            button.setEnabled(true);
+        }
+    }
+
+    function doAdd() {
+        var url = "Edit?PARENTID=" + parentId + "&FULLPATHID=" + fullId + "&ParentNodeType=" + type;
+        openWindow(url, {
+            title: "增加文件", width: 950, height: '90%', addQueryString: false
+        });
+    }
+
+    function doMultiEdit() {
+        var rows = grid.getSelecteds();
+        if (rows.length > 0) {
+            var idsArray = new Array(rows.length);
+            for (var i = 0; i < rows.length; i++) {
+                idsArray[i] = rows[i].ID;
+            }
+            var ids = idsArray.join();
+            var url = "BatchEdit?ParentId=" + parentId + "&ParentNodeType=" + type;
+            openWindow(url, {
+                title: "批量编辑", addQueryString: false, data: { IDs: ids }
+            });
+        } else {
+            msgUI("请选择一条记录");
+        }
+    }
+
+    function doCopy() {
+        var rows = grid.getSelecteds();
+        if (rows && rows.length > 0) {
+            if (rows.length > 1) {
+                msgUI("请选择单条记录进行复制！");
+            } else {
+                var windowSettings = $.extend({});
+                windowSettings.title = "编辑" + listConfig.title;
+                windowSettings.url = "Edit?FuncType=copy";
+                windowSettings.url = addSearch(windowSettings.url, "OldID", "{ID}");
+                windowSettings.width = 950;
+                windowSettings.height = '90%';
+
+                var settings = $.extend({}, windowParamSettings, listConfig, windowSettings);
+
+                openWindow(settings.url, settings);
+            }
+        } else {
+            msgUI("请选择一条记录！");
+        }
+    }
+</script>

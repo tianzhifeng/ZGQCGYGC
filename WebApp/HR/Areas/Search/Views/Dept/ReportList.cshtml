@@ -1,0 +1,430 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入姓名" onenter="quickSearch('Name');" onbuttonclick="quickSearch('Name');" />
+                <a class='mini-button' onclick="showSeacher();" iconcls='icon-setting'>报表查询</a>
+                <a class='mini-button' onclick="showSetting();" iconcls='icon-setting'>报表设置</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="false" allowunselect="false" ondrawcell="ondrawcell">
+        <div property="columns">
+        </div>
+    </div>
+</div>
+<iframe id='excelIFrame' name='excelIFrame' style='display: none;'></iframe>
+<form id='excelForm' style='display: none;' action='/HR/Search/Employee/ExportReport' method='post' target='excelIFrame'>
+<input type='hidden' id='jsonColumns' name='jsonColumns' />
+<input type='hidden' id='reportSettings' name='reportSettings' />
+<input type='hidden' id='quickQueryFormData' name='quickQueryFormData' />
+</form>
+<script type="text/javascript">
+    $(function () {
+        reportSettings = get("reportSettings");
+        queryData = get("queryData");
+        var grid = mini.get("dataGrid");
+        grid.setUrl("GetReportList");
+        if (!reportSettings) {
+            reportSettings = [{ "pid": "1", "table": "T_Employee", "sumFieldCode": "Name", "sumFieldName": "姓名", "sumFieldTitle": "姓名", "sumType": ""}];
+        }
+        setGridCol(reportSettings);
+        quickSearch();
+    });
+
+    function store(name, val) {
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem(pageKey + name, mini.encode(val));
+        } else {
+            //alert('Please use a modern browser to properly view this template!');
+        }
+    }
+    function get(name) {
+        if (typeof (Storage) !== "undefined") {
+            return mini.decode(localStorage.getItem(pageKey + name));
+        } else {
+            //alert('Please use a modern browser to properly view this template!');
+            return null;
+        }
+    }
+
+
+    var reportSettings;
+    var queryData;
+    function quickSearch() {
+        var quickSearchData = {};
+        var keyCo = mini.get("key");
+        if (keyCo.getValue()) {
+            var keys = "Name".split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var grid = mini.get("dataGrid");
+
+        var settings = {};
+        settings.quickQueryFormData = mini.encode(quickSearchData);
+        if (reportSettings)
+            settings.reportSettings = mini.encode(reportSettings);
+        if (queryData) {
+            settings.queryData = mini.encode(queryData);
+        }
+        store("reportSettings", reportSettings);
+        store("queryData", queryData);
+        grid.load(settings);
+    }
+
+    function setGridCol(data) {
+        var grid = mini.get("dataGrid");
+
+        var columns = []; //{ field: "Name", header: "姓名", headerAlign: "center"}
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var col = {};
+            col.header = item.sumFieldTitle;
+            col.headerAlign = "center";
+            if (item.groupFieldCode && item.groupFieldValue) {
+                col.columns = [];
+                var arr = item.groupFieldText.split(',');
+
+                for (var j = 0; j < arr.length; j++) {
+                    var subCol = {};
+                    subCol.headerAlign = "center";
+                    subCol.header = arr[j];
+                    subCol.field = arr[j];
+                    col.columns.push(subCol);
+                }
+            }
+            else {
+                col.field = item.sumFieldName;
+                //if (item.extremumFieldName)
+                //    col.field = item.extremumFieldName;
+            }
+            columns.push(col);
+        }
+        grid.set({ columns: columns });
+
+    }
+
+    function showSetting() {
+        mini.open({
+            url: changeToFullUrl("ReportSettings"),
+            title: "报表设置",
+            showModal: true,
+            width: 1000,
+            height: 400,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+                iframe.contentWindow.setData(reportSettings);
+            },
+            ondestroy: function (data) {
+                if (data == "close") return;
+                reportSettings = data;
+                setGridCol(reportSettings);
+                quickSearch();
+            }
+        });
+    }
+
+    function showSeacher() {
+        mini.open({
+            url: changeToFullUrl("ReportSeacher"),
+            title: "报表查询",
+            showModal: true,
+            width: 800,
+            height: 400,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+                iframe.contentWindow.setData(queryData);
+            },
+            ondestroy: function (data) {
+                if (data == "close") return;
+                queryData = data;
+                quickSearch();
+            }
+        });
+    }
+
+    function getEnumText(en, enumValues) {
+        if (enumValues == null || enumValues == "")
+            return "";
+
+
+        var vals = [];
+        if (enumValues.split)
+            vals = enumValues.split(',');
+        else
+            vals[0] = enumValues.toString();
+
+        for (var i = 0; i < vals.length; i++) {
+            if (vals[i] == "")
+                continue;
+            for (var j = 0; j < en.length; j++) {
+                if (en[j]["value"] == vals[i]) {
+                    vals[i] = en[j]["text"];
+                    break;
+                }
+            }
+        }
+
+        return vals.join(',');
+    }
+</script>
+<script type="text/javascript">
+    var sex = [{ value: "Male", text: "男" }, { value: "FeMale", text: "女"}];
+    var yesNo = [{ value: "1", text: "是" }, { value: "0", text: "否"}];
+    function ondrawcell(e) {
+        if (e.field == "性别") {
+            e.cellHtml = getEnumText(sex, e.value);
+        }
+        if (e.field == "已删除") {
+            e.cellHtml = getEnumText(yesNo, e.value);
+        }
+    }
+
+
+    var pageKey = "Dept";
+
+    var defaultReportSettings = [{ "pid": "0", "table": "(select distinct DeptID as ID,DeptName from T_Employee) T_Dept", "sumFieldCode": "DeptName", "sumFieldName": "部门", "sumFieldTitle": "部门", "sumType": ""}];
+
+    var treeData = [
+        { fieldName: "部门基本信息", id: "0",
+            children: [
+			{ pid: "0", table: "(select distinct DeptID as ID,DeptName from T_Employee) T_Dept", fieldCode: "DeptName", fieldName: "部门", ctrlType: "textbox", queryType: "like" }
+		]
+        },
+	{ fieldName: "人员基本信息", id: "1",
+	    children: [
+            { pid: "1", table: "T_Employee", fieldCode: "Name", fieldName: "姓名", ctrlType: "textbox", queryType: "like" },
+			{ pid: "1", table: "T_Employee", fieldCode: "Code", fieldName: "员工编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "Sex", fieldName: "性别", ctrlType: "combobox", queryType: "in", enumKey: "sex" },
+            { pid: "1", table: "T_Employee", fieldCode: "OldName", fieldName: "曾用名", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "Nation", fieldName: "民族", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "MobilePhone", fieldName: "移动电话", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "OfficePhone", fieldName: "办公电话", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "HomePhone", fieldName: "家庭电话", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "Email", fieldName: "邮箱", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "Address", fieldName: "地址", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "Political", fieldName: "政治面貌", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "HealthStatus", fieldName: "健康状态", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "Birthday", fieldName: "出生日期", ctrlType: "date", queryType: ">" },
+            { pid: "1", table: "T_Employee", fieldCode: "IdentityCardCode", fieldName: "身份证号", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "NativePlace", fieldName: "籍贯", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "MaritalStatus", fieldName: "婚姻状况", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "LoverName", fieldName: "爱人姓名", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "LoverUnit", fieldName: "爱人单位", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "FirstForeignLanguage", fieldName: "第一外语", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "TwoForeignLanguage", fieldName: "第二外语", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "FirstForeignLanguageLevel", fieldName: "第一外语程度", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "TwoForeignLanguageLevel", fieldName: "第二外语程度", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "JoinWorkDate", fieldName: "参加工作时间", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "JoinCompanyDate", fieldName: "入职时间", ctrlType: "date", queryType: ">" },
+            { pid: "1", table: "T_Employee", fieldCode: "EmploymentWay", fieldName: "招聘方式", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "EmployeeSource", fieldName: "员工来源", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "EmployeeBigType", fieldName: "人员大类", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "EmployeeSmallType", fieldName: "人员小类", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "Post", fieldName: "岗位", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "PostLevel", fieldName: "岗级", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "PositionalTitles", fieldName: "职称", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "Educational", fieldName: "学历", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "EngageMajor", fieldName: "从事专业", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "EducationalMajor", fieldName: "学历专业", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "ContractType", fieldName: "合同类型", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "DeterminePostsDate", fieldName: "定岗时间", ctrlType: "date", queryType: ">" },
+            { pid: "1", table: "T_Employee", fieldCode: "IsPaymentInterval", fieldName: "是否发放工资", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "1", table: "T_Employee", fieldCode: "IsPaymentSheBao", fieldName: "是否缴纳社保", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "1", table: "T_Employee", fieldCode: "IsPaymentGongJiJin", fieldName: "是否缴纳公积金", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "1", table: "T_Employee", fieldCode: "IsPaymentZongHeBaoXian", fieldName: "是否缴纳综合保险", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "1", table: "T_Employee", fieldCode: "DeptName", fieldName: "所属部门", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "ParttimeDeptName", fieldName: "兼职部门", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "EmployeeState", fieldName: "员工状态", ctrlType: "combobox", queryType: "in" },
+            { pid: "1", table: "T_Employee", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" },
+            { pid: "1", table: "T_Employee", fieldCode: "IsDeleted", fieldName: "已离退", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "1", table: "T_Employee", fieldCode: "IsHaveAccount", fieldName: "是否拥有系统账号", ctrlType: "combobox", queryType: "in" }
+
+		]
+	},
+    { fieldName: "人员学位子集", id: "2",
+        children: [
+			{ pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "EntrancelDate", fieldName: "入学时间", ctrlType: "date", queryType: ">" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "GraduationDate", fieldName: "毕业时间", ctrlType: "date", queryType: ">" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "School", fieldName: "毕业学校", ctrlType: "textbox", queryType: "like" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "FirstProfession", fieldName: "专业", ctrlType: "textbox", queryType: "like" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "TwoProfession", fieldName: "第二专业", ctrlType: "textbox", queryType: "like" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "SchoolingLength", fieldName: "学制", ctrlType: "combobox", queryType: "in" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "SchoolShape", fieldName: "学习形式", ctrlType: "combobox", queryType: "in" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "Degree", fieldName: "学位", ctrlType: "combobox", queryType: "in" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "Education", fieldName: "学历", ctrlType: "combobox", queryType: "in" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "DegreeGiveDate", fieldName: "学位授予时间", ctrlType: "date", queryType: ">" },
+            { pid: "2", table: "T_EmployeeAcademicDegree", fieldCode: "DegreeGiveCountry", fieldName: "学位授予国家", ctrlType: "combobox", queryType: "in" }
+		]
+    },
+    { fieldName: "人员职称子集", id: "3",
+        children: [
+			{ pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "Level", fieldName: "职称级别", ctrlType: "combobox", queryType: "in" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "Title", fieldName: "职称名称", ctrlType: "combobox", queryType: "in" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "Major", fieldName: "专业", ctrlType: "combobox", queryType: "in" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "AuditDept", fieldName: "审批部门", ctrlType: "combobox", queryType: "in" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "CertificateNumber", fieldName: "证书编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "IssueDate", fieldName: "发证日期", ctrlType: "date", queryType: ">" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "EmployDate", fieldName: "聘用时间", ctrlType: "combobox", queryType: "in" },
+            { pid: "3", table: "T_EmployeeAcademicTitle", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员合同子集", id: "4",
+        children: [
+			{ pid: "4", table: "T_EmployeeContract", fieldCode: "Code", fieldName: "合同编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ContractCategory", fieldName: "合同类别", ctrlType: "combobox", queryType: "in" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ContractShape", fieldName: "合同形式", ctrlType: "combobox", queryType: "in" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ContractBody", fieldName: "合同主体", ctrlType: "textbox", queryType: "like" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ContractStartDate", fieldName: "合同开始日期", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ContractEndDate", fieldName: "合同结束日期", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "PeriodStartDate", fieldName: "试用期开始日期", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "PeriodEndDate", fieldName: "试用结束日期", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "PracticeEndDate", fieldName: "实习期满时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ContractPeriod", fieldName: "合同期限", ctrlType: "textbox", queryType: "like" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "PostDate", fieldName: "定岗时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "GongJiJinBasePay", fieldName: "公积金缴纳基数", ctrlType: "textbox", queryType: "like" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "IsConfidentialityAgreement", fieldName: "是否签订保密协议", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ConfidentialityAgreementStart", fieldName: "保密协议开始时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "ConfidentialityAgreementEnd", fieldName: "保密协议结束时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "TrainAgreementStartDate", fieldName: "教育培训协议开始时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "TrainAgreementEndDate", fieldName: "教育培训结束时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "StockAgreementStartDate", fieldName: "股权协议开始时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "StockAgreementEndDate", fieldName: "股权协议结束时间", ctrlType: "date", queryType: ">" },
+            { pid: "4", table: "T_EmployeeContract", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员荣誉子集", id: "5",
+        children: [
+			{ pid: "5", table: "T_EmployeeHonour", fieldCode: "AwardName", fieldName: "获奖名称", ctrlType: "textbox", queryType: "like" },
+            { pid: "5", table: "T_EmployeeHonour", fieldCode: "AwardYear", fieldName: "获奖年份", ctrlType: "textbox", queryType: "=" },
+            { pid: "5", table: "T_EmployeeHonour", fieldCode: "CertificationDate", fieldName: "发证日期", ctrlType: "date", queryType: ">" },
+            { pid: "5", table: "T_EmployeeHonour", fieldCode: "CertificationUnit", fieldName: "发证单位", ctrlType: "textbox", queryType: "like" },
+            { pid: "5", table: "T_EmployeeHonour", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员职务子集", id: "6",
+        children: [
+			{ pid: "6", table: "T_EmployeeJob", fieldCode: "IsDeleted", fieldName: "已删除", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "EmployeeCategory", fieldName: "人员类别", ctrlType: "combobox", queryType: "in" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "JobCategory", fieldName: "职务类型", ctrlType: "combobox", queryType: "in" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "Clique", fieldName: "集团", ctrlType: "textbox", queryType: "like" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "SubCompany", fieldName: "子公司", ctrlType: "textbox", queryType: "like" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "DeptIDName", fieldName: "部门", ctrlType: "textbox", queryType: "like" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "SubCompany", fieldName: "子公司", ctrlType: "textbox", queryType: "like" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "JobName", fieldName: "职务", ctrlType: "combobox", queryType: "in" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "IsMain", fieldName: "是否主责", ctrlType: "combobox", queryType: "in", enumKey: "yesNo" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "Major", fieldName: "专业", ctrlType: "combobox", queryType: "in" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "EmployDate", fieldName: "聘任时间", ctrlType: "date", queryType: ">" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "JobAgreeCode", fieldName: "职批准文号", ctrlType: "textbox", queryType: "like" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "EmployAgreeCode", fieldName: "聘任批准文号", ctrlType: "textbox", queryType: "like" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "EmployEndDate", fieldName: "任满时间", ctrlType: "date", queryType: ">" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "ClearEmployDate", fieldName: "免职日期", ctrlType: "date", queryType: ">" },
+            { pid: "6", table: "T_EmployeeJob", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员档案子集", id: "7",
+        children: [
+			{ pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "Code", fieldName: "档案编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "Type", fieldName: "档案类型", ctrlType: "combobox", queryType: "in" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "KeepUnit", fieldName: "档案保存单位", ctrlType: "textbox", queryType: "like" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "SourceUnit", fieldName: "档案来源单位", ctrlType: "textbox", queryType: "like" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "ExitUnit", fieldName: "档案转出单位", ctrlType: "textbox", queryType: "like" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "ReportCardSubDate", fieldName: "报到证提交时间", ctrlType: "date", queryType: ">" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "EnterDate", fieldName: "转入时间", ctrlType: "date", queryType: ">" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "ExitDate", fieldName: "转出时间", ctrlType: "date", queryType: ">" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "ResidentAccountsType", fieldName: "户口类型", ctrlType: "combobox", queryType: "in" },
+            { pid: "7", table: "T_EmployeePersonalRecords", fieldCode: "ResidentAccountsStreet", fieldName: "户口所属街道", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员资格子集", id: "8",
+        children: [
+			{ pid: "8", table: "T_EmployeeQualification", fieldCode: "RegisterIDName", fieldName: "登记人", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "RegisteDate", fieldName: "登记日期", ctrlType: "date", queryType: ">" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "QualificationName", fieldName: "执业资格名称", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "QualificationCode", fieldName: "执业资格证书编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "FirstMajor", fieldName: "第一专业", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "TwoMajor", fieldName: "第二专业", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "QualificationIssueDate", fieldName: "执业资格证书发证时间", ctrlType: "date", queryType: ">" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "QualificationKeeperIDName", fieldName: "执业证书保管人", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "RegisteCode", fieldName: "注册证书编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "RegisteIssueDate", fieldName: "注册证发证日期", ctrlType: "date", queryType: ">" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "RegistelLoseDate", fieldName: "注册证书失效时间", ctrlType: "date", queryType: ">" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "RegisteKeeperIDName", fieldName: "注册证书保管人", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "SealCode", fieldName: "注册印章编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "SealLoseDate", fieldName: "注册印章失效日期", ctrlType: "date", queryType: ">" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "SealKeeperIDName", fieldName: "注册印章保管者", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "ContinueTrainDate", fieldName: "继续教育参加时间", ctrlType: "date", queryType: ">" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "ContinueTrainLength", fieldName: "继续教育学时", ctrlType: "textbox", queryType: "like" },
+            { pid: "8", table: "T_EmployeeQualification", fieldCode: "ContinueTrainCompleteLength", fieldName: "继续教育已完成学时", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员离退子集", id: "9",
+        children: [
+			{ pid: "9", table: "T_EmployeeRetired", fieldCode: "RetiredDate", fieldName: "离退时间", ctrlType: "date", queryType: ">" },
+            { pid: "9", table: "T_EmployeeRetired", fieldCode: "Type", fieldName: "离退类型", ctrlType: "combobox", queryType: "in" },
+            { pid: "9", table: "T_EmployeeRetired", fieldCode: "Direction", fieldName: "离退去向", ctrlType: "textbox", queryType: "like" },
+            { pid: "9", table: "T_EmployeeRetired", fieldCode: "Reason", fieldName: "离退原因", ctrlType: "textbox", queryType: "like" },
+            { pid: "9", table: "T_EmployeeRetired", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员社保子集", id: "10",
+        children: [
+			{ pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "Name", fieldName: "姓名", ctrlType: "textbox", queryType: "like" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "Relation", fieldName: "与员工关系", ctrlType: "textbox", queryType: "like" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "BirthDate", fieldName: "出生日期", ctrlType: "date", queryType: ">" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "Sex", fieldName: "性别", ctrlType: "combobox", queryType: "in", enumKey: "sex" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "WorkUnit", fieldName: "工作单位", ctrlType: "textbox", queryType: "like" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "Job", fieldName: "职务", ctrlType: "textbox", queryType: "like" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "Phone", fieldName: "联系电话", ctrlType: "textbox", queryType: "like" },
+            { pid: "10", table: "T_EmployeeSocialSecurity", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员工作经历子集", id: "11",
+        children: [
+			{ pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "JoinCompanyDate", fieldName: "入职时间", ctrlType: "date", queryType: ">" },
+            { pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "LeaveCompanyDate", fieldName: "离职时间", ctrlType: "date", queryType: ">" },
+            { pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "CompanyName", fieldName: "公司名称", ctrlType: "textbox", queryType: "like" },
+            { pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "DeptAndPost", fieldName: "部门和职务", ctrlType: "textbox", queryType: "like" },
+            { pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "Description", fieldName: "职责描述", ctrlType: "textbox", queryType: "like" },
+            { pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "Achievement", fieldName: "业绩", ctrlType: "textbox", queryType: "like" },
+            { pid: "11", table: "T_EmployeeWorkHistory", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员工作表现子集", id: "12",
+        children: [
+			{ pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectCode", fieldName: "项目编号", ctrlType: "textbox", queryType: "like" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectName", fieldName: "项目名称", ctrlType: "textbox", queryType: "like" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectClass", fieldName: "项目类型", ctrlType: "combobox", queryType: "in" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectScale", fieldName: "项目规模", ctrlType: "combobox", queryType: "in" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectType", fieldName: "项目性质", ctrlType: "combobox", queryType: "in" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectStartDate", fieldName: "项目开始日期", ctrlType: "date", queryType: ">" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectEndDate", fieldName: "项目结束日期", ctrlType: "date", queryType: ">" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "ProjectDescription", fieldName: "项目范围及任务描述", ctrlType: "textbox", queryType: "like" },
+            { pid: "12", table: "T_EmployeeWorkPerformance", fieldCode: "Remark", fieldName: "备注", ctrlType: "textbox", queryType: "like" }
+		]
+    },
+    { fieldName: "人员工作岗位子集", id: "13",
+        children: [
+			{ pid: "13", table: "T_EmployeeWorkPost", fieldCode: "Post", fieldName: "岗位", ctrlType: "textbox", queryType: "like" },
+            { pid: "13", table: "T_EmployeeWorkPost", fieldCode: "PostLevel", fieldName: "岗级", ctrlType: "combobox", queryType: "in" },
+            { pid: "13", table: "T_EmployeeWorkPost", fieldCode: "EffectiveDate", fieldName: "生效时间", ctrlType: "date", queryType: ">" }
+		]
+    }
+];
+
+    //处理成关系表
+    for (var i = 1; i < treeData.length; i++) {
+        var rows = treeData[i].children;
+        for (var j = 0; j < rows.length; j++) {
+            var row = rows[j];
+            row.table = "(select " + row.table + ".*,T_Employee.DeptID as fkDeptID from " + row.table + " join T_Employee on EmployeeID=T_Employee.ID) " + row.table;           
+        }
+    }
+</script>

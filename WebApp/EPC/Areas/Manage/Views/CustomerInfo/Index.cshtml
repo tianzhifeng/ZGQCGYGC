@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div id="CustomerTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" maskonload="false">
+</div>
+
+<script type="text/javascript">
+    var id = getQueryString("Id");
+    var funcType = getQueryString("FuncType");
+    initTab();
+
+    function initTab() {
+        mini.parse();
+        var tabs = mini.get("CustomerTabs");
+        if (id != "") {
+            var customerTab = { title: "客户基本信息", url: "/MvcConfig/UI/Form/PageView?TmplCode=MK_CU_Customerinfomanagement&ID=" + id + "&FuncType=" + funcType + "&IsIndex=YES", showCloseButton: false };
+            tabs.addTab(customerTab);
+            tabs.activeTab(customerTab);
+
+            var customerProjectTab = { title: "项目信息", url: "/MvcConfig/UI/List/PageView?TmplCode=MK_PR_ProjectInfoList&Customer=" + id, showCloseButton: false };
+            tabs.addTab(customerProjectTab);
+            var customerContractTab = { title: "合同信息", url: "/MvcConfig/UI/List/PageView?TmplCode=MK_CO_ManangerContractInfoList&FuncType=View&PartyA=" + id, showCloseButton: false };
+            tabs.addTab(customerContractTab);
+        }
+        else {
+            var customerTab = { title: "客户基本信息", url: customerUrl, showCloseButton: false };
+            tabs.addTab(customerTab);
+            tabs.activeTab(customerTab);
+        }
+    }
+</script>

@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnData();" plain="true">
+                    选择
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <ul id="dataTree" url="GetAllStructTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+        enablehottrack="false" showcheckbox="true" autocheckparent="false" checkrecursive="false"
+        ondrawnode="onDrawNode"
+        parentfield="ParentID" resultastree="false" expandonload="false"></ul>
+</div>
+
+<script type="text/javascript">
+    function returnData() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getCheckedNodes();
+        closeWindow(nodes);
+    }
+
+
+    function onDrawNode(e) {
+        var tree = e.sender;
+        var node = e.node;
+        if (node.NodeType == "Mode") {
+            e.showCheckBox = false;
+        }
+    }
+
+</script>

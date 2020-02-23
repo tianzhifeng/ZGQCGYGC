@@ -1,0 +1,1037 @@
+﻿@using System.Data
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <!--miniui-->
+    <script>var NoPopupLayer = '@ViewBag.NoPopupLayer';var PortalNewsTime = @ViewBag.PortalNewsTime; </script>
+    <script type="text/javascript" language="JScript" src="/CommonWebResource/CoreLib/Combine/SimplePageInc.js"></script>
+    <!-- LOGO -->
+    <link rel="Shortcut Icon" href="/PortalLTE/Images/favicon.ico" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+    <!-- FontAwesome 4.3.0 -->
+    <link href="/PortalLTE/Scripts/dist/css/font-awesome.min.css?main=1" rel="stylesheet"
+          type="text/css" />
+    <!-- Ionicons 2.0.0 -->
+    <link href="/PortalLTE/Scripts/dist/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <script src="/PortalLTE/Scripts/jQuery/jQuery-2.2.0.min.js"></script>
+    <script src="/PortalLTE/Scripts/dist/js/vue.min.js"></script>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/PortalLTE/Scripts/dist/css/AdminLTE.min.css">
+    <link href="/PortalLTE/Scripts/Custom/index.css" rel="stylesheet" type="text/css" />
+    <script src="/CommonWebResource/Theme/Default/MiniCssInc.js" type="text/javascript"></script>
+    <script>
+        Vue.filter('date', function (input) {
+            var date = new Date(input);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            month = month < 10 ? "0" + month : month;
+            day = day < 10 ? "0" + day : day;
+            return year.toString().substr(2, 2) + "/" + month + "/" + day;
+        });
+    </script>
+    <script>
+
+        $(function () {//禁止退格键后退
+
+            $(document).ready(function () {
+                //处理默认背景图片
+                var bg = get("background-image");
+                if (bg == null)
+                    bg = "/PortalLTE/Images/default.jpg";
+                $("body").css("background-image", "url(" + bg + ")");
+            });
+
+            //处理键盘事件 禁止后退键（Backspace）密码或单行、多行文本框除外
+            function banBackSpace(e) {
+                var ev = e || window.event; //获取event对象
+                var obj = ev.target || ev.srcElement; //获取事件源
+
+                var t = obj.type || obj.getAttribute('type'); //获取事件源类型
+
+                //获取作为判断条件的事件类型
+                var vReadOnly = obj.getAttribute('readonly');
+                var vEnabled = obj.getAttribute('enabled');
+                //处理null值情况
+                vReadOnly = (vReadOnly == null) ? false : vReadOnly;
+                vEnabled = (vEnabled == null) ? true : vEnabled;
+
+                //当敲Backspace键时，事件源类型为密码或单行、多行文本的，
+                //并且readonly属性为true或enabled属性为false的，则退格键失效
+                var flag1 = (ev.keyCode == 8 && (t == "password" || t == "text" || t == "textarea")
+                    && (vReadOnly == true || vEnabled != true)) ? true : false;
+
+                //当敲Backspace键时，事件源类型非密码或单行、多行文本的，则退格键失效
+                var flag2 = (ev.keyCode == 8 && t != "password" && t != "text" && t != "textarea")
+                    ? true : false;
+
+                //判断
+                if (flag2) {
+                    return false;
+                }
+                if (flag1) {
+                    return false;
+                }
+            }
+
+            //禁止后退键 作用于Firefox、Opera
+            document.onkeypress = banBackSpace;
+            //禁止后退键 作用于IE、Chrome
+            document.onkeydown = banBackSpace;
+
+            //滚动条样式控制
+            if ($(window).width() > $.AdminLTE.options.screenSizes.sm - 1)
+                $(".nicescroll").niceScroll({ cursorcolor: "#dfdfdf", cursorwidth: "3px" });
+            else
+                $("body").css("overflow", "auto");
+        });
+    </script>
+    <style>
+        .mini-window .mini-panel-header {
+            background-image: none;
+            background-color: #3c8dbc;
+        }
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini sidebar-collapse" style="min-width: 1024px;">
+    <div class="shortcutmenu" style="display: none">
+        <ul id="ulShortcut"></ul>
+    </div>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a onclick="gohome()" class="logo" style="cursor: pointer">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><b>A</b>LT</span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"></span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" style="height:52px">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" onclick="openMenu()"><span class="sr-only">Toggle navigation</span> </a>
+                <a class="menu_prev" onmouseover="onMouseOverMenu(1)" style="cursor:pointer" onmouseout="onMouseOutMenu(1)"><img id="prevImg" src="/PortalLTE/Images/bt-left.png" /></a>
+                <ul id="one-menu" style="height:52px">
+                    <ul id="two-menu" style="height:52px;min-width:641px">
+                        @foreach (DataRow item in ViewBag.TopMenu)
+                        {
+                            <li id="@item["ID"].ToString()" onclick="ShowMenuOrPage('@item["ID"].ToString()','@item["Url"].ToString()', '@item["Name"].ToString()','@item["Name"].ToString()','@item["Description"].ToString()', this)">@item["Name"].ToString()</li>
+                        }
+                    </ul>
+                </ul>
+                <a class="menu_next" onmouseover="onMouseOverMenu(2)" style="cursor:pointer" onmouseout="onMouseOutMenu(2)"><img id="nextImg" src="/PortalLTE/Images/bt-right.png" /></a>
+                <div class="navbar-custom-menu" style="height:50px">
+                    <ul class="nav navbar-nav" style="height:50px;min-width:330px">
+                        <!--Refresh-->
+                        <li class="dropdown messages-menu" title="首页">
+                            <a href="#" class="dropdown-toggle" onclick="javascript:location.reload(true);"><i class="fa fa-home" style="font-size: 15px;"></i></a>
+                        </li>
+                        <!-- Messages: style can be found in dropdown.less-->
+                        <li class="dropdown messages-menu" title="消息">
+                            <a href="#" class="dropdown-toggle" onclick="openMsg();"><i class="fa fa-envelope-o"></i><span class="label label-success" id="MsgCount"></span></a>
+                        </li>
+                        <!-- Notifications: style can be found in dropdown.less -->
+                        <li class="dropdown notifications-menu" title="提醒">
+                            <a href="#" class="dropdown-toggle" onclick="openAlarm();">
+                                <i class="fa fa-bell-o"></i><span class="label label-warning" id="AlarmCount"></span>
+                            </a>
+                        </li>
+                        <!-- Tasks: style can be found in dropdown.less -->
+                        <li class="dropdown tasks-menu" title="任务">
+                            <a href="#" class="dropdown-toggle" onclick="openTask();">
+                                <i class="fa fa-flag-o"></i>
+                                <span class="label label-danger" id="TaskCount"></span>
+                            </a>
+                        </li>
+                        <!-- Favorite: style can be found in dropdown.less -->
+                        <li class="dropdown favorite-menu">
+                            <a href="#" class="dropdown-toggle"><i class="fa fa-star-o" id="imgShortcut" style="font-size: 15px;" title="快捷入口"></i></a>
+                        </li>
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="/PortalLTE/Main/UserImage" class="user-image" alt="User Image">
+                            </a>
+                            <ul class="dropdown-menu" style="box-shadow: 1px 1px 7px 0px #999;">
+                                <!-- User image -->
+                                <li class="user-header">
+                                    <img src="/PortalLTE/Main/UserImage" class="img-circle" alt="User Image">
+                                    <p>
+                                        @ViewBag.User.UserName <small>@ViewBag.User.UserOrgName</small>
+                                    </p>
+                                </li>
+
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div style="float: left;">
+                                        <a href="#" class="btn btn-default btn-flat">取消</a>
+                                    </div>
+                                    <div style="float: left; text-align: center; margin-left: 20px;">
+                                        <a href="#" class="btn btn-default btn-flat" onclick="openUIF();">个人信息维护</a>
+                                    </div>
+                                    <div style="float: right;">
+                                        <a href="#" class="btn btn-default btn-flat" onclick="doLogout();">退出</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Control Sidebar Toggle Button -->
+                        <li>
+                            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="/PortalLTE/Main/UserImage" class="img-circle" alt="头像" />
+                    </div>
+                    <div class="pull-left info">
+                        <p>
+                            @ViewBag.User.UserName
+                            &nbsp;@ViewBag.User.WorkNo
+                        </p>
+                        <a href="#"><i class="fa fa-circle text-success"></i>Online</a>
+                    </div>
+                </div>
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <div class="nicescroll" style="position: absolute; top: 10px; bottom: 0; left: 0; right: 0;">
+                    <ul class="sidebar-menu" id="sidebar-menu"></ul>
+                </div>
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+        <div class="main-content nicescroll" id="mainView" style="overflow:auto">
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                <!-- Main content -->
+                <section class="content">
+                    @Html.Raw(ViewBag.PotalLTE)
+                    @Html.Raw(ViewBag.UserTemplet)
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
+
+        <div class="main-content " id="iframe">
+            <div class="content-wrapper">
+                <ul class="custab list-unstyled clearfix" id="custab"></ul>
+                <ul class="custab-content list-unstyled clearfix" id="custab-content"></ul>
+                <ul class="Subsystem-bg custab-content list-unstyled clearfix" id="custab-content-menu" style="display:none;">
+                    <li>
+                        <div class="base" id="_menuExplain">
+	                    <div class="up">
+	                       <div class="up_left">
+		                      <div class="circle"><img src="/PortalLTE/Images/circle_img_1.png"/></div>
+		                      <div  class="up_left_line">
+	
+		                       </div>
+		                    </div>
+		                     <div class="up_middle">
+			                    <div class="up_middle_1">{{EName}}</div> 
+			                    <div class="up_middle_2">{{Name}}</div> 		 
+		                    </div>
+		                     <div class="up_right">
+		                    <div class="up_right_font">系统</div>
+		
+		                    </div>
+			                    </div>
+		                    <div class="down">
+	                            <div class="dot1"></div>
+			                    <div class="dot2"></div>
+		                    <div class="down_nr"><div class="down_content nicescroll">{{Explain}}<div></div>
+	                    </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content " id="pageItem">
+            <div class="pageItem-content">
+                <div class="pageItem-body">
+                    <div id="pageItemText">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.content-wrapper -->
+        <footer class="main-footer" style="display: none">
+            <div class="pull-right hidden-xs">
+                Version 2.3.3
+            </div>
+            Copyright Goodwaysoft Ltd. All rights reserved.
+        </footer>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs" style="display: none">
+                <li>
+                    <a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a>
+                </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content nicescroll" style="height: 100%; position: relative">
+                <!-- Home tab content -->
+                <div class="tab-pane" id="control-sidebar-home-tab">
+                </div>
+                <!-- /.tab-pane -->
+                <!-- Stats tab content -->
+                <div class="tab-pane" id="control-sidebar-stats-tab">
+                    Stats Tab Content
+                </div>
+                <!-- /.tab-pane -->
+            </div>
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+             immediately after the control sidebar -->
+        <div class="control-sidebar-bg">
+        </div>
+    </div>
+    <!-- ./wrapper -->
+    <!-- jQuery UI 1.11.4 -->
+    <script src="/PortalLTE/Scripts/jQueryUI/jquery-ui.min.js"></script>
+    <script src="/PortalLTE/Scripts/jQuery/jquery.nicescroll.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="/PortalLTE/Scripts/bootstrap/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/PortalLTE/Scripts/dist/js/app.min.js"></script>
+    <script src="/PortalLTE/Scripts/dist/js/pages/dashboard.js"></script>
+    <script src="/PortalLTE/Scripts/dist/js/demo.js" charset="utf-8"></script>
+    <!--miniui-->
+    <script src="/CommonWebResource/CoreLib/MiniUI/miniui.js" type="text/javascript"></script>
+    <script type="text/javascript">    
+        var LGID = "@Html.Raw(ViewBag.LGID)";
+        var alertTitleStr = "@Html.Raw(ViewBag.Title)";
+    </script>
+    <script type="text/javascript">
+        var scIsHidden = true;
+        $(document).ready(function () {
+            initShortcut();
+            $(".box").show();
+            refresh();
+            setInterval(refresh, 30000);
+        });
+
+        function openMenu() {
+            if ($("#one-menu").find("li.active").length <= 0) {
+                $("body").addClass("has-subMenu");
+            }
+        }
+        function openSubMenu(cur, e) {
+            var $this = $(cur);
+            var checkElement = $this.next();
+
+            if ((checkElement.is('.treeview-menu')) && (checkElement.is(':visible'))) {
+                checkElement.slideUp('normal', function () {
+                    checkElement.removeClass('menu-open');
+                });
+                checkElement.parent("li").removeClass("active");
+            }
+            else if ((checkElement.is('.treeview-menu')) && (!checkElement.is(':visible'))) {
+                var parent = $this.parents('ul').first();
+                var ul = parent.find('ul:visible').slideUp('normal');
+                ul.removeClass('menu-open');
+                var parent_li = $this.parent("li");
+                checkElement.slideDown('normal', function () {
+                    checkElement.addClass('menu-open');
+                    parent.find('li.active').removeClass('active');
+                    parent_li.addClass('active');
+                    $.AdminLTE.layout.fix();
+                });
+            }
+            if (checkElement.is('.treeview-menu')) {
+                e.preventDefault();
+            }
+        }
+
+        var _indexVue = new Vue({
+            el: "#_menuExplain",
+            data: {
+                Url: "",
+                Name: "",
+                EName: "",
+                Explain: ""
+            }
+        });
+        function ShowMenuOrPage(id, url, name, ename, explain, e) {
+            $(e).addClass("active");
+            $(e).siblings("li").removeClass("active");
+            $("#mainView").hide();
+            $("#pageItem").hide();
+
+            $("#custab-content-menu").hide();
+           
+            $.ajax({
+                url: "GetMenuHtml?parentId=" + id,
+                type: "get",
+                dataType: "html",
+                success: function (data) {
+                    //增加新版报错分支
+                    if (data && typeof (data) == "string" && data.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(data);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 1, function (e) { window.location = "login"; });
+                        return;
+                    }
+
+                    $("#sidebar-menu").html(data);
+                    $("#custab-content").html("");
+                    $("#custab").html("");
+                    $("#page-mark").hide();
+                    $("#iframe").show();
+                    $("#custab-content").show();
+                    var iosPatch = (CheckIsIOS()) ? " style='-webkit-overflow-scrolling:touch;overflow:auto!important;' " : "";
+
+                    if (data !== "") {
+                        $("body").removeClass("has-subMenu").removeClass("sidebar-collapse");
+                        if (url) {
+                            $("#custab-content").css("top", "51px");
+                            $("#custab-content").css("left", "1px");
+                            $("#iframe").show();
+                           
+                            url=GetTokenUrl(url);
+
+                            _indexVue.Url = url;
+                            $("#custab-content").append('<li ' + iosPatch + '><iframe src="' + url + '"></iframe></li>');
+                        } else {
+                            $("#custab-content-menu").show();
+                            _indexVue.Url = "";
+                            _indexVue.Name = name;
+                            _indexVue.EName = ename;
+                            _indexVue.Explain = explain;
+                        }
+                    } else {
+                        $("#pageItem").hide();
+                        $("#iframe").show();
+                        $("body").addClass("has-subMenu");
+                        if (url) {
+
+                            url=GetTokenUrl(url);
+
+                            _indexVue.Url = url;
+                            $("#custab-content").append('<li' + iosPatch + '><iframe src="' + url + '"></iframe></li>');
+                        } else {
+                            $("#custab-content-menu").show();
+                            _indexVue.Url = "";
+                            _indexVue.Name = name;
+                            _indexVue.EName = ename;
+                            _indexVue.Explain = explain;
+                        }
+                    }
+                    menuAnimate();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    msgUI(xhr.responseText, 1, function (e) { window.location = "login"; });
+                }
+            });
+        }
+
+        _indexVue.$watch('Explain',function(val){resizeHeight(false);});
+
+        //iframe跳转
+        function goUrl(e) {
+
+            if ($("#custab-content").css("top") == "51px") {
+                $("#custab-content").css("top", "");
+                $("#custab-content").css("left", "");
+                $("#custab-content").html("");
+            }
+            var url = $(e).attr("ui-href");
+            if (url) {
+                url=GetTokenUrl(url);
+            }
+            else
+                return;
+            var curli;
+            var tablis = $("#custab").find("li");
+            //判断是否在tab页中打开
+            var hasTab = tablis.filter(function () {
+                return $(this).data("custaburl") === url;
+            });
+            $("#pageItem").hide();
+            $("#custab-content-menu").hide();
+            if (hasTab.length === 0) {
+                var title = $(e).text();
+                var className = "";
+                var length = tablis.length;
+                if (length === 0) {
+                    $("#page-mark").hide();
+                    className = "class='active'";
+                } else {
+                    $("#page-mark").show();
+                }
+
+
+                if (tablis.length >= 5) {
+                    $("#custab").find("li:eq(0)").remove();
+                    $("#custab-content").find("li:eq(0)").remove();
+                }
+                $("#custab").append('<li ' + className + ' onclick=showCurTab(this)  data-custaburl=' + url + '>' + title + '<i class="fa fa-remove" onclick="closeCustomTab(this,event)"></i></li>');
+                
+                var iosPatch = (CheckIsIOS()) ? " style='-webkit-overflow-scrolling:touch;overflow:auto!important;' " : "";
+                var src = window.location.protocol + '//' + window.location.host + url;
+                $("#custab-content").append('<li ' + iosPatch + className + '><iframe id="test_iframe" src="' + src + '"></iframe></li>');
+
+                curli = $("#custab").find("li").last();
+
+                $("#mainView").hide();
+                $("#iframe").show();
+            } else {
+                curli = hasTab[0];
+            }
+            //显示当前页
+            showCurTab(curli);
+        }
+
+        function CheckIsIOS() {
+            var browser = {
+                versions: function () {
+                    var u = navigator.userAgent, app = navigator.appVersion;
+                    return { //移动终端浏览器版本信息
+                        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                        iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                        iPad: u.indexOf('iPad') > -1, //是否iPad
+                    };
+                }(),
+            }
+            if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios)
+                return true;
+
+            return false;
+        }
+        //返回首页
+        function gohome() {
+            $("#mainView").show();
+            $("#pageItem").hide();
+            $("#iframe").hide();
+            $("#one-menu").find("li").removeClass("active");
+            $("body").addClass("has-subMenu");
+        }
+        //关闭自定义Tab栏
+        function closeCustomTab(cur, e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var curTab = $(cur).parent();
+            var index = curTab.index();
+            curTab.remove();
+            $("#custab-content").find("li:eq(" + index + ")").remove();
+            if (curTab.hasClass("active")) {
+                $("#custab").find("li:eq(0)").addClass("active");
+                $("#custab-content").find("li:eq(0)").addClass("active");
+            }
+            var length = $("#custab").find("li").length;
+            if (length <= 1) {
+                $("#page-mark").hide();
+            }
+
+            if (length === 0) {
+                if (_indexVue && _indexVue.Url != "") {
+                    $("#custab-content").css("top", "51px");
+                    $("#custab-content").css("left", "1px");
+                    $("#custab-content").show();
+                    $("#custab-content-menu").hide();
+                    $("#custab-content").append('<li><iframe src="' + _indexVue.Url + '"></iframe></li>');
+                } else {
+                    $("#custab-content-menu").show();
+                }
+            }
+            resizeHeight(false);
+        };
+        //显示当期Tab
+        function showCurTab(e, dom) {
+            dom = $(e) || dom;
+            dom.addClass("active");
+            dom.siblings("li").removeClass("active");
+            var index = dom.index();
+            var choTab = $("#custab-content").find("li:eq(" + index + ")");
+            choTab.addClass("active");
+            choTab.siblings("li").removeClass("active");
+        }
+        function doLogout() {
+            var isUseNewPortal = '@System.Configuration.ConfigurationManager.AppSettings["IsUseNewPortal"]';
+            var locationUrl = isUseNewPortal && isUseNewPortal.toLowerCase() == "true" ? "Portal" : "Index";
+            $.ajax({
+                url: "DoLogout",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    //增加新版报错分支
+                    if (data.errcode) {
+                        var msg = getErrorFromHtml(data.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    window.location = locationUrl;
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    window.location = locationUrl;
+                }
+            });
+        }
+        function refresh() {
+            $.getJSON("GetUserProps", function (data) {
+                if (!data) return;
+
+                if (data.LogOut) {
+                    msgUI("您的帐号异地登录,系统将强制退出!", 1, function (action, t) { doLogout(); });
+                }
+                else {
+                    $("#AlarmCount,#AlarmCount1").text(data.AlarmCount);
+                    $("#TaskCount,#TaskCount1").text(data.TaskCount);
+                    $("#MsgCount,#MsgCount1").text(data.MsgCount);
+                }
+            });
+        }
+        function openWindow(url, title, width, height) {
+            var opts = {
+                url: url,
+                title: title,
+                width: width,
+                height: height,
+                showMaxButton: true,
+                ondestroy: function (action) {
+
+                }
+            };
+            mini.open(opts);
+        }
+        function openMsg() {
+            var title = LGID == "EN" ? "My Messge" : "我的消息";
+            openWindow("/Base/ShortMsg/Msg/Index", title, "80%", "80%");
+        }
+        function openTask() {
+            var title = LGID == "EN" ? "My Task" : "我的任务";
+            openWindow("/MvcConfig/WorkFlow/Task/MyTaskCenter", title, "80%", "80%");
+        }
+        function openAlarm() {
+            var title = LGID == "EN" ? "My Mind" : "我的提醒";
+            openWindow("/Base/ShortMsg/Alarm/list", title, "80%", "80%");
+        }
+        function openUIF() {
+            openWindow("/Base/Auth/User/UserInfo", "个人信息维护", "360", "400");
+        }
+        function saveShortCut(txtTitle, txtUrl, iconUrl) {
+            msgUI("确认添加到快捷入口吗？", 2, function (action) {
+                if (action == "ok") {
+                    if ($.trim(txtTitle) == "") {
+                        msgUI("请输入快捷入口名称：", 5, function (action, t) {
+                            if (action == "ok") {
+                                if ($.trim(t) == "") {
+                                    msgUI("快捷入口名称不能为空");
+                                    return;
+                                }
+                                saveShortCutData(t, txtUrl, iconUrl);
+                            }
+                        });
+                    }
+                    else {
+                        saveShortCutData(txtTitle, txtUrl, iconUrl);
+                    }
+                }
+            });
+        }
+        function saveShortCutData(txtTitle, txtUrl, iconUrl) {
+            var data = {
+                Url: txtUrl,
+                Name: txtTitle,
+                IsUse: "T",
+                Type: "Normal",
+                IconImage: iconUrl,
+                PageIndex: 0
+            };
+            var executeParams = new Object();
+            executeParams["FormData"] = mini.encode(data);
+            execute("/Base/PortalBlock/ShortCut/Add", {
+                validateForm: false,
+                execParams: executeParams,
+                onComplete: function (data) {
+                    msgUI("　　[" + txtTitle + "] 模块已添加到首页快捷菜单板块！");
+                    bindShortcut();
+                }
+            });
+        }
+        function initShortcut() {
+            bindShortcut();
+            $("#imgShortcut").hover(
+        function () {
+            $(".shortcutmenu").fadeIn();
+            scIsHidden = false;
+        },
+        function () {
+            scIsHidden = true;
+            setTimeout('if (scIsHidden) {$(".shortcutmenu").fadeOut();}', 200);
+        });
+            $(".shortcutmenu").hover(
+        function () {
+            $(".shortcutmenu").fadeIn();
+            scIsHidden = false;
+        },
+        function () {
+            scIsHidden = true;
+            setTimeout('if (scIsHidden) {$(".shortcutmenu").fadeOut();}', 200);
+        });
+        }
+
+        function bindShortcut() {
+            execute("/Base/PortalBlock/ShortCut/Select", {
+                showLoading: false,
+                onComplete: function (data) {
+                    var $ul = $("#ulShortcut");
+                    $ul.children().remove();
+                    $.each(data, function (i, item) {
+                        var $left = $("<span></span>").addClass("shortcutmenu_span_left").append($("<a></a>").attr("href", "javascript:void(0);").text(item.Name).click(function () { openShortcut(item.Url, item.Name); }));
+                        var $img = $('<img src="/Base/Scripts/ShortMsg/delete.png" alt="删除" name="delete" width="16" height="16" align="absmiddle" border="0" />').mouseout(function () { MouseChange(this, '/Base/Scripts/ShortMsg/delete.png'); }).mouseover(function () { MouseChange(this, '/Base/Scripts/ShortMsg/deleteon.png'); });
+                        var $right = $("<span></span>").addClass("shortcutmenu_span_right").hide().append($("<a></a>").attr("href", "javascript:void(0);").click(function () { delShortcut(item.ID, item.Name); }).append($img));
+                        $ul.append($("<li></li>").mouseover(function () { $(this).addClass("shortcutmenu_onmouse"); $(this).find(".shortcutmenu_span_right").show(); }).mouseout(function () { $(this).removeClass("shortcutmenu_onmouse"); $(this).find(".shortcutmenu_span_right").hide(); }).append($left).append($right));
+                    });
+                }
+            });
+        }
+
+        function openShortcut(url, title) {
+            url=GetTokenUrl(url);
+            openWindow(url, title, "80%", "80%");
+            $(".shortcutmenu").hide();
+        }
+
+        function delShortcut(id, name) {
+            msgUI("确认删除" + name + "吗?", 2, function (action) {
+                if (action == "ok") {
+                    execute("/Base/PortalBlock/ShortCut/DeleteShortCut?ID=" + id, {
+                        onComplete: function (data) {
+                            bindShortcut();
+                            GetShortCut();
+                            msgUI("删除成功！");
+                        }
+                    });
+                }
+            });
+        }
+
+        //鼠标移入移出按钮图标切换事件
+        function MouseChange(obj, e) {
+            obj.src = e;
+        }
+
+        var dashboard = {
+            Set: function (key, value) { this[key] = value },
+            Get: function (key) { return this[key] },
+            Contains: function (key) { return this.Get(key) == null ? false : true },
+            Remove: function (key) { delete this[key] }
+        };
+        function dashboardChanged(e) {
+            var dashboards = $('section[id^="dashboard_"]');
+            for (var i = 0; i < dashboards.length; i++) {
+                var child = $("#" + dashboards[i].id).children("div[class^='box']");
+                var ids = new Array();
+                for (var j = 0; j < child.length; j++) {
+                    if (!$("#" + child[j].id).is(":hidden") && child[j].id != e)
+                        ids.push(child[j].id);
+                }
+                if (dashboard.Contains(dashboards[i].id)) {
+                    dashboard.Remove(dashboards[i].id);
+                }
+                dashboard.Set(dashboards[i].id, ids.toString().replace(/,/g, '&'));
+            }
+
+            if (Object.keys(dashboard).length < 5)
+                return;
+
+            var json = new Array();
+            for (var i = 4; i < Object.keys(dashboard).length; i++) {
+                var key = Object.keys(dashboard)[i];
+                if (key) {
+                    json.push(key + ':' + dashboard.Get(key));
+                }
+            }
+            var tid = $('section div[tid]:eq(0)').attr('tid');
+            if (tid == null)
+                return;
+            $.ajax({
+                url: "SaveUserTemplet?ID=" + tid,
+                type: "post",
+                data: { json: json.toString() },
+                cache: false,
+                dataType: "json",
+                success: function (data) {
+                    //增加新版报错分支
+                    if (data.errcode) {
+                        var msg = getErrorFromHtml(data.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+
+                }
+            });
+        }
+
+        //重置布局配置
+        function resetSetting(e) {
+            if ($(e).prop("checked") == true) {
+                $.ajax({
+                    url: "SaveSettings",
+                    data: { settings: "" },
+                    type: "post",
+                    dataType: "json",
+                    success: function (text) {
+                        //增加新版报错分支
+                        if (data.errcode) {
+                            var msg = getErrorFromHtml(data.errmsg);
+                            msgUI(msg, 4);
+                            return;
+                        }
+                        window.location.reload();
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        var curClick = false, pageCount = 1, curNextPage = 1;
+
+        $(document).ready(function (e) {
+
+            var collapsed = get("collapsed");
+            if (collapsed) {
+                var arr = collapsed.split(',');
+                for (var i = 0; i < arr.length; i++) {
+                    $("#" + arr[i]).addClass("collapsed-box");
+                }
+            }
+
+            $(document).click(function (e) {
+                var templetList = $('.templet-list');
+                var templetDefault = $('.templet-default');
+                var divTempletDefault = $('.templet-default div');
+                if (!templetList.is(e.target) && templetList.has(e.target).length === 0
+                    && !templetDefault.is(e.target) && templetDefault.has(e.target).length === 0) {
+                    templetList.hide();
+                    divTempletDefault.show();
+                }
+            });
+
+            $('.menu_prev').click(function () {
+                var _width = menuAnimate();
+                var wall = parseInt(_width.split(',')[0]);
+                var ulw = parseInt(_width.split(',')[1]);
+                if ($('#two-menu').is(':animated')) {
+                    $('#two-menu').stop(true, true);
+                }
+
+                if (wall > ulw && curClick) {
+                    $('#two-menu').animate({ left: '0px' }, 'slow');
+                }
+                curNextPage = 1;
+                curClick = false;
+            });
+
+            $('.menu_next').click(function () {
+                var _width = menuAnimate();
+                var wall = parseInt(_width.split(',')[0]) + 230;
+                var ulw = parseInt(_width.split(',')[1]);
+                pageCount = wall < ulw ? 1 : wall == ulw ? parseInt(wall / ulw) : parseInt(wall / ulw) + 1;
+                if ($('#two-menu').is(':animated')) {
+                    $('#two-menu').stop(true, true);
+                }
+
+                if (wall > ulw) {
+                    var width = ulw * curNextPage;
+                    var liarray = new Array();
+                    var curWidth = 0;
+                    if (curNextPage < pageCount) {
+                        $('#two-menu li').each(function (index, event) {
+                            var id = $(this).attr('id');
+                            var liw = $(this)[0].clientWidth;
+                            if (id) {
+                                curWidth = curWidth + liw;
+                                if (curWidth > width) {
+                                    width = curWidth - liw;
+                                    return false;
+                                }
+                            }
+                        });
+                        if (curNextPage + 1 == pageCount)
+                            width = wall - ulw;
+                        //if (!$("body").hasClass('sidebar-collapse'))
+                        //    width = width + 230;
+                        $('#two-menu').animate({ left: '-' + width + 'px' }, 'slow');
+
+                        if (curNextPage < pageCount)
+                            curNextPage = curNextPage + 1;
+                    }
+                }
+                curClick = true;
+            });
+
+            menuAnimate();
+        });
+
+        function store(name, val) {
+            setCache(name, val);
+        }
+        function get(name) {
+            return getCache(name);
+        }
+        function openUserTemplet(id) {
+            $("#df-" + id).hide();
+            $(".templet-list").show(500);
+        }
+        function switchTemplet(id) {
+            var href = window.location.href;
+            if (href.indexOf('?') >= 0) {
+                href = href.substr(0, href.indexOf('?'));
+            }
+            href = href.split('#')[0];
+            window.location.href = href + '?ID=' + id;
+            $("#df-" + id).show();
+            $(".templet-list").hide();
+        }
+
+        function menuAnimate() {
+            var liarray = new Array();
+            linum = $('#two-menu').length;
+            ulw = $('#one-menu').width();
+            $('#two-menu li').each(function (index, event) {
+                var id = $(this).attr('id');
+                var liw = $(this)[0].clientWidth + 10;//加上边距
+                if (id)
+                    liarray.push(id + ',' + liw);
+            });
+
+            var wall = 0;
+            for (var i = 0; i < liarray.length; i++) {
+                if (liarray[i].split(',')[1]) {
+                    wall = wall + parseInt(liarray[i].split(',')[1]);
+                }
+            }
+
+            if (wall <= ulw && !curClick) {
+                $('.menu_next').hide();
+                $('.menu_prev').hide();
+                $("#one-menu").removeClass("menu_padding");
+            } else {
+                var twoStyle = $('#two-menu').attr('style');
+                if (!twoStyle)
+                    $("#one-menu").addClass("menu_padding");
+                $('.menu_next').show();
+                $('.menu_prev').show();
+            }
+            return wall + ',' + ulw;
+        }
+        function onMouseOverMenu(type) {
+            if (type == 1) {
+                var img = document.getElementById("prevImg");
+                img.src = "/PortalLTE/Images/bt-left-on.png";
+            } else {
+                var img = document.getElementById("nextImg");
+                img.src = "/PortalLTE/Images/bt-right-on.png";
+            }
+        }
+        function onMouseOutMenu(type) {
+            if (type == 1) {
+                var img = document.getElementById("prevImg");
+                img.src = "/PortalLTE/Images/bt-left.png";
+            } else {
+                var img = document.getElementById("nextImg");
+                img.src = "/PortalLTE/Images/bt-right.png";
+            }
+        }
+        window.onbeforeunload = function (e) {
+            event.preventDefault();
+        }
+        resizeHeight(true);
+        function resizeHeight(is) {
+            if (is) {
+                $("#_menuExplain").css("margin-top", 170);
+            } else {
+                var clientHeight = document.body.clientHeight;
+                var expHeight = $("#_menuExplain").height();
+                $("#_menuExplain").css("margin-top", (clientHeight / 2 - expHeight / 2) - 51);
+            }
+
+        }
+        $(window).resize(function () {
+            resizeHeight(false);
+        });
+
+        //判断是否跨域，如果跨域则带上token
+        function GetTokenUrl(url){
+            if(url.indexOf("http")>=0){
+                var domain = url.split('/'); //以“/”进行分割
+                var returnurl="";
+                if( domain[2] ) {
+                    returnurl = domain[0]+"//"+domain[2];
+                } else {
+                    returnurl = ''; //如果url不正确就取空
+                }
+           
+                var urlflag=false;           
+                var lourl= path = "http://"+document.location.host; 
+                if(returnurl.indexOf(":")){               
+                    if(returnurl.indexOf(lourl)<0){
+                        urlflag=true;
+                    }
+                }else{
+                    lourl=lourl.substr(0, lourl.indexOf(':'));
+                    if(document.location.port!="80"||returnurl.indexOf(lourl)<0){
+                        urlflag=true;
+                    }
+                }
+                if(urlflag){
+                    var tokens= GetToken();
+                    if (typeof (tokens.Token) != "undefined" && typeof (tokens.TokenKey) != "undefined" && tokens.TokenKey && tokens.Token) {
+                        if (url.indexOf(tokens.TokenKey + "=") < 0) {
+                            if (url.indexOf("?") > 0) {
+                                url += "&" + tokens.TokenKey + "=" + tokens.Token;
+                            }
+                            else {
+                                url += "?" + tokens.TokenKey + "=" + tokens.Token;
+                            }
+                        }
+                    }
+                }
+            }
+            return url;
+        }
+        //获取token
+        function GetToken(){
+            var data;
+            $.ajax({
+                url: "/PortalLTE/Main/GetToken",
+                type: "get",
+                dataType: "json",
+                async: false,
+                success: function (sdata) {
+                    data= sdata;
+                }
+            });
+            return data;
+        }
+    </script>
+</body>
+</html>

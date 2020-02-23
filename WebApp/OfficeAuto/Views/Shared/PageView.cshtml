@@ -1,0 +1,207 @@
+﻿@section scripts{
+    <script type="text/javascript" charset="utf-8" src="/UEditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/UEditor/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/UEditor/lang/zh-cn/zh-cn.js"></script>
+}
+
+@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+else if ((!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"])) && System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"].ToLower() == "true")
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+<form id="dataForm" method="post" align="center" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    @Html.Raw(ViewBag.HiddenHtml)
+    <div class="formDiv" style="background-color: #fff;">
+        @Html.Raw(ViewBag.FormHtml)
+    </div>
+    @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True"
+        && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+    {
+        <div class="flow-msg">
+            <fieldset class="formDiv">
+                @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                {
+                    <legend>Operation Information</legend>
+                }
+                else
+                {
+                    <legend>操作信息</legend>
+                }
+                <div id="comment">
+                </div>
+                <div style='width: 100%; height: 15px;'>
+                </div>
+            </fieldset>
+        </div>
+        <br />
+        <br />
+        <script type="text/javascript">
+            function onCommentLoad(e) {
+                if (e.data.length == 0)
+                    $("#commentGrid").hide();
+            }
+        </script>
+    }
+    else
+    {
+        <div style='width: 100%; height: 120px;'>
+        </div>
+    }
+</form>
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0;
+        left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                    {
+                        <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                            Save
+                        </a> 
+                        <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow('close')">
+                            Cancel
+                        </a>
+                    }
+                    else
+                    {
+                        <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                            保存
+                        </a>
+                        <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow('close')">
+                            取消
+                        </a>
+                    }
+                </td>
+                <td id="btnRight">
+                    <a class='mini-button' onclick='showHelp()' iconcls='icon-help' plain='true'>帮助</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+}
+
+<script type="text/javascript">
+
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    @Html.Raw(ViewBag.Script)
+</script>
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '[data-tooltip]'
+        });
+
+
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //UEditor控件
+        var arrTxtAreas = $("script.UEditor");
+        $.each(arrTxtAreas, function (i, obj) {
+            var name = $(obj).attr("name");
+            UE.getEditor(name).addListener('ready', function (editor) {
+                UE.getEditor(name).setContent(formData[name], false);//Content
+            });
+        });
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        var _returnForm = null;
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            _returnForm = onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(_returnForm);
+        }
+
+
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+</script>
+<style>
+    body {
+        background-color: #fff;
+    }
+</style>

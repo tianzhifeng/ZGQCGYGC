@@ -1,0 +1,202 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="400" expanded="true" showspliticon="true" showheader="false" style="border:0px;">
+        <div class="mini-toolbar" style="padding: 0px;  border-top: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="add({ height: '90%', width: '50%' });" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="edit({ height: '90%', width: '50%' });" plain="true">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 onselectionchanged="onSelectionChanged" showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="100" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="Code" width="100" headeralign="center" allowsort="true">
+                        编号
+                    </div>
+                    <div field="ColDefine" width="70" headeralign="center" allowsort="true" align="center">
+                        列定义
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border:0px;">
+        @*<div class="mini-toolbar" style="padding: 0px;  border-top: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="save" plain="true">保存</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>*@
+        <div class="mini-fit">
+            <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true"
+                 treecolumn="Name" idfield="StructInfoID" parentfield="ParentID" resultastree="false" multiselect="true"
+                 expandonload="true" oncellclick="onTreeCellclick" allowcelledit="true" allowcellselect="true"
+                 allowresize="true" fitcolumns="false" contextmenu="#gridMenu">
+                <div property="columns">
+                    <div type="checkcolumn"></div>
+                    <div type="indexcolumn"></div>
+                    <div name="Name" field="Name" width="200" headeralign="center">名称</div>
+                    <div field="Code" width="90" headeralign="center">编号</div>
+                    <div field="NodeType" width="80" headeralign="center" align="center">节点类型</div>
+                    <div field="TaskType" width="80" headeralign="center" align="center">节点类型</div>
+                    <div field="IsDynmanic" width="60" headeralign="center" align="center">是否动态</div>
+                    <div field="RelateStructNodeName" width="100" headeralign="center" align="left">依赖绑定节点</div>
+                    <div field="Visible" type="checkboxcolumn" truevalue="1" falsevalue="0" width="60" headeralign="center" align="center">显示</div>
+                    <div field="CanAdd" type="checkboxcolumn" truevalue="1" falsevalue="0" width="60" headeralign="center" align="center">可新增</div>
+                    <div field="CanEdit" type="checkboxcolumn" truevalue="1" falsevalue="0" width="60" headeralign="center" align="center">可编辑</div>
+                    <div field="CanDelete" type="checkboxcolumn" truevalue="1" falsevalue="0" width="70" headeralign="center" align="center">可删除</div>
+                    <div field="IsLocked" type="checkboxcolumn" truevalue="1" falsevalue="0" width="70" headeralign="center" align="center">固定工期</div>
+                    <div field="ExtendFieldConfig" width="90" headeralign="center" align="center">扩展属性设置</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="gridMenu" class="mini-contextmenu">
+    <li name="add" iconcls="icon-add" onclick="onAdd">新增</li>
+    <li name="remove" iconcls="icon-remove" onclick="onRemove">删除</li>
+    <li name="modify" iconcls="icon-modify" onclick="onBinding">依赖绑定节点</li>
+</ul>
+<script type="text/javascript">
+    @Html.GetEnum("System.TrueOrFalse")
+    @Html.GetEnum("Base.WBSType")
+    @Html.GetEnum(typeof(EPC.Logic.TaskType))
+</script>
+<script type="text/javascript">
+    var modeID = getQueryString("ModeID");
+    $("#dataGrid").attr("url", "GetDefineList?ModeID=" + modeID);
+
+    addGridEnum("dataTree", "NodeType", "WBSType");
+    addGridEnum("dataTree", "IsDynmanic", "TrueOrFalse");
+    addGridEnum("dataTree", "IsEnum", "TrueOrFalse");
+    addGridEnum("dataTree", "TaskType", "TaskType");
+
+    addGridLink("dataGrid", "ColDefine", "ColDefine?ID={ID}", { linkText: "定义", height: "70%", width: "70%" });
+
+    addGridLink("dataTree", "ExtendFieldConfig", "ExtendFieldConfig?ID={ID}", { linkText: "设置", height: "70%", width: "70%" });
+
+    function onSelectionChanged(e) {
+        if (e.selected) {
+            var dataTree = mini.get("dataTree");
+            dataTree.setUrl("GetDefineNodes?DefineID=" + e.selected.ID);
+        }
+    }
+
+    function onAdd() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            return;
+        }
+        var url = "/EPC/WBSStructSelector/Selector?ModeID=" + modeID;
+        openWindow(url, {
+            refresh: false, title: "WBS结构选择", width: 400, height: "80%",
+            onDestroy: function (data) {
+                if (!data || data == "close") { return; }
+                addExecuteParam("ParentID", node.ID);
+                addExecuteParam("NodeID", data.ID);
+                execute("AddDefineNodes", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataTree.reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function onBinding() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            return;
+        }
+
+
+        addExecuteParam("DefineID", node.DefineID);
+        execute("GetDefineID", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "NodeSelector?DefineID=" + data.ID;
+                openWindow(url, {
+                    refresh: false, title: "静态节点选择", width: 400, height: "80%",
+                    onDestroy: function (data) {
+                        if (!data || data == "close") {
+                            return;
+                        }
+                        node.RelateStructNodeID = data.ID;
+                        node.RelateStructNodeName = data.Name;
+                        node.RelateType = data.NodeType;
+                        addExecuteParam("NodeID", node.ID);
+                        addExecuteParam("Data", mini.encode(node));
+                        execute("SetNode", {
+                            showLoading: true, refresh: false, onComplete: function (data) {
+                                mini.get("dataTree").reload();
+                            }, validateForm: false
+                        });
+                    }
+                });
+            }, validateForm: false
+        });
+
+
+    }
+
+    function onRemove() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+        msgUI("您确定需要删除选中的节点吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", mini.encode(nodes));
+            execute("RemoveNode", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataTree.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onTreeCellclick(e) {
+        if ((e.field == "CanAdd" || e.field == "CanEdit" || e.field == "CanDelete" || e.field == "Visible" || e.field == "IsLocked")) {
+            var value = "0";
+            if (e.value == "1") {
+                value = e.value;
+            }
+            var node = e.record;
+            node.Visible = e.record.Visible;
+            node.CanAdd = e.record.CanAdd;
+            node.CanEdit = e.record.CanEdit;
+            node.CanDelete = e.record.CanDelete;
+            node.IsLocked = e.record.IsLocked;
+            addExecuteParam("NodeID", e.record.ID);
+            addExecuteParam("Data", mini.encode(node));
+            execute("SetNode", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataTree").reload();
+                }, validateForm: false
+            });
+        }
+    }
+</script>

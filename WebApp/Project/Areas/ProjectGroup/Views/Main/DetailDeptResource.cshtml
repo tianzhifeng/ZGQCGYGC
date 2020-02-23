@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "DetailDeptResource";
+}
+<link rel="stylesheet" type="text/css" href="/Project/Scripts/Main/css/projectPeople.css">
+<script src="/Project/Scripts/Main/js/jquery.min.js" type="text/javascript"></script>
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+<div class="section blue">
+    <div class="title title-border">
+        <h4>当前人员负荷</h4>
+        <span class="small">(共<span id="userCount">@ViewBag.UserCount</span>人)</span>
+    </div>
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" borderstyle="border:0px;"
+         showpager="false" ondrawcell="onDrawCell">
+        <div property="columns">
+            <div field="UserName" width="70" headeralign="center" allowsort="true" align="center">
+                姓名
+            </div>
+            <div field="LastMonth" numberformat="p" width="50" headeralign="center" allowsort="true" align="right">
+                上月工时<br />负荷
+            </div>
+            <div field="CurrentMonth" numberformat="p" width="50" headeralign="center" allowsort="true" align="right">
+                本月工时<br />负荷
+            </div>
+            <div field="Seaon" numberformat="p" headeralign="center" width="50" allowsort="true" align="right">
+                本季工时<br />负荷
+            </div>
+            <div field="Year" numberformat="p" headeralign="center" width="50" allowsort="true" align="right">
+                本年工时<br />负荷
+            </div>
+            <div header="参与项目" headeralign="center">
+                <div property="columns">
+                    <div field="Plan" width="50" headeralign="center" align="right">
+                        策划中
+                    </div>
+                    <div field="Execute" width="50" headeralign="center" align="right">
+                        设计中
+                    </div>
+                    <div field="ExecuteTotal" width="50" headeralign="center" align="right">
+                        在建合计
+                    </div>
+                    <div field="Finish" width="50" headeralign="center" align="right">
+                        已完工
+                    </div>
+                    <div field="Pause" width="50" headeralign="center" align="right">
+                        已暂停
+                    </div>
+                    <div field="Terminate" width="50" headeralign="center" align="right">
+                        已终止
+                    </div>
+                    <div field="Total" width="50" headeralign="center" align="right">
+                        合计
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var height = $(document).height() - 60;
+    $("#dataGrid").height(height);
+    var deptID = getQueryString("DeptID");
+    $("#dataGrid").attr("url", "GetResourceDetailList?ChargerDept=" + deptID);
+
+
+    var linkFields = "Plan,Execute,ExecuteTotal,Finish,Pause,Terminate,Total";
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field && linkFields.indexOf(field) >= 0) {
+            if (e.value > 0) {
+                e.cellHtml = '<a href="javascript:openDetail(\'' + field + '\',\'' + record.ID + '\')">' + e.value + '</a>&nbsp; ';
+            }
+            else {
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+            }
+        }
+    }
+
+    function openDetail(State, userID) {
+        var url = "/Project/ProjectGroup/PersonnelLoad/ProjectList?DeptID=" + deptID + "&UserID=" + userID + "&State=" + State;
+        if (State == "ExecuteTotal") {
+            url = "/Project/ProjectGroup/PersonnelLoad/ProjectList?DeptID=" + deptID + "&UserID=" + userID + "&State=Plan,Execute";
+        }
+        else if (State == "Total") {
+            url = "/Project/ProjectGroup/PersonnelLoad/ProjectList?DeptID=" + deptID + "&UserID=" + userID;
+        }
+        openWindow(url, {
+            refresh: false, title: "项目信息", width: 900, height: 600, addQueryString: false,
+            onDestroy: function () { }
+        });
+    }
+
+</script>

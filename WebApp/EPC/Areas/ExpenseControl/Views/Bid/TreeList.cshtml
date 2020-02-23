@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="treeSearch"
+                       onbuttonclick="treeSearch" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="treeArea">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true" multiselect="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowcellwrap="true" iconfield="NodeType"
+         expandonload="1" onload="onload" ondrawcell="onDrawingCell"
+         allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="270" headeralign="center" allowsort="false">名称</div>
+            <div field="Unit" width="50" headeralign="center" allowsort="false" align="center">单位</div>
+            <div field="Quantity" width="60" align="right" headeralign="center" allowsort="false">数量</div>
+            <div field="UnitPrice" width="100" align="right" headeralign="center" allowsort="false">单价（元）</div>
+            <div field="Tender" width="120" align="right" headeralign="center" allowsort="false">总价（元）</div>
+            <div field="Model" width="200" headeralign="center" allowsort="false">规格及参数</div>
+            <div field="MajorName" width="70" headeralign="center" allowsort="false" align="center">专业分类</div>
+            <div field="Branding" width="100" headeralign="center" allowsort="false">品牌</div>
+            <div field="Material" width="100" headeralign="center" allowsort="false">材质</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var url = "GetTreeList?EngineeringInfoID=" + engineeringInfoID;
+    $("#dataTree").attr("url", url);
+
+    function collapseLevel() {
+        var level = mini.getbyName("PBSType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        if (level == "Root") {
+            tree.collapseLevel(0);
+        }
+        else if (level == "SubProject") {
+            tree.collapseLevel(1);
+        }
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType != "Detail") {
+            e.cellStyle = "font-weight:bolder;";
+        }
+        else if (record.NodeType == "Detail") {
+
+        }
+    }
+
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+</script>

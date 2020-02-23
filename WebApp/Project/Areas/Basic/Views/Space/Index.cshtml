@@ -1,0 +1,366 @@
+﻿@{
+    ViewBag.Title = "项目空间";
+}
+@Styles.Render("~/Scripts/Tab/tab.css")
+@{
+    <div class="tabs1402-headers">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabs1402-header">
+            <tr>
+                <td class="tabs1402-space">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="white-space: nowrap;">
+                                <a class="mini-button" id="showBtn" iconcls="icon-switch" onclick="showAtEl" plain="true" tooltip="切换项目">
+                                    切换项目
+                                </a>当前项目：
+                            </td>
+                            <td style="width: 450px;">
+                                <input name="currentProject" onvaluechanged="onValueChanged" value="@ViewBag.ProjectInfoID" class="mini-combobox" style="width: 100%;" textfield="Name" valuefield="ID"
+                                       data="relationProject" />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                @for (int i = 0; i < this.ViewBag.DisplayCount; i++)
+                {
+                    var entrace = ViewBag.Entrace[i];
+                    var className = "tab1402-active-4";
+                    if (entrace.Name.Length <= 3)
+                    {
+                        className = "tab1402-active-2";
+                    }
+                    if (entrace.IsDefault)
+                    {
+                        <td class="@className" id="@entrace.ID" onclick="ontabClick('@entrace.SpaceDefineID','@entrace.Code','@entrace.ID','@entrace.LinkUrl')">
+                            @entrace.Name
+                    </td>
+                    }
+                    else
+                    {
+                        className = className.Replace("active-", "");
+                        <td class="@className" id="@entrace.ID" onclick="ontabClick('@entrace.SpaceDefineID','@entrace.Code','@entrace.ID','@entrace.LinkUrl')">
+                            @entrace.Name
+                    </td>
+                    }
+                }
+                @{
+                    if (ViewBag.NeedMenu)
+                    {
+                        <td class="tab1402-bt">
+                            <img src="~/Scripts/Tab/more.png" onclick="showMore()" width="16" height="16" alt="more" />
+                        </td>
+                    }
+                }
+            </tr>
+        </table>
+    </div>
+    if (ViewBag.NeedMenu)
+    {
+        <div class="tab1402-menu" style="display: none" id="menu">
+            <ul>
+                @for (int i = this.ViewBag.DisplayCount; i < ViewBag.Entrace.Count; i++)
+                {
+                    var entrace = ViewBag.Entrace[i];
+                    <li>
+                        <a href="#" id="@entrace.ID" onclick="ontabClick('@entrace.SpaceDefineID','@entrace.Code','@entrace.ID','@entrace.LinkUrl')">@entrace.Name</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    <div class="mini-fit">
+        <div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+
+            <div title="导航" showheader="false" region="west" width="200" expanded="true" showspliticon="true" style="border-top: 0px;">
+                <ul id="mytree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name"
+                    idfield="ID" enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="4"
+                    onnodeclick="onNodeClick" iconfield="Type" ondrawnode="onDrawNode"></ul>
+            </div>
+
+            <div title="center" region="center" style="border-top: 0px;">
+                <div class="mini-fit">
+                    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;">
+                        <div title="Title" url="@ViewBag.DefaultUrl" showheader="false" headerstyle="display:none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="chooseWin" class="mini-window" title="切换项目" style="width: 900px; height: 450px;" showmaxbutton="false"
+         showcollapsebutton="false" showshadow="true" showtoolbar="false" showfooter="false" showmodal="true"
+         allowresize="false" allowdrag="false">
+        <div id="maintabl" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;">
+            <div title="常用项目">
+                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 100%;"></td>
+                            <td style="white-space: nowrap;">
+                                <input id="actkey" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name',{gridId:'myProjectGrid',queryBoxId:'actkey'});"
+                                       onbuttonclick="quickSearch('Code,Name',{gridId:'myProjectGrid',queryBoxId:'actkey'});" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="myProjectGrid" url="GetMyProjectInfo" class="mini-datagrid" style="width: 100%; height: 100%;"
+                         idfield="ID" multiselect="true" ondrawcell="onDrawingCell">
+                        <div property="columns">
+                            <div field="Enter" width="60" headeralign="center" align="center">
+                                切换
+                            </div>
+                            <div field="Cancel" width="60" headeralign="center" align="center">
+                                取消常用
+                            </div>
+                            <div field="Name" width="*" headeralign="center" allowsort="true">
+                                项目名称
+                            </div>
+                            <div field="Code" width="120" headeralign="center" allowsort="true" align="center">
+                                项目编号
+                            </div>
+                            <div field="ChargeUserName" width="100" headeralign="center" allowsort="true" align="center">
+                                项目负责人
+                            </div>
+                            <div field="PhaseValue" width="80" headeralign="center" allowsort="true" align="center">
+                                项目阶段
+                            </div>
+                            <div field="State" width="80" headeralign="center" allowsort="true" align="center">
+                                项目状态
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div title="全部项目">
+                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 100%;"></td>
+                            <td style="white-space: nowrap;">
+                                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name',{gridId:'allProjectGrid'});"
+                                       onbuttonclick="quickSearch('Code,Name',{gridId:'allProjectGrid'});" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="allProjectGrid" url="GetAllProjectInfo" class="mini-datagrid" style="width: 100%; height: 100%;"
+                         idfield="ID" multiselect="true" ondrawcell="onDrawingCell">
+                        <div property="columns">
+                            <div field="Enter" width="60" headeralign="center" align="center">
+                                切换
+                            </div>
+                            <div field="Mark" width="60" headeralign="center" align="center">
+                                常用
+                            </div>
+                            <div field="Name" width="*" headeralign="center" allowsort="true">
+                                项目名称
+                            </div>
+                            <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                                项目编号
+                            </div>
+                            <div field="ChargeUserName" width="100" headeralign="center" allowsort="true" align="center">
+                                项目负责人
+                            </div>
+                            <div field="PhaseValue" width="80" headeralign="center" allowsort="true" align="center">
+                                项目阶段
+                            </div>
+                            <div field="State" width="80" headeralign="center" allowsort="true" align="center">
+                                项目状态
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var projectInfo= @Html.Raw(ViewBag.ProjectJson);
+        var showSpace = "@Html.Raw(ViewBag.ShowSpace)";
+        var defaultCode = "@Html.Raw(ViewBag.DefaultCode)";
+        var defaultSpaceDefineID="@Html.Raw(ViewBag.DefaultSpaceDefineID)";
+        var relationProject = @Html.Raw(ViewBag.RelationProject);
+        @Html.GetEnum("Project.Phase");
+        @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+        var currentCode = defaultCode;
+        if (showSpace == "True") {
+            var treeDefaultLoadUrl = changeToFullUrl("GetSpaceDefine").split('?')[0]
+        + "?ProjectInfoID=" + projectInfo.ID + "&DefineID=" + defaultSpaceDefineID + "&SpaceCode=" + defaultCode;
+            $("#mytree").attr("url", treeDefaultLoadUrl);
+        }
+    </script>
+    <script type="text/javascript">
+
+        addGridEnum("allProjectGrid", "PhaseValue", "Phase");
+        addGridEnum("myProjectGrid", "PhaseValue", "Phase");
+        addGridEnum("allProjectGrid", "State", "ProjectCommoneState");
+        addGridEnum("myProjectGrid", "State", "ProjectCommoneState");
+
+        $("body").css("overflow", "hidden");
+
+        function onValueChanged(e) {
+            var url = window.location.href.split('?')[0] + "?ProjectInfoID=" + e.value;
+            window.location.href = url;
+        }
+
+        function onDrawingCell(e) {
+            var record = e.record, column = e.column, field = e.field, value = e.value;
+            if (field == "Enter")
+                e.cellHtml = '<span class="Enter"  title="进入" onclick="javascript:ChangeProject(\'' + record.ID + '\')"><span>';
+            if (field == "Cancel")
+                e.cellHtml = '<span class="Mark"  title="取消常用" onclick="javascript:CancelProject(\'' + record.ID + '\')"><span>';
+            if (field == "Mark")
+                e.cellHtml = '<span class="Mark" title="设为常用"onclick="javascript:SetFocusProject(\'' + record.ID + '\')"></span>';
+        }
+
+        function onDrawNode(e) {
+            if (e.node.AuthType != "FullControl") {
+                e.nodeStyle = 'color:gray;';
+            }
+        }
+
+        function showAtEl(e) {
+            var win = mini.get("chooseWin");
+            win.showAtEl(e.sender.el, {
+                xAlign: "left",
+                yAlign: "below"
+            });
+        }
+
+        function ChangeProject(projectInfoID) {
+            var url = window.location.href.split('?')[0] + "?ProjectInfoID=" + projectInfoID;
+            window.location.href = url;
+        }
+
+        function CancelProject(projectInfoID) {
+            addExecuteParam("ProjectInfoID", projectInfoID);
+            execute("CancelFocusProject", { onComplete: function (data) {
+                mini.get("allProjectGrid").reload();
+                mini.get("myProjectGrid").reload();
+            }
+            });
+        }
+
+        function SetFocusProject(projectInfoID) {
+            addExecuteParam("ProjectInfoID", projectInfoID);
+            execute("SetFocusProject", { onComplete: function (data) {
+                mini.get("allProjectGrid").reload();
+                mini.get("myProjectGrid").reload();
+            }
+            });
+        }
+
+        function ontabClick(defineID, code, ID, linkUrl) {
+            currentCode = code;
+            $(".tab1402-active-4").removeClass("tab1402-active-4").addClass("tab1402-4");
+            $(".tab1402-active-2").removeClass("tab1402-active-2").addClass("tab1402-2");
+            var className = $("#" + ID).attr('class');
+            if (className == "tab1402-2")
+                $("#" + ID).removeClass(className).addClass("tab1402-active-2");
+            else
+                $("#" + ID).removeClass(className).addClass("tab1402-active-4");
+            var url = changeToFullUrl("GetSpaceDefine");
+            var requestUrl = url.split('?')[0] + "?ProjectInfoID=" + projectInfo.ID + "&DefineID=" + defineID + "&SpaceCode=" + code;
+            mini.get("mytree").load(requestUrl);
+            var mainTabs = mini.get("mainTab"); var tab = mainTabs.getTabs()[0];
+            if (linkUrl) {
+                tab.url = linkUrl;
+                mainTabs.reloadTab(tab);
+            }
+            else {
+                var node = mini.get("mytree").getSelectedNode();
+                if (node && node.LinkUrl) {
+                    var linkUrl = "";
+                    if (node.LinkUrl.indexOf("?") >= 0) {
+                        if (node.AuthType == "View")
+                            linkUrl = node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&FuncType=View&AuthType=" + node.AuthType;
+                        else
+                            linkUrl = node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&AuthType=" + node.AuthType;
+                    }
+                    else {
+                        if (node.AuthType == "View")
+                            linkUrl = node.LinkUrl + "?ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&FuncType=View&AuthType=" + node.AuthType;
+                        else
+                            linkUrl = node.LinkUrl + "?ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&AuthType=" + node.AuthType;
+                    }
+                    tab.url = linkUrl;
+                    mainTabs.reloadTab(tab);
+                }
+            }
+            hiddenMore();
+        }
+
+        function hiddenMore() {
+            $("#menu").hide();
+        }
+
+        function showMore() {
+            $("#menu").show();
+        }
+
+        function onNodeClick(e) {
+            var mainTabs = mini.get("mainTab"); var tab = mainTabs.getTabs()[0];
+            if (e.node.LinkUrl && e.node.LinkUrl != "") {
+                var linkUrl = "";
+                if (e.node.LinkUrl.indexOf("?") >= 0) {
+                    if (e.node.AuthType == "View")
+                        linkUrl = e.node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&FuncType=View&AuthType=" + e.node.AuthType;
+                    else
+                        linkUrl = e.node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&AuthType=" + e.node.AuthType;
+                }
+                else {
+                    if (e.node.AuthType == "View")
+                        linkUrl = e.node.LinkUrl + "?ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&FuncType=View&AuthType=" + e.node.AuthType;
+                    else
+                        linkUrl = e.node.LinkUrl + "?ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&AuthType=" + e.node.AuthType;
+                }
+                tab.url = linkUrl;
+                mainTabs.reloadTab(tab);
+            }
+        }
+
+    </script>
+    <style type="text/css">
+        .Root {
+            background: url(/CommonWebResource/RelateResource/image/icons/catalog.gif) no-repeat;
+        }
+
+        .Catalog {
+            background: url(/CommonWebResource/RelateResource/image/icons/catalog.gif) no-repeat;
+        }
+
+        .Feature {
+            background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+        }
+
+        .Mark, .Enter {
+            width: 16px;
+            height: 16px;
+            overflow: hidden;
+            margin: auto;
+            text-align: center;
+            display: block;
+            cursor: hand;
+            background: url(/CommonWebResource/Theme/Default/MiniUI/icons/preview.png) no-repeat;
+        }
+
+        .Enter {
+            background: url(/CommonWebResource/Theme/Default/MiniUI/icons/goto.gif) no-repeat;
+        }
+
+        .mini-tabs-bodys {
+            padding: 0 0 0 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .icon-switch {
+            background: url(/Project/Scripts/Tab/switch.png) no-repeat;
+        }
+
+        .icon-tree {
+            background: url(/Project/Scripts/Tab/tree.png) no-repeat;
+        }
+    </style>
+}

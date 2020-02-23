@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <form id="dataForm" method="post" autogetdata="false">
+        <div class="formDiv">
+            <fieldset>
+                <legend>完工信息</legend>
+                <div>
+                    <table>
+                        <tr>
+                            <td style="width: 30%;">
+                                实际完工日期
+                            </td>
+                            <td style="padding-right: 40px; width: 70%;">
+                                <input name="FactFinishDate" class="mini-datepicker" style="width: 100%" value="@DateTime.Now.ToShortDateString()" required="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+</script>

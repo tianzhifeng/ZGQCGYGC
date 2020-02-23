@@ -1,0 +1,221 @@
+﻿@{
+    ViewBag.Title = "照片综合查询";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<script src="~/Scripts/Main/js/timeago.min.js" type="text/javascript"></script>
+<script src="~/Scripts/Main/js/partial.js" type="text/javascript"></script>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="addVideo();" plain="true">增加</a>
+                <a class="mini-button" id="btnEdit" iconcls="icon-edit" onclick="updateVideo();" plain="true">编辑</a>
+                <a class="mini-button" id="btnDel" iconcls="icon-remove" onclick="doVideo('DeleteVideo', '删除');" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <div id="showMine" name="showMine" checked="false" class="mini-checkbox" text="显示我上传的" onvaluechanged="onCheckBoxValueChanged"></div>
+                &nbsp;
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入标题" style="width: 250px;"
+                       onenter="tabSearch();" onbuttonclick="tabSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit" id='divGrid'>
+    <div id="dataGrid" url="GetVideoList" class="mini-datagrid" style="width: 100%; height: 100%;"
+         idfield="ID" multiselect="true" showcolumns="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Content" width="*" headeralign="center" allowsort="false" renderer="onContentRenderer">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    normalParamSettings.searchFields = "Title";
+
+    function onCheckBoxValueChanged() {
+        var dataGrid = mini.get('dataGrid');
+        var cbox = mini.get('showMine');
+        dataGrid.setUrl('GetVideoList?EngineeringInfoID=' + engineeringInfoID + '&IsMine=' + cbox.getValue());
+        tabSearch();
+    }
+
+    function onContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table class='innerTable' width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+
+        var url = "GetPic?fileId=" + rec.FileID + "&width=140&height=106";
+        var $img = $("<a href='javascript:void(0);' onclick='$onViewImages(\"" + rec.FileID + "\")'><img src='" + url + "'></a>");
+        var $tip = $("<div class='picTip'>共" + rec.PicCount + "张</div>");
+        //第一列
+        var $tr1td1 = $("<td rowspan='4' style='width:140px;position:relative'></td>").append($img).append($tip);
+
+        //第二列
+        //第一行
+        var $tr1td2 = $("<td></td>").append($("<h3 style='display:inline'></h3>").text(rec.Title || "-"));
+        var $tr1 = $("<tr></tr>").append($tr1td1).append($tr1td2);
+        $table.append($("<tr></tr>").append($tr1));
+
+        //第二行
+        var $tr2td2 = $("<td></td>");
+        var $remark = $('<span class="remark"><span/>').text(rec.Remark || "-");
+        $tr2td2.append($remark);
+        var $tr2 = $("<tr ></tr>").append($tr2td2);
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td2 = $("<td></td>");
+        $tr3td2.append($('<h0></h0>').text("标段：" + rec.SectionName));
+        $tr3td2.append($('<h0  class="leftDistance"></h0>').text("类别：" + rec.ProjectVideoType));
+
+        var isPulish = "未发布";
+        if (rec.IsPublish == "1") {
+            isPulish = "已发布";
+        }
+        var isPublishLink = "<a  class='publishBtn'  href=\"javascript:void(0);\" onclick=\"onPublish('" + rec.ID + "'," + rec.IsPublish + ")\">" + isPulish + "</a>";
+        $tr3td2.append($('<h0 class="leftDistance">状态：</h0>').append($(isPublishLink)));
+        var logLink = "<a class='logBtn' href=\"javascript:void(0);\" onclick=\"$onViewLog('" + rec.ID + "')\">查看</a>";
+        $tr3td2.append($('<h0 class="leftDistance">日志：</h0>').append($(logLink)));
+
+        var d = new Date(rec.CreateDate);
+        var hourDescrib = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        $hourDescrib = $('<span class="stateSpan" title = "' + hourDescrib + '"></span>').timeago();
+        $tr3td2.append($hourDescrib);
+
+        var $tr3 = $("<tr></tr>").append($tr3td2);
+        $table.append($tr3);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+    function addVideo() {
+        openWindow("PageView?TmplCode=SCProjectVideo&EngineeringInfoID=" + engineeringInfoID);
+    }
+
+    function updateVideo() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一条记录"); return; }
+        var url = "PageView?TmplCode=SCProjectVideo&ID=" + row.ID;
+        openWindow(url, {
+            refresh: false, title: "编辑图片",
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function doVideo(action, actionName) {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一条记录"); return;
+        }
+        msgUI("您确定要" + actionName + "选中内容吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ListData", mini.encode(rows));
+            execute(action, {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onPublish(id, isPublish) {
+        if (isPublish == "1") {
+            msgUI("是否取消发布？", 2, function (d) {
+                if (d == "ok") {
+                    addExecuteParam("ID", id);
+                    execute("DisPublishVideo", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            tabSearch();
+                        }, validateForm: false
+                    });
+                }
+            });
+        }
+        else {
+            msgUI("是否发布？", 2, function (d) {
+                if (d == "ok") {
+                    addExecuteParam("ID", id);
+                    execute("PublishVideo", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            tabSearch();
+                        }, validateForm: false
+                    });
+                }
+            });
+        }
+    }
+
+
+
+</script>
+<style>
+    .stateSpan {
+        padding: 0px 8px !important;
+        float: right !important;
+        border-radius: 15px;
+        font-size: 12px;
+        background-color: transparent !important;
+        margin-right: 0px !important;
+    }
+
+    .leftDistance {
+        padding-left: 20px;
+    }
+
+    .remark {
+        width: 60%;
+        float: left !important;
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow: hidden;
+        height: 60px;
+        line-height: 20px;
+    }
+
+    .picTip {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        color: white;
+        background-color: #42433D;
+        opacity: 0.5;
+        padding: 3px;
+    }
+
+    .publishBtn {
+        background: #2A445B;
+        color: white;
+        width: 80px;
+        height: 20px;
+        border-radius: 10px;
+        text-align: center;
+        text-decoration: none;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .logBtn {
+        background: #9C0E0C;
+        color: white;
+        width: 80px;
+        height: 20px;
+        border-radius: 10px;
+        text-align: center;
+        text-decoration: none;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+</style>

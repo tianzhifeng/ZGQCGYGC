@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "问卷问题信息维护";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="add({title:'增加',width:600,height:320});" plain="true">增加</a>
+                <a class="mini-button" id="btnEdit" iconcls="icon-edit" onclick="edit({title:'编辑',width:600,height:320})" plain="true">编辑</a>
+                <a class="mini-button" id="btnDel" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入问题标题" style="width: 200px;"
+                    onenter="quickSearch('QuestionName');" onbuttonclick="quickSearch('QuestionName');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetList" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" sortField="ID" sortOrder="desc">
+        <div property="columns">
+            <div type="checkcolumn">
+                选择
+            </div>
+            <div field="QuestionName" headeralign="center" width="120" allowsort="true" align="left">
+                问题标题</div>
+            <div field="QuestionType" headeralign="center" width="100" allowsort="true" align="center">
+                问题类型</div>
+            <div field="IsMustAnswer" headeralign="center" width="80" allowsort="true" align="center">
+                是否必须回复</div>
+            <div field="IsComment" width="90" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                是否需要评论</div>
+            <div field="CreateUserName" width="100" headeralign="center" allowsort="true" align="center">
+                创建人</div>
+            <div field="CreateDate" width="90" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                创建时间</div>
+            <div field="Enter" headeralign="center" width="100" align="center" renderer="onEnterRenderer">
+                维护选项</div>              
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; "
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="13%" align="center">
+                    问题标题
+                </td>
+                <td width="20%" align="left">
+                    <input class="mini-textbox" name="$LK$QuestionName" style="width: 100%;"  onenter="search();"/>
+                </td>
+                <td width="13%" align="center">
+                    问题类型
+                </td>
+                <td width="20%" align="left">
+                    <input name="$EQ$QuestionType" class="mini-combobox" style="width: 100%" data="QuestionType" 
+                    valuefield="value" textfield="text" shownullitem="true" onenter="search();" />
+                </td>
+                
+            </tr>
+            <tr>
+                <td width="13%" align="center">
+                    是否必须回复
+                </td>
+                <td width="20%" align="left">
+                    <input name="$EQ$IsMustAnswer" class="mini-combobox" style="width: 100%" data="TrueOrFalse" 
+                    valuefield="value" textfield="text" shownullitem="true" onenter="search();" />
+                </td>
+                <td width="13%" align="center">
+                    是否需要评论
+                </td>
+                <td width="20%" align="left">
+                    <input name="$EQ$IsComment" class="mini-combobox" style="width: 100%" data="TrueOrFalse" 
+                    valuefield="value" textfield="text" shownullitem="true" onenter="search();" />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("System.TrueOrFalse")
+    @Html.GetEnum("OA.QuestionType")
+</script>
+<script type="text/javascript">
+
+    //为Grid枚举列指定枚举定义
+    addGridEnum("dataGrid", "IsMustAnswer", "TrueOrFalse");
+    addGridEnum("dataGrid", "IsComment", "TrueOrFalse");
+
+    //注册Grid链接列
+    addGridLink('dataGrid', 'QuestionName', 'Edit?ID={ID}', { funcType: 'view', width: 600, height: 320 });
+
+    function doEnter(ID) {
+        url = "/OfficeAuto/SurveyOption/Edit?QuestionID=" + ID;
+        openWindow(url, { width: 520, height: 350 });
+    }
+
+    function onEnterRenderer(e) {
+        var record = e.record;
+        var thtml = "";
+        if (record.QuestionType == "文本") {
+            thtml = '<span>不可维护</span> ';
+        }
+        else {
+            if (getQueryString("FuncType") == "View")
+                thtml = '<a href="javascript:void(0);"  onclick="doEnter(\'' + record.ID + '\')">查看</span></a> ';
+            else
+                thtml = '<a href="javascript:void(0);"  onclick="doEnter(\'' + record.ID + '\')">编辑</span></a> ';
+        }
+        return thtml;
+    }
+
+
+</script>

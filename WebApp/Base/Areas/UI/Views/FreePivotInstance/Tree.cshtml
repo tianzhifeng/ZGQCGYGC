@@ -1,0 +1,93 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="150" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetTree" contextmenu="#treeMenu" allowdrag="true" allowdrop="true"
+                ongivefeedback="onNodeDroping" onbeforedrop="onNodeDrop" allowleafdropin="true" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID"
+                resultastree="false" onnodeclick="onNodeSelect" expandonload="1" ondragstart="ChangeText">
+            </ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <!-- 首先放一个div，用做loading效果 -->
+        <div id="load" style="vertical-align: middle; text-align: center; height: 300px;">
+            <h1>
+                loading</h1>
+        </div>
+        <iframe id="frame" style="width: 100%; height: 100%; border: 0;" src=""></iframe>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onTreeMenuBeforeOpen">
+    <li name="Add" iconcls="icon-add" onclick="nodeAdding({url:'NodeEdit?FreePivotID={FreePivotID}'});">增加透视表</li>
+    <li name="Edit" iconcls="icon-edit" onclick="nodeEditing();">编辑透视表</li>
+    <li name="Delete" iconcls="icon-remove" onclick="nodeDeleting();">删除透视表</li>
+    <li name="Settings" iconcls="icon-setting" onclick="setLabel('Items');">透视表设置</li>
+</ul>
+<script type="text/javascript">
+    var frame = document.getElementById("frame");
+    var load = document.getElementById("load");
+    frame.style.display = "none"; //隐藏 
+    load.style.display = "block"; //显示
+    frame.onreadystatechange = function () {
+        if (this.readyState == "complete") {
+            // 解释：一个iframe加载完毕的状态是complete,
+            // 就象xmlhttp里的那个==4一样,这些都是规定的
+            //load.innerHTML = "load complete!";
+            load.style.display = "none";
+            frame.style.display = "block";
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function setLabel(view) {
+        var node = mini.get("dataTree").getSelectedNode();
+        openWindow(view + "?ID=" + node.ID);
+    }
+
+    function onNodeSelect(e) {
+        if (e.node.Type == "Category") {
+            $("#frame").attr("src", "");
+        }
+        else {
+            $("#frame").attr("src", "/DevPivotGrid/PivotGrid.aspx?ID=" + e.node.ID);
+            frame.style.display = "none"; //隐藏 
+            load.style.display = "block"; //显示
+        }
+    }
+
+    function onTreeMenuBeforeOpen(e) {
+        var menu = e.sender;
+        var Add = mini.getbyName("Add", menu);
+        var Edit = mini.getbyName("Edit", menu);
+        var Delete = mini.getbyName("Delete", menu);
+        var Settings = mini.getbyName("Settings", menu);
+
+
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node || node.Type == "Category") {
+            Add.show();
+            Edit.show();
+            Delete.show();
+            Settings.hide();
+        }
+        else {
+            Add.hide();
+            Edit.show();
+            Delete.show();
+            Settings.show();
+        }
+    }
+
+    function ChangeText(e) {
+        e.dragText = "<font size='2'>移动节点：" + e.node.Name + "</font>";
+    }
+
+    function onNodeDroping(e) {
+        //不能拖放到非同级节点的前后
+        if ((e.effect == "before" || e.effect == "after") && e.targetNode.ParentID != e.node.ParentID)
+            e.effect = "no";
+        if (e.effect == "add")
+            e.effect = "no";
+    }
+</script>

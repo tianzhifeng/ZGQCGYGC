@@ -1,0 +1,906 @@
+﻿@{
+    ViewBag.Title = "Execute";
+}
+
+@{
+    if (ViewBag.MajorParentNode == "Project")
+    {
+        var wbsNode = ViewBag.RootNode as Project.Logic.Domain.S_W_WBS;
+        var spaceCode = ViewBag.SpaceCode;
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+        borderstyle="border:0;">
+        <div title="计划内提资">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;"></td>
+                        <td style="white-space: nowrap;">
+                            <input id='InPlanGridKey' class='mini-buttonedit gw-searchbox' emptytext='请输入资料名称'
+                                onenter="quickSearch('Name', { gridId: 'InPlanGrid', queryBoxId: 'InPlanGridKey' });"
+                                onbuttonclick="quickSearch('Name', { gridId: 'InPlanGrid', queryBoxId: 'InPlanGridKey' });" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="InPlanGrid" class="mini-datagrid" url="GetPlanList?WBSID=@wbsNode.ID&SpaceCode=@spaceCode" style="width: 100%; height: 100%;"
+                         sortorder="asc" multiselect="true" idfield="id" onshowrowdetail="onShowRowDetail" sortfield="PlanFinishDate" sortorder="asc">
+                    <div property="columns">
+                        <div type="expandcolumn">
+                        </div>
+                        <div field="Name" width="*" headeralign="center" allowsort="true" align="left">
+                            资料名称
+                        </div>
+                        <div field="PlanEndDate" width="120" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd">
+                            计划完成时间
+                        </div>
+                        <div field="PutInfo" width="80" headeralign="center" align="center">
+                            提出资料
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="计划外提资">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="startFlowWithNoSubProject('@wbsNode.ID');" plain="true">提出资料
+                            </a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input id='OutPlanGridKey' class='mini-buttonedit gw-searchbox' emptytext='请输入资料名称'
+                                onenter="quickSearch('CooperationContent', { gridId: 'OutPlanGrid', queryBoxId: 'OutPlanGridKey' });"
+                                onbuttonclick="quickSearch('CooperationContent', { gridId: 'OutPlanGrid', queryBoxId: 'OutPlanGridKey' });" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="OutPlanGrid" class="mini-datagrid" url="GetMajorInputList?WBSID=@wbsNode.ID&SpaceCode=@spaceCode" style="width: 100%; height: 100%;"
+                         multiselect="true" idfield="id" sortfield="DelegateDate" sortorder="asc">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="ViewReceive" width="80" headeralign="center" allowsort="true" align="center">
+                            接收情况
+                        </div>
+                        <div field="CooperationContent" width="300" headeralign="center" allowsort="true"
+                            align="left">
+                            资料名称
+                        </div>
+                        <div field="OutMajorValue" width="80" headeralign="center" allowsort="true" align="center">
+                            提出专业
+                        </div>
+                        <div field="InMajorValue" width="120" headeralign="center" allowsort="true" align="left">
+                            接收专业
+                        </div>
+                        <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                            提交人
+                        </div>
+                        <div field="DelegateDate" width="80" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd">
+                            提交日期
+                        </div>
+                        <div field="PictureNum" width="80" headeralign="center" allowsort="true" align="right">
+                            附图（张）
+                        </div>
+                        <div field="AnnexNum" width="80" headeralign="center" allowsort="true" align="right">
+                            附件（份）
+                        </div>
+                        <div field="RecieveDate" width="120" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd">
+                            接收日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="直接分享">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td align="left">
+                            <a class="mini-button" iconcls="icon-add" onclick="addShareInfoWithNoSub('@wbsNode.ID');">增加</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="editShareInfo();">编辑</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delShareInfo();">删除</a>
+                        </td>
+                        <td class="gw-toolbar-right">
+                            <input id="majorShareInfoGridKey" class="mini-buttonedit gw-searchbox" emptytext="请输入文件名称或资料描述"
+                                onenter="quickSearch('InfoDetial,FileName', { gridId: 'majorShareInfoGrid', queryBoxId: 'majorShareInfoGridKey' });"
+                                onbuttonclick="quickSearch('InfoDetial,FileName', { gridId: 'majorShareInfoGrid', queryBoxId: 'majorShareInfoGridKey' });" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit" style="height: 100px;">
+                <div id="majorShareInfoGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;" borderstyle="border-left:0px;"
+                    multiselect="true" idfield="id" sortfield="CreateDate" sortorder="asc">
+                    <div property="columns">
+                        <div type="indexcolumn">
+                        </div>
+                        <div field="Download" width="60" headeralign="center" align="center">
+                            下载附件
+                        </div>
+                        <div field="WBSValue" width="60" headeralign="center" allowsort="true" align="center">
+                            专业
+                        </div>
+                        <div field="FileName" width="200" headeralign="center" allowsort="true" align="left">
+                            文件名称
+                        </div>
+                        <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                            图纸编号
+                        </div>
+                        <div field="Source" width="80" headeralign="center" allowsort="true" align="center">
+                            来源
+                        </div>
+                        <div field="Type" width="80" headeralign="center" allowsort="true" align="center">
+                            类型
+                        </div>
+                        <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                            提交人
+                        </div>
+                        <div field="CreateDate" width="120" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd HH:mm">
+                            提出时间
+                        </div>
+                        <div field="InfoDetial" width="200" headeralign="center" allowsort="true" align="left">
+                            资料描述
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="提资确认">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-ok" onclick="confirmReceive();" plain="true">确认接收</a>
+                            <a class="mini-button" iconcls="icon-cancel" onclick="refuseReceive();" plain="true">拒绝接收
+                            </a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit searchbox" id="receiveGridKey" emptytext="请输入资料名称"
+                                style="width: 200px;" onenter="quickSearch('Name', { gridId: 'receiveGrid', queryBoxId: 'receiveGridKey' });"
+                                onbuttonclick="quickSearch('Name', { gridId: 'receiveGrid', queryBoxId: 'receiveGridKey' });" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit" style="height: 100px;">
+                <div id="receiveGrid" url="GetReceiveList?WBSID=@wbsNode.ID&SpaceCode=@spaceCode" class="mini-datagrid" style="width: 100%; height: 100%;"
+                         idfield="ID" multiselect="true" sortfield="FetchOutDate" sortorder="asc">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="ViewForm" width="80" headeralign="center" allowsort="true" align="center">
+                            查看
+                        </div>
+                        <div field="Name" width="350" headeralign="center" allowsort="true">
+                            资料名称
+                        </div>
+                        <div field="OutMajor" width="80" headeralign="center" allowsort="true" align="center">
+                            提出专业
+                        </div>
+                        <div field="PicNo" width="80" headeralign="center" allowsort="true" align="right">
+                            附图（张）
+                        </div>
+                        <div field="DrawingNo" width="80" headeralign="center" allowsort="true" align="right">
+                            附件（份）
+                        </div>
+                        <div field="FetchOutDate" width="90" headeralign="center" dateformat="yyyy-MM-dd"
+                            allowsort="true" align="center">
+                            提出日期
+                        </div>
+                        <div field="FetchOutUser" width="90" headeralign="center" allowsort="true" align="center">
+                            提出人
+                        </div>
+                        <div field="ReceiveState" width="80" headeralign="center" allowsort="true" align="center">
+                            接收状态
+                        </div>
+                        <div field="ReceiverName" width="80" headeralign="center" allowsort="true" align="center">
+                            接收人
+                        </div>
+                        <div field="ReceiveDate" width="90" dateformat="yyyy-MM-dd" headeralign="center"
+                            allowsort="true" align="center">
+                            接收日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="接收文件一览">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td align="left">
+                            @*<a class="mini-button" iconcls="icon-add" onclick="addShareInfoWithNoSub('@wbsNode.ID');">增加</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="editShareInfo();">编辑</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delShareInfo();">删除</a>*@
+                        </td>
+                        <td class="gw-toolbar-right">
+                            <input id="majorshareInfoGridKey" class="mini-buttonedit gw-searchbox" emptytext="请输入文件名称或资料描述"
+                                onenter="quickSearch('InfoDetial,FileName', { gridId: 'shareInfoGrid', queryBoxId: 'shareInfoGridKey' });"
+                                onbuttonclick="quickSearch('InfoDetial,FileName', { gridId: 'shareInfoGrid', queryBoxId: 'shareInfoGridKey' });" />
+                                    <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit" style="height: 100px;">
+                <div id="shareInfoGrid" class="mini-datagrid" url="GetShareInfoList?WBSID=@wbsNode.ID&SpaceCode=@spaceCode" style="width: 100%; height: 100%;"
+                         multiselect="true" idfield="id" sortfield="CreateDate" sortorder="asc">
+                    <div property="columns">
+                        <div type="indexcolumn">
+                        </div>
+                        <div field="FormID" width="60" headeralign="center" align="center">
+                            提资单
+                        </div>
+                        <div field="Download" width="60" headeralign="center" align="center">
+                            下载附件
+                        </div>
+                        <div field="WBSValue" width="60" headeralign="center" allowsort="true" align="center">
+                            专业
+                        </div>
+                        <div field="FileName" width="200" headeralign="center" allowsort="true" align="left">
+                            文件名称
+                        </div>
+                        <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                            图纸编号
+                        </div>
+                        <div field="Source" width="80" headeralign="center" allowsort="true" align="center">
+                            来源
+                        </div>
+                        <div field="SourceType" width="80" headeralign="center" allowsort="true" align="center">
+                            分类
+                        </div>
+                        <div field="Type" width="80" headeralign="center" allowsort="true" align="center">
+                            类型
+                        </div>
+                        <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                            提交人
+                        </div>
+                        <div field="CreateDate" width="120" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd HH:mm">
+                            提出时间
+                        </div>
+                        <div field="InfoDetial" width="200" headeralign="center" allowsort="true" align="left">
+                            资料描述
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    else
+    {
+    <div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="west" region="west" width="250" expanded="true" showspliticon="true"
+            showheader="false" style="border-top: 0px">
+            <ul id="dataTree" class="mini-tree" url="GetSubProjectTree" style="width: 100%; height: 100%;"
+                showtreeicon="true" textfield="Name" iconfield="WBSType" idfield="VirtualID" enablehottrack="false"
+                parentfield="ParentID" resultastree="false" expandonload="1" onnodeselect="onNodeSelect">
+            </ul>
+        </div>
+        <div title="center" region="center" style="border-top: 0px">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+                borderstyle="border:0;">
+                <div title="计划内提资">
+                    <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 100%;"></td>
+                                <td style="white-space: nowrap;">
+                                    <input id='InPlanGridKey' class='mini-buttonedit gw-searchbox' emptytext='请输入资料名称'
+                                        onenter="quickSearch('CooperationContent', { gridId: 'InPlanGrid', queryBoxId: 'InPlanGridKey' });"
+                                        onbuttonclick="quickSearch('CooperationContent', { gridId: 'InPlanGrid', queryBoxId: 'InPlanGridKey' });" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="InPlanGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;" borderstyle="border-left:0px;"
+                            sortorder="asc" multiselect="true" idfield="id" onshowrowdetail="onShowRowDetail" sortfield="PlanFinishDate" sortorder="asc">
+                            <div property="columns">
+                                <div type="expandcolumn">
+                                </div>
+                                <div field="Name" width="300" headeralign="center" allowsort="true" align="left">
+                                    工作内容
+                                </div>
+                                <div field="InMajor" width="80" headeralign="center" align="center">
+                                    接收专业
+                                </div>
+                                <div field="PlanEndDate" width="120" headeralign="center" allowsort="true" align="center"
+                                    dateformat="yyyy-MM-dd">
+                                    计划进度时间
+                                </div>
+                                <div field="PutInfo" width="80" headeralign="center" align="center">
+                                    提出资料
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div title="计划外提资">
+                    <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 100%;">
+                                    <a class="mini-button" iconcls="icon-add" onclick="startFlow();" plain="true">提出资料
+                                    </a>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <input id='OutPlanGridKey' class='mini-buttonedit gw-searchbox' emptytext='请输入资料名称'
+                                        onenter="quickSearch('CooperationContent', { gridId: 'OutPlanGrid', queryBoxId: 'OutPlanGridKey' });"
+                                        onbuttonclick="quickSearch('CooperationContent', { gridId: 'OutPlanGrid', queryBoxId: 'OutPlanGridKey' });" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="OutPlanGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;" borderstyle="border-left:0px;"
+                            multiselect="true" idfield="id" sortfield="DelegateDate" sortorder="asc">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="FlwoPahse" width="80" headeralign="center" allowsort="true" align="center">
+                                    流程状态
+                                </div>
+                                <div field="StepName" width="80" headeralign="center" allowsort="true" align="center">
+                                    当前环节
+                                </div>
+                                <div field="OutMajorValue" width="80" headeralign="center" allowsort="true" align="center">
+                                    提出专业
+                                </div>
+                                <div field="InMajorValue" width="120" headeralign="center" allowsort="true" align="left">
+                                    接收专业
+                                </div>
+                                <div field="CooperationContent" width="300" headeralign="center" allowsort="true"
+                                     align="left">
+                                    资料说明
+                                </div>
+                                <div field="WASTCZLYY" width="200" headeralign="center" allowsort="true" align="left">
+                                    未按时提出资料原因
+                                </div>
+                                <div field="BCZLYY" width="200" headeralign="center" allowsort="true" align="left">
+                                    补充资料原因
+                                </div>
+                                <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                                    提交人
+                                </div>
+                                <div field="DelegateDate" width="80" headeralign="center" allowsort="true" align="center"
+                                    dateformat="yyyy-MM-dd">
+                                    提资日期
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div title="接收文件一览">
+                    <div class="mini-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td align="left">
+                                    @* <a class="mini-button" iconcls="icon-add" onclick="addShareInfo();">增加</a>
+                                        <a class="mini-button" iconcls="icon-edit" onclick="editShareInfo();">编辑</a>
+                                        <a class="mini-button" iconcls="icon-remove" onclick="delShareInfo();">删除</a>*@
+                                </td>
+                                <td class="gw-toolbar-right">
+                                    <input id="shareInfoGridKey" class="mini-buttonedit gw-searchbox" emptytext="请输入文件名称或资料描述"
+                                        onenter="quickSearch('InfoDetial,FileName', { gridId: 'shareInfoGrid', queryBoxId: 'shareInfoGridKey' });"
+                                        onbuttonclick="quickSearch('InfoDetial,FileName', { gridId: 'shareInfoGrid', queryBoxId: 'shareInfoGridKey' });" />
+                                    <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit" style="height: 100px;">
+                        <div id="shareInfoGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;" borderstyle="border-left:0px;"
+                            multiselect="true" idfield="id" sortfield="CreateDate" sortorder="asc">
+                            <div property="columns">
+                                <div type="indexcolumn">
+                                </div>
+                                <div field="FormID" width="60" headeralign="center" align="center">
+                                    提资单
+                                </div>
+                                <div field="Download" width="60" headeralign="center" align="center">
+                                    下载附件
+                                </div>
+                                <div field="WBSValue" width="60" headeralign="center" allowsort="true" align="center">
+                                    专业
+                                </div>
+                                <div field="FileName" width="200" headeralign="center" allowsort="true" align="left">
+                                    文件名称
+                                </div>
+                                @*<div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                                    图纸编号
+                                </div>*@
+                                @*<div field="Source" width="80" headeralign="center" allowsort="true" align="center">
+                                    来源
+                                </div>*@
+                                @*<div field="SourceType" width="80" headeralign="center" allowsort="true" align="center">
+                                    分类
+                                </div>*@
+                                <div field="Type" width="80" headeralign="center" allowsort="true" align="center">
+                                    类型
+                                </div>
+                                <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                                    提交人
+                                </div>
+                                <div field="CreateDate" width="120" headeralign="center" allowsort="true" align="center"
+                                    dateformat="yyyy-MM-dd HH:mm">
+                                    提出时间
+                                </div>
+                                <div field="InfoDetial" width="200" headeralign="center" allowsort="true" align="left">
+                                    提资说明
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+}
+
+<div id="detailGrid_Form" style="display: none; width: 100%;">
+    <div class="mini-fit" style="padding-top: 5px;">
+        <div id="detailTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+            <div title="提资单情况">
+                <div id="childGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 300px;" borderstyle="border:0px;"
+                    showfooter="false">
+                    <div property="columns">
+                        <div type="indexcolumn">
+                        </div>
+                        <div field="ViewReceive" width="80" headeralign="center" allowsort="true" align="center">
+                            接收情况
+                        </div>
+                        <div field="CooperationContent" width="300" headeralign="center" allowsort="true" align="left">
+                            资料名称
+                        </div>
+                        <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                            提交人
+                        </div>
+                        <div field="DelegateDate" width="80" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd">
+                            提交日期
+                        </div>
+                        <div field="PictureNum" width="80" headeralign="center" allowsort="true" align="right">
+                            附图（张）
+                        </div>
+                        <div field="AnnexNum" width="80" headeralign="center" allowsort="true" align="right">
+                            附件（张）
+                        </div>
+                        <div field="InMajorValue" width="200" headeralign="center" allowsort="true" align="center">
+                            接收专业
+                        </div>
+                        <div field="RecieveDate" width="80" headeralign="center" allowsort="true" align="center"
+                            dateformat="yyyy-MM-dd">
+                            接收日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @{
+                if (ViewBag.ModeCode.IndexOf("ElectricalPower") >= 0)
+                {
+                <div title="成果情况">
+                    <div class="mini-fit">
+                        <div id="detailShareInfoGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;" borderstyle="border:0px;"
+                            multiselect="true" idfield="id" ondrawcell="onDetailShareInfoGridDrawCell">
+                            <div property="columns">
+                                <div type="indexcolumn">
+                                </div>
+                                <div field="Download" width="90" headeralign="center" align="center">
+                                    下载附件
+                                </div>
+                                <div field="AuditState" width="90" headeralign="center" allowsort="true" align="center">
+                                    是否接收
+                                </div>
+                                <div field="WBSValue" width="100" headeralign="center" allowsort="true" align="center">
+                                    专业
+                                </div>
+                                <div field="FileName" width="200" headeralign="center" allowsort="true" align="left">
+                                    文件名称
+                                </div>
+                                <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                                    图纸编号
+                                </div>
+                                <div field="Source" width="80" headeralign="center" allowsort="true" align="center">
+                                    来源
+                                </div>
+                                <div field="Type" width="80" headeralign="center" allowsort="true" align="center">
+                                    类型
+                                </div>
+                                <div field="RegisterName" width="80" headeralign="center" allowsort="true" align="center">
+                                    提交人
+                                </div>
+                                <div field="CreateDate" width="120" headeralign="center" allowsort="true" align="center"
+                                    dateformat="yyyy-MM-dd HH:mm">
+                                    提出时间
+                                </div>
+                                <div field="InfoDetial" width="200" headeralign="center" allowsort="true" align="left">
+                                    资料描述
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 690px; height: 200px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+            <table>
+                <tr>
+                    <td width="15%">文件名称</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$FileName" class="mini-textbox" style='width: 100%' /></td>
+                    <td width="15%">图纸编号</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$Code" class="mini-textbox" style='width: 100%' /></td>
+                </tr>
+                <tr>
+                    <td width="15%">来源</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$Source" class="mini-textbox" style='width: 100%' /></td>
+                    <td width="15%">分类</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$EQ$SourceType" class="mini-combobox"   data='ShareInfoSourceType'  style='width:100%' />
+                </tr>
+                <tr>
+                    <td width="15%">提交人</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$RegisterName" class="mini-textbox" style='width: 100%' /></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick='search({ gridId: "shareInfoGrid",queryBoxId:"shareInfoGridKey",searchFields:"InfoDetial,FileName"})' iconcls='icon-find' style='margin-right: 20px;'>查询</a>
+            <a class='mini-button' onclick='clearQueryForm()' iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Major");
+    @Html.GetEnum("Project.ShareInfoSourceType");
+    var modeCode = "@ViewBag.ModeCode"
+    var majorParentNode = "@ViewBag.MajorParentNode"
+    var rootNode = @Html.Raw(Formula.Helper.JsonHelper.ToJson(ViewBag.RootNode));
+</script>
+<script type="text/javascript">
+    var spaceCode = getQueryString("SpaceCode");
+    var projectInfoID = getQueryString("ProjectInfoID");
+
+    addGridEnum("InPlanGrid", "OutMajorValue", "Major");
+    addGridEnum("InPlanGrid", "InMajorValue", "Major");
+    addGridEnum("childGrid", "InMajorValue", "Major");
+    addGridEnum("OutPlanGrid", "OutMajorValue", "Major");
+    addGridEnum("OutPlanGrid", "InMajorValue", "Major");
+    addGridEnum("shareInfoGrid", "WBSValue", "Major");
+    addGridEnum("shareInfoGrid", "SourceType", "ShareInfoSourceType");
+    addGridEnum("detailShareInfoGrid", "WBSValue", "Major");
+    addGridEnum("majorShareInfoGrid", "WBSValue", "Major");
+
+    addGridEnum("receiveGrid", "OutMajor", "Major");
+
+    addGridLink('shareInfoGrid', 'FileName', '/MvcConfig/UI/Form/PageView?TmplCode=CooperationShareInfo&ID={ID}', {
+        funcType: 'view', height: '80%', width: '60%', title: '共享资料查看'
+    });
+    addGridLink('majorShareInfoGrid', 'FileName', '/MvcConfig/UI/Form/PageView?TmplCode=CooperationShareInfo&ID={ID}', {
+        funcType: 'view', height: '80%', width: '60%', title: '共享资料查看'
+    });
+    addGridLink('detailShareInfoGrid', 'FileName', '/MvcConfig/UI/Form/PageView?TmplCode=CooperationShareInfo&ID={ID}', {
+        funcType: 'view', height: '80%', width: '60%', title: '成果查看'
+    });
+    addGridLink('shareInfoGrid', 'FormID', '/Project/AutoUI/CooperationExecute/PageView?TmplCode=CooperationExecute&FlowCode=CooperationExecute&FuncType=View&ID={FormID}', {
+        funcType: 'view', height: '80%', width: '60%', title: '查看', linkText: '查看',
+        onFilter: function (e) {
+            return e.row["FormID"];
+        }
+    });
+
+    addGridButton("shareInfoGrid", "Download", {
+        linkText: "下载", onButtonClick: function (row) {
+            if (!row.Annex) { msgUI("该资料没有附件，不能下载"); return; }
+            DownloadFile(escape(row.Annex));
+        }
+    });
+    addGridButton("majorShareInfoGrid", "Download", {
+        linkText: "下载", onButtonClick: function (row) {
+            if (!row.Annex) { msgUI("该资料没有附件，不能下载"); return; }
+            DownloadFile(escape(row.Annex));
+        }
+    });
+    addGridButton("detailShareInfoGrid", "Download", {
+        linkText: "下载", onButtonClick: function (row) {
+            if (!row.Annex) { msgUI("该资料没有附件，不能下载"); return; }
+            DownloadFile(escape(row.Annex));
+        }
+    });
+
+
+    addGridButton("OutPlanGrid", "ViewReceive", {
+        linkText: "查看", onButtonClick: function (row) {
+            var url = "/MvcConfig/UI/List/PageView?TmplCode=CooperationReceiveInfo&BatchID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "接收情况", width: 700, height: 500,
+                onDestroy: function () { }
+            });
+        }
+    });
+
+    addGridButton("childGrid", "ViewReceive", {
+        linkText: "查看", onButtonClick: function (row) {
+            var url = "/MvcConfig/UI/List/PageView?TmplCode=CooperationReceiveInfo&BatchID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "接收情况", width: 700, height: 500,
+                onDestroy: function () { }
+            });
+        }
+    });
+
+
+    addGridButton("receiveGrid", "ViewForm", {
+        linkText: "查看提资单", onButtonClick: function (row) {
+            if (row.FlowID) {
+                var url = "/Project/AutoUI/CooperationExecute/PageView?TmplCode=CooperationExecute&FlowCode=CooperationExecute&FuncType=View&ID=" + row.FlowID;
+                openWindow(url, {
+                    refresh: false, title: "互提资料单", width: "60%", height: "80%",
+                    onDestroy: function () { }
+                });
+            }
+            else {
+                msgUI("没有找到互提资料单信息");
+            }
+        },
+        onFilter: function (e) {
+            return e.row["FlowID"];
+        }
+    });
+
+    var authType = getQueryString("AuthType");
+    if (authType == "FullControl") {
+        addGridButton("OutPlanGrid", "CooperationContent", {
+            linkText: "", onButtonClick: function (row) {
+                var url = "/Project/AutoUI/CooperationExecute/PageView?TmplCode=CooperationExecute&FlowCode=CooperationExecute&ID=" + row.ID;
+                openWindow(url, {
+                    title: "提出资料", width: "60%", height: "80%",
+                    refresh: false, onDestroy:
+                        function (data) {
+                            if (data == "close") return;
+                            mini.get("OutPlanGrid").reload();
+                        }
+                });
+            }
+        });
+
+        addGridButton("childGrid", "CooperationContent", {
+            linkText: "", onButtonClick: function (row) {
+                var url = "/Project/AutoUI/CooperationExecute/PageView?TmplCode=CooperationExecute&FlowCode=CooperationExecute&ID=" + row.ID;
+                openWindow(url, {
+                    title: "提出资料", width: "60%", height: "80%",
+                    refresh: false, onDestroy:
+                        function (data) {
+                            if (data == "close") return;
+                            mini.get("childGrid").reload();
+                        }
+                });
+            }
+        });
+
+        addGridButton("InPlanGrid", "PutInfo", {
+            linkText: "提出资料", onButtonClick: function (row) {
+                var url = "/Project/AutoUI/CooperationExecute/PageView?TmplCode=CooperationExecute&FlowCode=CooperationExecute&ProjectInfoID="
+                        + row.ProjectInfoID + "&WBSID=" + row.ID + "&MajorValue=" + spaceCode + "&Plan=In";
+                //if (majorParentNode == "Project")
+                //    url += "&relateWBSID=" + rootNode.ID;
+                //else{
+                //    var node = mini.get("dataTree").getSelectedNode();
+                //    url += "&relateWBSID=" + node.VirtualID;
+                //}
+                openWindow(url, {
+                    title: "提出资料", width: "60%", height: "80%",
+                    refresh: false, onDestroy:
+                        function (data) {
+                            if (data == "close") return;
+                            var childGrid = mini.get("childGrid");
+                            childGrid.setUrl("GetExecuteList?CoopPlanID=" + row.ID);
+                            childGrid.reload();
+                        }
+                });
+            }
+        });
+    }
+
+    function onDetailShareInfoGridDrawCell(e) {
+        if (e.field == "AuditState") {
+            if (e.value == "Pass")
+                e.cellHtml = "已接收";
+            else
+                e.cellHtml = "未接收";
+        }
+    }
+
+    var detailGrid_Form = document.getElementById("detailGrid_Form");
+    function onShowRowDetail(e) {
+        var grid = e.sender;
+        var row = e.record;
+        var td = grid.getRowDetailCellEl(row);
+        td.appendChild(detailGrid_Form);
+        detailGrid_Form.style.display = "block";
+        var childGrid = mini.get("childGrid");
+        childGrid.setUrl("GetExecuteList?WBSID=" + row.ID);
+        childGrid.load();
+        var detailShareInfoGrid = mini.get("detailShareInfoGrid");
+        detailShareInfoGrid.setUrl("GetShareInfoList?CooperationPlan=" + row.CooperationPlanID);
+        detailShareInfoGrid.load();
+    }
+
+    function refuseReceive() {
+        var dataGrid = mini.get("receiveGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一条记录"); return;
+        }
+        msgUI("您确定需要拒绝选中资料吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", mini.encode(rows));
+            execute("RefuseRecevie", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function confirmReceive() {
+        var dataGrid = mini.get("receiveGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一条记录"); return;
+        }
+        msgUI("您确定需要接收选中资料吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", mini.encode(rows));
+            execute("ConfirmRecevie", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function startFlowWithNoSubProject(nodeID) {
+        var url = "/Project/AutoUI/CooperationExecute/PageView?TmplCode=UnplannedCooperationExecute&closeForm=true&FlowCode=UnplannedCooperationExecute&ProjectInfoID=" +
+            projectInfoID + "&WBSID=" + nodeID + "&MajorValue=" + spaceCode;
+        openWindow(url, {
+            refresh: false, title: "提出资料", width: "60%", height: "80%",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                var outPlanGrid = mini.get("OutPlanGrid");
+                outPlanGrid.reload();
+            }
+        });
+    }
+
+    function startFlow() {
+        var node = mini.get("dataTree").getSelectedNode();
+        if (!node) { msgUI("请选择一个子项"); return; }
+        var url = "/Project/AutoUI/CooperationExecute/PageView?TmplCode=CooperationExecute&closeForm=true&FlowCode=CooperationExecute&ProjectInfoID=" +
+            projectInfoID + "&RelateWBSID=" + node.VirtualID + "&MajorValue=" + spaceCode + "&Plan=Out";
+        openWindow(url, {
+            refresh: false, title: "提出资料", width: "60%", height: "80%",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                var outPlanGrid = mini.get("OutPlanGrid");
+                outPlanGrid.reload();
+            }
+        });
+    }
+
+    function onNodeSelect(e) {
+        node = e.node;
+        var inPlanGrid = mini.get("InPlanGrid");
+        inPlanGrid.setUrl("GetPlanList?WBSID=" + node.VirtualID + "&SpaceCode=" + spaceCode + "&ProjectInfoID=" + projectInfoID);
+        quickSearch("CooperationContent", { gridId: "InPlanGrid", queryBoxId: 'InPlanGridKey' });
+        inPlanGrid.reload();
+
+        var outPlanGrid = mini.get("OutPlanGrid");
+        outPlanGrid.setUrl("GetMajorInputList?WBSID=" + node.VirtualID + "&SpaceCode=" + spaceCode);
+        quickSearch("CooperationContent", { gridId: "OutPlanGrid", queryBoxId: 'OutPlanGridKey' });
+
+        var receiveGrid = mini.get("receiveGrid");
+        receiveGrid.setUrl("GetReceiveList?WBSID=" + node.VirtualID + "&SpaceCode=" + spaceCode + "&ProjectInfoID=" + projectInfoID);
+        quickSearch("Name", { gridId: "receiveGrid", queryBoxId: 'receiveGridKey' });
+
+        var shareInfoGrid = mini.get("shareInfoGrid");
+        shareInfoGrid.setUrl("GetShareInfoList?WBSID=" + node.VirtualID + "&SpaceCode=" + spaceCode + "&ProjectInfoID=" + projectInfoID);
+        quickSearch("InfoDetial", { gridId: "shareInfoGrid", queryBoxId: 'shareInfoGridKey' });
+        
+        var majorShareInfoGrid = mini.get("majorShareInfoGrid");
+        majorShareInfoGrid.setUrl("GetMajorShareInfoList?WBSID=" + node.VirtualID);
+        quickSearch("InfoDetial", { gridId: "majorShareInfoGrid", queryBoxId: 'majorShareInfoGridKey' });
+    }
+
+    function addShareInfoWithNoSub(wbsID) {
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=CooperationShareInfo&ProjectInfoID=" + projectInfoID + "&SubProjectID=" + wbsID + "&MajorValue=" + spaceCode;
+        openWindow(url, {
+            refresh: false, title: "共享资料上传", width: "60%", height: "70%",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                mini.get("majorShareInfoGrid").reload();
+            }
+        });
+    }
+
+    function addShareInfo() {
+        var node = mini.get("dataTree").getSelectedNode();
+        if (!node) { msgUI("请选择一个子项"); return; }
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=CooperationShareInfo&ProjectInfoID=" + projectInfoID + "&SubProjectID=" + node.VirtualID + "&MajorValue=" + spaceCode;
+        openWindow(url, {
+            refresh: false, title: "共享资料上传", width: "60%", height: "70%",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                mini.get("majorShareInfoGrid").reload();
+            }
+        });
+    }
+
+    function editShareInfo() {
+        var dataGrid = mini.get("majorShareInfoGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一个资料记录"); return; }
+        if (row.Source == "CAD") { msgUI("不能修改CAD上传的共享资料"); return; }
+        if (row.Register != user.UserID) {
+            msgUI("只能编辑本人提交的文件！");
+            return;
+        }
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=CooperationShareInfo&ID=" + row.ID;
+        openWindow(url, {
+            refresh: false, title: "共享资料上传", width: "60%", height: "80%",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                dataGrid.reload();
+            }
+        });
+    }
+
+    function delShareInfo() {
+        var dataGrid = mini.get("majorShareInfoGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一个资料");
+        }
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].Register != user.UserID) {
+                msgUI("只能删除本人提交的文件！删除失败！");
+                return;
+            }
+        }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ListData", mini.encode(rows));
+            execute("DelShareInfo", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    msgUI("删除成功");
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+</script>
+<style type="text/css">
+    .mini-tabs-body {
+        overflow: hidden;
+    }
+</style>

@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "ContractView";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div class="mini-fit" id="layoutArea">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="合同分析" showheader="false" region="north" height="250" showspliticon="true">
+            <div id="xyChartContainer" class="mini-fit">
+            </div>
+        </div>
+        <div title="center" region="center">
+            <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            @Html.ExportButton()
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" id="GridArea">
+            <div id="dataGrid" url="GetContractList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                 multiselect="false" borderstyle="border:0" showpager="false" onload="onGridLoad" ondrawsummarycell="onDrawSummaryCell"
+                 sortfield="SortIndex" sortorder="asc" showsummaryrow="true">
+                <div property="columns">
+                    <div field="ProductionUnitName" width="150" headeralign="center" align="center">
+                        部门
+                    </div>
+                    <div field="ContractValue" summarytype="sum" datatype="currency" width="120" headeralign="center" align="right">
+                        合同总额（元）
+                    </div>
+                    <div field="ReceiptValue" summarytype="sum" datatype="currency" width="120" headeralign="center" align="right">
+                        收款总额（元）
+                    </div>
+                    <div field="InvoiceValue" summarytype="sum" datatype="currency" width="120" headeralign="center" align="right">
+                        开票总额（元）
+                    </div>
+                    <div field="BadDebtValue" summarytype="sum" datatype="currency" width="120" headeralign="center" align="right">
+                        坏账金额（元）
+                    </div>
+                    <div field="ReciveableValue" summarytype="sum" datatype="currency" width="120" headeralign="center" align="right">
+                        应收款总额（元）
+                    </div>
+                    <div field="RemainValue" summarytype="sum" datatype="currency" width="120" headeralign="center" align="right">
+                        剩余合同额（元）
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+
+
+    function cusTabSearch(tabData, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+        }
+        var belongYear = "All";
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "BelongYear") {
+                belongYear = tabDataInfo.value;
+                continue;
+            }
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({ Year: belongYear, queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData)
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+
+    function onGridLoad(e) {
+        if (e.result && e.result.chartData) {
+            loadingChart("xyChartContainer", e.result.chartData);
+        }
+    }
+
+    function loadingChart(divID, option) {
+        $("#" + divID).highcharts(option);
+    }
+
+    function onDrawSummaryCell(e) {
+        e.cellStyle = "text-align:right; color:Brown";
+    }
+</script>

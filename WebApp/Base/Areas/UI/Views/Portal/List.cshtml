@@ -1,0 +1,223 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="500" showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="add({url:'Edit?IsNew=false'});">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="edit({url:'Edit?IsNew=false'});">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或标题" onenter="quickSearch('Code,Title',{gridId:'dataGrid',queryBoxId:'key'});" onbuttonclick="quickSearch('Code,Title',{gridId:'dataGrid',queryBoxId:'key'});" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" onselectionchanged="bindRoleGrid" style="width: 100%; height: 100%;" url="GetList?IsNew=false" multiselect="true">
+                <div property="columns">
+                    <div type="indexcolumn" width="25">
+                    </div>
+                    <div field="Code" width="60" allowsort="true" align="center">
+                        编号
+                    </div>
+                    <div field="Title" allowsort="true">
+                        标题
+                    </div>
+                    <div field="Setting" width="45" align="center">
+                        配置
+                    </div>
+                    <div field="IsEnabled" name="IsEnabled" width="35" headeralign="center" align="center" renderer="onIsEnabledRenderer">是否失效</div>
+                    <div field="Xorder" width="25" align="center">
+                        排序
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+            <table>
+                <tr>
+                    <td>
+                        <a id="btnRole" class="mini-button" iconcls="icon-setting" plain="true" onclick="relationAppending(urlConstant.multiRole,{fullRelation:false,paramFrom:'dataGrid',isGrid:true,onDestroy:portalRelationAppended,type:0,action:'SetPortalRoleRelation'});">授权到角色</a>
+                        <a id="btnOrg" class="mini-button" iconcls="icon-setting2" plain="true" onclick="relationAppending(urlConstant.multiOrg,{fullRelation:false,paramFrom:'dataGrid',isGrid:true,onDestroy:portalRelationAppended,type:1,action:'SetPortalRoleRelation',width: 320, height: 500});">授权到组织</a>
+                        <a id="btnUser" class="mini-button" iconcls="icon-user" plain="true" onclick="relationAppending(urlConstant.multiUser,{fullRelation:true,paramFrom:'dataGrid',isGrid:true,onDestroy:portalRelationAppended,type:2,action:'SetPortalRoleRelation', width: 750, height: 595});">授权到用户</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <a class="mini-button" iconcls="icon-user" plain="true" onclick="openWindow('UserTempletView?IsNew=false', {title: '人员模板查看', width: 750, height: 600, onDestroy: function (rows) {}});">查看人员模板</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="roleGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 100%;"
+                multiselect="false" allowunselect="false">
+                <div property="columns">
+                    <div type="indexcolumn" width="35">
+                    </div>
+                    <div field="Type" width="80" align="center">
+                        类型
+                    </div>
+                    <div field="Name" width="*" align="center">
+                        名称
+                    </div>
+                    <div field="Delete" width="60">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.RoleType));
+    addGridEnum("roleGrid", "Type", "RoleType");
+
+    addGridButton("dataGrid", "Setting", {
+        linkText: '门户配置', onButtonClick: function (row) {
+            var url = "Main?ID=" + row["ID"];
+            var width = window.screen.width - 100;
+            var height = window.screen.height - 130;
+            openWindow(url, {
+                title: '门户配置', width: width, height: height, onDestroy: function (rows) {
+
+                }
+            });
+        }
+    });
+
+    addGridButton("roleGrid", "Delete", {
+        linkText: '删除', onButtonClick: function (row) {
+            msgUI("确认要删除该记录？", 2, function (action) {
+                if (action == "ok") {
+                    execute("DeleteRole?ID=" + row.ID, {
+                        onComplete: function (data, settings) {
+                            mini.get("roleGrid").reload();
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    var templetID, roleID;
+    function onActionRenderer(e) {
+        var record = e.record;
+        var data = mini.get("dataGrid").getSelected();
+        if (data != undefined && record != undefined) {
+            templetID = data.ID; roleID = record.ID;
+        }
+        var html = "<a href=\"javascript:openWindow('Selector?SelectMode=Multi&ID=" + templetID + "&RoleID=" + roleID + "', { width: 320, height: 500 })\">组织授权</a>";
+        return (record.Effective == true || record.Effective == '1') && record.Type == 'OrgRole' ? html : "";
+    }
+
+    function bindRoleGrid(e) {
+        if (e != undefined && e.selected) {
+            var roleGrid = mini.get("roleGrid");
+            var data = mini.get("dataGrid").getSelecteds();
+            var url = changeToFullUrl('GetRole') + '?TempletID=' + data[0].ID;
+            roleGrid.setUrl(url);
+            roleGrid.reload();
+        }
+    }
+
+    function setRole(record, node, role) {
+        var selectMaps = new Array();
+        var data = role.findRows(function (row) {
+            if (row.Effective == true || row.Effective == '1') return true;
+        });
+        for (var i = 0; i < data.length; i++) {
+            selectMaps.push(data[i].ID);
+        }
+        if (node == undefined || role == undefined || data == undefined)
+            return;
+        jQuery.ajax({
+            url: changeToFullUrl('SetRole'),
+            type: "post",
+            data: { ID: node.ID, IDs: selectMaps.toString() },
+            cache: false,
+            async: false,
+            success: function (text, textStatus) {
+                //增加新版报错分支
+                if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    function setRoleUser(e) {
+        if (e && e.field == 'Effective') {
+            var record = e.record;
+            var node = mini.get("dataGrid").getSelected();
+            var role = mini.get("roleGrid");
+            if (record.Effective) {
+                jQuery.ajax({
+                    url: changeToFullUrl('GetTempletRole'),
+                    type: "post",
+                    data: { roleID: record.ID },
+                    cache: false,
+                    async: false,
+                    success: function (text, textStatus) {
+                        //增加新版报错分支
+                        if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                            var fail = jQuery.parseJSON(text);
+                            var msg = getErrorFromHtml(fail.errmsg);
+                            msgUI(msg, 4);
+                            return;
+                        }
+
+                        if (text != 'true') {
+                            msgUI(text, 2, function (act) {
+                                if (act == "ok") {
+                                    setRole(record, node, role);
+                                } else {
+                                    role.load();
+                                    return;
+                                }
+                            });
+                        } else { setRole(record, node, role); }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+
+                    }
+                });
+            } else {
+                setRole(record, node, role);
+            }
+        }
+    }
+
+    function portalRelationAppended(data, settings) {
+
+        if (data == undefined || data == "close" || data.length == 0)
+            return;
+        settings = $.extend(true, {}, executeParamSettings, settings);
+        var node;
+        if (settings.isGrid)
+            node = mini.get(settings.gridId).getSelected();
+        else
+            node = mini.get(settings.treeId).getSelectedNode();
+
+        addExecuteParam("TempletID", node.ID);
+        addExecuteParam("Type", settings.type);
+        addExecuteParam("RelationData", mini.encode(data));
+
+        execute(settings.action, {
+            onComplete: function (data, settings) {
+                mini.get("roleGrid").reload();
+            }
+        });
+    }
+
+    function onIsEnabledRenderer(e) {
+        if (e.value == 1) return "是";
+        else return "否";
+    }
+</script>

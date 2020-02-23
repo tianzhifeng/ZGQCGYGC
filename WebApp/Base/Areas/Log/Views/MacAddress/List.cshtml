@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "移动通用户手机绑定";
+}
+<div class="mini-toolbar">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-lock" onclick="editMac" plain="true">移动通用户锁定</a>
+                <a class="mini-button" iconcls="icon-unlock" onclick="releaseMac" plain="true">解锁用户</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入姓名" onenter="quickSearch('UserName');"
+                       onbuttonclick="quickSearch('UserName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="UserName" width="100" align="center">
+                姓名
+            </div>
+            <div field="AppID" width="80" align="center">
+                版本
+            </div>
+            <div field="ClientID" width="120" align="left">
+                Mac地址
+            </div>
+            <div field="DeviceOS" width="50" align="center">
+                操作系统
+            </div>
+            <div field="RegistDate" width="80" align="center" dateformat="yyyy-MM-dd">
+                激活日期
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function editMac() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length != 1) return msgUI("需要选择一条操作记录，请重新确认！")
+        openWindow('Edit?ID=' + rows[0]["ID"], { width: "50%", height: "60%", title: '移动通用户手机绑定' });
+    }
+
+    function releaseMac() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length < 1) return msgUI("当前没有选择要操作的记录，请重新确认！")
+
+        addExecuteParam("macInfo", mini.encode(rows));
+        execute("ReleaseMac", {
+            showLoading: true, validateForm: false, refresh: false, onComplete: function (data) {
+                msgUI("解锁成功。");
+                dataGrid.reload();
+            }
+        });
+    }
+</script>

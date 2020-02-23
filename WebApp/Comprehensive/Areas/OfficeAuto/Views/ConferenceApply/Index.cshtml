@@ -1,0 +1,203 @@
+﻿<link href="/Comprehensive/CusStyle/images_conference/style.css" rel="stylesheet" type="text/css" />
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="fa-check-square-o" onclick="ThisWeek()" plain="true">
+                    本周
+                </a> <a class="mini-button" id="btnEdit" iconcls="fa-mail-forward " onclick="NextWeek()"
+                        plain="true">下周</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <input name="vCountWeek" id="vCountWeek" class="mini-hidden" />
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="bm-grid">
+        <thead>
+            <tr>
+                <td width="150"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td rowspan="3" align="center" class="bm-grid-celllt">
+                    会议地点
+                </td>
+                <td colspan="2" class="bm-grid-celllt1" align="center">
+                    星期一
+                </td>
+                <td colspan="2" class="bm-grid-celllt1" align="center">
+                    星期二
+                </td>
+                <td colspan="2" class="bm-grid-celllt1" align="center">
+                    星期三
+                </td>
+                <td colspan="2" class="bm-grid-celllt1" align="center">
+                    星期四
+                </td>
+                <td colspan="2" class="bm-grid-celllt1" align="center">
+                    星期五
+                </td>
+                <td colspan="2" class="bm-grid-celllt1 red" align="center">
+                    星期六
+                </td>
+                <td colspan="2" class="bm-grid-celllt1 red" align="center">
+                    星期日
+                </td>
+            </tr>
+            <tr>
+                <td id="Monday_date" colspan="2" class="bm-grid-celllt2" align="center"></td>
+                <td id="Tuesday_date" colspan="2" class="bm-grid-celllt2" align="center"></td>
+                <td id="Wednesday_date" colspan="2" class="bm-grid-celllt2" align="center"></td>
+                <td id="Thursday_date" colspan="2" class="bm-grid-celllt2" align="center"></td>
+                <td id="Friday_date" colspan="2" class="bm-grid-celllt2" align="center"></td>
+                <td id="Saturday_date" colspan="2" class="bm-grid-celllt2 red" align="center"></td>
+                <td id="Sunday_date" colspan="2" class="bm-grid-celllt2 red" align="center"></td>
+            </tr>
+            <tr>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    上午
+                </td>
+                <td align="center" class="bm-grid-celllt">
+                    下午
+                </td>
+            </tr>
+        </thead>
+        <tbody id="MeetingBody"></tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    window.onload = function () {
+        SearchData();
+    }
+
+    //查询
+    function SearchData() {
+        ChangeTime();
+        PostToBack();
+    }
+
+    Date.prototype.toString = function () {
+        return (this.getMonth() + 1) + "-" + this.getDate();
+    }
+    Date.prototype.tooString = function () {
+        return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate();
+    }
+    function ChangeTime() {
+        var nvCountWeek = mini.get("vCountWeek").getValue();
+        var nowdate = new Date();
+        nowdate.setTime(nowdate.getTime() - 24 * 60 * 60 * 1000);
+        var vMonday = new Date(nowdate - (nowdate.getDay() - 1 + (nvCountWeek * 7)) * 86400000);
+        var vTuesday = new Date(nowdate - (nowdate.getDay() - 2 + (nvCountWeek * 7)) * 86400000);
+        var vWednesday = new Date(nowdate - (nowdate.getDay() - 3 + (nvCountWeek * 7)) * 86400000);
+        var vThursday = new Date(nowdate - (nowdate.getDay() - 4 + (nvCountWeek * 7)) * 86400000);
+        var vFriday = new Date(nowdate - (nowdate.getDay() - 5 + (nvCountWeek * 7)) * 86400000);
+        var vSaturday = new Date(nowdate - (nowdate.getDay() - 6 + (nvCountWeek * 7)) * 86400000);
+        var vSunday = new Date(nowdate - (nowdate.getDay() - 7 + (nvCountWeek * 7)) * 86400000);
+
+        $("#Monday_date").html(vMonday.format("M月d日"));
+        $("#Tuesday_date").html(vTuesday.format("M月d日"));
+        $("#Wednesday_date").html(vWednesday.format("M月d日"));
+        $("#Thursday_date").html(vThursday.format("M月d日"));
+        $("#Friday_date").html(vFriday.format("M月d日"));
+        $("#Saturday_date").html(vSaturday.format("M月d日"));
+        $("#Sunday_date").html(vSunday.format("M月d日"));
+    }
+
+    function PostToBack() {
+        var nvCountWeek = mini.get("vCountWeek").getValue();
+        var Nowdate = new Date();
+        Nowdate.setTime(Nowdate.getTime() - 24 * 60 * 60 * 1000);
+        var vMonday = new Date(Nowdate - (Nowdate.getDay() - 1 + (nvCountWeek * 7)) * 86400000);
+        addExecuteParam("Monday", vMonday.tooString());
+        execute("Weeks", { closeWindow: false, actionTitle: "", validateForm: false, onComplete: SetData });
+    }
+
+    function SetData(data) {
+        if (data != null) {
+            var str = data.MeetingBody;
+            $("#MeetingBody").html(str);
+        }
+    }
+
+    function ThisWeek() {
+        mini.get("vCountWeek").setValue(0);
+        ChangeTime();
+        PostToBack();
+    }
+
+    function NextWeek() {
+        var nvCountWeek = mini.get("vCountWeek").getValue();
+        nvCountWeek = nvCountWeek - 1;
+        mini.get("vCountWeek").setValue(nvCountWeek);
+        ChangeTime();
+        PostToBack();
+    }
+
+    function LinkToThis(metRoomId, startTime, dayType) {
+        var url = "/Comprehensive/OfficeAuto/ConferenceApply/PageView?TmplCode=Flow_Conference_ConferenceApply&MetRoomId=" + metRoomId + "&StartTime=" + startTime + "&DayType=" + dayType;
+        flowAdd('Flow_Conference_ConferenceApply', {
+            url: url, title: '会议室预定申请流程', width: "60%", height: '90%', onDestroy: function () {
+                ChangeTime();
+                PostToBack();
+
+            }
+        });
+    }
+
+    function LinkToView(ids) {
+        openWindow("ListView?IDs=" + ids, { title: "会议室预定情况", funcType: 'view', width: 900, height: 450 });
+    }
+</script>

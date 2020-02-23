@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "PDFAuditFileList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a id="savePDFAuditFiles" class="mini-button" iconcls="icon-save" tooltip="保存" onclick="savePDFAuditFiles" plain="true">保存</a>
+                <a id="deletePDFAuditFiles" class="mini-button" iconcls="icon-remove" tooltip="删除" onclick="deletePDFAuditFiles" plain="true">删除</a>
+                <span id="spanThis" class="separator"></span>
+                <a class="mini-button" iconcls="icon-download" onclick="downloadAll" plain="true">全部下载</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="FitDiv">
+    <div id="dataGrid" url="GetPDFAuditFileList" class="mini-datagrid" style="width: 100%; height: 100%;"
+        idfield="ID" multiselect="true" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;"
+        ondrawcell="onDrawingCell" onload="onLoad">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div name='AuditStep' width="120" align="center" field='AuditStep' type='comboboxcolumn' visible='true'>
+                校审环节
+            </div>
+            <div name='SubmitUser' width="120" align="center" field='SubmitUser' displayfield='SubmitUserName' visible='true'>
+                提交人
+            </div>
+            <div name='SubmitDate' width="120" align="center" field='SubmitDate' dateformat='yyyy-MM-dd' visible='true' datatype='date'>
+                提交时间
+            </div>
+            <div field='Attachment' width="*" displayfield='AttachmentName' visible='true' renderer='onFileRender'>
+                附件
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.AuditSuggestionState");
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "AuditStep", "AuditSuggestionState");
+
+    function onLoad() {
+        var IsShow = getQueryString("IsShow");
+        if (IsShow != "True") {
+            $("#savePDFAuditFiles").hide();
+            $("#deletePDFAuditFiles").hide();
+            $("#spanThis").hide();
+        }
+    }
+
+    function onDrawingCell(e) {
+        var field = e.field;
+        var record = e.record;
+        var value = e.value;
+        if (field == "Attachment") {
+            if (value != "" && value != null) {
+                e.cellHtml = '<a href="#" onclick="DownloadFile(\'' + e.value + '\');">' + getMiniFileNames(e.value) + '<a>';
+            }
+        }
+    }
+
+    function savePDFAuditFiles() {
+        var dataGrid = mini.get("dataGrid");
+        var productID = getQueryString("ID");
+        var rows = dataGrid.getData();
+        addExecuteParam("ProductID", productID);
+        addExecuteParam("Files", mini.encode(rows));
+        execute("SaveAuditFiles", {
+            showLoading: true, validateForm: false, refresh: true, onComplete: function (data) {
+                msgUI("保存成功。");
+                //dataGrid.reload();
+            }
+        });
+    }
+
+    function deletePDFAuditFiles() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].SubmitUser != user.UserID) {
+                msgUI("选中的PDF校审记录中存在其他人提交的记录，请重新选择。"); return;
+            }
+        }
+        dataGrid.removeRows(rows, true);
+    }
+
+    function downloadAll() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getData();
+        var fileIDs = ""; 
+        for (var i = 0; i < rows.length; i++) {
+            fileIDs += rows[i].Attachment.split('_')[0] + ",";
+        }
+        DownloadFile(fileIDs.substring(0, fileIDs.length - 1));
+    }
+</script>

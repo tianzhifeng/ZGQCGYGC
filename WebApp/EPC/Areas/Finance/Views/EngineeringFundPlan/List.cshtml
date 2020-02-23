@@ -1,0 +1,524 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar">
+    <table style="width:100%">
+        <tr style="width:100%">
+            <td style="width:50%">
+                <a class='mini-button' id='btnAddReceivePlan' iconcls='icon-add' onclick='addPlan("Receive");' visible='true'>新增收款计划</a>
+                <a class='mini-button' id='btnAddPaymentPlan' iconcls='icon-add' onclick='addPlan("Payment")' visible='true'>新增付款计划</a>
+                <a class='mini-button' id='btnDelete' iconcls='icon-remove' onclick='removeRows' visible='true'>移除</a>
+                <a class='mini-button' iconcls='icon-up' onclick='moveUp' visible='true'>上移</a>
+                <a class='mini-button' iconcls='icon-down' onclick='moveDown' visible='true'>下移</a>
+                <a class="mini-button" id='btnSave' iconcls="icon-save" onclick="saveList" plain="true">保存</a>
+            </td>
+            <td style="text-align:right;width:50%">
+                <div id="FundType"  class="mini-checkbox" text="按付款类型分组" onvaluechanged="onGroupChange"></div>
+                &emsp;&emsp;
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height:100% " url="GetList" onbeforeload="beforelLoad" onload="load" allowCellEdit="true"
+         allowcellvalid="true"  multiSelect="true" allowCellSelect="true" showPager="false"  allowunselect="false" editNextOnEnterKey="true" editNextRowCell="true"
+         oncellbeginedit="oncellbeginedit" onCellValidation="onCellValidation" showGroupSummary="true" ondrawgroup="onDrawGroup" ondrawcell="onDrawCell" >
+
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn" headerAlign="center" header="序号"></div>
+
+            <div field="FundType" type="comboboxcolumn" header="款项类型" width="80" headerAlign="center" align="center" required="true" readonly='true'>
+                <input property="editor" class="mini-combobox" style="width:100%;" data="FundType" />
+            </div>
+
+            <div name="Contract" field="Contract" displayfield="ContractInfoName" header="合同名称" width="200" >
+                <input name="ContractInfoSelector" property="editor" class="mini-buttonedit" onbuttonclick="onContractSelect" required="true" allowinput="false" style="width:100%;" />
+            </div>
+
+            <div field="ContractInfoCode" header="合同号" width="100" headeralign="center" style="color:blue;text-decoration:underline;cursor: pointer;"></div>
+
+            <div field="CooperationName" header="供应商/客户名称" width="150" headeralign="center"></div>
+
+            <div name="ReceivePayment" field="ReceivePayment" header="收付款项名称" displayfield="ReceivePaymentName" width="120" align="left">
+                <input name="ReceivePaymentSelector" property="editor" class="mini-buttonedit" onbuttonclick="onReceivePaymentSelect" allowinput="false" style="width:100%;" />
+            </div>
+
+            <div field="Amount" header="款项金额（元）" width="100" align="right" numberFormat="n" required="true" vtype="float" summaryType="sum" summaryRenderer="onSummaryRenderer" >
+                <input property="editor" class="mini-textbox" required="true" style="width:100%;" />
+            </div>
+
+            <div name="EstimateDate" field="EstimateDate" header="预计收付款时间" align="center" width="80" dateFormat="yyyy-MM-dd" autoShowPopup="true">
+                <input name="esDate" property="editor" class="mini-datepicker" required="true" allowinput="false" style="width:100%;" onhidepopup="commitGridEdit" onshowpopup="onShowEstimateDate" />
+            </div>
+
+            <div type="comboboxcolumn" field="Tendays" header="旬数" width="50" align="center" readonly='true'>                
+                <input property="editor" class="mini-combobox" required="true" style="width:100%;" data="Tendays" />
+            </div>
+
+            <div name="CreateDate" field="CreateDate" header="创建日期" width="80" align="center" visible="true"   allowmove="false" allowresize="true" readOnly="true" datatype="date"  dateFormat="yyyy-MM-dd" value="new Date()" >
+                <input property="editor" class="mini-datepicker" required="false" allowinput="false" showtime="false" showtodaybutton="true" showokbutton="false" showclearbutton="true" style="width:100%;"  />
+            </div>
+
+            <div name="BelongDate" field="BelongDate" header="计划年月" width="80" align="center" visible="true" allowmove="false" allowresize="true" readOnly="true" datatype="date" dateFormat="yyyy-MM" value="new Date()">
+                <input property="editor" class="mini-datepicker" required="false" allowinput="false" showtime="false" showtodaybutton="true" showokbutton="false" showclearbutton="true" style="width:100%;" />
+            </div>
+
+            <div field="Remarks" width="120"  header="备注" headerAlign="center">                
+                <input property="editor" class="mini-textarea" style="width:200px;" minWidth="200" minHeight="50" />
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("EPC.FundType")
+    @Html.GetEnum("System.Tendays")
+
+    var ContractInfo = @Html.Raw(ViewBag.ContractInfo);
+
+    var engineeringInfoID = getQueryString('EngineeringInfoID');
+    var belongYear = "";
+    var belongMonth = "";
+    var planDate = new Date();
+
+    function pageLoad() {
+
+    }
+
+    function beforelLoad() {
+        var tabData = GetTabsData();
+        for (var i = 0; i < tabData.length; i++) {
+            switch (tabData[i].queryfield) {
+                case "BelongYear":
+                    belongYear = tabData[i].value;
+                    break;
+
+                case "BelongMonth":
+                    belongMonth = tabData[i].value;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        planDate = mini.parseDate(belongYear + "-" + belongMonth + "-01");
+
+
+
+    }
+    function load(e) {
+        var grid = e.sender;
+        var data = e.data;
+        var hasYearReceive = 0;
+        var hasYearPayment = 0;
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            if (item.FundType == "YearReceive") {
+                hasYearReceive++;
+            }else if (item.FundType == "YearPayment") {
+                hasYearPayment++;
+            }
+        }
+
+        var newRow = { Amount: 0 };
+        if (hasYearReceive == 0) {
+            newRow = { 
+                FundType: "YearReceive", 
+                Amount: 0, 
+                EstimateDate: belongYear +"-12-31",
+                CreateDate:new Date(),
+                BelongDate: planDate
+            };
+            addRow(newRow, { gridId: "dataGrid", isLast: true });      
+        }
+        if (hasYearPayment == 0) {
+            newRow = { 
+                FundType: "YearPayment", 
+                Amount: 0, 
+                EstimateDate: belongYear +"-12-31",
+                CreateDate:new Date(),
+                BelongDate: planDate
+            };
+           addRow(newRow, { gridId: "dataGrid", isLast: true });
+        }
+    }
+
+    function commitGridEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit(); 
+        grid.validate();
+
+
+    }
+
+
+    //添加
+    function addPlan(fundType) {
+        var grid = mini.get('dataGrid');
+        var newRow = { FundType: fundType, Amount: 0, CreateDate:new Date(), BelongDate: planDate };
+        if (fundType == "Receive") {
+            if (!ContractInfo || ContractInfo.length == 0) {
+                msgUI("此项目无已签约的收入合同，无法新增收款计划！");
+                return;
+            }
+  
+            newRow = { 
+                FundType: fundType, 
+                Amount: 0, 
+                ContractInfo: ContractInfo[0].ID, 
+                ContractInfoName: ContractInfo[0].Name,
+                ContractInfoCode: ContractInfo[0].SerialNumber,
+                CooperationID: ContractInfo[0].PartyA,
+                CooperationName: ContractInfo[0].PartyAName,
+                CreateDate: new Date(),
+                BelongDate: planDate 
+            };
+
+        }
+
+        //addRow(newRow, { gridId: "dataGrid", isLast: true });
+        //var newRow = { FundType: fundType, Amount: 0 };
+        grid.addRow(newRow, grid.getData().length -2);
+        grid.validateRow(newRow);
+        grouping();
+    }
+    //保存
+    function saveList() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        grid.validate();
+        if (grid.isValid() == false) {
+            var error = grid.getCellErrors()[0];
+            grid.beginEditCell(error.record, error.column);
+            //msgUI("输入数据有误！");
+            return;
+        }
+
+        var tabData = GetTabsData();
+        for (var i = 0; i < tabData.length; i++) {
+            addExecuteParam(tabData[i].queryfield, tabData[i].value);
+        }
+        addExecuteParam("List", grid.getData());
+        execute("SaveList", {
+            showLoading: true, refresh: false, validateForm: true, onComplete: function (data) {
+                var grid = mini.get("dataGrid");
+                grid.reload();
+            }
+        });
+
+    }
+    //移除
+    function removeRows() {
+        var grid = mini.get('dataGrid');
+        var rows = grid.getSelecteds();
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].FundType == "Receive" || rows[i].FundType == "Payment") {
+                grid.removeRow(rows[i], false);
+            }
+        }
+    }
+    function moveUp() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+        grouping();
+    }
+    function moveDown() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+        grouping();
+    }   
+    //分组
+    function onGroupChange(e) {
+        var grid = mini.get("dataGrid");
+        if (e.value == "true") {
+            grid.groupBy(e.sender.id, "");
+        }else {
+            grid.clearGroup();
+        }
+        //grid.reload();
+    }
+    function onDrawGroup(e) {
+        var rows = e.group.rows;
+        var sum = 0;
+        for (var i = 0, l = rows.length; i < l; i++) {
+            sum += parseInt(rows[i].Amount);
+        }
+        sum = formatNumber(sum);
+        e.cellHtml = getFundTypeText(e.value) + "：<font style='color:red' >" + sum + "元</font>";
+
+    }
+    function getFundTypeText(id) {
+        for (var i = 0; i < FundType.length; i++) {
+            var f = FundType[i];
+            if (f.id == id) return f.text;
+        }
+        return "";
+    }
+    function formatNumber(num) {
+        if (isNaN(num)) {
+            return "0.00";
+        }
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+    }
+    function grouping() {
+        var checked = mini.get("FundType").getChecked();
+        if (checked) {
+            var grid = mini.get('dataGrid');
+            grid.groupBy("FundType", "asc");
+        } 
+
+    }
+
+    //选合同
+    function onContractSelect(e) {
+        var grid = mini.get('dataGrid');
+        var row = grid.getSelected();
+        var url = "";
+        if (row.FundType == "Receive") {
+            url = "/MvcConfig/UI/List/PageView?TmplCode=SingleContractSelector&ProjectInfo=" + engineeringInfoID + "&ContractState=Sign";
+        } else if (row.FundType == "Payment") {
+            url = "/MvcConfig/UI/List/PageView?TmplCode=SinglerSubContractSelector&EngineeringInfo=" + engineeringInfoID + "&ContractState=Sign";
+        }
+
+        openWindow(url, {
+            width: "80%", height: "80%", addQueryString: false, refresh: false,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                var item = data[0];
+
+                if (row.FundType == "Receive") {
+                    grid.updateRow(row, {
+                        ContractInfo: item.ID,
+                        ContractInfoName: item.Name,
+                        ContractInfoCode: item.SerialNumber,
+                        CooperationID: item.PartyA,
+                        CooperationName: item.PartyAName,
+                        ReceivePaymentID: "",
+                        ReceivePaymentName: ""
+                    });
+                } else if (row.FundType == "Payment") {
+                    grid.updateRow(row, {
+                        ContractInfo: item.ID,
+                        ContractInfoName: item.Name,
+                        ContractInfoCode: item.SerialNumber,
+                        CooperationID: item.PartyB,
+                        CooperationName: item.PartyBName,
+                        ReceivePaymentID: "",
+                        ReceivePaymentName: ""
+                    });
+                }
+                grid.commitEdit();
+
+            }
+        });
+
+    }
+    //查看合同
+    function onShowContractInfo(id) {
+        var grid = mini.get('dataGrid');
+        var row = grid.getSelected();
+        var url = "";
+        if (row.FundType == "Receive") {
+            url = "/EPC/Contract/ContractInfo/PageView?TmplCode=ContractInfo&ID="+id+"&FuncType=View";
+        } else if (row.FundType == "Payment") {
+            url = "/MvcConfig/UI/Form/PageView?TmplCode=SubContractInfo&ID="+id+"&FuncType=View";
+        }
+        openWindow(url, {
+            width: "80%", height: "80%", addQueryString: false, refresh: false,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+
+            }
+        });
+
+
+    }
+    //选收付款项
+    function onReceivePaymentSelect(e) {
+        var grid = mini.get('dataGrid');
+        var row = grid.getSelected();
+        if (!row.ContractInfo) {
+            msgUI("请选择合同！"); return;
+        }
+
+        var url = "";
+        if (row.FundType == "Receive") {
+            url = "/MvcConfig/UI/List/PageView?TmplCode=SingleReceiptObjSelector&ProjectInfo="+ engineeringInfoID +"&ContractInfoID=" + row.ContractInfo;
+        } else if (row.FundType == "Payment") {
+            url = "/MvcConfig/UI/List/PageView?TmplCode=SingleContractPaymentObjSelector&EngineeringInfoID="+ engineeringInfoID +"&ContractInfoID=" + row.ContractInfo;
+        }
+
+        openWindow(url, {
+            width: "80%", height: "80%", addQueryString: false, refresh: false,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                var item = data[0];
+
+                grid.updateRow(row, {
+                    ReceivePaymentID: item.ID,
+                    ReceivePaymentName: item.Name
+                });
+                grid.commitEdit();
+
+            }
+        });
+
+    }
+
+    function onShowEstimateDate(e) {
+       // e.value =mini.parseDate("2020-03-01");;
+
+    }
+
+    function onDrawCell(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var field = e.field, value = e.value;
+        if (field == "ContractInfoCode") {
+            if (value) {
+                e.cellHtml = '<a href="javascript:onShowContractInfo(\'' + record.ContractInfo + '\')" >' + value + '</a>';
+            }
+        }
+    }
+
+    function oncellbeginedit(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var field = e.field, value = e.value;
+        switch (field) {
+            case "Contract":
+                if (record.FundType == "YearReceive" || record.FundType == "YearPayment") {
+                    e.cancel=true;
+                }
+                break;
+
+            case "ReceivePayment":
+                if (record.FundType == "YearReceive" || record.FundType == "YearPayment") {
+                    e.cancel=true;
+                }
+                break;
+
+            case "EstimateDate":
+                if (record.FundType == "YearReceive" || record.FundType == "YearPayment") {
+                    e.cancel=true;
+                }
+                break;
+
+
+            default:
+                break;
+
+        }
+
+
+    }
+    function onCellValidation(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var field = e.field, value = e.value;
+        switch (field) {
+            case "Contract":
+                if (record.FundType != "YearReceive" && record.FundType != "YearPayment") {
+                    if (!record.ContractInfo) {
+                        e.isValid = false;
+                        e.errorText = "请选择【合同】";
+                    }
+                }
+
+                break;
+
+            case "Amount":
+                if (isNaN(value)) {
+                    e.isValid = false;
+                    e.errorText = "【款项金额】格式不正确！";
+                    grid.updateRow(record, { Amount: 0 });
+                    return;
+                }
+                if (value <= 0) {
+                    e.isValid = false;
+                    e.errorText = "【款项金额】必须大于0";
+                    grid.updateRow(record, { Amount: 0 });
+                }
+                break;
+
+
+            case "EstimateDate":
+                var date = mini.parseDate(value);
+                if (!date) {
+                    e.isValid = false;
+                    e.errorText = "请选择收付款日期！";
+                    return;
+                }
+                if (record.FundType == "Receive" || record.FundType == "Payment") {
+                    if (date.getFullYear() != belongYear || date.getMonth() + 1 != belongMonth) {
+                        msgUI('收付款日期只能选择【' + belongYear + '年' + belongMonth + '月】！');
+                        grid.updateRow(record, { EstimateDate: "", Tendays: "" });
+                        return;
+                    }
+                }
+
+                var tenDays = getTendays(value);
+                grid.updateRow(record, { Tendays: tenDays });
+                break;
+
+
+            default:
+                break;
+
+        }
+
+
+    }
+
+    //获取旬
+    function getTendays(strDate) {
+        var date = mini.parseDate(strDate);
+        var day = date.getDate();
+        var tenDays = "";
+        if (day <= 10) {
+            tenDays = "FirstTenDays";
+        } else if (day > 20) {
+            tenDays = "LastTenDays";
+        } else {
+            tenDays = "MiddleTenDays";
+        }
+        return tenDays;
+    }
+
+
+</script>
+
+
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+
+</script>

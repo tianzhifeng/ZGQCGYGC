@@ -1,0 +1,263 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="dealFeedback();">
+                    保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<div class="formDiv">
+    <table width="100%" style="table-layout: fixed;">
+        <tr style="height: 0px">
+            <td width="15%">
+            </td>
+            <td width="35%">
+            </td>
+            <td width="15%">
+            </td>
+            <td width="35%">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                项目负责人
+            </td>
+            <td>
+                <input name="ProjectPrincipal" style="width: 100%" class="mini-textbox" />
+            </td>
+            <td>
+                责任部门
+            </td>
+            <td>
+                <input name="ProjectDept" style="width: 100%" class="mini-textbox"  />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                处理人
+            </td>
+            <td>
+                <input name="DealUserName" style="width: 100%" class="mini-textbox"  />
+            </td>
+            <td>
+                处理状态
+            </td>
+            <td>
+                <input name="DealStatus" class="mini-combobox" value="dap" style="width: 100%;"
+                    data="dealStatus" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                问题性质
+            </td>
+            <td>
+                <input name="ProblemNature" class="mini-combobox" value=""  style="width: 100%;"
+                    data="FeedbackProblemNature" />
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                问题确认时间
+            </td>
+            <td>
+                <input name='ConfirmProblemsTime' class='mini-datepicker' onvaluechanged="changeDealStatus();"
+                    style='width: 100%' />
+            </td>
+            <td>
+                计划完成时间
+            </td>
+            <td>
+                <input name='PlanCompleteTime' class='mini-datepicker' onvaluechanged="changeDealStatus();"
+                    style='width: 100%' />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                实际完成时间
+            </td>
+            <td>
+                <input name='ActualCompleteTime' class='mini-datepicker' onvaluechanged="changeDealStatus();"
+                    style='width: 100%' />
+            </td>
+            <td>
+                确认完成时间
+            </td>
+            <td>
+                <input name='ConfirmCompleteTime' class='mini-datepicker' onvaluechanged="changeDealStatus();"
+                    style='width: 100%' />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                问题确认人
+            </td>
+            <td>
+                <input name="ConfirmProblemsUserID" textname="ConfirmProblemsUserName" class="mini-buttonedit"
+                    allowinput="true" style="width: 100%;" />
+            </td>
+            <td>
+                确认完成人
+            </td>
+            <td>
+                <input name="ConfirmCompleteUserID" textname="ConfirmCompleteUserName" class="mini-buttonedit"
+                    allowinput="true" style="width: 100%;" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                处理说明
+            </td>
+            <td colspan="3">
+                <textarea class="mini-textarea" name="DealResult" style="width: 100%; height: 100px"
+                    ></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                相关模块
+            </td>
+            <td>
+                <input name="Module" style="width: 100%" class="mini-textbox" vtype="maxLength:50"
+                    />
+            </td>
+            <td>
+                期望完成时间
+            </td>
+            <td>
+                <input name='ExpectedCompleteTime' class='mini-datepicker' style='width: 100%' />
+            </td>
+        </tr>
+    </table>
+</div>
+</form>
+<script type="text/javascript">
+</script>
+<script type="text/javascript">
+    function dealFeedback() {
+        execute('SavePatch', { closeWindow: true, onComplete: function (data) {
+            if (FeedbackServerUrl == "" || FeedbackProjectName == "") {
+                closeWindow();
+                return;
+            }
+
+            var formData = new mini.Form("#dataForm").getData();
+            var executeParams = {};
+            executeParams.ProjectPrincipal = formData.ProjectPrincipal;
+            executeParams.ProjectDept = formData.ProjectDept;
+            executeParams.DealUserName = formData.DealUserName;
+            executeParams.DealStatus = formData.DealStatus;
+            executeParams.DealResult = formData.DealResult;
+            executeParams.ProblemNature = formData.ProblemNature;
+            executeParams.Module = formData.Module;
+            executeParams.ExpectedCompleteTime = funConvertUTCToNormalDateTime(formData.ExpectedCompleteTime);
+            executeParams.ConfirmProblemsTime = funConvertUTCToNormalDateTime(formData.ConfirmProblemsTime);
+            executeParams.PlanCompleteTime = funConvertUTCToNormalDateTime(formData.PlanCompleteTime);
+            executeParams.ActualCompleteTime = funConvertUTCToNormalDateTime(formData.ActualCompleteTime);
+            executeParams.ConfirmCompleteTime = funConvertUTCToNormalDateTime(formData.ConfirmCompleteTime);
+            executeParams.ConfirmProblemsUserID = formData.ConfirmProblemsUserID;
+            executeParams.ConfirmProblemsUserName = formData.ConfirmProblemsUserName;
+            executeParams.ConfirmCompleteUserID = formData.ConfirmCompleteUserID;
+            executeParams.ConfirmCompleteUserName = formData.ConfirmCompleteUserName;
+            
+            jQuery.ajax({
+                url: FeedbackServerUrl + "/" + getQueryString("IDs") + "/PatchSave",
+                type: "post",
+                data: executeParams,
+                dataType: "text",
+                cache: false,
+                success: function (text, textStatus) {
+                    //增加新版报错分支
+                    if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(text);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    closeWindow();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    msgUI("反馈提交成功，发送反馈到金慧软件有限公司失败！");
+                }
+            });
+
+        }
+        })
+    }
+</script>
+<script type="text/javascript">
+    var dealStatus = [{ value: "问题待确认", text: "问题待确认" }, { value: "暂缓", text: "暂缓" }, { value: "不处理", text: "不处理" }, { value: "待安排", text: "待安排" }, { value: "进行中", text: "进行中" }, { value: "修改完成", text: "修改完成" }, { value: "确认完成", text: "确认完成"}];
+    var FeedbackType = [{ value: '界面报错', text: '界面报错' }, { value: '界面美化', text: '界面美化' }, { value: '功能改进', text: '功能改进' }, { value: '性能低下', text: '性能低下' }, { value: '新增功能', text: '新增功能'}];
+    var FeedbackLevel = [{ value: '一般', text: '一般' }, { value: '严重', text: '严重' }, { value: '非常严重', text: '非常严重'}];
+    var FeedbackProblemNature = [{ value: 'BUG', text: 'BUG' }, { value: '修订', text: '修订' }, { value: '新增', text: '新增' }, { value: '变更', text: '变更'}];
+    var FeedbackProjectName = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectName"]';
+    var FeedbackProjectPrincipal = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectPrincipal"]';
+    var FeedbackProjectDept = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectDept"]';
+    var FeedbackServerUrl = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackServerUrl"]';    
+</script>
+<script type="text/javascript">
+    function onFormSetData(data) {
+//        if (!data.ProjectPrincipal)
+//            mini.getbyName("ProjectPrincipal").setValue(FeedbackProjectPrincipal);
+//        if (!data.ProjectDept)
+//            mini.getbyName("ProjectDept").setValue(FeedbackProjectDept);
+//        if (!data.DealUserName)
+//            mini.getbyName("DealUserName").setValue(FeedbackProjectPrincipal);
+
+        //浏览器判断
+        var browser = navigator.appName
+        var b_version = navigator.appVersion
+        var version = b_version.split(";");
+        var trim_Version = version[1].replace(/[ ]/g, "");
+        if (browser == "Microsoft Internet Explorer" && trim_Version == "MSIE6.0") {
+            msgUI('请使用IE9及以上、火狐、Chrome浏览器！', 1, function () { closeWindow(); });
+        }
+        else if (browser == "Microsoft Internet Explorer" && trim_Version == "MSIE7.0") {
+            msgUI('请使用IE9及以上、火狐、Chrome浏览器！', 1, function () { closeWindow(); });
+        }
+        else if (browser == "Microsoft Internet Explorer" && trim_Version == "MSIE8.0") {
+            msgUI('请使用IE9及以上、火狐、Chrome浏览器！', 1, function () { closeWindow(); });
+        }
+    }
+</script>
+<script type="text/javascript">
+    function funConvertUTCToNormalDateTime(utc) {
+        var date = new Date(utc);
+        var ndt;
+        ndt = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + (date.getUTCDate() + 1);
+        return ndt;
+    }
+</script>
+<script type="text/javascript">
+    function changeDealStatus() {
+        var ConfirmProblemsTime = mini.getbyName("ConfirmProblemsTime").getValue();
+        var PlanCompleteTime = mini.getbyName("PlanCompleteTime").getValue();
+        var ActualCompleteTime = mini.getbyName("ActualCompleteTime").getValue();
+        var ConfirmCompleteTime = mini.getbyName("ConfirmCompleteTime").getValue();
+
+        var dealStatus = mini.getbyName("DealStatus");
+
+        if (ConfirmCompleteTime)
+            dealStatus.setValue("确认完成");
+        else if (ActualCompleteTime)
+            dealStatus.setValue("修改完成");
+        else if (PlanCompleteTime)
+            dealStatus.setValue("进行中");
+        else if (ConfirmProblemsTime)
+            dealStatus.setValue("待安排");
+    }
+</script>
+<script type="text/javascript">
+    addSingleUserSelector("ConfirmProblemsUserID");
+    addSingleUserSelector("ConfirmCompleteUserID");
+</script>

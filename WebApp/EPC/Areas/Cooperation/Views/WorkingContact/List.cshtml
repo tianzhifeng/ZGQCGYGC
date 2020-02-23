@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "联系单明细";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<script src="~/Scripts/Main/js/partial.js" type="text/javascript"></script>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @Html.ExportButton("导出Excel", "", "WorkingContactList")
+                <a class="mini-button" iconcls="icon-major" onclick="onAction('Receive', '接收')" id="btnReceive" visible="false">接收</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="onAction('Resolve', '处理')" id="btnResolve" visible="false">处理</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入联系单名称或编号 " style="width: 250px;"
+                       onenter="thisQuickSearch();" onbuttonclick="thisQuickSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetList" style="width: 100%; height: 100%;" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type='indexcolumn' headerAlign='center'>序号</div>
+            <div name='ID' field='ID' header='ID' align='left' visible='false' allowsort='false'></div>
+            <div field='Action' header='操作' width='75' align='center' allowsort='true'></div>
+            <div field='Status' header='状态' width='75' align='center' allowsort='true'></div>
+            <div name='Name' field='Name' header='名称' width='150' align='left' allowsort='false'></div>
+            <div name='SerialNumber' field='SerialNumber' header='联系单编号' width='100' allowsort='true'></div>
+            <div name='EngineeringInfo' field='EngineeringInfo' header='项目ID' align='left'  allowsort='false' visible='false'></div>
+            <div name='EngineeringInfoName' field='EngineeringInfoName' header='项目名称' width='300' align='left' allowsort='true' visible='false'></div>
+            <div name='SendCompanyName' field='SendCompanyName' header='发送单位' width='300' align='left' allowsort='true'></div>
+            <div name='MessageCompanyName' field='MessageCompanyName' header='发文单位' width='300' align='left' allowsort='true' visible='false'></div>
+            <div name='CreateUser' field='CreateUser' header='发起人' width='60' align='center' allowsort='true' ></div>
+            <div name='CreateDate' field='CreateDate' header='发起时间' width='80' align='center' allowsort='true' dateFormat="yyyy-MM-dd"></div>
+            <div field='Log' header='日志' width='75' align='center' allowsort='true'></div>
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    normalParamSettings.searchFields = "Name,Code";
+    @Html.GetEnum("EPC.ContactStatus", "ContactStatusEnum");
+    addGridEnum('dataGrid', 'Status', 'ContactStatusEnum');
+    addGridLink("dataGrid", "Name", "Edit?ID={ID}&FuncType=View", { title: "查看联系单", refresh: false, addQueryString: false });
+    $("#dataGrid").attr("ondrawcell", "ondrawcell");
+    function ondrawcell(e) {
+        var field = e.field;
+        var rec = e.record;
+
+        if (e.field == "Action") {
+            if (!rec.MainCompany && rec.MessageCompany && rec.Status != 'Resolved') {
+                if (rec.Status == 'Add') {
+                    e.cellHtml = '<a href="javascript:void(0);" onclick="onAction(\'Receive\', \'接收\')">接收</a>';
+                } else if (rec.Status == 'Received') {
+                    e.cellHtml = '<a href="javascript:void(0);" onclick="onAction(\'Resolve\', \'处理\')">处理</a>';
+                }
+            }
+        } else if (e.field == "Log") {
+            e.cellHtml = '<a href="javascript:void(0);" onclick="$onViewLog(\'' + rec.ID + '\')">日志</a>';
+        }
+
+    }
+
+    function pageLoad() {
+
+    }
+
+    function thisQuickSearch()
+    {
+        tabSearch();
+    }
+
+    //接收、处理
+    function onAction(action, actionName) {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择要操作的行"); return;
+        }
+        msgUI("您确定要" + actionName + "选中内容吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ListData", mini.encode(rows));
+            execute(action, {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+
+
+
+</script>

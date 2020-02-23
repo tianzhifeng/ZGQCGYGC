@@ -1,0 +1,140 @@
+﻿<div class="mini-toolbar" taohong="T" style="display:none">
+    <table>
+        <tr>
+            <td>
+                <a id="btnTaoHong1" plain="true" class='mini-button' iconcls='icon-taohong' onclick="taohongClick">套红</a>
+                <a id="btnTaoHong2" plain="true" class='mini-button' iconcls='icon-stamp' onclick="signClick">签章</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="divFit">
+    <object id='WebOffice1' height='100%' width='100%' style='left: 0px; top: 0px;' classid='clsid:E77E049B-23FC-4DB8-B756-60529A35FAD5'
+            codebase='/CommonWebResource/RelateResource/cab/WebOffice_v7.0.1.8.cab#Version=7,0,1,8'>
+        <param name='_ExtentX' value='6350' />
+        <param name='_ExtentY' value='6350' />
+    </object>
+    <script language=javascript event=NotifyCtrlReady for=WebOffice1>
+        var docID = getQueryString("DocID");
+        var formStatus = getQueryString("FormStatus");
+        var code = "";
+        if (formStatus == "TaoHong") {
+            code = formStatus;
+        }
+        $.WebOffice.Init(docID, 'doc', 'officeId', 'true', 'false', code, 'wordSaveCallBack', '', '');
+        if (!(/.*(Firefox|Safari|Chrome).*/.exec(window.navigator.userAgent))) {
+            $.WebOffice.ReturnFrm = $.WebOffice.GetControl('{control}');
+            $.WebOffice.NotifyCtrlReady();
+        }
+    </script>
+    <script language=javascript event=NotifyToolBarClick(iIndex) for=WebOffice1>
+        $.WebOffice.NotifyToolBarClick(iIndex);
+    </script>
+
+    @*<iframe id="ifrm" frameborder="no" scrolling="no" style="width:100%;height:100%"></iframe>*@
+</div>
+<script type="text/javascript">
+    var docID = getQueryString("DocID");
+    var url = getRootPath() + "/WebOffice.axd?callback=wordSaveCallBack";
+    function getRootPath() {
+        var pathName = window.location.pathname.substring(1);
+        var webName = pathName == '' ? '' : pathName.substring(0, pathName.indexOf('/'));
+        return window.location.protocol + '//' + window.location.host + '/' + webName;
+    }
+
+
+
+    //$(function () {
+    //    init();
+    //});
+
+    function init() {
+        var formStatus = getQueryString("FormStatus");
+        var urlZhengWen = url;
+        if ($.trim(docID) != "")
+            urlZhengWen += "&DocID=" + docID;
+        if (getQueryString("IsRevise") == "true") {
+            urlZhengWen += "&revise=True";
+        }
+        if (getQueryString("IsReadOnly") == "true") {
+            urlZhengWen += "&readonly=True";
+        }
+        if (formStatus == "TaoHong") {
+            urlZhengWen += "&code=" + formStatus;
+        }
+
+        $("#ifrm").attr("src", urlZhengWen);
+        $("div[" + formStatus + "],span[id*='" + formStatus + "']").show();
+        //$("#ifrm").height($("#divFit").outerHeight(true));
+
+        var webObj = document.getElementById("WebOffice1");
+        webObj.ShowToolBar = false;
+        //webObj.SetCurrUserName("123");
+    }
+
+    function wordSaveCallBack(docID) {
+        window.parent.mini.get("DocID").setValue(docID);
+    }
+
+    function taohongClick(e) {
+        //弹出套红
+        openWindow("/OfficeAuto/SelectorT/OutFileRedTitleSelect", {
+            title: "选择红头模板",
+            width: "800px",
+            height: "85%",
+            onDestroy: function (data) {
+                if (typeof (data) == "object") {
+                    if (data.length > 0) {
+                        addExecuteParam("ID", window.parent.mini.getbyName("ID").getValue());
+                        addExecuteParam("HongTou", data[0]["Attachment"]);
+                        addExecuteParam("MergeDocID", window.parent.mini.getbyName("MergeDocID").getValue());
+                        addExecuteParam("DocID", docID);
+                        addExecuteParam("ZiHao", window.parent.mini.getbyName("ZiHao").getValue());
+                        addExecuteParam("Title", window.parent.mini.getbyName("Title").getValue());
+                        execute("TaoHong", {
+                            showLoading: true,
+                            onComplete: function (data) {
+                                var newDocID = data["MergeDocID"];
+                                if ($.trim(newDocID) != "") {
+                                    window.parent.mini.getbyName("MergeDocID").setValue(newDocID);
+                                    openWindow(url + "&DocID=" + newDocID + "&showrevisions=False&readonly=True", {
+                                        width: "800px",
+                                        height: "85%",
+                                        title: "套红正文"
+                                    });
+                                    msgUI("套红成功!");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    function signClick(e) {
+        msgUI("确认签章?", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("ID", window.parent.mini.getbyName("ID").getValue());
+                addExecuteParam("MergeDocID", window.parent.mini.getbyName("MergeDocID").getValue());
+                addExecuteParam("DocID", docID);
+                execute("Sign", {
+                    showLoading: true,
+                    onComplete: function (data) {
+                        var newDocID = data["MergeDocID"];
+                        if ($.trim(newDocID) != "") {
+                            window.parent.mini.getbyName("MergeDocID").setValue(newDocID);
+                            openWindow(url + "&DocID=" + newDocID + "&showrevisions=False&readonly=True", {
+                                width: "800px",
+                                height: "85%",
+                                title: "签章正文"
+                            });
+                            msgUI("签章成功!");
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

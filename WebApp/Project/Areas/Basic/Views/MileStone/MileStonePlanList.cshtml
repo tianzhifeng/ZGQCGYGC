@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "项目里程碑策划";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<link href="~/Scripts/Menu/Style.css" rel="stylesheet" type="text/css" />
+<div class="mini-fit">
+    <div class="mini-toolbar " style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+        <table>
+            <tr>
+                <td style="width: 100%">
+                    <a class="mini-button" iconcls="icon-import" onclick="ImportMileStone" plain="true">导入</a>
+                    <a class="mini-button" iconcls="icon-add" onclick="addMileStone" plain="true">增加</a>
+                    <a class="mini-button" iconcls="icon-remove" onclick="delMileStone" plain="true">删除</a>
+                    <a class="mini-button" iconcls="icon-save" onclick="saveMileStone" plain="true">保存</a>
+                    @*   <a class="mini-button" iconcls="icon-goto" onclick="gotoGantt" plain="true">转到甘特图</a>*@
+                </td>
+                <td style="white-space: nowrap;">
+                    <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入里程碑名称" onenter="quickSearch('Code,Name');"
+                        onbuttonclick="quickSearch('Code,Name');" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="mini-fit">
+        <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true"
+            borderstyle="border:0;" allowcelledit="true" allowcellselect="true" sortorder="asc" sortfield="SortIndex"
+            ondrawcell="OnGridDrawing" oncellbeginedit="OnCellBeginEdit">
+            <div property="columns">
+                <div type="checkcolumn">
+                </div>
+                <div name="majorField" visible="false" field="MajorValue" width="80">
+                    专业<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Name" vtype="required" width="*">
+                    里程碑名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="120" align="center">
+                    计划完成时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+                </div>
+                <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="120" align="center">
+                    原计划完成时间
+                </div>
+                <div field="Weight" width="60" align="center" vtype="float">
+                    权重%<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div type="comboboxcolumn" field="ReceiptObjectID" width="200">
+                    关联收款项<div property="editor" class="mini-combobox" style="width: 100%;" popupwidth="550" textfield="Name"
+                        valuefield="ID" data="ReceiptObject" multiselect="true">
+                        <div property="columns">
+                            <div header="收款项名称" width="*" field="Name">
+                            </div>
+                            <div header="合同名称" width="120" field="ContractName">
+                            </div>
+                            <div header="计划收款日期" width="80" field="PlanFinishDate">
+                            </div>
+                            <div header="收款金额（元）" width="80" field="ReceiptValue" align="right">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div field="Description" width="200">
+                    备注<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+    @Html.GetEnum(typeof(Project.Logic.WBSNodeType));
+    var rootNode = @Html.Raw(ViewBag.RootNode);
+    var ReceiptObject = @Html.Raw(ViewBag.ReceiptObject);
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "State", "ProjectCommoneState");
+    addGridEnum("dataGrid", "WBSType", "WBSNodeType");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var mileStoneLevel = getQueryString("MileStoneLevel");
+
+    function delMileStone() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length < 1) {
+            msgUI("请选择一条记录！");
+            return;
+        }
+        msgUI("您确定需要删除吗？", 2, function (data) {
+            if (data != "ok") return;
+            addExecuteParam("MileStoneData", mini.encode(rows));
+            execute("DeleteMileStone", {
+                refresh: false, showLoading: true, validateForm: false,
+                onComplete: function (data) {
+                    grid.removeRows(rows);
+                }
+            });
+        });
+    }
+
+    function addMileStone() {
+        var grid = mini.get("dataGrid");
+        var level = "Project";
+        var newRow = { WBSID: rootNode.ID, ProjectInfoID: rootNode.ProjectInfoID, MileStoneLevel: level };
+        grid.addRow(newRow);
+    }
+
+    function ImportMileStone() {
+        var wbsType = "Project";
+        openWindow("MileStoneImport?MileStoneLevel=" + mileStoneLevel, { refresh: false, title: "里程碑模板导入", width: 850, height: 400,
+            onDestroy: function (rows) {
+                if (rows == "close" || !rows || rows.length == 0) return;
+                addExecuteParam("MileStoneData", mini.encode(rows));
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                execute("ImportMileStoneData", { showLoading: true, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }
+                });
+            }
+        });
+    }
+
+    function saveMileStone() {
+        var grid = mini.get("dataGrid");
+        grid.validate();
+        var data = grid.getChanges();
+        if (data.length == 0)
+            return;
+        if (!grid.isValid()) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);
+            return;
+        }
+        addExecuteParam("MileStoneData", mini.encode(grid.data));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("MileStoneSave", {
+            refresh: false, showLoading: true,
+            onComplete: function (data) {
+                msgUI("保存成功");
+                grid.reload();
+            }
+        });
+    }
+
+    function OnGridDrawing(e) {
+        var rec = e.record;
+        var field = e.field;
+        if (rec.State == "Finish" && field != "ReceiptObjectID" && field != "Description") {
+            e.cellStyle = "background:#ecedef";
+        }
+    }
+
+    function OnCellBeginEdit(e) {
+        var grid = e.sender;
+        var field = e.field;
+        var rec = e.record;
+        if (rec.State == "Finish" && field != "ReceiptObjectID" && field != "Description") {
+            e.cancel = true; return;
+        }
+
+    }
+
+    function gotoGantt() {
+        window.location.href = "/Project/Gantt/MileStoneGantt/MileStoneGantt" + window.location.search;
+    }
+
+  
+</script>

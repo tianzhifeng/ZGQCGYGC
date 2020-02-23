@@ -1,0 +1,150 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+    <div size="250" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%"
+                textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false" onnodeclick="onNodeSelect"
+                expandonload="1" contextmenu="#treeMenu" iconfield="IconClass">
+            </ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-ok" onclick="returnList();">选择</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="doSearch();"
+                            onbuttonclick="doSearch();" />
+                        <a class='mini-button' id="btnSearch" onclick="showWindow('queryWindow');" iconcls='icon-find'>
+                            详细查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    @* <div field="ModuleName" width="100" allowsort="true">
+                        模块名称</div>
+                    <div field="CategoryName" width="100" allowsort="true">
+                        分类名称</div>*@
+                    <div field="Code" width="200" allowsort="true">
+                        编号</div>
+                    <div field="Name" width="*" allowsort="true">
+                        名称</div>
+                    <div field="Type" width="100" allowsort="true">
+                        类型
+                    </div>
+                    <div field="ModifyUserName" width="120" allowsort="true" align="center">
+                        最后修改人</div>
+                    <div field="ModifyTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm"
+                        width="120" allowsort="true">
+                        最后修改时间</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 185px;
+    display: none;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="13%">
+                    类型
+                </td>
+                <td width="35%">
+                    <input name="$IL$Type" class="mini-combobox" multiselect="true" style="width: 100%;"
+                        data='uiType' />
+                </td>
+                <td width="13%">
+                    编号
+                </td>
+                <td width="35%">
+                    <input name="$LK$Code" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="4%" />
+            </tr>
+            <tr>
+                <td width="13%">
+                    名称
+                </td>
+                <td width="35%">
+                    <input name="$LK$Name" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td>
+                    最后修改时间
+                </td>
+                <td>
+                    <input name="$FR$ModifyTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ModifyTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="doSearch()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var DbServerAddr = window.Owner.mini.getbyName("DbServerAddr").getValue();
+    var DbName = window.Owner.mini.getbyName("DbName").getValue();
+    var DbLoginName = window.Owner.mini.getbyName("DbLoginName").getValue();
+    var DbPassword = window.Owner.mini.getbyName("DbPassword").getValue();
+    var dbData = { DbServerAddr: DbServerAddr, DbName: DbName, DbLoginName: DbLoginName, DbPassword: DbPassword };
+    dbData.pageSize = 50;
+
+    function pageLoad() {
+        var grid = mini.get("dataGrid");
+        grid.setUrl("GetUIList");
+        grid.load(dbData);
+
+        var tree = mini.get("dataTree");
+        tree.setUrl("GetUITree");
+        tree.load(dbData);
+    }
+</script>
+<script type="text/javascript">
+    //树节点点击事件
+    var url = "GetUIList";
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID + "&NodeFullID=" + e.node.FullID);
+            dataGrid.load(dbData);
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load(dbData);
+        }
+    }
+
+    function doSearch() {
+        var data = {};
+        var keyCo = mini.get("key");
+
+        var keys = "Code,Name".split(',');
+        for (i = 0, len = keys.length; i < len; i++) {
+            data["$IL$" + keys[i]] = keyCo.getValue();
+        }
+        dbData.quickQueryFormData = mini.encode(data);
+        var queryForm = new mini.Form("queryForm");
+        dbData.queryFormData = mini.encode(queryForm.getData());
+        var grid = mini.get("dataGrid");
+        grid.load(dbData);
+    }
+    
+</script>
+<script type="text/javascript">
+    var uiType = [{ value: 'Form', text: 'Form' }, { value: 'List', text: 'List' }, { value: 'Selector', text: 'Selector' }, { value: 'Word', text: 'Word' }, { value: 'Report', text: 'Report' }, { value: 'Enum', text: 'Enum' }, { value: 'Workflow', text: 'Workflow'}];
+</script>

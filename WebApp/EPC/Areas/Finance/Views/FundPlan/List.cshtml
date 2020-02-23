@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+    <table>
+        <tr>
+            <td>
+                <a class='mini-button' enabled='true' visible='true' id='btnAddPlan' text='发起资金计划编制' iconcls='icon-add' onclick='onAddPlan'></a>
+            </td>
+            <td class='gw-toolbar-right'></td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit" id="divGrid">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" onbeforeload="beforelLoad" showPager="true"  multiselect="true" 
+         allowalternating="false" expandonload="true" ajaxOptions={async:true} onDrawSummaryCell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div name="ChargerDeptName" field="ChargerDeptName" header="部门名称" align="left" visible="true" allowsort="true" ></div>
+            <div name="CreateDate" field="CreateDate" header="创建日期" width="80" align="center" visible="true" allowsort="true" dateformat="yyyy-MM-dd"></div>
+            <div name="BelongDate" field="BelongDate" header="计划年月" width="80" align="center" visible="true" allowsort="true" dateformat="yyyy-MM"></div>
+            <div name="ReceiveValue" field="ReceiveValue" header="计划收款金额（元）" width="120" align="right" visible="true" allowsort="true" datatype="currency"></div>
+            <div name="PaymentValue" field="PaymentValue" header="计划付款金额（元）" width="120" align="right" visible="true" allowsort="true" datatype="currency"></div>
+            <div name="YearReceiveValue" field="YearReceiveValue" header="预测全年收款（元）" width="120" align="right" visible="true" allowsort="true" datatype="currency"></div>
+            <div name="YearPaymentValue" field="YearPaymentValue" header="预测全年付款（元）" width="120" align="right" visible="true" allowsort="true" datatype="currency"></div>
+            <div name="FlowPhase" field="FlowPhase" header="审核状态" align="center" visible="true" allowsort="true"></div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">    
+    @Html.GetEnum("FlowPhase")
+    addGridEnum('dataGrid', 'FlowPhase', 'FlowPhase');
+    addGridLink('dataGrid','FlowPhase','/EPC/Finance/FundPlan/PageView?TmplCode=DeptFundPlan&FlowCode=DeptFundPlan&ID={ID}&FuncType=FlowTrace',{"width":"80%","height":"80%","title":"流程跟踪","true":"true"});
+
+
+    var Dept = @Html.Raw(ViewBag.Dept);
+
+    var belongYear = "";
+    var belongMonth = "";
+    var chargerDept = "";
+    var chargerDeptName = "";
+
+    function pageLoad() {
+
+    }
+    function beforelLoad() {
+        var tabData = GetTabsData();
+        for (var i = 0; i < tabData.length; i++) {
+            switch (tabData[i].queryfield) {
+                case "BelongYear":
+                    belongYear = tabData[i].value;
+                    break;
+
+                case "BelongMonth":
+                    belongMonth = tabData[i].value;
+                    break;
+
+                case "ChargerDept":
+                    chargerDept = tabData[i].value;
+                    chargerDeptName = getDeptName(chargerDept);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+    }
+    function getDeptName(value) {
+        for (var i = 0; i < Dept.length; i++) {
+            var d = Dept[i];
+            if (d.value == value) return d.text;
+        }
+        return "";
+    }
+
+    //发起资金计划编制
+    function onAddPlan() {
+        addExecuteParam("BelongYear", belongYear);
+        addExecuteParam("BelongMonth", belongMonth);
+        addExecuteParam("ChargerDept", chargerDept);
+        execute("/EPC/Finance/FundPlan/ValidateStart", {
+            showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                var url = "/EPC/Finance/FundPlan/PageView?TmplCode=DeptFundPlan&FlowCode=DeptFundPlan&BelongYear="
+                    + belongYear + "&BelongMonth=" + belongMonth + "&ChargerDept=" + chargerDept + "&ChargerDeptName=" + chargerDeptName;
+                if (data && data.ID) {
+                    url = "/EPC/Finance/FundPlan/PageView?TmplCode=DeptFundPlan&FlowCode=DeptFundPlan&ID=" + data.ID;
+                }
+                openWindow(url, {
+                    refresh: false, title: "部门资金计划", width: "80%", height: "90%",onDestroy: function (data) {
+                        if (!data || data.length == 0 || data == "close") return;
+                        var grid = mini.get("dataGrid");
+                        grid.reload();
+
+                    }
+                });
+            }
+        });
+
+
+
+
+    }
+
+
+</script>
+

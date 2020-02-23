@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "里程碑计划管理";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table>
+        <tr>
+            <td style="white-space: nowrap; width: 100%;">
+                <a class="mini-button" id="btnDelay" iconcls="icon-print" onclick="planDelay();"
+                    plain="true">里程碑变更</a> <a class="mini-button" id="btnDelay" iconcls="icon-goto" onclick="finishPlan();"
+                        plain="true">里程碑完成</a>
+                @Html.ExportButton()
+            </td>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或项目编号" style="width: 240px;"
+                    onenter="tabSearch()" onbuttonclick="tabSearch()" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GridArea">
+    <div id="dataGrid" url="GetPlanList" class="mini-datagrid" style="width: 100%; height: 100%;"
+        idfield="ID" multiselect="true" ondrawcell="OnDrawCell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="ProjectInfoName" width="400" headeralign="center" allowsort="true">
+                项目名称</div>
+            <div field="ProjectInfoCode" width="150" headeralign="center" allowsort="true">
+                项目编号</div>
+            <div field="Name" width="200" headeralign="center" allowsort="true">
+                里程碑名称</div>
+            <div field="PlanFinishDate" headeralign="center" dateformat="yyyy-MM-dd" width="120"
+                allowsort="true" align="center">
+                计划完成日期</div>
+            <div field="Stauts" width="100" headeralign="center" allowsort="true" align="center">
+                状态</div>
+            <div field="State" width="100" headeralign="center" allowsort="true" align="center">
+                里程碑状态</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+@Html.GetEnum(typeof(Project.Logic.MileStoneShowStatus))
+@Html.GetEnum(typeof(Project.Logic.MileStoneState))
+
+</script>
+<script language="javascript">
+    addGridEnum("dataGrid", "Stauts", "MileStoneShowStatus");
+    addGridEnum("dataGrid", "State", "MileStoneState");
+
+    function OnDrawCell(e) {
+        var record = e.record;
+        if (e.field == "Stauts") {
+            if (record.Stauts == "NormalFinish") {
+                e.cellStyle = "color:#2da100;background:#c6d7e6";
+            }
+            else if (record.Stauts == "DelayUndone") {
+                e.cellStyle = "color:#0a6aad;background:#e6dfbd";
+            }
+            else if (record.Stauts == "UnFinished") {
+                e.cellStyle = "color:#8e3e84;background:#e6cfe3";
+            }
+            else if (record.Stauts == "DelayFinish") {
+                e.cellStyle = "color:#777777;background:#e5e5e5";
+            }
+        }
+    }
+
+    function planDelay() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一条记录");
+            return;
+        }
+        addExecuteParam("MileStoneData", mini.encode(rows));
+        execute("ValidateOperation", { showLoading: true, refresh: false, onComplete: function (data) {
+            var url = "MileStoneChange";
+            openWindow(url, { refresh: false, title: "里程碑变更", width: 400, height: 300,
+                onDestroy: function (data) {
+                    if (!data || data == "close") return;
+                    msgUI("您确定需要延期所选择的【" + rows.length + "】条里程碑吗？", 2, function (result) {
+                        if (result != "ok") return;
+                        addExecuteParam("NewPlanDate", data.NewPlanDate);
+                        addExecuteParam("ChangeType", data.ChangeType);
+                        addExecuteParam("MileStoneData", mini.encode(rows));
+                        execute("DelayPlan", { showLoading: true, refresh: false, onComplete: function (data) {
+                            grid.reload();
+                        }, validateForm: false
+                        });
+                    });
+                }
+            });
+        }, validateForm: false
+        });
+    }
+
+    function finishPlan() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一条记录");
+            return;
+        }
+        addExecuteParam("MileStoneData", mini.encode(rows));
+        execute("ValidateOperation", { showLoading: true, refresh: false, onComplete: function (data) {
+            var url = "MileStoneFinish";
+            openWindow(url, { refresh: false, title: "里程碑完成", width: 400, height: 300,
+                onDestroy: function (data) {
+                    if (!data || data == "close") return;
+                    msgUI("您确定需要完成所选择的【" + rows.length + "】条里程碑吗？", 2, function (result) {
+                        if (result != "ok") return;
+                        addExecuteParam("FinishDate", data);
+                        addExecuteParam("MileStoneData", mini.encode(rows));
+                        execute("Finish", { showLoading: true, refresh: false, onComplete: function (data) {
+                            grid.reload();
+                        }, validateForm: false
+                        });
+                    });
+                }
+            });
+        }, validateForm: false
+        });
+    }
+
+</script>

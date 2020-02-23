@@ -1,0 +1,137 @@
+﻿<div class="mini-toolbar" style="border-bottom: 0px;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="returnData();">确定</a>
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="addRow({},{isLast:true});">添加</a>
+                <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="delRow();">移除</a>
+                <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="150" vtype="required;">
+                字段标题
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="100">
+                字段编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="ValueType" width="100" autoshowpopup="true" align="center" header="控件类型">
+                <input property="editor" class="mini-combobox" style="width: 100%;" data="ItemType" onitemclick="commitEdit" onvaluechanged="itemTypeChanged" />
+            </div>
+            <div type="checkboxcolumn" field="NotNull" truevalue="true" falsevalue="false" width="60" header="必填">
+            </div>
+            <div type="checkboxcolumn" field="IsEdit" truevalue="true" falsevalue="false" width="60" header="可编辑">
+            </div>
+            <div type="checkboxcolumn" field="IsHidden" truevalue="true" falsevalue="false" width="60" header="是否隐藏">
+            </div>
+            <div field="settings" width="80">
+                详细设置
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var ItemType = [
+        { value: 'text', text: '文本框' },
+        { value: 'textArea', text: '多行文本框' },
+        { value: 'date', text: '日期框' },
+        { value: 'datetime', text: '日期时间框' },
+		{ value: 'time', text: '时间框' },
+        { value: 'list', text: '列表选择' },
+        { value: 'enum', text: '枚举选择' },
+        { value: 'attachment', text: '附件' },
+        { value: 'multiAttachment', text: '多附件' },
+        { value: 'link', text: '链接' },
+        { value: 'invoice', text: '发票识别' }
+    ];
+
+
+
+    function itemTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["Settings"] = "";
+        grid.updateRow(row);
+    }
+
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+    function getitemTypeText(value) {
+        for (var i = 0; i < ItemType.length; i++) {
+            if (ItemType[i]["value"] == value)
+                return ItemType[i]["text"];
+        }
+    }
+
+    function MobileOpenWindow(row, url, title, width) {
+        openWindow(url, {
+            width: width, title: title, data: row["Settings"], onDestroy: function (data) {
+                if (data != "close")
+                    row["Settings"] = mini.encode(data);
+            }
+        });
+    }
+
+    addGridButton("dataGrid", "settings", {
+        linkText: '详细', onButtonClick: function (row) {
+            var type = row["ValueType"];
+            if (!type) { msgUI('请先选择控件类型!'); return; }
+            if (type == "textArea") { return; }
+            var title = getitemTypeText(type);
+            if (type == "list" || type == "enum" || type == "link" || type == "date" || type == "datetime" || type == "time" || type == "invoice") {
+                var url = "MobileSettings" + type;
+                if (type == "datetime")
+                    url = "MobileSettingsdate";
+                MobileOpenWindow(row, url, title, 400);
+            }
+            else if (type == "text") {  //文本框支持货币类型
+                MobileOpenWindow(row, "MobileSettingsformat", title, 400);
+            }
+            else if (type == "attachment" || type == "multiAttachment") {
+                MobileOpenWindow(row, "MobileSettingsattachment", title, 400);
+            }
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+</script>
+<script type="text/javascript">
+    function setData(data) {
+        if (data) {
+            var grid = mini.get("dataGrid");
+            grid.setData(mini.decode(data));
+        }
+    }
+</script>
+<script type="text/javascript">
+    function returnData() {
+        var grid = mini.get("dataGrid");
+        var data = grid.getData();
+        closeWindow(data);
+    }
+</script>

@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "PublishInfoAnylise";
+}
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" showheader="false" height="300" showspliticon="false" allowresize="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <input name="BelongYear" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value"
+                               data="YearEnum" allowinput="false" value="@DateTime.Now.Year" onvaluechanged="onValuechanged" />
+                    </td>
+                    <td style="white-space: nowrap; padding-right: 5px; font-weight: bold">单位：元</td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div class="mini-splitter" vertical="false" allowresize="false" style="width:100%; height:100%; " borderstyle="border-bottom:0px;">
+                <div size="50%" showcollapsebutton="false">
+                    <div id="xyChartContainer" class="mini-fit">
+                    </div>
+                </div>
+                <div showcollapsebutton="false">
+                    <div id="pieChartContainer" class="mini-fit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 showpager="false" showsummaryrow="true" borderstyle="border:0px" ondrawsummarycell="onDrawSummaryCell"
+                 ondrawcell="onDrawCell" onload="onGridLoad" sortmode="client">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="DeptName" width="100" headeralign="center" allowsort="true">
+                        部门名称
+                    </div>
+                    @{
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            var field = i.ToString() + "Month";
+                            var fieldName = i.ToString() + "月";
+                            <div field="@field" summarytype="sum" headeralign="center" width="80" allowsort="true" align="right">
+                                @fieldName
+                            </div>
+                        }
+                    }
+                    <div field="SumToA1" summarytype="sum" width="80" headeralign="center" allowsort="true" align="right">
+                        合计
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("YearEnum");
+</script>
+<script type="text/javascript">
+
+    function loadingChart(divID, option) {
+        $("#" + divID).highcharts($.extend(true,
+            option,
+            {
+
+            }));
+    }
+
+    function onValuechanged(e) {
+        if (e.value) {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl("GetList?BelongYear=" + e.value);
+            dataGrid.reload();
+        }
+    }
+
+    function onGridLoad(e) {
+        if (e.result && e.result.chartData) {
+            loadingChart("xyChartContainer", e.result.chartData);
+            loadingChart("pieChartContainer", e.result.pieChartData);
+        }
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var field = e.field;
+        e.cellStyle = "text-align:right; color:Brown";
+    }
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field != "DeptName" && field) {
+            var belongMonth = field.replace("Month", "");
+            var belongYear = record["BelongYear"];
+            if (field == "SumToA1") belongMonth = "";
+            e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + belongYear + '\',\'' + belongMonth + '\',\'' + record.DeptID + '\')">' + e.value + '</a>&nbsp; ';
+        }
+    }
+
+    function viewDetailInfo(belongYear, belongMonth, deptID) {
+        url = "/MvcConfig/UI/List/PageView?TmplCode=PublishDetail&BelongYear=" + belongYear
+            + "&ChargeDeptID=" + deptID;
+        if (belongMonth)
+            url += "&BelongMonth=" + belongMonth;
+        openWindow(url, { width: "70%", height: "75%", title: "部门月出图明细", addQueryString: false });
+    }
+
+
+
+</script>

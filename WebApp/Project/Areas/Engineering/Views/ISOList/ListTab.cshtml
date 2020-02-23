@@ -1,0 +1,235 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="west" width="250" expanded="true" showspliticon="true" showheader="false"
+        style="border-top: 0; border-bottom: 0;">
+        <div class="mini-fit">
+            <ul id="mytree" class="mini-tree" url="GetProjectList" style="width: 100%; height: 100%;"
+                showtreeicon="true" textfield="Name" iconfield="Type" idfield="ID" enablehottrack="false"
+                parentfield="ParentID" resultastree="false" expandonload="0" onnodeselect="onNodeSelect">
+            </ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;"
+        class="tree-backcolor">
+        <div class="mini-toolbar" style="padding: 0px;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        @*<a class="mini-button" iconcls="icon-add" onclick="addForm();" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delForm();" plain="true">删除</a>*@
+                        <a class="mini-button" id="ExportToPDF" iconcls="icon-pdf" onclick="exportToPDF();"
+                            plain="true">导出PDF</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="onFilter()"
+                            onbuttonclick="onFilter()" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-bottom:0px;"
+                idfield="ID" multiselect="false" showpager="false" ondrawcell="onDrawingCell">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="Name" width="*" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="FlowPhase" width="90" headeralign="center" allowsort="true" align="center">
+                        流程状态
+                    </div>
+                    <div field="VersionNumber" width="90" headeralign="center" allowsort="true" align="center">
+                        版本号
+                    </div>
+                    <div field="CreateUser" width="90" headeralign="center" allowsort="true" align="center">
+                        创建人
+                    </div>
+                    <div field="CreateDate" width="120" headeralign="center" dateformat="yyyy-MM-dd"
+                        allowsort="true" align="center">
+                        创建日期
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("FlowPhase")
+</script>
+<script type="text/javascript">
+    var viewTypeEnum = [{ text: "详细列表", value: "list" }, { text: "大图标", value: "image"}];
+    var groupInfoID = getQueryString("GroupInfoID");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var authType = "FullControl";
+    addGridEnum("dataGrid", "FlowPhase", "FlowPhase");
+    $(".mini-button").hide();
+
+    $(document).ready(function () {
+        var mytree = mini.get("mytree");
+        var node = mytree.getRootNode().children[0].children[0];
+        if (node != null)
+            mytree.expandNode(node)
+    });
+
+    var selectedFolderID = "";
+    var currentTmpCode = "";
+    function onNodeSelect(e) {
+        if (e.node.Type != "ISO") {
+            var grid = mini.get("dataGrid");
+            grid.setData("");
+            grid.load();
+            return;
+        }
+        projectInfoID = e.node.ParentID;
+        selectedFolderID = e.node.ID;
+        currentTmpCode = e.node.FormCode;
+        loadGridData(selectedFolderID);
+    }
+
+    function onDrawingCell(e) {
+        var grid = mini.get("dataTree");
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (field == "FlowPhase") {
+            if (record.FlowPhase) {
+                var flowPhase = "";
+                for (var i = 0; i < FlowPhase.length; i++) {
+                    if (FlowPhase[i].value == record.FlowPhase) {
+                        flowPhase = FlowPhase[i].text; break;
+                    }
+                }
+                var html = "<a href=\"javascript:flowTrace('" + record.ID + "')\">" + flowPhase + "</a>";
+                e.cellHtml = html;
+            }
+        }
+        else if (field == "Name" && record.LinkUrl) {
+            var html = "<a href=\"javascript:openFile('" + record.LinkUrl + "')\">" + record.Name + "</a>";
+            e.cellHtml = html;
+        }
+    }
+
+    function flowTrace(id) {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + id + "&FuncType=FlowTrace";
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "70%", height: "80%",
+            onDestroy: function (data) {
+
+            }
+        });
+    }
+
+    function refreshFolders(data) {
+    }
+
+    function loadGridData(folderID) {
+        addExecuteParam("ISODefineID", folderID);
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("GetFiles", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                var filesListBox = mini.get("dataGrid");
+                filesListBox.setData(data.data);
+                addFormUrl = data.AddUrl;
+                if (data.CanAddNewForm != "True" && authType == "FullControl") {
+                    $(".mini-button").hide();
+                }
+                else {
+                    $(".mini-button").show();
+                }
+                $("#ExportToPDF").show();
+            }, validateForm: false
+        });
+    }
+
+    function exportToPDF() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请需选择一条就"); return; }
+        if (!currentTmpCode) {
+            msgUI("表单编号为空，无法导出PDF"); return;
+        }
+        ExportPdf(currentTmpCode, row.ID);
+    }
+
+    function delForm() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (row.FlowPhase != "Start") { msgUI("已经启动流程的数据，不能删除"); return; }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListIDs", row.ID);
+            addExecuteParam("FolderID", selectedFolderID);
+            execute("Delete", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    loadGridData(selectedFolderID);
+                }, validateForm: false
+            });
+        });
+    }
+
+    function openFile(url) {
+        openWindow(url, {
+            refresh: false, title: "表单查看", width: "70%", height: "80%",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                loadGridData(selectedFolderID);
+            }
+        });
+    }
+
+    var addFormUrl = "";
+    function addForm() {
+        if (!addFormUrl) { return; }
+        openWindow(addFormUrl, {
+            refresh: false, title: "新增", width: "70%", height: "80%",
+            onDestroy: function () {
+                loadGridData(selectedFolderID);
+            }
+        });
+    }
+
+    function onFilter() {
+        var grid = mini.get("dataGrid");
+        var searchKey = mini.get("key").getValue();
+        if (!searchKey) {
+            grid.clearFilter();
+            return;
+        }
+
+        //多条件组合过滤
+        grid.filter(function (row) {
+            if (row.Name.indexOf(searchKey) >= 0)
+                return true;
+            else
+                return false;
+        });
+    }
+</script>
+<style type="text/css">
+    .Project:before
+    {
+        content:"";
+    }
+    .mini-layout-proxy
+    {
+        border-top: 0px;
+        border-left: 0px;
+    }
+    .Engineering
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+    .Project
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/project.gif) no-repeat;
+    }
+    .ISO
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+</style>

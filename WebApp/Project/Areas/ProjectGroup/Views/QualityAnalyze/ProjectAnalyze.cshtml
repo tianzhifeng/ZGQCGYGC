@@ -1,0 +1,231 @@
+﻿@{
+    ViewBag.Title = "ProjectAnalyze";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或项目编号" style="width: 200px;"
+                    onenter="tabSearch();" onbuttonclick="tabSearch();" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;" id="GridArea">
+    <div id="dataGrid" url="GetProjectList" class="mini-datagrid" style="width: 100%; height: 100%;" ondrawcell="onDrawCell"
+        idfield="ID" multiselect="true" showsummaryrow="true" sortfield="Summary" sortorder="desc"
+        ondrawsummarycell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="Code" width="100" allowsort="true" headeralign="center" allowsort="true"
+                align="center">
+                项目编号
+            </div>
+            <div field="Name" width="250" headeralign="center" allowsort="true" allowsort="true"
+                align="left">
+                项目名称
+            </div>
+            <div field="ProjectClass" headeralign="center" align="center" width="70" allowsort="true">
+                业务类型
+            </div>
+            <div field="PhaseValue" headeralign="center" align="center" width="110" allowsort="true">
+                设计阶段
+            </div>
+            <div field="ChargeDeptName" width="120" headeralign="center" allowsort="true" allowsort="true"
+                align="center">
+                主责部门
+            </div>
+            <div field="ChargeUserName" width="70" headeralign="center" allowsort="true" allowsort="true"
+                align="center">
+                项目负责人
+            </div>
+            <div field="CreateDate" headeralign="center" width="90" allowsort="true" align="center"
+                dateformat="yyyy-MM-dd">
+                立项日期
+            </div>
+            @{
+                foreach (var item in ViewBag.MistakeLevel)
+                {
+                    var len = item.Name.Length * 13 + 20;
+                <div field="@item.Code" width="@len" headeralign="center" align="right" summarytype="sum" allowsort="true">
+                    @item.Name
+                </div>
+                }
+            }
+            <div field="Summary" width="80" headeralign="center" align="right" summarytype="sum" allowsort="true" renderer="onLinkRender">
+                合计
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; display: none;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">项目编号
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$Code" style="width: 85%;" class="mini-textbox" />
+                    </td>
+                    <td width="10%" align="center">项目名称
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$Name" class="mini-textbox" style="width: 85%" />
+                    </td>
+                    <td width="10%" align="center">主责部门
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$ChargeDeptName" class="mini-textbox" style="width: 85%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">项目负责人
+                    </td>
+                    <td align="left">
+                        <input name="$LK$ChargeUserName" style="width: 85%;" class="mini-textbox" />
+                    </td>
+                    <td align="center">业务类型
+                    </td>
+                    <td align="left">
+                        <input class="mini-combobox" name="$EQ$ProjectClass" style="width: 85%;" valuefield="value"
+                            textfield="text" data="BusinessType" shownullitem="true" />
+                    </td>
+                    <td align="center">设计阶段
+                    </td>
+                    <td align="left">
+                        <input class="mini-combobox" name="$IL$PhaseValue" style="width: 85%;" valuefield="value"
+                            textfield="text" data="Phase" shownullitem="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">立项日期
+                    </td>
+                    <td align="left">
+                        <input class="mini-datepicker" name="$FR$CreateDate" id="CreateDateStart" style="width: 85%;"
+                            ondrawdate="onDrawStartDate(e,'CreateDateEnd')" />
+                    </td>
+                    <td align="center">至
+                    </td>
+                    <td align="left">
+                        <input class="mini-datepicker" name="$TO$CreateDate" id="CreateDateEnd" style="width: 85%;"
+                            ondrawdate="onDrawEndDate(e,'CreateDateStart')" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">错误发生日期
+                    </td>
+                    <td align="left">
+                        <input class="mini-datepicker" name="$FR$MistakeDate" id="MistakeDateStart" style="width: 85%;"
+                            ondrawdate="onDrawStartDate(e,'MistakeDateEnd')" />
+                    </td>
+                    <td align="center">至
+                    </td>
+                    <td align="left">
+                        <input class="mini-datepicker" name="$TO$MistakeDate" id="MistakeDateEnd" style="width: 85%;"
+                            ondrawdate="onDrawEndDate(e,'MistakeDateStart')" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询
+            </a><a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.ProjectClass")
+    @Html.GetEnum("Project.Phase")
+    @Html.GetEnum("Market.NewOrAdded")
+    @Html.GetEnum(typeof(Market.Logic.YesOrNo))
+</script>
+<script type="text/javascript">
+    normalParamSettings.searchFields = "Name,Code";
+    addGridEnum("dataGrid", "PhaseValue", "Phase");
+    addGridEnum("dataGrid", "ProjectClass", "BusinessType");
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field != "CreateDate" && field && field != "ChargeUserName" && field != "PhaseValue" && field != "ChargeDeptName"
+            && field != "ProjectClass" && field != "Name" && field != "Code") {
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:onGridLink(\'' + e.record._uid + '\',\'' + e.field + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+    }
+
+
+    function onGridLink(UID, field) {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getRowByUID(UID);
+        queryData = {};
+        queryData["$EQ$ProjectInfoID"] = row.ID;
+        queryData["$FR$CreateDate"] = mini.getbyName("$FR$MistakeDate").getValue();
+        queryData["$TO$CreateDate"] = mini.getbyName("$TO$MistakeDate").getValue();
+        var url = "DetailList?MistakeType=" + field;
+        var width = 600; var height = 550;
+        if (field == "Summary") {
+            url = "MajorDetailList?ProjectInfoID=" + row.ID;
+            width = 900;
+        }
+        openWindow(url, { data: queryData, width: width, height: height, title: "查看" });
+    }
+
+    //计算合计
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        if (result.sumData && e.field) {
+            if (result.sumData[e.field] != undefined) {
+                e.cellHtml = result.sumData[e.field];
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+            else if (result.avgData[e.field] != undefined) {
+                e.cellHtml = "平均：" + result.avgData[e.field];
+                e.cellStyle = "text-align:center; color:Brown;datatype:currency";
+            }
+            else if (e.field == "Name") {
+                e.cellHtml = "合计：";
+                e.cellStyle = " text-align: left;color:Brown";
+            }
+            else {
+                e.cellHtml = "";
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+        }
+        else {
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+    }
+
+    function onDrawStartDate(e, endID) {
+        var date = e.date;
+        var end = mini.get(endID).value;
+        if (end == null || end == "" || end == undefined)
+            return;
+        if (date.getTime() > end.getTime()) {
+            e.allowSelect = false;
+        }
+    }
+
+    function onDrawEndDate(e, startID) {
+        var date = e.date;
+        var start = mini.get(startID).value;
+        if (start == null || start == "" || start == undefined)
+            return;
+        var date = e.date;
+        if (date.getTime() < start.getTime()) {
+            e.allowSelect = false;
+        }
+    }
+</script>

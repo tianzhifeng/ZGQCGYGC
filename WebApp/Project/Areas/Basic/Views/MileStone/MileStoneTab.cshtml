@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "MileStoneTab";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<link href="~/Scripts/Menu/Style.css" rel="stylesheet" type="text/css" />
+<div class="mini-fit">
+    <div class="menu_tab_a_bg">
+        <ul id="TabPlan" class="menu_tab_a">
+            @for (int i = 0; i < ViewBag.MileStoneLevel.Count; i++)
+            {
+                var item = ViewBag.MileStoneLevel[i];
+                <li>
+                    @{
+                if (i == 0)
+                {
+                        <a style="cursor:hand" key="@item.Code" class="current">@item.Name</a>
+                }
+                else
+                {    
+                        <a style="cursor:hand" key="@item.Code" >@item.Name</a>
+                }
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="mini-fit">
+        <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;">
+            <div title="" url="MileStonePlanList?MileStoneLevel=Project&ProjectInfoID=@ViewBag.ProjectInfoID"  showheader="false" headerstyle="display:none;">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    $("#TabPlan a").bind("click", function (e) {
+        $("#TabPlan a").removeClass("current");
+        var key = $(e.target).attr("key");
+        mileStoneLevel = key;
+        var url = "MileStonePlanList?MileStoneLevel=" + key + "&ProjectInfoID=" + projectInfoID;
+        if (mileStoneLevel == "Major")
+            url = "MajorMileStoneList?MileStoneLevel=" + key + "&ProjectInfoID=" + projectInfoID;
+        var mainTabs = mini.get("mainTab");
+        var tab = mainTabs.getTabs()[0];
+        tab.url = url;
+        mainTabs.reloadTab(tab);
+        $(e.target).addClass("current");
+    });
+</script>
+<style type="text/css">
+    .mini-tabs-bodys
+    {
+        padding: 0 0 0 0;
+    }
+    .mini-tabs-scrollCt
+    {
+        visibility: hidden;
+        height: 0px;
+    }
+</style>

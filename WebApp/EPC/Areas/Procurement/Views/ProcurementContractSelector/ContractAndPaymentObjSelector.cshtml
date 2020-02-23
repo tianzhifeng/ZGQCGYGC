@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "CusContractSelector";
+}
+
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="north" showheader="false" region="north" height="250" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">选择</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow();" plain="true">取消</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入合同名称或合同编号" style="width: 240px;"
+                               onenter="quickSearch('Name,SerialNumber')" onbuttonclick="quickSearch('Name,SerialNumber')" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%;height: 100%;" showpager="false"
+                 idfield="ID" multiselect="false" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;" onselectionchanged="onSelectionChanged">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="SerialNumber" width="80" allowsort="true" headeralign="center">
+                        合同编号
+                    </div>
+                    <div field="Name" width="150" allowsort="true" headeralign="center">
+                        合同名称
+                    </div>
+                    <div field="ContractAmount" datatype="currency" currencyunit="￥" allowsort="true"
+                         headeralign="center" align="right">
+                        合同金额
+                    </div>
+                    <div field="SumInvoiceValue" datatype="currency" allowsort="true" headeralign="center"
+                         align="right">
+                        已收票金额（元）
+                    </div>
+                    <div field="SumPaymentValue" datatype="currency" allowsort="true" headeralign="center"
+                         align="right">
+                        已付款金额（元）
+                    </div>
+                    <div field="NoInvoiceAmount" datatype="currency" allowsort="true" headeralign="center"
+                         align="right">
+                        剩余可收票金额（元）
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="paymentObjGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+                 idfield="ID" multiselect="true" borderstyle="border:0" showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="250" headeralign="center" allowsort="true">
+                        付款项名称
+                    </div>
+                    <div field="PlanPaymentDate" width="150" headeralign="center" dateformat="yyyy-MM"
+                         allowsort="true" align="center">
+                        计划付款日期
+                    </div>
+                    <div field="PlanPaymentValue" datatype="currency" currencyunit="￥" headeralign="center"
+                         width="120" allowsort="true" align="right">
+                        金额（元）
+                    </div>
+                    <div field="SumInvoiceValue" datatype="currency" currencyunit="￥" headeralign="center"
+                         width="120" allowsort="true" align="right">
+                        已收票金额（元）
+                    </div>
+                    <div field="RemainInvoiceValue" datatype="currency" currencyunit="￥" headeralign="center"
+                         width="120" allowsort="true" align="right">
+                        可收票金额（元）
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+<script type="text/javascript">
+
+    function pageLoad() {
+        var contractProperty = getQueryString('ContractProperty');
+        var grid = mini.get('dataGrid');
+        grid.setUrl("GetContractList?ContractProperty=" + contractProperty);
+    }
+
+
+    function returnValue() {
+        var grid = mini.get("dataGrid");
+        var contract = grid.getSelected();
+        var plans = mini.get("paymentObjGrid").getSelecteds();
+        contract.PaymentObjRelation = plans;
+        closeWindow(contract);
+    }
+
+    //合同选择发生改变时
+    function onSelectionChanged(e) {
+        var row = e.selected;
+        if (row != null) {
+            var contractInfoID = row.ID;
+            var url = "GetPaymentObjectList?ContractInfoID=" + contractInfoID;
+            var paymentObjGrid = mini.get("paymentObjGrid");
+            paymentObjGrid.setUrl(url);
+            paymentObjGrid.reload();
+        }
+    }
+</script>

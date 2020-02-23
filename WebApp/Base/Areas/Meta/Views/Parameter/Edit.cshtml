@@ -1,0 +1,222 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <input name="ParentID" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td style="width:13%">计算式名称</td>
+                            <td style="width:20%">
+                                <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                            </td>
+                            <td style="width:13%; padding-left: 20px;">编码</td>
+                            <td style="width:20%">
+                                <input name="Code" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                            </td>
+                            <td style="width:13%; padding-left: 20px;">模块</td>
+                            <td style="width:20%">
+                                <input name="Module" class="mini-combobox" style="width: 100%" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                分类
+                            </td>
+                            <td>
+                                <input name="Category" class="mini-combobox" style="width: 100%" required="true" />
+                            </td>
+                            <td style="padding-left: 20px;">类型</td>
+                            <td>
+                                <input name="ParamType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                       data="ArgumentType" allowinput="false" />
+                            </td>
+                            <td style="padding-left: 20px;" id="ConnNameTitle">链接</td>
+                            <td id="ConnNameItem">
+                                <input name="ConnName" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="ConnEnum" allowinput="false" />
+                            </td>
+                        </tr>
+                        <tr id="refParamRow">
+                            <td>
+                                是否返回集合
+                            </td>
+                            <td>
+                                <div name="IsCollectionRef" class="mini-radiobuttonlist" repeatitems="4" repeatlayout="table" repeatdirection="horizontal"
+                                     textfield="text" valuefield="value" data="trueOrFalse">
+                                </div>
+                            </td>
+                            <td style="padding-left: 20px;"></td>
+                            <td></td>
+                            <td style="padding-left: 20px;"></td>
+                            <td></td>
+                        </tr>
+                        <tr id="orderByRow">
+                            <td>排序（需要Order by）</td>
+                            <td colspan="5">
+                                <input name="OrderBy" class="mini-textbox" style="width: 100%;" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                        <tr id="sqlRow">
+                            <td>SQL</td>
+                            <td colspan="5">
+                                <input name="SQL" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>备注说明</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="10%"></td>
+                            <td width="23%;"></td>
+                            <td width="10%" style="padding-left: 20px;"></td>
+                            <td width="23%;"></td>
+                            <td width="10%" style="padding-left: 20px;"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>说明</td>
+                            <td colspan="5">
+                                <input name="Description" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.ArgumentType))
+    @Html.GetEnum(typeof(Config.ConnEnum))
+    var Categories = @Html.Raw(ViewBag.EnumCategory)
+</script>
+<script type="text/javascript">
+    var trueOrFalse =[{value:false,text:"否"},{value:true,text:"是"}];
+    function addNode() {
+        var dataGrid = mini.get("Arguments");
+        var row = { ArgType: "InputArg" };
+        dataGrid.addRow(row);
+    }
+
+    function removeNode() {
+        var dataGrid = mini.get("Arguments");
+    }
+
+    function onFormSetData(dataForm) {
+        setFormItemDisabled("ParamType");
+        setFormItemDisabled("ConnName");
+        $("#ConnNameItem").hide();
+        $("#ConnNameTitle").hide();
+        if (dataForm.ParamType == "InputArg") {
+            //输入参数
+            $("#sqlRow").hide();
+            $("#orderByRow").show();
+            $("#refParamRow").hide();
+            mini.getbyName("SQL").setRequired(false);
+            mini.getbyName("ConnName").setRequired(false);
+        }
+        else if (dataForm.ParamType == "RefArg") {
+            //取值参数
+            $("#sqlRow").show();
+            $("#orderByRow").show();
+            $("#ConnNameItem").show();
+            $("#ConnNameTitle").show();
+            $("#refParamRow").show();
+            mini.getbyName("SQL").setRequired(true);
+            mini.getbyName("ConnName").setRequired(true);
+            setFormItemEditabled("ConnName");
+        }
+        else if (dataForm.ParamType == "CalArg") {
+            //计算参数
+            $("#sqlRow").hide();
+            mini.getbyName("SQL").setRequired(false);
+            mini.getbyName("ConnName").setRequired(false);
+        }
+        else if (dataForm.ParamType == "DynCalArg") {
+            //动态范围计算参数
+            $("#sqlRow").hide();
+            mini.getbyName("SQL").setRequired(false);
+            mini.getbyName("ConnName").setRequired(false);
+        }
+
+        var module = getQueryString("Module");
+        var categoryID = getQueryString("Category");
+        if (module) {
+            mini.getbyName("Module").setValue(module);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(dataForm.Module, dataForm.Category);
+        }
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("Module").setData(ConnEnum);
+        mini.getbyName("Module").setValue(connName);
+        mini.getbyName("Category").setData(CateEnum);
+        mini.getbyName("Category").setValue(categoryID);
+    }
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var rec = e.record;
+        if (field == "Expression" && rec.ArgType != "CalArg" && rec.ArgType != "DynCalArg") {
+            e.cellStyle = "background:#ecedef";
+        }
+        else if (field == "SQL" && rec.ArgType != "RefArg" && rec.ArgType != "DynCalArg") {
+            e.cellStyle = "background:#ecedef";
+        }
+    }
+
+    function onCellBeginEdit(e) {
+        var field = e.field;
+        var rec = e.record;
+        if (field == "Expression" && rec.ArgType != "CalArg" && rec.ArgType != "DynCalArg") {
+            e.cancel = true; return;
+        }
+        else if (field == "SQL" && rec.ArgType != "RefArg" && rec.ArgType != "DynCalArg") {
+            e.cancel = true; return;
+        }
+    }
+
+    function saveData() {
+        save({
+            onComplete: function (data) {
+                closeWindow(data);
+            }
+        });
+    }
+
+</script>

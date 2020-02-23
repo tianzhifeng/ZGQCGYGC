@@ -1,0 +1,247 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({ height: '400',width:'700',title:'添加反馈信息',onDestroy:function(){ mini.get('dataGrid').reload(); }});"
+                    plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="patchConfirmComplete();" plain="true">
+                    批量确认完成</a>
+               @* <a class="mini-button" iconcls="icon-remove" onclick="deleteFeedback()" plain="true">
+                    删除</a>*@
+            </td>
+            <td id="btnRight">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入反馈标题" style="width: 200px;"
+                    onenter="quickSearch('Title');" onbuttonclick="quickSearch('Title');" />
+                <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetMyFeedbackList" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="DealStatus" headeralign="center" align="center" width="100" allowsort="true">
+                处理状态</div>
+            <div field="Module" headeralign="center" align="left" width="80" allowsort="true">
+                所属模块</div>
+            <div field="Title" headeralign="center" align="left" width="200" allowsort="true">
+                反馈标题</div>
+            <div field="Level" headeralign="center" align="left" width="100" allowsort="true">
+                严重程度</div>
+            <div field="Type" headeralign="center" align="left" width="100" allowsort="true">
+                反馈类型</div>
+            <div field="Content" headeralign="center" align="left" width="300" allowsort="true">
+                反馈内容</div>
+            <div field="CreateTime" width="80" dateformat="yyyy-MM-dd" headeralign="center" allowsort="true"
+                align="center">
+                反馈日期</div>
+            <div field="ExpectedCompleteTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                期望完成时间</div>
+            <div field="ConfirmCompleteTime" width="80" dateformat="yyyy-MM-dd" headeralign="center"
+                allowsort="true" align="center">
+                确认完成时间
+            </div>
+            <div field="ConfirmCompleteUserName" headeralign="center" align="left" width="60"
+                allowsort="true">
+                确认完成人
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 240px;
+    display: none;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="13%">
+                    处理状态
+                </td>
+                <td width="35%">
+                    <input name="$LK$DealStatus" class="mini-combobox" style="width: 100%;" data='dealStatus' />
+                </td>
+                <td width="13%">
+                    所属模块
+                </td>
+                <td width="35%">
+                    <input name="$LK$Module" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="4%" />
+            </tr>
+            <tr>
+                <td width="13%">
+                    反馈标题
+                </td>
+                <td width="35%">
+                    <input name="$LK$Title" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="13%">
+                    严重程度
+                </td>
+                <td width="35%">
+                    <input name="$EQ$Level" class="mini-combobox" style="width: 100%;" data='FeedbackLevel' />
+                </td>
+                <td width="4%" />
+            </tr>
+            <tr>
+                <td width="13%">
+                    反馈类型
+                </td>
+                <td width="35%">
+                    <input name="$LK$Type" class="mini-combobox" style="width: 100%;" data='FeedbackType' />
+                </td>
+                <td>
+                    反馈日期
+                </td>
+                <td>
+                    <input name="$FR$CreateTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$CreateTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td />
+            </tr>
+            <tr>
+                <td>
+                    期望完成时间
+                </td>
+                <td>
+                    <input name="$FR$ExpectedCompleteTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ExpectedCompleteTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td>
+                    确认完成时间
+                </td>
+                <td>
+                    <input name="$FR$ConfirmCompleteTime" class="mini-datepicker" style='width: 45%' />到<input
+                        name="$TO$ConfirmCompleteTime" class="mini-datepicker" style='width: 45%' />
+                </td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    确认完成人
+                </td>
+                <td>
+                    <input name="$LK$ConfirmCompleteUserName" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //注册Grid链接列
+    addGridLink('dataGrid', 'Title', 'Edit?FuncType=View&ID={ID}', { funcType: 'view', width: "700",
+        height: "400"
+    });
+    addGridEnum('dataGrid', 'DealStatus', 'dealStatus');
+    addGridEnum('dataGrid', 'Level', 'FeedbackLevel');
+    addGridEnum('dataGrid', 'Type', 'FeedbackType');
+</script>
+<script type="text/javascript">
+    function verifyFeedback() {
+        var grid = mini.get("dataGrid");
+        var row = grid.getSelected();
+        if (!row) {
+            msgUI("请选择记录！");
+            return;
+        }
+
+        openWindow('VerifyFeedback?ID=' + row["ID"], { width: 700, height: 600, title: '处理确认' });
+    }
+</script>
+<script type="text/javascript">
+    var dealStatus = [{ value: "问题待确认", text: "问题待确认" }, { value: "暂缓", text: "暂缓" }, { value: "不处理", text: "不处理" }, { value: "待安排", text: "待安排" }, { value: "进行中", text: "进行中" }, { value: "修改完成", text: "修改完成" }, { value: "确认完成", text: "确认完成"}];
+    var FeedbackType = [{ value: '界面报错', text: '界面报错' }, { value: '界面美化', text: '界面美化' }, { value: '功能改进', text: '功能改进' }, { value: '性能低下', text: '性能低下' }, { value: '新增功能', text: '新增功能'}];
+    var FeedbackLevel = [{ value: '一般', text: '一般' }, { value: '严重', text: '严重' }, { value: '非常严重', text: '非常严重'}];
+    var FeedbackProblemNature = [{ value: 'BUG', text: 'BUG' }, { value: '修订', text: '修订' }, { value: '新增', text: '新增' }, { value: '变更', text: '变更'}];
+    var FeedbackProjectName = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectName"]';
+    var FeedbackProjectPrincipal = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectPrincipal"]';
+    var FeedbackProjectDept = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectDept"]';
+    var FeedbackServerUrl = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackServerUrl"]';    
+</script>
+<script type="text/javascript">
+    function deleteFeedback() {
+        var grid = mini.get("dataGrid");
+        var ids = getValues(grid.getSelecteds(), "ID");
+
+        del({ onComplete: function (data) {
+            if (FeedbackServerUrl == "" || FeedbackProjectName == "") {
+                grid.reload();
+                return;
+            }
+
+            jQuery.ajax({
+                url: FeedbackServerUrl + "/" + ids,
+                type: "delete",
+                data: {},
+                dataType: "text",
+                cache: false,
+                success: function (text, textStatus) {
+                    //增加新版报错分支
+                    if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(text);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    grid.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    msgUI("反馈删除成功，发送删除信息到金慧软件有限公司失败！");
+                }
+            });
+        }
+        });
+    }
+
+    function patchConfirmComplete() {
+        var grid = mini.get("dataGrid");
+        var ids = getValues(grid.getSelecteds(), "ID");
+
+        execute('PatchConfirmComplete', { actionTitle:'完成', mustConfirm: true, refresh: true, onComplete: function (data) {
+            if (FeedbackServerUrl == "" || FeedbackProjectName == "") {
+                grid.reload();
+                return;
+            }
+
+            jQuery.ajax({
+                url: FeedbackServerUrl + "/" + ids + "/PatchConfirmComplete",
+                type: "post",
+                data: {},
+                dataType: "text",
+                cache: false,
+                success: function (text, textStatus) {
+                    //增加新版报错分支
+                    if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(text);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    grid.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    msgUI("反馈删除成功，发送删除信息到金慧软件有限公司失败！");
+                }
+            });
+        }
+        });
+    }
+
+</script>

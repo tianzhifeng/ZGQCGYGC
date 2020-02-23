@@ -1,0 +1,85 @@
+﻿<div class="mini-tabs" activeindex="0" style="width: 100%; height: 100%" onactivechanged="onTabChanged">
+    <div title="收到的任务">
+        <div class="mini-toolbar gw-grid-toolbar">
+            <table>
+                <tr>
+                    <td>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="keyReceive" class="mini-buttonedit gw-searchbox" emptytext="请输入任务名称" onenter="quickSearch('Name',{gridId:'receiveTaskGrid',queryBoxId:'keyReceive'});"
+                            onbuttonclick="quickSearch('Name',{gridId:'receiveTaskGrid',queryBoxId:'keyReceive'});" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="receiveTaskGrid" class="mini-datagrid" style="width: 100%; height: 100%;"
+                url="GetReceiveTaskList" multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="*" allowsort="true">
+                        任务名称</div>
+                    <div field="Urgency" width="120" allowsort="true" align="center">
+                        紧急程度</div>
+                    <div field="DeadLine" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                        计划完成日期</div>
+                    <div field="CompleteTime" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                        确认完成日期</div>
+                    <div field="ExecTime" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                        实际完成日期</div>
+                    <div field="TaskStatus" width="120" allowsort="true" align="center">
+                        完成状态</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="发起的任务">
+        <div class="mini-toolbar gw-grid-toolbar">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="add();">增加</a>
+                        @*                        <a class="mini-button" id="btnModify" iconcls="icon-edit" onclick="edit();">编辑</a>*@
+                        <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="del();">删除</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入任务名称" onenter="quickSearch('Name');"
+                            onbuttonclick="quickSearch('Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetMyTaskList"
+                multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="*" allowsort="true">
+                        任务名称</div>
+                    <div field="DeadLine" width="120" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                        完成日期</div>
+                    <div field="Urgency" width="120" allowsort="true" align="center">
+                        紧急程度</div>
+                    <div field="TaskStatus" width="120" allowsort="true" align="center">
+                        完成状态</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    listConfig.width = 900;
+    listConfig.height = 650;
+    addGridLink("receiveTaskGrid", "Name", "Edit?ID={ID}&IsExecutor=True", { title: '查看任务：{Name}', width: 900, height: 650 });
+    addGridLink("dataGrid", "Name", "Edit?ID={ID}", { title: '查看任务：{Name}', width: 900, height: 650 });
+</script>
+<script type="text/javascript">
+    function onTabChanged(e) {
+        if (e.index == 0)
+            mini.get("receiveTaskGrid").reload();
+        else
+            mini.get("dataGrid").reload();
+    }
+</script>

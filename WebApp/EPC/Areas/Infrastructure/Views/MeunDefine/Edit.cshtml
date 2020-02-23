@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "MeunEdit";
+}
+@using Config.Logic;
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <input name="ParentID" class="mini-hidden" />
+            <input name="ModeID" class="mini-hidden" />
+            <input name="MeunType" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td></td>
+                        <td colspan="3" style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td width="15%">名称</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                        </td>
+                        <td width="15%">类型</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="MeunDefineType" class="mini-combobox" data="SpaceDefineType" style="width: 100%;"
+                                   onvaluechanged="onDefineTypeChanged"
+                                   textfield="text" valuefield="value" allowinput="false" required="true" />
+                        </td>
+                    </tr>
+                    @if (System.Configuration.ConfigurationManager.AppSettings["IsUseMultilingual"] == "True")
+                    {
+                        <tr>
+                            <td>名称(英文)</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="NameEN" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                            </td>
+                        </tr>
+                    }
+
+                    @if (EPC.Logic.Domain.S_T_DefineParams.Params.GetValue("ShowWBSNav") == "true")
+                    {
+                        <tr>
+                            <td>WBS类型</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="NavWBSType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="WBSType" allowinput="false" />
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>URL链接</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="LinkUrl" style="width: 100%" class="mini-textbox" vtype="maxLength:500" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>排序号</td>
+                        <td style="padding-right: 40px;">
+                            <input name="SortIndex" style="width: 100%" class="mini-textbox" required="true" vtype="int" />
+                        </td>
+                        <td>默认展开</td>
+                        <td style="padding-right: 40px;">
+                            <input name="Expanded" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="trueOrFalse" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>数据源类别</td>
+                        <td style="padding-right:40px;">
+                            <input name="DataSourceType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="SpaceDataSourceType" allowinput="false" />
+                        </td>
+                        <td>数据库连接</td>
+                        <td style="padding-right:40px;">
+                            <input name="ConnName" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="ConnEnum" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>数据源SQL</td>
+                        <td colspan="3" style="padding-right:40px;">
+                            <input name="DataSourceSQL" class="mini-textarea" style="width: 100%;height:150px;" vtype="maxLength:2000" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>条件SQL</td>
+                        <td colspan="3" style="padding-right:40px;">
+                            <input name="ConditionSQL" class="mini-textarea" style="width: 100%;height:150px;" vtype="maxLength:2000" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.SpaceDefineType))
+    @Html.GetEnum(typeof(EPC.Logic.SpaceDataSourceType))
+    @Html.GetEnum(typeof(Config.ConnEnum))
+    @Html.GetEnum("Base.WBSType")
+</script>
+<script type="text/javascript">
+    var trueOrFalse = [{ value: "True", text: "是" }, { value: "False", text: "否" }];
+    function onFormSetData(dataForm) {
+        if (dataForm.MeunType == "Meun") {
+            setFormItemDisabled("MeunDefineType");
+            setFormItemDisabled("DataSourceType");
+            setFormItemDisabled("ConnName");
+            setFormItemDisabled("TableName");
+            setFormItemDisabled("DynamicField");
+            setFormItemDisabled("DataSourceSQL");
+        }
+
+        if (dataForm.MeunDefineType == "Static") {
+            setFormItemDisabled("DataSourceType");
+            setFormItemDisabled("ConnName");
+            setFormItemDisabled("TableName");
+            setFormItemDisabled("DynamicField");
+            setFormItemDisabled("DataSourceSQL");
+        }
+    }
+
+    function onDefineTypeChanged(e) {
+        if (e.value == "Dynamic") {
+            setFormItemEditabled("DataSourceType");
+            setFormItemEditabled("ConnName");
+            setFormItemEditabled("TableName");
+            setFormItemEditabled("DynamicField");
+            setFormItemEditabled("DataSourceSQL");
+            mini.getbyName("DataSourceType").setRequired(true);
+            mini.getbyName("ConnName").setRequired(true);
+        }
+        else {
+            setFormItemDisabled("DataSourceType");
+            setFormItemDisabled("ConnName");
+            setFormItemDisabled("TableName");
+            setFormItemDisabled("DynamicField");
+            setFormItemDisabled("DataSourceSQL");
+            mini.getbyName("DataSourceType").setRequired(false);
+            mini.getbyName("ConnName").setRequired(false);
+        }
+    }
+</script>

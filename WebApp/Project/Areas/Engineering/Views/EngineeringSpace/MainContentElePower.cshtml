@@ -1,0 +1,691 @@
+﻿@{
+    ViewBag.Title = "MainContentProject";
+}
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.min.js" type="text/javascript"></script>
+<!--MiniUI-->
+<link href="/Project/Scripts/EngineeringSpace/css/bootstrap.min.css" rel="stylesheet"
+      type="text/css" />
+<link href="/Project/Scripts/EngineeringSpace/css/font-awesome.min.css" rel="stylesheet"
+      type="text/css" />
+<script src="/Project/Scripts/EngineeringSpace/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/Project/Scripts/EngineeringSpace/css/content-pro.css" />
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/Project/Scripts/EngineeringSpace/css/content.css" />
+<link href="/MvcConfig/Scripts/BI/css/index.css" rel="stylesheet" />
+<script>
+    $("body").css("background-color","");
+</script>
+@{
+    var projectInfo = ViewBag.ProjectInfo as Project.Logic.Domain.S_I_ProjectInfo;
+
+    var difDay = 0;
+    if (projectInfo.CreateDate != null)
+    {
+        var timeSpan = DateTime.Now.Subtract(projectInfo.CreateDate);
+        difDay = timeSpan.Days + 1;
+    }
+    <div id="tab-content-container">
+        <div class="tab-content-right">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active">
+                    <div class="tab-content-title clearfix">
+                        <div class="left-img pull-left">
+                        </div>
+                        <div class="pull-left tab-title-left">
+                            <h4>
+                                @projectInfo.Name<span> · @projectInfo.Code</span>
+                            </h4>
+                            <div style="postion: absolute; padding-top: 3px">
+                                @if (!string.IsNullOrEmpty(projectInfo.CustomerName))
+                                {
+                                    <div class="edlink" id="customerInfo">
+                                        <a href="javascript:void(0)" onclick="openUrl('/Market/Basic/Customer/Index?FuncType=view&ID=@projectInfo.CustomerID','客户信息查看')">@projectInfo.CustomerName</a>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(projectInfo.PhaseName))
+                                {
+                                    <div class="edtag">
+                                        <span class="state-panel">&nbsp;@projectInfo.PhaseName </span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(projectInfo.ProjectClass))
+                                {
+                                    <div class="edtag">
+                                        <span class="state-panel">&nbsp;@projectInfo.ProjectClass</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="pull-right tab-title-right">
+                            <p>
+                                <span class="has-mar">参与部门：<span>@projectInfo.ChargeDeptName</span></span> <span class="has-mar">第一设总：<span>@projectInfo.ChargeUserName</span></span>
+                            </p>
+                            <p>
+                                @{
+                                    var proportion = 0m;
+                                    if (projectInfo.Proportion.HasValue)
+                                    {
+                                        proportion = Math.Round(projectInfo.Proportion.Value, 2);
+                                    }
+                                    <span class="has-mar">项目启动天数：<span>@difDay 天</span></span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tab-content-bottom clearfix">
+                        <div class="tab-content--bottom-slider">
+                            <ul class="slider-wrap">
+                                @{
+                                    var QBSCatagoryList = ViewBag.QBSCatagoryList as List<Project.Logic.Domain.S_T_QBSTemplate>;
+                                    var QBSList = ViewBag.QBSList as List<Project.Areas.Engineering.Controllers.EngineeringSpaceController.QBSTemplateInfo>;
+                                    var qualitative = Project.Logic.QBSType.Qualitative.ToString();
+
+                                    foreach (var catagory in QBSCatagoryList)
+                                    {
+                                        <li>
+                                            <div class="title">
+                                                <img src="/Project/Scripts/EngineeringSpace/images/pro-item.png" alt="" />
+                                                <span>@catagory.Name</span>
+                                            </div>
+                                            <ul class="wrap-ul">
+                                                @foreach (var qbs in QBSList)
+                                                {
+                                                    if (qbs.ParentID != catagory.ID)
+                                                    {
+                                                        continue;
+                                                    }
+                                                    if (qbs.QBSType == qualitative)
+                                                    {
+                                                        if (!string.IsNullOrEmpty(qbs.ResState))
+                                                        {
+                                                            <li class="clearfix finish" onclick="openUrl('@qbs.LinkUrl','@qbs.Name')">
+                                                                <div class="pull-left">
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/pro-item-green.png" alt="" />
+                                                                    <span>@qbs.Name</span>
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/fet.png" alt="" />
+                                                                </div>
+                                                                <div class="pull-right">
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/pro-ok-green.png" alt="" />
+                                                                    <p>
+                                                                        @qbs.ResState
+                                                                    </p>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li class="clearfix unfinish" style="cursor: default;">
+                                                                <div class="pull-left">
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/icon01.png" alt="" />
+                                                                    <span>@qbs.Name</span> @*<img src="/Project/Scripts/EngineeringSpace/images/fet.png" alt="" />*@
+                                                                </div>
+                                                                <div class="pull-right">
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/pro-ok-h.png" alt="" />
+                                                                    <p>
+                                                                        未完成
+                                                                    </p>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <li class="clearfix number" onclick="openUrl('@qbs.LinkUrl','@qbs.Name')">
+                                                            @{
+                                                                var num = "0";
+                                                                if (!string.IsNullOrEmpty(qbs.ResState))
+                                                                {
+                                                                    num = qbs.ResState;
+                                                                }
+                                                                <div class="pull-left">
+                                                                    @{
+                                                                        if (num == "0")
+                                                                        {
+                                                                            <img src="/Project/Scripts/EngineeringSpace/images/icon01.png" alt="" />}
+                                                                        else
+                                                                        {
+                                                                            <img src="/Project/Scripts/EngineeringSpace/images/pro-item-green.png" alt="" />
+                                                                        }
+                                                                    }
+                                                                    <span>@qbs.Name</span>
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/fet.png" alt="" />
+                                                                </div>
+                                                                <div class="pull-right">
+                                                                    <p>
+                                                                        @num<span>@qbs.DataUnit</span>
+                                                                    </p>
+                                                                    <p>
+                                                                    </p>
+                                                                </div>
+                                                            }
+                                                        </li>
+                                                                            }
+                                                                        }
+                                            </ul>
+                                        </li>
+                                                                        }
+                                }
+                            </ul>
+                        </div>
+                        <div class="tab-content--bottom-content">
+                            <div class="tab-content--bottom-content-top">
+                                <ul>
+                                    @{
+                                        var wbsInfo = ViewBag.WBSInfo as List<Project.Logic.Domain.S_W_WBS>;
+                                        var projectType = Project.Logic.WBSNodeType.Project.ToString();
+                                        var majorType = Project.Logic.WBSNodeType.Major.ToString();
+                                        var majorWBSList = wbsInfo.Where(d => d.WBSType == projectType || d.WBSType == majorType).Select(d => new
+                                        {
+                                            Name = d.Name,
+                                            WBSType = d.WBSType,
+                                            WBSValue = d.WBSValue
+                                        }).Distinct().ToList();
+                                        var obsUserInfo = ViewBag.ObsUserInfo as List<Project.Areas.Engineering.Controllers.EngineeringSpaceController.OBSUserInfo>;
+                                        var productList = ViewBag.ProductList as List<Project.Logic.Domain.S_E_Product>;
+                                        var workHourList = ViewBag.WorkHourList as List<Project.Areas.Engineering.Controllers.WorkHourViewList>;
+                                        var taskWorks = ViewBag.taskWorks as List<Project.Logic.Domain.S_W_TaskWork>;
+
+
+                                        foreach (var wbs in majorWBSList)
+                                        {
+                                            var wsbName = "";
+                                            int peopleNum = 0;
+                                            var overviewName = "";
+                                            var curOBSUsers = new List<Project.Areas.Engineering.Controllers.EngineeringSpaceController.OBSUserInfo>();
+                                            var curProductList = new List<Project.Logic.Domain.S_E_Product>();
+                                            var curWorkHourList = new List<Project.Areas.Engineering.Controllers.WorkHourViewList>();
+                                            var productNum = 0;
+                                            DateTime? lastestSubmitDate = null;
+                                            string printText = "";
+                                            string productNumText = "";
+                                            string workHourText = "";
+                                            string wbsValueStr = "";//查看工时明细
+                                            string taskWorkSum = "";
+                                            string taskWorkFinish = "";
+                                            string taskWorkDelay = "";
+                                            if (wbs.WBSType == projectType)
+                                            {
+                                                printText = "出图总量";
+                                                productNumText = "提交总量";
+                                                wsbName = "项目";
+                                                workHourText = "总工时";
+                                                curOBSUsers = obsUserInfo.Where(d => string.IsNullOrEmpty(d.MajorValue)).ToList();
+                                                curProductList = productList.OrderByDescending(d => d.CreateDate).ToList();
+                                                curWorkHourList = workHourList;
+                                                taskWorkSum = taskWorks.Count.ToString();
+                                                taskWorkFinish = taskWorks.Count(a => a.State == "Finish").ToString();
+                                                taskWorkDelay = taskWorks.Count(a => a.PlanEndDate < System.DateTime.Now.Date).ToString();
+                                            }
+                                            else
+                                            {
+                                                printText = "出图量";
+                                                productNumText = "提交量";
+                                                wsbName = wbs.Name;
+                                                workHourText = "工时";
+                                                curOBSUsers = obsUserInfo.Where(d => d.MajorValue == wbs.WBSValue).OrderBy(d => d.SortIndex).ToList();
+                                                curProductList = productList.Where(d => d.MajorValue == wbs.WBSValue).OrderByDescending(d => d.CreateDate).ToList();
+                                                curWorkHourList = workHourList.Where(a => a.MajorCode == wbs.WBSValue).ToList();
+                                                wbsValueStr = "&MajorValue=" + wbs.WBSValue;
+                                                taskWorkSum = taskWorks.Count(a => a.MajorValue == wbs.WBSValue).ToString();
+                                                taskWorkFinish = taskWorks.Count(a => a.State == "Finish" && a.MajorValue == wbs.WBSValue).ToString();
+                                                taskWorkDelay = taskWorks.Count(a => a.PlanEndDate < System.DateTime.Now.Date && a.MajorValue == wbs.WBSValue).ToString();
+                                            }
+                                            peopleNum = curOBSUsers.Count;
+                                            if (peopleNum != 0)
+                                            {
+                                                int i = 0;
+                                                foreach (var obsUserName in curOBSUsers.Select(d => d.UserName).Distinct())
+                                                {
+                                                    if (i > 1)
+                                                    {
+                                                        break;
+                                                    }
+                                                    overviewName += obsUserName + ",";
+                                                    i++;
+                                                }
+                                                overviewName = overviewName.TrimEnd(',');
+                                            }
+
+                                            productNum = curProductList.Count;
+                                            if (productNum != 0)
+                                            {
+                                                lastestSubmitDate = curProductList.FirstOrDefault().CreateDate;
+                                            }
+                                            var printNum = curProductList.Select(d => d.PrintCount).Sum();
+                                            var workHourNumSum = curWorkHourList.Select(d => d.WorkHourValue).Sum();
+                                            int workHourNum = 0;
+                                            if (workHourNumSum.HasValue)
+                                            {
+                                                workHourNum = Convert.ToInt16(workHourNumSum.Value);
+                                            }
+
+                                            <li>
+                                                <div>
+                                                    <div class="classify">
+                                                        <div>
+                                                            <div>
+                                                                <span class="title">@wsbName</span>
+                                                            </div>
+                                                            <div>
+                                                                <img src="/Project/Scripts/EngineeringSpace/images/people-w.png" alt="" />
+                                                                @{
+                                                                    if (peopleNum == 0)
+                                                                    {
+                                                                        <span>暂无人员</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>@overviewName 共 @peopleNum 人</span> <span class="icon icon-double-angle-down"
+                                                                                                                        style="cursor: pointer"></span>
+                                                                    }
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="block">
+                                                        <div style="cursor: pointer">
+                                                            @{
+                                                                string submitText = "暂无成果";
+                                                                string submitTitle = "";
+                                                                if (lastestSubmitDate.HasValue)
+                                                                {
+                                                                    submitTitle = lastestSubmitDate.Value.ToString("yyyy-MM-dd");
+                                                                    TimeSpan span = DateTime.Now - lastestSubmitDate.Value.Date;
+                                                                    if (span.Days > 365)
+                                                                    { submitText = string.Format("{0}年前", span.Days / 365); }
+                                                                    else if (span.Days > 30)
+                                                                    { submitText = string.Format("{0}个月前", span.Days / 30); }
+                                                                    else if (span.Days > 7)
+                                                                    { submitText = string.Format("{0}周前", span.Days / 7); }
+                                                                    else if (span.Days >= 1)
+                                                                    { submitText = string.Format("{0}天前", span.Days); }
+                                                                    else
+                                                                    { submitText = "今天"; }
+                                                                }
+                                                                <span>
+                                                                    <img src="/Project/Scripts/EngineeringSpace/images/space-productrecent.png" alt="" />
+                                                                    最新上传：
+                                                                </span><span title="@submitTitle">@submitText</span>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <span>
+                                                                <img src="/Project/Scripts/EngineeringSpace/images/space-productprint.png" alt="" />
+                                                                @printText：
+                                                            </span><span><a href="javascript:openUrl('/MvcConfig/UI/List/PageView?TmplCode=ProductDetail&ProjectInfoID=@projectInfo.ID@wbsValueStr&PrintState=Printed','@wsbName@printText')">@printNum</a> 张</span>
+                                                        </div>
+                                                        <div>
+                                                            <span>
+                                                                <img src="/Project/Scripts/EngineeringSpace/images/space-product.png" alt="" />
+                                                                @productNumText：
+                                                            </span><span><a href="javascript:openUrl('/MvcConfig/UI/List/PageView?TmplCode=ProductDetail&ProjectInfoID=@projectInfo.ID@wbsValueStr','@wsbName@productNumText')">@productNum</a> 张</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="block">
+                                                        <div style="max-width: 140px;">
+                                                            <span>已策划子项：</span>
+                                                            <span style="min-width: 40px;"><a href="javascript:openUrl('/MvcConfig/UI/List/PageView?TmplCode=TaskWork&ProjectInfoID=@projectInfo.ID@wbsValueStr&IsDelay=true,false','@wsbName')">@taskWorkSum</a> 个</span>
+                                                        </div>
+                                                        <div style="max-width: 140px;">
+                                                            <span>下进度子项：</span>
+                                                            <span style="min-width: 40px;"><a href="javascript:openUrl('/MvcConfig/UI/List/PageView?TmplCode=TaskWork&ProjectInfoID=@projectInfo.ID@wbsValueStr&State=Finish&IsDelay=true,false','@wsbName')">@taskWorkFinish</a> 个</span>
+                                                        </div>
+                                                        <div style="max-width: 140px;">
+                                                            <span>已暂停子项：</span>
+                                                            <span style="min-width: 40px;"><a href="javascript:openUrl('/MvcConfig/UI/List/PageView?TmplCode=TaskWork&ProjectInfoID=@projectInfo.ID@wbsValueStr&IsDelay=true','@wsbName')">@taskWorkDelay</a> 个</span>
+                                                        </div>
+                                                    </div>
+                                                    @if (wbs.WBSType == projectType)
+                                                    {
+
+                                                    }
+                                                    @*<div class="outimg">
+                                                            <div style="display: inline-block; line-height: 30px">
+                                                                <span>@printText</span>
+                                                                <div>
+                                                                    <span>@printNum</span>张
+                                                                </div>
+                                                            </div>
+                                                            <div class="printCount" style="width: 60%; height:60px;float:right" id="printCount_@wbs.WBSValue">
+                                                            </div>
+                                                        </div>
+                                                        <div class="commitimg">
+                                                            <div style="display: inline-block; line-height: 30px">
+                                                                <span>@productNumText</span>
+                                                                <div>
+                                                                    <span>@productNum</span>张
+                                                                </div>
+                                                            </div>
+                                                            <div class="productNum" style="width: 60%; height:60px; float:right" id="productNum_@wbs.WBSValue">
+                                                            </div>
+                                                        </div>*@
+                                                </div>
+                                                @{
+                                                    if (peopleNum != 0)
+                                                    {
+                                                        <div class="people">
+                                                            <ul class="clearfix green">
+                                                                @{
+                                                                    foreach (var obsUser in curOBSUsers)
+                                                                    {
+                                                                        <li class="clearfix" style="cursor: pointer;" onclick="openUrl('/Project/ProjectGroup/PersonnelLoad/MainTab?ProjectInfoID=@projectInfo.ID&MarketProjectInfoID=@projectInfo.MarketProjectInfoID&UserID=@obsUser.UserID','@obsUser.UserName')">
+                                                                            <div>
+                                                                                <img src="/Project/Scripts/EngineeringSpace/images/people.png" alt="" />
+                                                                                <span>@obsUser.UserName</span>
+                                                                            </div>
+                                                                            <div>
+                                                                                <p>
+                                                                                    @obsUser.RoleName
+                                                                                </p>
+                                                                                <span>@obsUser.TEL</span>
+                                                                            </div>
+                                                                        </li>
+                                                                    }
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                                    }
+                                                }
+                                            </li>
+                                                                    }
+                                    }
+                                </ul>
+                            </div>
+                            <div class="tab-content-contents clearfix">
+                                <div class="BIinfo-box" style="display: table-cell; float:left; width:28%" id="6" templatetype="NoticeGrid">
+                                    <div class="col-100" name="content">
+                                        <div class="BIinfo-box-content BIpadding5">
+                                        </div>
+                                        <div class="BIinfo-box-titlen">
+                                            <i>|</i>项目进度
+                                        </div>
+                                        <div class="xnflow" style="overflow: auto;">
+                                            <div class="xnflow-wrap">
+                                                <div class="xnflow-wrap-list">
+                                                    <ul>
+                                                        <li>
+                                                            <div class="icon">
+                                                                <img src="/MvcConfig/Scripts/BI/img/flow-green.png" width="15" height="15">
+                                                            </div>
+                                                            <div class="main">
+                                                                <div class="name">设总任命</div>
+                                                                <div class="time"> 实际完成时间：2019-05-09</div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="icon">
+                                                                <img src="/MvcConfig/Scripts/BI/img/flow-green.png" width="15" height="15">
+                                                            </div>
+                                                            <div class="main">
+                                                                <div class="name">要则下达</div>
+                                                                <div class="time"> 实际完成时间：2019-06-01</div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="icon">
+                                                                <img src="/MvcConfig/Scripts/BI/img/flow-yellow.png" width="15" height="15">
+                                                            </div>
+                                                            <div class="main">
+                                                                <div class="name">纸质成果提交</div>
+                                                                <div class="time"> 实际完成时间：2019-06-01</div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="icon">
+                                                                <img src="/MvcConfig/Scripts/BI/img/flow-right.png" width="15" height="15">
+                                                            </div>
+                                                            <div class="main">
+                                                                <div class="name">政府批文 </div>
+                                                                <div class="time"> 实际完成时间：进行中</div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="icon">
+                                                                <img src="/MvcConfig/Scripts/BI/img/flow-right.png" width="15" height="15">
+                                                            </div>
+                                                            <div class="main">
+                                                                <div class="name">项目验收 </div>
+                                                                <div class="time"> 实际完成时间：进行中</div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="width:70%;background-color:none; margin-left:5px; float:right;border-radius:5px; background-color:#f9f9f9; font-family:'微软雅黑','Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;">
+                                    <div class="BIinfo-box-content BIpadding5">
+                                    </div>
+                                    <div class="BIinfo-box-titlen" onclick="openNotice('True','项目动态')">
+                                        <i>|</i>
+                                        <span>项目动态(@ViewBag.SysNoticeNum)</span>
+                                    </div>
+                                    <div style="color:#333">
+                                        @{
+                                            var list = ViewBag.LastestNotice as List<Project.Logic.Domain.S_N_Notice>;
+
+                                            if (list.Count != 0)
+                                            {
+                                                <div class="white-block">
+                                                </div>
+                                            }
+                                            <ul style="width:100%;">
+                                                @{
+                                                    if (list.Count == 0)
+                                                    {
+                                                        <img src="/Project/Scripts/EngineeringSpace/images/NoContent.png" class="nothings" />
+                                                    }
+
+                                                    foreach (var item in list)
+                                                    {
+                                                        var mins = (DateTime.Now - item.CreateDate.Value).TotalMinutes;
+                                                        <li style="padding:11px 20px 11px 27px;">
+                                                            <p>
+                                                                <a onclick="openNoticeForm('@item.ID','@item.LinkUrl')" href="javascript:void(0)">@item.Title</a>
+                                                            </p>
+                                                            <span>@item.CreateUserName</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <span class="glyphicon glyphicon-time"></span>
+                                                            @if (mins < 1)
+                                                            {
+                                                                <span>刚刚上传</span>
+                                                            }
+                                                            else if (mins < 60)
+                                                            {
+                                                                var min = Math.Floor(mins);
+                                                                <span>@min 分钟前上传</span>
+                                                            }
+                                                            else if (mins < 1440)
+                                                            {
+                                                                var hour = Math.Floor(mins / 60);
+                                                                <span>@hour 小时前上传</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                var diffDate = Math.Floor(mins / 1440);
+                                                                <span>@diffDate 天前上传</span>
+                                                            }
+                                                        </li>
+                                                    }
+                                                }
+                                            </ul>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    var ProductNumJson=@Html.Raw(ViewBag.ProductNumColumnOption);
+    var PrintCountJson=@Html.Raw(ViewBag.PrintCountColumnOption);
+    var ProjectInfoID='@projectInfo.ID';
+    var MarketProjectInfoID='@projectInfo.MarketProjectInfoID';
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#tab-content-container").niceScroll({ cursorborder: "none" });
+        $(".tab-content-contents-right").niceScroll({ cursorborder: "none" });
+        $(".tab-content--bottom-content-top").niceScroll({ cursorwidth:"10px",cursorborder: "none",oneaxismousemode: false,cursordragontouch:true });
+
+        //var colors = ['#7cb5ec'];
+        //var idx = 0;
+        //$.each(ProductNumJson,
+        //    function (i, v) {
+        //        var opt = $.extend(true, { colors: colors }, mini.decode(v));
+        //        $("#" + i).highcharts(opt);
+        //    });
+        //idx = 0;
+        //$.each(PrintCountJson,
+        //    function (i, v) {
+        //        var opt = $.extend(true, { colors: colors }, mini.decode(v));
+        //        $("#" + i).highcharts(opt);
+        //    });
+    });
+
+
+    var color = ["#00b3bd", "#df62c8", "#c8353b", "#1e83df"]
+    for (var i = 0; i < $(".tab-content-item").length; i++) {
+        $(".tab-content-item").eq(i).find("h3").css("color", color[i]);
+        if (i % 2 == 0) {
+            $(".tab-content-item").eq(i).css("margin-right", "8px");
+        } else {
+
+            $(".tab-content-item").eq(i).css("margin-left", "8px");
+        }
+    }
+
+    $(".tab-content-item .item-bottom ul li>div").on("mouseover", function () {
+        var index = $(this).closest(".tab-content-item").index();
+        $(this).find("div").css({ "background-color": color[index], "color": "#fff" });
+        $(this).stop();
+        $(this).animate({
+            width: "200px"
+        }, 300);
+    }).on("mouseout", function () {
+        var index = $(this).closest(".tab-content-item").index();
+        $(this).find("div").css({ "background-color": "#fff", "color": "black" });
+        $(this).stop();
+        $(this).animate({
+            width: "54px"
+        }, 300);
+    })
+
+    $(".tab-content--bottom-content-top > ul > li .people").css("max-height","none").hide();
+    $("body").on("click", " .icon-double-angle-down", function () {
+        $(this).closest("li").find(".people").show(500,function() {
+            $(".tab-content--bottom-content-top").getNiceScroll().resize();
+        });
+        $(this).attr("class", "icon-double-angle-up");
+    });
+    $("body").on("click", " .icon-double-angle-up", function () {
+        $(this).closest("li").find(".people").hide(500,function() {
+            $(".tab-content--bottom-content-top").getNiceScroll().resize();
+        });
+        $(this).attr("class", "icon-double-angle-down");
+    });
+    /////table选择
+    $(".tab-content--bottom-content-bottom ul li").on("click", function () {
+        $(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".table-container table").eq(index).addClass("active").siblings().removeClass("active");
+    });
+    //////////
+
+    function openUrl(url, title,width) {
+        if (url && url != "")
+            openWindow(url, { "width": width||"80%", "title": title, addQueryString: false });
+    }
+
+    function LinkToCost(costType,subjectCode) {
+        var url = '/Market/Analysis/ProjectAnalysis/CostItemSummaryList';
+        var width = 600; var height = "80%";var title="项目支出";
+        var queryData = {"$EQ$ProjectID":MarketProjectInfoID};
+        if(costType)
+        {
+            queryData["$EQ$CostType"] = costType;
+            title="报销支出";
+        }
+        if(subjectCode)
+        {
+            url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectCostDetail";
+            width = "70%"; height = "75%";
+            queryData["$EQ$SubjectCode"] = subjectCode;
+            title="分包支出";
+        }
+        openWindow(url, { data: queryData, width: width, height: height,title:title });
+    }
+
+
+    function openNotice(isFromSys, title) {
+        if (isFromSys == "True")
+            openWindow("/MvcConfig/UI/List/PageView?TmplCode=SysNotice&GroupInfoID=" + ProjectInfoID + "&Type=Engineering" + "&FuncType=View", { "width": "1000", "title": title });
+        else
+            openWindow("/MvcConfig/UI/List/PageView?TmplCode=Notice&GroupInfoID=" + ProjectInfoID + "&Type=Engineering" + "&FuncType=View", { "width": "1000", "title": title });
+    }
+
+
+    function openNoticeForm(noticeID, linkUrl) {
+        var url = "/Project/Engineering/EngineeringNotice/Views?ID=" + noticeID;
+        if (linkUrl) { url = linkUrl; }
+        openWindow(url + "&FuncType=View", { "width": "70%", height: "80%", "title": "查看" });
+    }
+
+</script>
+
+
+<style type="text/css">
+    .timeline {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-size: 13px;
+    }
+
+    .timestamp {
+        margin-bottom: 10px;
+        padding: 10px 10 x;
+        isplay: flex- irectio u alig - ter;
+        : center .status;
+
+    {
+        pad;
+        ispay: fex;
+        fy-conten bor p l d relative;
+        : all 20 ms;
+        e;
+
+    {
+        ";  w ght: 5 x kgrou hte rder-ad s: 5px;
+        d te;
+        px ll 20m e e-i;
+
+
+    {
+        e in 15px 0 p ay s;
+
+    {
+        : l 0;
+    }
+
+    .statu {
+        boder- o 66DC1;
+    }
+
+    t e backroun cor: #6DC71; oe; tasi i 0ms asei; .rela ta k or: # siti se- n li {
+        splay: l .li;
+
+    {
+        tran transition: all 200ms ease-in;
+    }
+</style>

@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "WBSTree";
+}
+<div class="mini-toolbar" style="padding: 0px; ">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <input id="treeKey" class="mini-buttonedit gw-searchbox" emptytext="请输入节点名称或编号"
+                       onenter="treeCascadeSearch();" onbuttonclick="treeCascadeSearch();" />
+            </td>
+            <td style="white-space: nowrap;">
+                <div id="showWorkTask" name="showWorkTask" checked="true" class="mini-checkbox"
+                     text="隐藏无关" onvaluechanged="onCheckBoxValueChanged"></div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <ul id="mytree" class="mini-tree" url="" style="width: 100%; height: 100%;" showtreeicon="true"
+        textfield="Name" iconfield="WBSType" idfield="VirtualID" enablehottrack="false" parentfield="ParentID"
+        resultastree="false" expandonload="true" onnodeselect="onNodeSelect" ondrawnode="onDrawNode"></ul>
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var spaceCode = getQueryString("SpaceCode");
+    var url = "GetWBSTree?ProjectInfoID=" + projectInfoID + "&SpaceCode=" + spaceCode + "&ShowOwnNode=True";
+    var treeViewType = getQueryString("TreeViewType");
+    if (treeViewType)
+        url += "&TreeViewType=" + treeViewType;
+    $("#mytree").attr("url", url);
+    function onCheckBoxValueChanged(e) {
+        var tree = mini.get("mytree");
+        if (e.value.toLowerCase() == "true") {
+            var url = "GetWBSTree?ProjectInfoID=" + projectInfoID + "&SpaceCode=" + spaceCode + "&ShowOwnNode=True";
+            url = addUrlSearch(url);
+            tree.setUrl(url);
+        }
+        else {
+            var url = "GetWBSTree?ProjectInfoID=" + projectInfoID + "&SpaceCode=" + spaceCode + "&ShowOwnNode=False";
+            url = addUrlSearch(url);
+            tree.setUrl(url);
+        }
+    }
+
+    function treeCascadeSearch() {
+        var tree = mini.get("mytree");
+        var key = mini.get("treeKey").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            var array = [];
+            var nodes = tree.findNodes(function (node) {
+                var text = node["Name"] ? node["Name"].toLowerCase() : "";
+                var text1 = node.Code ? node.Code.toLowerCase() : "";
+                if (text.indexOf(key) != -1 || text1.indexOf(key) != -1) {
+                    array.push(node.ID);
+                    return true;
+                }
+            })
+            for (var i = 0; i < nodes.length; i++) {
+                tree.cascadeChild(nodes[i], function (node) {
+                    array.push(node.ID);
+                });
+            }
+            tree.filter(function (node) {
+                if (array.indexOf(node.ID) > -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onDrawNode(e) {
+        var node = e.node;
+        var auth = node.HasAuth;
+        if (auth != "True" || !node.MajorCode) {
+            e.nodeStyle = "color:gray;"
+        }
+        else
+            e.nodeStyle = "font-weight: bolder;"
+    }
+
+    function onNodeSelect(e) {
+        var node = e.node;
+        var auth = node.HasAuth;
+        if (!e.source.enabled || !e.node.MajorCode || auth != "True") {
+            return;
+        }
+        var nodeWBSID = e.node.ID;
+        if (e.node.VirtualID)
+            nodeWBSID = e.node.VirtualID;
+        closeWindow({ WBSID: nodeWBSID });
+    }
+</script>

@@ -1,0 +1,26 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnEdit" iconcls="icon-edit" onclick="execute('WithdrawDelegateTask',{mustSelectRow:true})">撤回</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入任务名称" onenter="quickSearch('TaskName');" onbuttonclick="quickSearch('TaskName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetDoneList" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Code" width="200" allowsort="true">
+                任务名称</div>
+            <div field="CreateTime" width="200" format="yyyy-MM-dd hh:mm" allowsort="true">
+                任务创建时间</div>
+            <div field="ExecUserName" width="200" allowsort="true">
+                被委托人</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+
+<style>
+    .mini-tab-text{
+        line-height:12px;
+    }
+</style>
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" tabposition="left" style="width: 100%; height: 100%;">
+        @{
+            var list = ViewBag.ModeList as List<EPC.Logic.Domain.S_C_Mode>;
+            foreach (var item in list)
+            {
+                var title = "";
+                foreach (var tmp in item.Name)
+                {
+                    title += tmp + "<br>";
+                }
+
+                var code = item.Code;
+                var url = "/EPC/Manage/SpaceScheduleTrace/MainTab?ModeCode=" + code;
+                if (Request["Gantt"] == "True")
+                {
+                    url = "/EPC/Manage/SpaceScheduleTrace/MainTab?ModeCode=" + code;
+                }
+                <div title="@title" url="@url">
+                </div>
+            }
+
+        }
+    </div>
+
+</div>

@@ -1,0 +1,348 @@
+﻿@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+@using Config.Logic;
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTabl" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="审批表">
+            <form id="dataForm" method="post" align="center" autogetdata="false">
+                <input name="ID" class="mini-hidden" />
+                @Html.Raw(ViewBag.HiddenHtml)
+                <div class="formDiv" style="background-color: #fff;">
+                    @Html.Raw(ViewBag.FormHtml)
+                </div>
+                @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+                {
+                    <div style="padding-left: 35px; padding-right: 35px; padding-bottom: 65px;">
+                        <fieldset>
+                            <legend style="font-weight: bold; margin-left: 35px;">操作信息</legend>
+                            <div id="comment">
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <script type="text/javascript">
+                        function onCommentLoad(e) {
+                            if (e.data.length == 0)
+                                $("#commentGrid").hide();
+                        }
+                    </script>
+                }
+            </form>
+        </div>
+        <div title="详细信息">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;"></td>
+                        <td style="white-space: nowrap;">
+                            版本：@ViewBag.VersionNo
+                            &nbsp;  &nbsp;  &nbsp;
+                            展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                                       onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                            &nbsp;
+                            显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType"
+                                      allowinput="false"
+                                      onvaluechanged="onShowTypeChanged" value="New" /> &nbsp; &nbsp;
+                            <div id="showWorkTask" name="showWorkTask" checked="true" class="mini-checkbox" text="显示工作包" onvaluechanged="onCheckBoxValueChanged"></div>
+                            &nbsp;&nbsp;
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;"
+                     url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true"
+                     virtualscroll="@ViewBag.VirtualScrollTree" autoload="false"
+                     multiselect="true" treecolumn="Name" idfield="WBSID" parentfield="WBSParentID"
+                     resultastree="false" expandonload="true" iconfield="WBSType"
+                     allowresize="false" fitcolumns="false">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div type="indexcolumn" width="50">
+                        </div>
+                        <div name="Name" field="Name" width="300" headeralign="center" vtype="required">
+                            任务名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Code" width="200" headeralign="center">
+                            编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div name="ChargeUserID" field="ChargeUserID" displayfield="ChargeUserName" width="80" headeralign=" center" align="center">
+                            负责人
+                            <input name='ChargeUserID' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                        </div>
+                        <div field="PlanStartDate" dateformat="yyyy-MM-dd" width="90" headeralign="center"
+                             align="center">
+                            计划开始时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+                        </div>
+                        <div field="PlanEndDate" dateformat="yyyy-MM-dd" width="90" headeralign="center"
+                             align="center">
+                            计划完成时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+                        </div>
+                        @{
+                            var roleDefineDt = ViewBag.roleColumns as System.Data.DataTable;
+                            foreach (System.Data.DataRow row in roleDefineDt.Rows)
+                            {
+                                var title = row["RoleName"];
+                                var field = row["RoleCode"] + "UserID";
+                                var displayfield = row["RoleCode"] + "UserName";
+
+                                <div name="@field" field="@field" displayfield="@displayfield" width="80" headeralign=" center" align="left">
+                                    @title
+                                    <input name='@field' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div title="甘特图" url="/EPC/Manage/Schedule/Gantte?EngineeringInfoID=@ViewBag.EngineeringInfoID&VersionID=@ViewBag.VersionID&FuncType=View"></div>*@
+    </div>
+</div>
+@if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+{
+    if (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view")
+    {
+        <div style='width: 100%; height: 40px;'>
+        </div>
+    }
+    else
+    {
+        <div style='width: 100%; height: 80px;'>
+        </div>
+    }
+}
+
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0;
+        left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                        保存
+                    </a> <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                        取消
+                    </a>
+                </td>
+                <td id="btnRight"></td>
+            </tr>
+        </table>
+    </div>
+
+}
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+    var NodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+    @Html.Raw(ViewBag.SelectorScript)
+</script>
+@{
+    if (ViewBag.VirtualScrollTree == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+</script>
+
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div style="text-align:left; font-weight:bolder; color:red;">上一版内容</div>
+    <table class="mini-grid-table" cellspacing="0" cellpadding="0" style="width:700px;table-layout:fixed;">
+        <tr>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center">名称</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center"> 备注</td>
+        </tr>
+        <tr>
+            <td style="text-align: center">${Name}</td>
+            <td style="text-align: center">${Remark}</td>
+        </tr>
+    </table>
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var versionID = getQueryString("ID");
+
+
+    $("#dataTree").attr("url","GetVersionTreeList?VersionID="+versionID+"&ShowType=New&IncludeWorkTask=true");
+
+    function pageLoad() {
+        mini.get("dataTree").load();
+    }
+
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if(record.CanEdit=="0"){
+            e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+        }
+        else if(field=="PlanDuration"&&record.TaskType=="MileStone"){
+            e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+        }
+
+        if (record.ModifyState == "Add") {
+            if (field == "Name") {
+                e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/Project/Scripts/WBS/new_red.png\" />";// record.Name + "new";
+            }
+            e.cellStyle = "background:#BBFFFF;";
+        }
+        else if (record.ModifyState == "Modify") {
+            //if (field == "Name") {
+            //    e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+            //}
+            e.cellStyle = " background: yellow;";
+        }
+        else if (record.ModifyState == "Remove") {
+            e.cellStyle = "background:url('/Project/Scripts/WBS/red-line.jpg')  center ;color:#fff;";
+        }
+
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var tree = mini.get("dataTree");
+        var showAll = mini.get("showWorkTask").getValue();
+        tree.load({ IncludeWorkTask: showAll });
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.showCellTooltip',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                var el = e.element;
+                var id = el.id;
+                if (id) {
+                    this.showLoading();
+                    addExecuteParam("ID", id);
+                    execute("GetLastDetailInfo", {
+                        showLoading: false, refresh: false, onComplete: function (data) {
+                            var html = $("#formTemplate").tmpl(data);
+                            tip.setContent(html);
+                        }, validateForm: false
+                    });
+                }
+            }
+        });
+    });
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        var showDiff = mini.getbyName("ShowType").getValue();
+        var showAll = mini.get("showWorkTask").getValue();
+        var url="GetVersionTreeList?VersionID="+versionID+"&ShowType="+showDiff+"&IncludeWorkTask="+showAll;
+        tree.setUrl(url);
+        tree.load();
+    }
+
+</script>
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    .showCellTooltip {
+        background: yellow;
+    }
+</style>

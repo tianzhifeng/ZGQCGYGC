@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" onclick="startReturnDat();" iconcls="icon-add" plain="true">启动返资确认</a>
+            </td>
+            <td style="white-space: nowrap;">
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;&nbsp;&nbsp;
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="treeSearch"
+                       onbuttonclick="treeSearch" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="treeArea">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true" multiselect="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowcellwrap="true" iconfield="NodeType"
+         expandonload="true" onload="onload" ondrawcell="onDrawingCell" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="false"
+         allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn"></div>
+            <div field="ReturnDatState" width="50" align="center" headeralign="center" allowsort="false">已返资</div>
+            <div name="Name" field="Name" width="270" headeralign="center" allowsort="false">名称</div>
+            <div field="Code" width="80" headeralign="center" allowsort="false" align="center">编号</div>
+            <div field="MajorName" width="70" headeralign="center" allowsort="false" align="center">专业分类</div>
+            <div field="PlanReturnDate" dateformat="yyyy-MM-dd" width="90" headeralign="center" allowsort="false" align="center">计划返资</div>
+            <div field="FactReturnDate" dateformat="yyyy-MM-dd" width="90" headeralign="center" allowsort="false" align="center">实际返资</div>
+            <div name="Attachment" field="Attachment"
+                 displayfield="AttachmentName" width="120" headeralign="center" allowsort="false"
+                 align="left" visible="true" renderer='onFileRender'>
+                规格书
+                <input property="editor" class="mini-fileupload" style="width: 100%;"
+                       flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                       uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+            </div>
+            <div name="ReturnDatFile" field="ReturnDatFile"
+                 displayfield="ReturnDatFileName" width="120" headeralign="center" allowsort="false"
+                 align="left" visible="true" renderer='onFileRender'>
+                返回资料
+                <input property="editor" class="mini-fileupload" style="width: 100%;"
+                       flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                       uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+            </div>
+            <div field="Model" width="200" headeralign="center" allowsort="false">规格及参数</div>
+            <div field="Branding" width="90" headeralign="center" allowsort="false">品牌</div>
+            <div field="Material" width="90" headeralign="center" allowsort="false">材质</div>
+            <div field="Unit" width="50" headeralign="center" allowsort="false" align="center">单位</div>
+            <div field="Quantity" width="40" align="right" headeralign="center" allowsort="false">数量</div>
+            <div field="VersionNo" dateformat="yyyy-MM-dd" width="50" align="center" headeralign="center" allowsort="false">版本</div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .DivTab {
+        border-top: 0px !important;
+    }
+
+    .ShowStatus {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+    }
+
+    .Finish {
+        background: url(/EPC/Scripts/Images/green.gif) no-repeat;
+    }
+
+    .UnFinish {
+        background: url(/EPC/Scripts/Images/red.gif) no-repeat;
+    }
+</style>
+
+<script type="text/javascript">
+    @Html.GetEnum("Base.PBSType")
+    var NodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var url = "GetTreeList?EngineeringInfoID=" + engineeringInfoID;
+    $("#dataTree").attr("url", url);
+    normalParamSettings.gridId = "dataTree";
+
+    //addGridButton("dataTree", "FactReturnDate", {
+    //    onButtonClick: function (row) {
+    //        if (!row.ReturnDatPathID) { msgUI("没有关联设备返资确认单，无法查看"); return; }
+    //        var url = "/MvcConfig/UI/Form/PageView?TmplCode=ReturnDatFile&FuncType=View&ID=" + row.ReturnDatPathID;
+    //        openWindow(url, {
+    //            refresh: false, title: "设备清单版本查看", width: "75%", height: "90%",
+    //            onDestroy: function (data) {
+    //            }
+    //        });
+    //    }
+    //});
+
+    addGridButton("dataTree", "VersionNo", {
+        onButtonClick: function (row) {
+            var url = "/MvcConfig/UI/List/PageView?TmplCode=EBomVersion&PBomID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "设备清单版本查看", width: "70%", height: "80%",
+                onDestroy: function (data) {
+                }
+            });
+        }
+    });
+
+
+    function onload() {
+        collapseLevel();
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        var url = "";        if (record.NodeType != "Detail") {
+            e.cellStyle = "font-weight:bolder;";
+        }
+        else if (record.NodeType == "Detail") {
+            if (field == "ReturnDatState") {
+                var toolTip = "未完成";
+                if (e.value == "Finish") {
+                    toolTip = "已完成";
+                }
+                e.cellHtml = "<span title='"+toolTip+"' class='ShowStatus " + e.value + "' style='float:center;'></span>";
+            }
+        }
+
+        if (field == "FactReturnDate" && record.ReturnDatPathID) {
+            url = "/MvcConfig/UI/Form/PageView?TmplCode=ReturnDatFile&FuncType=View&ID=" + record.ReturnDatPathID;
+            e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + url + '\')">' + mini.formatDate(e.value,'yyyy-MM-dd') + '</a>&nbsp; ';
+        }
+
+    }
+
+    function viewDetailInfo(url) {
+
+        openWindow(url, {
+            refresh: false, title: "设备清单版本查看", width: "75%", height: "90%",
+            onDestroy: function () { }
+        });
+
+    }
+
+    function startReturnDat() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            msgUI("请选择设备");
+            return;
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (node.NodeType != "Detail") {
+                msgUI("只能选择设备材料记录进行返资操作"); return;
+            }
+        }
+
+        var url = "/EPC/Procurement/ReturnDatFile/PageView?TmplCode=ReturnDatFile&FlowCode=ReturnDatFile&EngineeringInfoID=" + engineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "设备返资确认", width: "75%", height: "90%",
+            data: nodes,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    dataTree.reload();
+                }
+            }
+        });
+    }
+
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+</script>

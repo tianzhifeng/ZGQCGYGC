@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache,must-revalidate">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>在建项目</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css" />
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <script src="../js/way.js"></script>
+    <script src="../js/jquery-1.10.2.js"></script>
+    <script src="../js/iscroll.js"></script>
+    <script src="../js/echarts-all.js"></script>
+    <script src="../js/core.js"></script>
+</head>
+<body>
+	<!--菜单-->
+	<div class="page-menu"></div>
+	<!--loading-->
+	<div class="loading"><div></div></div>
+	<!--页面-->
+	<ul class="page-views page-move">
+		<li class="page">
+			<div class="page-view">
+                <div class="head">
+                    <button class="left"><a href="/mobile/close"><i class="span-close icon-close"></i></a></button>
+                    <span class="title">项目信息总览</span>
+                    <button class="right" onclick='showProjectSearchPage("projectSearch")'><i class="span-search icon-search"></i></button>
+                </div>
+				<div class="content scroll" way-scope="projectIndex">
+                    <div class="scroll-content">
+                        <div class="project-first-cls" onclick="EnterProjectList()">
+                            <div class="left">
+                                <div class="new-title">
+                                    <div class="prj-sum">项目总数:<span class="sum-num-cls" way-data="ProjectInfo.TotalProject"></span>个</div>
+                                </div>
+                                <div class="info-cls">
+                                    <div class="border">
+                                        在建<span class="big-black-cls margin-cls" way-data="ProjectInfo.ExecuteProject"></span>个,
+                                        延期<span class="orange-cls margin-cls" way-data="ProjectInfo.DelayProject"></span>个
+                                    </div>
+                                </div>
+                            </div>
+                            <i class="glyphicon glyphicon-menu-right right"></i>
+                        </div>
+                        <div class="project-second-cls">
+                            <div class="chart-title">
+                                <span>在建项目阶段分布</span>
+                            </div>
+                            <div>
+                                <div class="row-cls first-column" onclick="goAndSelect('ZHX')">
+                                    <div class="text-cls">专项规划</div>
+                                    <div class="number-cls"><span class="black-cls" way-data="PhaseInfo.ZHX"></span>个</div>
+                                </div>
+                                <div class="row-cls second-column" onclick="goAndSelect('ZIX')">
+                                    <div class="text-cls">咨询规划</div>
+                                    <div class="number-cls"><span class="black-cls" way-data="PhaseInfo.ZIX"></span>个</div>
+                                </div>
+                                <div class="row-cls third-column" onclick="goAndSelect('FA')">
+                                    <div class="text-cls">方案</div>
+                                    <div class="number-cls"><span class="black-cls" way-data="PhaseInfo.FA"></span>个</div>
+                                </div>
+                                <div class="row-cls forth-column" onclick="goAndSelect('CBSJ')">
+                                    <div class="text-cls">初步设计</div>
+                                    <div class="number-cls"><span class="black-cls" way-data="PhaseInfo.CBSJ"></span>个</div>
+                                </div>
+                                <div class="row-cls first-column"  onclick="goAndSelect('SGT')">
+                                    <div class="text-cls">施工图</div>
+                                    <div class="number-cls"><span class="black-cls" way-data="PhaseInfo.SGT"></span>个</div>
+                                </div>
+                                <div class="row-cls second-column" onclick="goAndSelect('HQFW')">
+                                    <div class="text-cls">后期服务</div>
+                                    <div class="number-cls"><span class="black-cls" way-data="PhaseInfo.HQFW"></span>个</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-third-cls">
+                            <div class="chart-title">
+                                <span>部门在建项目分布</span>
+                                <!--<i class="glyphicon glyphicon-zoom-in"></i>-->
+                            </div>
+                            <div class="project-chart" id="project-chart"></div>
+                        </div>
+                    </div>
+				</div>
+			</div>
+		</li>
+	</ul>
+</body>
+</html>
+
+<script type="text/javascript">
+    var re = {
+        css: ["../css/prj-info.css", "../css/search.css"],
+        js: ["../js/project/projectIndexCtrl.js", "../js/project/projectListCtrl.js", "../js/project/projectInfoCtrl.js", "../js/project/projectSearch.js"]
+    }
+    $monitor.loadFile(re);
+</script>

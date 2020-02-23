@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "Tab";
+}
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="整改问题列表">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">                         
+                            <a class="mini-button" iconcls="icon-add" onclick="add();" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="edit();" plain="true">编辑</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="del();" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="initProRec();" plain="true">发起问题整改</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="Import();" plain="true">从检查记录导入</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" url="GetRectifyProblemsList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                     allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" showpager="false"
+                     ondrawcell="" allowcellwrap="true" oncellendedit=""
+                     oncellbeginedit="onCellBeginEdit">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Code" name="Code" width="130" headeralign="center" allowsort="false" align="center">
+                            问题编号
+                        </div>
+                        <div field="Problems" name="Problems" width="280" headeralign="center" autoshowpopup="true">
+                            整改问题
+                        </div>
+                        <div field="ProType" name="ProType" width="200" headeralign="center" align="center">
+                            问题类型
+                        </div>
+                        <div field="ProNature" name="ProNature" width="100" headeralign="center" align="center">
+                            问题性质
+                        </div>
+                        <div field="RecPeriod" name="RecPeriod" width="100" headeralign="center" dateformat="yyyy-MM-dd" align="center">
+                            整改期限
+                        </div>
+                        <div field="LiablePerson" name="LiablePerson" headeralign="center" width="100" align="center">
+                            责任人
+                        </div>
+                        <div field="RectifyMeasures" name="RectifyMeasures" headeralign="center" width="280" allowsort="false" align="left">
+                            整改措施
+                        </div>
+                        <div field="RectifyState" name="RectifyState" headeralign="center" width="100" allowsort="false" align="center">
+                            整改状态
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="问题整改单列表">
+            <div class="mini-fit">
+                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 100%;">
+                                <a class="mini-button" iconcls="icon-add" onclick="addSheet();" plain="true">增加</a>
+                                <a class="mini-button" iconcls="icon-edit" onclick="editSheet();" plain="true">编辑</a>
+                                <a class="mini-button" iconcls="icon-remove" onclick="delSheet();" plain="true">删除</a>
+                            </td>
+                            <td style="white-space: nowrap;"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="recSheetGrid" url="GetRectifySheetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="EngineeringInfoName" name="EngineeringInfoName" width="150" headeralign="center" allowsort="true" align="left">
+                            项目名称
+                        </div>
+                        <div field="Problems" name="Problems" width="150" headeralign="center" allowsort="true" align="left">
+                            整改问题
+                        </div>
+                        <div field="Compactor" name="Compactor" width="200" headeralign="center" autoshowpopup="true" align="center">
+                            编制人
+                        </div>
+                        <div field="CompilationDate" name="CompilationDate" width="200" headeralign="center" align="center" dateformat="yyyy-MM-dd">
+                            编制日期
+                        </div>
+                        <div field="Initiator" name="Initiator" width="70" headeralign="center" allowsort="true" align="left">
+                            发起人
+                        </div>
+                        <div field="RectifyPerson" name="RectifyPerson" headeralign="center" width="80" allowsort="false" align="left">
+                            整改人
+                        </div>
+                        <div field="Verifier" name="Verifier" headeralign="center" width="80" allowsort="false" align="left">
+                            验证人
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("EPC.ProRectifiState")
+    addGridEnum("dataGrid", "RectifyState", "ProRectifiState");
+    function add() {
+        var dataGrid = mini.get("dataGrid");
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=THSERectifyProblems";
+        openWindow(url, {
+            refresh: false, title: "增加", width: "85%", height: "90%",
+            onDestroy: function (data) {
+                //if (!data || data.length == 0 || data == "close") return;
+                dataGrid.reload();
+            }
+        });
+    }
+
+    function edit() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows == null || rows.length == 0 || rows.length>1) {
+            msgUI("请选择一条记录！");
+            return;
+        }
+
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=THSERectifyProblems&ID=" + rows[0]["ID"];
+        openWindow(url, {
+            refresh: false, title: "编辑", width: "85%", height: "90%",
+            onDestroy: function (data) {
+                //if (!data || data.length == 0 || data == "close") return;
+                dataGrid.reload();
+            }
+        });
+    }
+
+    function Import() {
+        var dataGrid = mini.get("dataGrid");
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=THSECheckProblems";
+        openWindow(url, {
+            refresh: false, title: "HSE安全检查问题选择", width: "85%", height: "90%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                if (dataGrid) {
+                    var rows = [];
+                    for (var i = 0; i < data.length; i++) {
+                        var checkProblems = data[i];
+                        var existRow = dataGrid.findRow(function (row) {
+                            if (row.Code == checkProblems.SerialNumber) {
+                                return true;
+                            }
+                            else
+                                return false;
+                        });
+                        if (!existRow) {
+                            existRow = {
+                                Code: checkProblems.SerialNumber, Problems: checkProblems.MainProblems
+                            };
+                            dataGrid.addRow(existRow);
+                            rows.push(existRow);
+                        }
+                    }
+                    
+                    addExecuteParam("ListData", mini.encode(rows));
+                    execute("Save", {
+                        showLoading: true, refresh: false, onComplete: function (data2) {
+                            dataGrid.reload();
+                        }, validateForm: false
+                    });
+                }
+                
+            }
+        });
+    }
+
+
+    function initProRec() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].RectifyState != "Register") {
+                msgUI("只能对登记状态的问题发起问题整改，请重新选择！");
+                return;
+            }
+        }
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=THSERectifySheet";
+        openWindow(url, {
+            refresh: false, title: "发起问题整改", width: "85%", height: "90%",
+            data: rows,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    dataGrid.reload();
+                    mini.get("recSheetGrid").reload();
+                }
+            }
+        });
+
+    }
+
+    //问题整改单列表增加
+    function addSheet() {
+        var dataGrid = mini.get("recSheetGrid");
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=THSERectifySheet";
+        openWindow(url, {
+            refresh: false, title: "增加", width: "85%", height: "90%",
+            onDestroy: function (data) {
+                //if (!data || data.length == 0 || data == "close") return;
+                dataGrid.reload();
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+    //问题整改单列表编辑
+    function editSheet() {
+        var dataGrid = mini.get("recSheetGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows == null || rows.length == 0 || rows.length > 1) {
+            msgUI("请选择一条记录！");
+            return;
+        }
+
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=THSERectifySheet&ID=" + rows[0]["ID"];
+        openWindow(url, {
+            refresh: false, title: "编辑", width: "85%", height: "90%",
+            onDestroy: function (data) {
+                //if (!data || data.length == 0 || data == "close") return;
+                dataGrid.reload();
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function delSheet() {
+        var dataGrid = mini.get("recSheetGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows == null || rows.length == 0) {
+            msgUI("请选择一条记录！");
+        }
+        var listIDs = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (i == rows.length - 1) {
+                listIDs += rows[i].ID;
+            }
+            else {
+                listIDs += rows[i].ID + ",";
+            }
+        }
+        addExecuteParam("ListIDs", listIDs);
+        execute("DeleteSheet", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+                mini.get("dataGrid").reload();
+            }, validateForm: false
+        });
+    }
+
+</script>

@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                        @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入员工姓名或所属部门" onenter="tabSearch({searchFields:'Name,DeptName',IsOrRelation:'false'});"
+                    onbuttonclick="tabSearch({searchFields:'Name,DeptName',IsOrRelation:'false'});" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitDiv" class="mini-fit">
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%;height: 100%;'
+        url='GetList' multiselect='true' allowalternating='false' showpagebar="true" fitcolumns="true" ondrawcell="onDrawCell">
+        <div property="columns">
+            @*<div field="indexcolumn" type="indexcolumn">序号</div>*@
+            <div field="DeptName" name="DeptName" headeralign="center" width="80" align="center">所属部门</div>
+            <div field="Name" name="Name" headeralign="center" width="80" align="center">员工姓名</div>
+            <div field="AnnualLeavedays" name="AnnualLeavedays" headeralign="center" width="60" align="center">当年年假</div>
+            @*<div field="Workdays" name="Workdays" headeralign="center" width="60" align="center">应出勤</div>*@
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("HR.AttendanceLegends")
+    @Html.GetEnum("HR.LeaveType")
+</script>
+<script type="text/javascript">
+
+    function onTabPageLoad() {
+        var grid = mini.get("dataGrid");
+        var columns = grid.getColumns();
+        //$.each(AttendanceLegends, function (index, item) {
+        //    var _c = { field: item.value, name: item.value, header: item.Description, headerAlign: "center", width: "60", align: "center" };
+        //    columns.push(_c);
+        //});
+        $.each(LeaveType, function (index, item) {
+            var _c = { field: item.value, name: item.value, header: item.text, headerAlign: "center", width: "60", align: "center" };
+            columns.push(_c);
+        });
+        grid.setColumns(columns);
+    }
+
+    function onDrawCell(e) {
+        if (e.field && e.field.indexOf("Name") < 0) {
+            if (e.value > 0) {
+                e.cellStyle = "font-weight:bold;";
+            }
+            else {
+                e.cellStyle = "color:#c4c4c4;";
+            }
+        }
+    }
+
+</script>

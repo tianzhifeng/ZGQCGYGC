@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "社会招聘需求汇总";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="GetSocialrecruitmentneedsumList" class="mini-datagrid" style="width: 100%;
+        height: 100%;" idfield="ID" multiselect="true" onload="onDataGridLoad">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="DeptName" name="DeptName" width="120" headeralign="center" allowsort="true" align="center">
+                部门</div>
+            <div field="PostName" width="120" headeralign="center" allowsort="true" align="center">
+                岗位名称</div>
+            <div field="Major" width="120" headeralign="center" allowsort="true" align="center">
+                专业</div>
+            <div field="Number" width="120" headeralign="center" allowsort="true" align="center">
+                计划人数</div>
+            <div field="Responsibilities" width="120" headeralign="center" allowsort="true" align="center">
+                岗位职责</div>
+            <div field="Qualification" width="120" headeralign="center" allowsort="true" align="center">
+                任职资格</div>
+            <div field="SalaryRange" width="120" headeralign="center" allowsort="true" align="center">
+                薪酬范围 (年薪/月薪)
+            </div>
+            <div field="TargetUnitName" width="120" headeralign="center" allowsort="true" align="center">
+                目标单位</div>
+            <div field="Remarks" width="200" headeralign="center" allowsort="true" align="left">
+                备注</div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function onDataGridLoad() {
+
+        var grid = mini.get("dataGrid");
+
+        grid.mergeColumns(["DeptName"]);
+    }
+
+</script>

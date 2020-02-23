@@ -1,0 +1,154 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+    <div size="150" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="/Base/Meta/Category/GetTree?RootFullID=0" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+                onnodeclick="onNodeSelect" expandonload="1" contextmenu="#treeMenu" iconfield="IconClass"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-menubutton" id="createFormMenu" iconcls="icon-add" plain="true" menu="#popupCreateFormMenu">创建模板</a>
+                        <ul id="popupCreateFormMenu" class="mini-menu" style="display: none;">
+                            <li iconcls="icon-item" onclick="toList();">从列表定义</li>
+                            <li iconcls="icon-item" onclick="toForm();">从表单定义</li>
+                            <li iconcls="icon-item" onclick="add({url:'Edit?CategoryID={ID}&ConnName={Code}&CategoryCode={CategoryCode}',paramFrom:'dataTree', width: 800, height: 580 });">自定义模板</li>
+                        </ul>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                        <a class="mini-button" iconcls="icon-download" onclick="exportSQL();">导出SQL</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');" onbuttonclick="quickSearch('Code,Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetExcelImportList" multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Code" width="120" allowsort="true" align="center">
+                        编号
+                    </div>
+                    <div field="Name" width="150" allowsort="true">
+                        名称
+                    </div>
+                    <div field="ModifyTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm:ss" width="120" allowsort="true">
+                        最后修订时间
+                    </div>
+                    <div headeralign="center" header="修订">
+                        <div property="columns">
+                            <div field="Base" width="60" align="center">
+                                基本信息</div>
+                            <div field="LayoutField" width="60" align="center">
+                                模板配置</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="menuAddModule" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/ModuleEdit'});">增加模块</li>
+    <li name="menuEditModule" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/ModuleEdit'});">编辑模块</li>
+    <li name="menuDelModule" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除模块</li>
+    <li name="menuAddCategory" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/CategoryEdit?Code={Code}'});">增加分类</li>
+    <li name="menuEditCategory" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/CategoryEdit'});">编辑分类</li>
+    <li name="menuDelCategory" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除分类</li>
+</ul>
+<script type="text/javascript">
+    addGridLink("dataGrid", "Base", "Edit?ID={ID}", { linkText: '基本信息', width: 1000 });
+    addGridLink("dataGrid", "LayoutField", "ItemList?ID={ID}", { linkText: '模板配置', width: 1000 });
+    jQuery(".gw-grid-toolbar .mini-button,#createFormMenu").hide();
+
+</script>
+
+<script type="text/javascript">
+    //树节点点击事件
+    var url = "GetExcelImportList";
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            jQuery(".gw-grid-toolbar .mini-button,#createFormMenu").show();
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID + "&NodeFullID=" + e.node.FullID);
+            dataGrid.load();
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load();
+            jQuery(".gw-grid-toolbar .mini-button,#createFormMenu").hide();
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var menuAddModule = mini.getbyName("menuAddModule", menu);
+        var menuEditModule = mini.getbyName("menuEditModule", menu);
+        var menuDelModule = mini.getbyName("menuDelModule", menu);
+        var menuAddCategory = mini.getbyName("menuAddCategory", menu);
+        var menuEditCategory = mini.getbyName("menuEditCategory", menu);
+        var menuDelCategory = mini.getbyName("menuDelCategory", menu);
+
+        if (node.ParentID == null || node.ParentID == "") {
+            menuAddModule.show();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else if (node.ParentID == "0") {
+            menuAddModule.hide();
+            menuEditModule.show();
+            menuDelModule.show();
+            menuAddCategory.show();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else {
+            menuAddModule.hide();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.show();
+            menuDelCategory.show();
+        }
+    }
+</script>
+<script type="text/javascript">
+    function exportSQL() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择记录！");
+            return;
+        }
+        var url = "/Base/UI/ExportSql/SqlFile?DefID=" + getValues(rows, "ID") + "&FileCode=ExcelImportSql&TableName=S_UI_ExcelImport";
+        window.location = url;
+    }
+
+    function toList() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        add({ url: 'ToList?CategoryID=' + node.ID, title: '列表选择', width: 800, height: 580 });
+    }
+
+    function toForm() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        add({ url: 'ToForm?CategoryID=' + node.ID, title: '表单选择', width: 800, height: 580 });
+    }
+</script>

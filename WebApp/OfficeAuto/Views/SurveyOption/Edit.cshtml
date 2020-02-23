@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "问题选项维护";
+}
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <div id="divSel" class="mini-toolbar" style="border-bottom: 0; padding: 2px;">
+        <a class="mini-button" iconcls="icon-add" onclick=" addFileInfo() "  plain="true">增加</a>
+        <a class="mini-button" iconcls="icon-remove" onclick=" removeRow() " onclick=" del() " plain="true">删除</a>
+        <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick=" doSave(); ">保存</a>  
+    </div>
+    <div class="mini-fit" style="height: 270px;">
+        <div id="Sub" class="mini-datagrid" idfield="ID" url="GetOptionList"  style="height: 100%; width: 100%;"
+             allowcelledit="true" allowcellselect="true" allowcellvalid="true" pagesize="20" showpager="false" emptyText="选项名称不能为空">
+            <div property="columns">
+                <div type="checkcolumn" width="16px">选择</div>
+                <div field="ID" width="1" visible="false">ID</div>
+                <div field="OptionName" headeralign="left" width="120px" align="left"   vtype="required">
+                    选项名称<input property="editor" class="mini-textbox" style="width: 100%"/>
+                </div>                      
+            </div>
+        </div>       
+    </div>
+</form>
+<script type="text/javascript">
+    function addFileInfo() { //增加行
+        var grid = mini.get("Sub");
+        var row = {};
+        grid.addRow(row);
+    }
+
+    function removeRow() { //删除行
+        var grid = mini.get("Sub");
+        var rows = grid.getSelecteds();
+        if (rows[0].ID == "" || rows[0].ID == null) {
+            grid.removeRows(rows, true);
+        } else {
+            addExecuteParam("ID", rows[0].ID);
+            execute("DeleteOption", { closeWindow: false, actionTitle: "删除" });
+            grid.load({ QuestionID: getQueryString("QuestionID") });
+        }
+    }
+
+    function doSave() {
+        var grid = mini.get("Sub");
+        grid.commitEdit();
+        save();
+    }
+</script>

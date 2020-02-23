@@ -1,0 +1,240 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+    <div size="150" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetTree?RootFullID=0" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+                onnodeclick="onNodeSelect" expandonload="1" contextmenu="#treeMenu" iconfield="IconClass">
+            </ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" id="addUse" onclick="addUse();">增加应用</a>
+                        <a class="mini-button" iconcls="icon-remove" id="delUse" onclick="delUse();">删除</a>
+                        <a class="mini-button" iconcls="icon-download" onclick="exportSQL();">导出SQL</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('CategoryCode,Name');" onbuttonclick="quickSearch('CategoryCode,Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true"
+                 borderstyle="border-left:0px;border-right:0px;border-bottom:0px" ondrawcell="onDrawCell"
+                 collapsegrouponload="false" url="GetUseList">
+                <div property="columns">
+                    <div type="checkcolumn" width="15">
+                    </div>
+                    <div field="Action" width="35" align="center">
+                        操作
+                    </div>
+                    <div field="CategoryCode" width="120" >
+                        应用编号
+                    </div>
+                    <div field="Name" width="150">
+                        应用名称
+                    </div>
+                    <div field="Description">
+                        应用说明
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="menuAddModule" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/ModuleEdit'});">增加模块</li>
+    <li name="menuEditModule" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/ModuleEdit'});">编辑模块</li>
+    @*<li name="menuDelModule" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除模块</li>*@
+</ul>
+
+<script type="text/javascript">
+    jQuery("#addUse,#delUse,#separator").hide();
+    //树节点点击事件
+    var url = "GetUseList";
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            jQuery("#addUse,#delUse,#separator").show();
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID);
+            dataGrid.load();
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load();
+            jQuery("#addUse,#delUse,#separator").hide();
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var menuAddModule = mini.getbyName("menuAddModule", menu);
+        var menuEditModule = mini.getbyName("menuEditModule", menu);
+        //var menuDelModule = mini.getbyName("menuDelModule", menu);
+
+
+        if (node.ParentID == null || node.ParentID == "") {
+            menuAddModule.show();
+            menuEditModule.hide();
+            //menuDelModule.hide();
+
+        }
+        else if (node.ParentID == "0") {
+            menuAddModule.hide();
+            menuEditModule.show();
+            //menuDelModule.show();
+        }
+
+    }
+
+    function addUse() {
+        var url = 'UseEdit?Code={Code}&ParentID={ID}&FullID={FullID}&IsOpen=true';
+        openWindow(url, {
+            title: "添加应用", width: '80%', paramFrom: 'dataTree', height: '80%', onDestroy: function (data) {
+                if (data != 'close' && data != undefined)
+                    openForm(data.ID, data.Code, data.CategoryCode, data.ParentID, data.FullID, data.Name);
+            }
+        });
+    }
+
+    function delUse() {
+        var dataGrid = mini.get("dataGrid");
+        var ids = getValues(dataGrid.getSelecteds(), "ID");
+        if (ids.length == 0) {
+            msgUI("请选择记录!");
+            return;
+        }
+        msgUI("确认要删除吗？", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("ids", ids);
+                execute("DeleteUse", {
+                    onComplete: function (data) {
+                        dataGrid.reload();
+                    }
+                });
+            }
+        });
+    }
+
+    function openForm(id, code, categoryCode, parentID, fullID, title) {
+        setCache("_CacheCategoryID", id);
+        setCache("_CacheUseCode", code);
+        setCache("_CacheCategoryCode", categoryCode);
+        setCache("_CacheUseParentID", parentID);
+        setCache("_CacheUseFullID", fullID);
+        removeCache("_CacheRoleID");
+        removeCache("_CacheFinish");
+        removeCache("_CacheFlowID");
+        removeCache("_CacheFlowFormID");
+        removeCache("_CacheUseID");
+        addTab(this, title, id, categoryCode);
+    }
+    function onDrawCell(e) {
+        var record = e.record, field = e.field, categoryCode = record.CategoryCode != undefined ? record.CategoryCode : "";
+        var parentID = record.ParentID, fullID = record.FullID;
+        fullID = fullID.lastIndexOf('.') > 1 ? fullID.substring(0, fullID.lastIndexOf('.')) : fullID;
+        if (field == "Action") {
+            e.cellStyle = "text-align:center";
+            e.cellHtml = "<a href=\"javascript:openForm('" + record.ID + "','" + record.Code + "','" + categoryCode + "','" + parentID + "','" + fullID + "','" + record.Name + "')\">点击进入</a>";
+        }
+    }
+
+    function addTab(e, title, id, categoryCode) {
+        if (window.parent.$("#custab-content").css("top") == "51px") {
+            window.parent.$("#custab-content").css("top", "");
+            window.parent.$("#custab-content").css("left", "");
+            window.parent.$("#custab-content").html("");
+        }
+        var url = "/MvcConfig/WorkFlow/Flow/FlowNavigation?CategoryID=" + id + "&categoryCode=" + categoryCode;
+        var curli;
+        var tablis = window.parent.$("#custab").find("li");
+        //判断是否在tab页中打开
+        var hasTab = tablis.filter(function () {
+            return $(this).data("custaburl") === url;
+        });
+        window.parent.$("#pageItem").hide();
+        if (hasTab.length === 0) {
+            var className = "";
+            var length = tablis.length;
+            if (length === 0) {
+                window.parent.$("#page-mark").hide();
+                className = "class='active'";
+            } else {
+                window.parent.$("#page-mark").show();
+            }
+
+
+            if (tablis.length >= 5) {
+                window.parent.$("#custab").find("li:eq(0)").remove();
+                window.parent.$("#custab-content").find("li:eq(0)").remove();
+            }
+            window.parent.$("#custab").append('<li ' + className + ' onclick=showCurTab(this)  data-custaburl=' + url + '>应用(' + title + ')<i id="_flowUseTab" class="fa fa-remove" onclick="closeCustomTab(this,event)"></i></li>');
+            window.parent.$("#custab-content").append('<li ' + className + '><iframe src="http://' + window.location.host + url + '"></iframe></li>');
+
+            curli = window.parent.$("#custab").find("li").last();
+            window.parent.$("#mainView").hide();
+            window.parent.$("#iframe").show();
+
+        } else {
+            curli = hasTab[0];
+        }
+        //显示当前页
+        showCurTab(curli);
+
+    }
+    function showCurTab(e, dom) {
+        dom = $(e) || dom;
+        dom.addClass("active");
+        dom.siblings("li").removeClass("active");
+        var index = dom.index();
+        var choTab = window.parent.$("#custab-content").find("li:eq(" + index + ")");
+        choTab.addClass("active");
+        choTab.siblings("li").removeClass("active");
+    }
+
+    //关闭Tab栏
+    function closeCustomTab(cur, e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var curTab = $(cur).parent();
+        var index = curTab.index();
+        curTab.remove();
+        window.parent.$("#custab-content").find("li:eq(" + index + ")").remove();
+        if (curTab.hasClass("active")) {
+            window.parent.$("#custab").find("li:eq(0)").addClass("active");
+            window.parent.$("#custab-content").find("li:eq(0)").addClass("active");
+        }
+        var length = window.parent.$("#custab").find("li").length;
+        if (length <= 1) {
+            window.parent.$("#page-mark").hide();
+        }
+        if (length === 0) {
+            window.parent.$("#iframe").hide();
+        }
+    };
+</script>
+<script type="text/javascript">
+    function exportSQL() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length != 1) {
+            msgUI("请选择一行记录！");
+            return;
+        }
+        var url = "/Base/UI/ExportSql/ExportSql?CategoryFullID=" + rows[0].FullID + "&startDate=";
+        window.open(url);
+    }
+</script>

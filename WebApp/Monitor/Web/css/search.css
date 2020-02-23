@@ -1,0 +1,156 @@
+.search-title{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	color: #999;
+	padding: 0 15px;
+}
+.search-title i{
+	padding-right: 5px;
+}
+.search-title .glyphicon-trash{
+    width: 50px;
+    height: 40px;
+    font-size: 16px;
+    text-align: right;
+    float: right;
+    line-height: 40px;
+}
+
+.search-content .history{
+	padding: 0;
+	margin:0;
+	width: 100%;
+	padding: 0 15px;
+	position: relative;
+}
+.search-content .history li{
+	height:30px;
+	line-height: 20px;
+	padding: 5px 15px; 
+	border: 1px solid #ccc;
+	color: #bbb;
+	float: left;
+	margin-right:10px;
+	margin-bottom:10px;
+}
+
+.search-body{
+	padding:0 20px;
+	width: 100%;
+}
+
+.search-model .title{
+	height: 40px;
+	line-height: 40px;
+	color: #aaa;
+	font-size: 14px;
+	border-bottom: 1px solid #ccc; 
+}
+.search-model .title span{
+	padding: 0 3px;
+}
+.search-model ul{
+	margin-top: 15px;
+}
+.search-model li{
+	height: 30px;
+	line-height: 30px;
+	color:#2C80C8;
+	font-size: 16px;
+}
+.search-model .title div{
+	width: 40px;
+	height: 40px;
+	float: right;
+	text-align: center;
+    padding-top: 15px;
+}
+
+.search-content{
+	z-index: 999;
+	background-color: #fff;
+}
+
+.filter.search-result{
+    line-height: 35px;
+    font-size: 16px;
+    padding: 15px;
+}
+.filter.search-result span{
+	color:#888;
+	padding-left: 15px;
+}
+.has-filter.search-result{
+	background-color: #eee;
+}
+.search-result .scroll-content{
+    padding: 15px;
+}
+.has-filter.search-result ul{
+	background-color: #fff;
+	border-radius: 5px;
+}
+
+.has-filter.search-result li{
+	width: 100%;
+	padding: 10px;
+	position: relative;
+}
+
+.has-filter.search-result li:nth-last-child(1) div{
+	border-bottom: none;
+}
+
+.has-filter.search-result li .model{
+    border-bottom: 1px solid #ddd;
+    height: 90px;
+    color: #888;
+    padding-left: 8px;
+}
+.has-filter.search-result li .model div{
+	height: 30px;
+	line-height: 30px;
+}
+.has-filter.search-result li .model .title{
+	color: #000;
+	font-size: 18px;
+}
+.has-filter.search-result li .model .title span{
+    color: #888;
+    font-size: 14px;
+    padding-left: 10px;
+}
+.has-filter.search-result li .model .money{
+    display: block;
+    margin-right: 10px;
+}
+.floatCls{
+    float: left;
+}
+.has-filter.search-result li .model .money span{
+	padding: 0 4px;
+	font-size: 18px;
+	color:#06f;
+}
+.has-filter.search-result li i{
+    position: absolute;
+    top: 40px;
+    right: 15px;
+    font-size: 18px;
+    color: #ccc;
+}
+.red{
+	color: #e53236!important;
+}
+
+.contract-search .important-cls{
+    width: 40px !important;
+    color: #387ef5 !important;
+    float: left !important;
+    text-align: left !important;
+}
+.contract-search .return-cls{
+    left: 40px !important;
+    right: 10px !important;
+}

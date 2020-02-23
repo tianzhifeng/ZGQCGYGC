@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "统计报表";
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                @Html.ExportButton()
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetList" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" sortfield="Index" sortorder="asc" showpager="false"
+        showfooter="false">
+        <div property="columns">
+            <div field="Category" name="Category" width="80" headeralign="center" allowsort="true"
+                align="center">
+                分类</div>
+            <div field="Item" width="150" headeralign="center" allowsort="true" align="left">
+                项目</div>
+            <div field="PersonCount" width="80" headeralign="center" allowsort="true" align="center">
+                人数</div>
+            <div field="Ratio" width="80" headeralign="center" allowsort="true" align="right">
+                比例</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+    grid.on("load", function () {
+        grid.mergeColumns(["Category"]);
+    });
+    grid.load();
+</script>

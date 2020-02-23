@@ -1,0 +1,264 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+@using Config.Logic;
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="startFeedBack();" plain="true">进度反馈</a>
+                <a class="mini-button" iconcls="icon-add" onclick="startBack();" plain="true">查看历史反馈记录</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入任务名称或任务编号' onenter="treeSearch" onbuttonclick="treeSearch" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;"
+         url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true"
+         multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px;" allowheaderwrap="true"
+         treecolumn="Name" idfield="WBSID" parentfield="ParentID" resultastree="false" iconfield="TaskType"
+         allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="indexcolumn" name="index"></div>
+            <div type="checkcolumn"></div>
+            <div field="FinishState" width="40" align="center" headeralign="center" allowsort="false">完成状态</div>
+            <div name="Name" field="Value" displayfield="Name" width="380" headeralign="center">
+                任务名称
+                <input property="editor" class="mini-combobox" style="width:100%;" data="" allowinput="true" />
+            </div>
+            <div field="Code" width="90" align="center" headeralign="center">
+                任务编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="TaskType" displayfield="TaskTypeName" autoshowpopup="true" width="80" align="center" headeralign="center">
+                任务类型
+                <input property="editor" class="mini-combobox" style="width:100%;" valuefield="value" textfield="text" />
+            </div>
+            <div field="Weight" width="50" align="right" headeralign="center">
+                权重%
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PlanDuration" width="40" align="right" headeralign="center">
+                工期(天)
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PlanStartDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                计划开始日期
+                <input property="editor" class="mini-datepicker" style="width:100%;" />
+            </div>
+            <div field="PlanEndDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                计划完成日期
+                <input property="editor" class="mini-datepicker" style="width:100%;" />
+            </div>
+            <div field="FactStartDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                实际开始日期
+            </div>
+            <div field="FactEndDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                实际完成日期
+            </div>
+            <div field="Progress" width="60" align="right" headeralign="center">
+                进度率%
+            </div>
+            <div field='Evidence' displayfield="EvidenceName" header='凭证附件' visible='true' width='90' align='left' renderer='onFileRender' headeralign="center">
+                <input property='editor' class='mini-fileupload' style='width: 100%;' flashurl='/commonwebresource/RelateResource/Uploadify/uploadify.swf' uploadurl='/FileStore/SWFUpload/FileUploadHandler.ashx' uploadonselect='true' onuploadsuccess='onuploadsuccess' />
+            </div>
+            @{
+                var attrDefines = Formula.Helper.JsonHelper.ToList(ViewBag.AttrDefine) as List<Dictionary<string, object>>;
+                foreach (var item in attrDefines)
+                {
+                    if (item.GetValue("ItemType") == "textbox")
+                    {
+                        <div name="@item.GetValue("AttrField")" field="@item.GetValue("AttrField")" width="100" headeralign="center">
+                            @item.GetValue("AttrName")
+                            <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                    }
+                    else if (item.GetValue("ItemType") == "textarea")
+                    {
+                        <div name="@item.GetValue("AttrField")" field="@item.GetValue("AttrField")" width="100" headeralign="center">
+                            @item.GetValue("AttrName")
+                            <input property="editor" class="mini-textarea" style="width: 100%;" />
+                        </div>
+                    }
+                    else if (item.GetValue("ItemType") == "ButtonEdit")
+                    {
+                        var field = item.GetValue("AttrField");
+                        var displayField = item.GetValue("AttrField") + "Name";
+                        <div name="@field" field="@field" displayfield="@displayField" width="80" headeralign="center">
+                            @item.GetValue("AttrName")
+                            <input name='@field' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                        </div>
+                    }
+                    else if (item.GetValue("ItemType") == "SingleFile")
+                    {
+                        var field = item.GetValue("AttrField");
+                        var displayField = item.GetValue("AttrField") + "Name";
+                        <div name="@field" field="@field"
+                             displayfield="@displayField" width="150" headeralign="center" allowsort="false"
+                             align="left" visible="true" renderer='onFileRender'>
+                            @item.GetValue("AttrName")
+                            <input property="editor" class="mini-fileupload" style="width: 100%;"
+                                   flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                                   uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+                        </div>
+
+                    }
+                    else if (item.GetValue("ItemType") == "datepicker")
+                    {
+                        <div name="@item.GetValue("AttrField")" field="@item.GetValue("AttrField")" width="80" headeralign="center" align="center"
+                             dateformat="yyyy-MM-dd">
+                            @item.GetValue("AttrName")
+                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                        </div>
+                    }
+                    else if (item.GetValue("ItemType") == "combobox")
+                    {
+
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .DivTab {
+        border-top: 0px !important;
+    }
+
+    .ShowStatus {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+    }
+
+    .Finish {
+        background: url(/EPC/Scripts/Images/green.gif) no-repeat;
+    }
+
+    .UnFinish {
+        background: url(/EPC/Scripts/Images/red.gif) no-repeat;
+    }
+</style>
+<script type="text/javascript">
+    var versionID = "@Html.Raw(ViewBag.VersionID)";
+    var scheduleCode = "@Html.Raw(ViewBag.ScheduleCode)";// getQueryString("ScheduleCode");
+    var wbsNodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+    var attrDefines =@Html.Raw(ViewBag.AttrDefine);
+    for (var i = 0; i < attrDefines.length; i++) {
+        var attrDefine = attrDefines[i];
+        if(attrDefine.ItemType=="ButtonEdit"){
+            var settings = mini.decode( attrDefine.Settings);
+            if(settings.SelectorKey=="SystemUser"){
+                if(settings.AllowMultiSelect=="false"){
+                    addSingleUserSelector(attrDefine.AttrField,{returnParams:settings.returnParams});
+                }
+                else{
+                    addMultiUserSelector(attrDefine.AttrField,{returnParams:settings.returnParams});
+                }
+            }
+            else
+            {
+                addSelector(attrDefine.AttrField,{returnParams:settings.returnParams});
+            }
+        }
+    }
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+</script>
+<script type="text/javascript">
+
+    if (versionID) {
+        var url = "GetVersionTreeList?VersionID=" + versionID + "";
+        $("#dataTree").attr("url", url);
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        if(record.NodeType!="Task"){
+            e.cellStyle = "font-weight:bolder;";
+        }
+        else if (record.NodeType == "Task") {
+            if (field == "FinishState") {
+                var toolTip = "未完成";
+                var state = "UnFinish";
+                if (record.FactEndDate) {
+                    toolTip = "已完成";
+                    state="Finish";
+                }
+                e.cellHtml = "<span title='"+toolTip+"' class='ShowStatus  " + state + "' style='float:center;'></span>";
+            }
+        }
+    }
+
+    function startBack() {
+        var dataTree = mini.get("dataTree");
+        var rows = dataTree.getSelecteds();
+        //if (rows.length == 0) {
+        //    msgUI("请选择一个作业");
+        //    return;
+        //}
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ScheduleFeedback&EngineeringInfoID=" + engineeringInfoID+"&VersionID="+versionID;
+        openWindow(url, {
+            refresh: false, title: "进度反馈", width: "60%", height: "80%",
+            data: rows,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    dataTree.reload();
+                }
+            }
+        });
+    }
+
+    function startFeedBack() {
+        var dataTree = mini.get("dataTree");
+        var rows = dataTree.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择一个作业");
+            return;
+        }
+        for (var i = 0; i < rows.length; i++) {
+            if(rows[i].NodeType!="Task"){
+                msgUI("所选中的记录中有非作业节点的记录，进度反馈只能针对作业进行反馈");return;
+            }
+        }
+        var url = "/EPC/Manage/TScheduleFeedback/PageView?TmplCode=ScheduleFeedback&FlowCode=ScheduleFeedback&EngineeringInfoID=" + engineeringInfoID+"&VersionID="+versionID;
+        openWindow(url, {
+            refresh: false, title: "进度反馈", width: "75%", height: "90%",
+            data: rows,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    dataTree.reload();
+                }
+            }
+        });
+    }
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+
+                var text1 = node.Code ? node.Code.toLowerCase() : "";
+                if (text1.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+</script>

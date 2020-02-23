@@ -1,0 +1,366 @@
+﻿<script src="@Url.Content("~/Scripts/raphael-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/flow.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/flow.jpdl.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/flow.editors.js")" type="text/javascript"></script>
+
+<div style="height:100%;">
+    <div class="mini-splitter" style="width: 100%; height: 100%;">
+        <div showcollapsebutton="false">
+            <div class="mini-fit">
+                <div id="myflow_tools"
+                    class="ui-widget-content">
+                    <div id="myflow_tools_handle" style="text-align: center;"
+                        class="ui-widget-header">
+                        工具集
+                    </div>
+                    <hr />
+                    <div class="node selectable" id="pointer">
+                        <img src="/Workflow/Scripts/Images/select16.gif">选择
+                    </div>
+                    <div class="node selectable" id="path">
+                        <img src="/Workflow/Scripts/Images/flow_sequence.png">连线
+                    </div>
+                    <hr />
+                    <div class="node state" id="start" type="start">
+                        <img src="/Workflow/Scripts/Images/start_event_empty.png" />开始
+                    </div>
+                    <div class="node state" id="task" type="task">
+                        <img src="/Workflow/Scripts/Images/task_empty.png" />活动
+                    </div>
+                    <div class="node state" id="end" type="end">
+                        <img src="/Workflow/Scripts/Images/end_event_terminate.png" />结束
+                    </div>
+                </div>
+                <div id="myflow"></div>
+            </div>
+        </div>
+        <div size="400" minsize="250" showcollapsebutton="true" borderstyle="0px" style="background-color:#fff;">
+            <div class="mini-toolbar" id="btnDiv">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td id="btnRight">
+                            <a class="mini-button " iconcls="icon-save" onclick="saveAll('',false,true);" style="display: none" plain="true">路由重命名</a>
+                            <a class="mini-button " iconcls="icon-save" id="myflow_save" plain="true">保存</a>
+                            <a class="mini-button " iconcls="icon-auditing_pass" id="myflow_cloth"  plain="true">发布</a>
+                            <a class="mini-button " iconcls="icon-save" id="myflow_saveHide" style="display: none" plain="true"></a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <iframe id="ptyIframe" frameborder="0px"></iframe>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function getConfig() {
+        var data = getData(getQueryString("ID"), "Flow");
+        if (data)
+            return data.ViewConfig;
+        else
+            return "";
+    }
+    $(function () {
+        $('#myflow')
+				.myflow(
+						{
+						    basePath: "",
+						    restore: !getConfig() ? eval() : eval("(" + getConfig() + ")") ,
+						    tools: {
+						        save: {
+						            onclick: function (data) {
+						            }
+						        }
+						    }
+						});
+	    if (getQueryString("editable") != 1)
+		    $("#btnDiv").css("display","none");
+	    if (getQueryString("FuncType") == "View")
+	        $("#ptyIframe").addClass("iframe");
+	    else
+	        $("#ptyIframe").addClass("iframe_calc45");
+    });
+
+    var ruleID = "";
+    function bendLine() {
+        bendrule(ruleID);
+    }
+
+    function delCtrl() {
+        deletecontrol();
+        showFlowDefineSetting(getQueryString("ID"));
+    }
+
+    function saveAll(json, releaseFlow, renameRouting) {
+        var ptyIframe = document.getElementById("ptyIframe");
+        saveChangedData(ptyIframe); //保存变化数据
+
+        addExecuteParam("changedData", changedData);
+        addExecuteParam("layout", json);
+        if (releaseFlow)
+            addExecuteParam("releaseFlow", "True");
+        if (renameRouting)
+            addExecuteParam("renameRouting", "True");
+        execute("/Workflow/DefFlow/SaveChangedData", {
+            onComplete: function () {
+                for (var item in changedData)
+                    delete changedData[item];
+                if (releaseFlow)
+                    closeWindow();
+                else if (renameRouting) {    
+                    msgUI("重命名成功！", 1, function () { $("#silverlightControlHost").show(); });
+                }
+                else {
+                    msgUI("暂存成功！", 1, function () { $("#silverlightControlHost").show(); });
+                }
+                delete changedData;
+                delete data;
+                changedData = {}; //清空
+                data = {};
+            }
+        });
+    }
+
+    function showActivitySetting(activityID, node) {
+        var ptyIframe = document.getElementById("ptyIframe");
+        saveChangedData(ptyIframe); //保存变化数据
+        if (activityID != "") {
+            setacitivty(activityID, node);
+            ptyIframe.src = "StepProperty?ID=" + activityID + "&defFlowID=" + getQueryString("ID") + "&editable=" + getQueryString("editable");
+        }
+        else {
+            ptyIframe.src = "";
+        }
+
+        ruleID = "";
+
+    }
+
+    function showRuleSetting(ruleID, line) {
+        var ptyIframe = document.getElementById("ptyIframe");
+        saveChangedData(ptyIframe); //保存变化数据
+        if (ruleID != "") {
+            setrule(ruleID, line);
+            ptyIframe.src = "RoutingProperty?ID=" + ruleID + "&defFlowID=" + getQueryString("ID") + "&editable=" + getQueryString("editable");
+        }
+        else {
+            ptyIframe.src = "";
+        }
+
+        this.ruleID = ruleID;
+    }
+
+    function showFlowDefineSetting(defineID) {
+        var ptyIframe = document.getElementById("ptyIframe");
+        saveChangedData(ptyIframe); //保存变化数据
+        ptyIframe.src = "DefProperty?ID=" + defineID + "&defFlowID=" + getQueryString("ID") + "&editable=" + getQueryString("editable");
+
+        ruleID = "";
+    }
+
+    function pageLoad() {
+        showFlowDefineSetting(getQueryString("ID"));
+    }
+
+    if (getQueryString("FuncType=View")) {
+        $(".mini-button").hide();
+    }
+    if (getQueryString("editable") !=1) {
+        $("#myflow_tools").hide();
+    }
+
+    var changedData = {}; //修改的数据
+    var data = {};
+    function saveChangedData(ptyIframe) {
+        if (ptyIframe.src) {//切换属性页保存数据
+            if (typeof (ptyIframe.contentWindow.getData) != "undefined") {
+                var result = ptyIframe.contentWindow.getData(true);
+                if (result) {
+                    changedData[result.ID] = result;
+                }
+                var d = ptyIframe.contentWindow.getData(false);
+                if(d)
+                    data[d.ID] = d;
+            }
+        }
+    }
+
+    function getData(id, type) {
+        if (data[id]) {
+            return data[id].Data;
+        }
+        var result = "";
+        $.ajax({
+            url: "/Workflow/DefFlow/GetData?ID=" + id + "&Type=" + type,
+            type: "post",
+            cache: false,
+            async: false,
+            success: function (text) {
+                //增加新版报错分支
+                if (text && typeof(text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var data = mini.decode(text);
+                result = data;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var msg = getErrorFromHtml(jqXHR.responseText);
+                msgUI(msg);
+            }
+        });
+        return result;
+    }
+    if (getQueryString("IsFlowNav")) {
+        $("#myflow_cloth").removeClass();
+        $("#myflow_cloth").addClass("mini-button flow_pass");
+    }
+
+</script>
+<style type="text/css">
+    .icon-start {
+        background: url(/Workflow/Scripts/Images/start.gif) no-repeat;
+    }
+
+    .icon-end {
+        background: url(/Workflow/Scripts/Images/end.gif) no-repeat;
+    }
+
+    .icon-normal {
+        background: url(/Workflow/Scripts/Images/normal.gif) no-repeat;
+    }
+
+    .icon-subflow {
+        background: url(/Workflow/Scripts/Images/subflow.gif) no-repeat;
+    }
+
+    .icon-bend {
+        background: url(/Workflow/Scripts/Images/bend.gif) no-repeat;
+    }
+
+    body {
+        margin: 0;
+        text-align: left;
+        font-size: 12px;
+        line-height: 1.5;
+        color: black;
+        background-image: url(/Workflow/Scripts/Images/bg.png)!important;
+        background-size: auto!important;
+        background-repeat: repeat;
+    }
+
+    #task {
+        background-repeat: no-repeat;
+        background-position: center;
+        width:100%;
+    }
+
+    #state {
+        background-repeat: no-repeat;
+        background-position: center; 
+        width:100%;
+    }
+
+    .node {
+        margin-bottom: 5px;
+        text-align: center;
+        width:100%;
+    }
+
+        .node:hover {
+            cursor: pointer;
+            /*background-color: #DDDDDD;*/
+        }
+
+    #myflow_tools {
+        position: fixed;
+        z-index: 99999;
+        display: block;
+        background-color: #f5f5f5;
+        width: 70px;
+        cursor: default;
+        padding: 3px;
+        border:1px solid #676767;
+        font-family:'Microsoft YaHei';
+        vertical-align:middle;
+    }
+    #myflow_tools img{
+        vertical-align:middle;
+        margin-right:6px;
+    }
+
+    .mover {
+        border: 1px solid #ddd;
+        background-color: #ddd;
+    }
+
+    .selected {
+        background-color: #ddd;
+    }
+
+
+    #myflow_props table {
+    }
+
+    #myflow_props th {
+        letter-spacing: 2px;
+        text-align: left;
+        padding: 6px;
+        background: #ddd;
+    }
+
+    #myflow_props td {
+        background: #fff;
+        padding: 6px;
+    }
+
+    #pointer {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #path {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    path[stroke="#ffffff"]{
+	    visibility:hidden;
+	    pointer-events: stroke;
+    }
+    .flow_pass{
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0!important;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+
+    .flow_pass .icon-auditing_pass {
+        color: #fff;
+        background-image: none;
+        font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .iframe {
+        border: 0px; 
+        width: 100%; 
+        height:100%;
+    }
+
+    .iframe_calc45 {
+        border: 0px; 
+        width: 100%; 
+        height:calc(100% - 45px);
+    }
+</style>

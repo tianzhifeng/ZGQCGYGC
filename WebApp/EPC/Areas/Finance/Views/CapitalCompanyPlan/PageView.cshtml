@@ -1,0 +1,216 @@
+﻿@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+<form id="dataForm" method="post" align="center" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    @Html.Raw(ViewBag.HiddenHtml)
+    <div class="formDiv">
+        @Html.Raw(ViewBag.FormHtml)
+        <div id="Detail" class="mini-treegrid" style="width:100%;height:680px;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+             url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" multiselect="true"
+             treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="CapitalPlanType"
+             allowresize="false" fitcolumns="false" allowleafdropin="true">
+
+            <div property='columns'>
+
+            </div>
+        </div>
+    </div>
+
+    @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+    {
+        <div style="margin-left: 35px; margin-right: 35px; margin-bottom: 65px;">
+            <fieldset>
+                <legend style="font-weight: bold;margin-left:35px;">操作信息</legend>
+                <div id="comment"></div>
+            </fieldset>
+        </div>
+
+        <script type="text/javascript">
+            function onCommentLoad(e) {
+                if (e.data.length == 0)
+                    $("#commentGrid").hide();
+            }
+        </script>
+    }
+</form>
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                    <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                </td>
+                <td id="btnRight"></td>
+            </tr>
+        </table>
+    </div>
+
+}
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+
+    });
+
+</script>
+<script>
+    var yearAndMonthCol = @Html.Raw(ViewBag.YearAndMonthCol);
+    var yearAndMonthColPre = '@Html.Raw(ViewBag.YearAndMonthColPre)';
+    var versionID = '@Html.Raw(ViewBag.VersionID)';
+    var flowEnd = "@Html.Raw(ViewBag.FlowEnd)";
+    var detailLoadFromProjList = "@Html.Raw(ViewBag.DetailLoadFromProjList)";
+
+    var splitBetweenDateAndType = '@Html.Raw(ViewBag.SplitBetweenDateAndType)';
+    var receiveColName = '@Html.Raw(ViewBag.ReceiveColName)';
+    var invoiceColName = '@Html.Raw(ViewBag.InvoiceColName)';
+    var guaranteeColName = '@Html.Raw(ViewBag.GuaranteeColName)';
+</script>
+<script>
+    var yearAndMonthCol = @Html.Raw(ViewBag.YearAndMonthCol);
+
+    function pageLoad()
+    {
+        var id = getQueryString("id");
+        if(id&&id!=''){
+            setColumn();
+            addExecuteParam("id", id);
+            loadDetailFrom("GetBudgetList");
+        }
+    }
+
+    function onDrawingCell(e)
+    {
+        var dataGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        if(field && field != 'Name' && record.HaveLink)
+        {
+            var tmps= $.grep(yearAndMonthCol, function(n,i){
+                return n.colName == field;
+            });
+
+            if(tmps.length > 0 && record.SourceLink)
+            {
+                var link = record.SourceLink.replace('{year}',tmps[0].year).replace('{month}',tmps[0].month);
+                e.cellHtml = '<a style="cursor:pointer;color:blue;text-decoration:underline" onclick="thisOpenWindow(\'' + link + '\')">' + e.cellHtml + '</a>';
+            }
+        }
+
+        if(record.ParentID == '')
+        {
+            if(record.CapitalPlanType == "Total")
+            {
+                //e.cellStyle = "background:yellow;font-weight:bold;"
+                if(field && field !='Name')
+                {
+                    if(record[field] > 0)
+                    {
+                        e.cellStyle+="color:green";
+                    }
+                    else
+                    {
+                        e.cellStyle+="color:red";
+                    }
+                }
+            }
+            else if(record.CapitalPlanType == "Initial")
+            {
+                //e.cellStyle = "background:#BBFFFF;";
+            }
+            else if(record.CapitalPlanType == "In")
+            {
+                //e.cellStyle = "background:green;color:white";
+            }
+            else if(record.CapitalPlanType == "Out")
+            {
+                //e.cellStyle = "background:red;color:white";
+            }
+        }
+    }
+
+    function thisOpenWindow(url)
+    {
+        openWindow(url,{ width: '70%', height: '60%' });
+    }
+
+    function setColumn()
+    {
+        var columns = [
+            { type: "indexcolumn", width: 40 },
+            { field: "Name", name: "Name", width: 180, headerAlign: "center", align: "left", allowSort: false, header: "名称\\日期" }
+        ];
+
+        for (i = 0; i < yearAndMonthCol.length; i++) {
+            var tmp = yearAndMonthCol[i];
+            columns.push({ field: tmp.colName, width: 120, headerAlign: "center", align: "right", numberFormat: '0.00',vtype:'required;float', allowSort: false, header: tmp.year + '年' + tmp.month+'月' });
+        }
+        var dataTree = mini.get('Detail');
+        dataTree.set({ columns: columns });
+        dataTree.frozenColumns(0,1);
+    }
+
+    function loadDetailFrom(url)
+    {
+        var dataTree = mini.get('Detail');
+        addExecuteParam("monthColArr", yearAndMonthCol);
+        execute(url, {
+            showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                if (data) {
+                    dataTree.loadList(data, "ID", "ParentID");
+                }
+            }
+        });
+    }
+</script>
+

@@ -1,0 +1,450 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutFlow.cshtml";
+}
+
+<div id="tabs1" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" onactivechanged="onActiveChanged">
+    <div title="  表  单  " name="Form">
+        <form id="dataForm" method="post">
+            <input name="ID" class="mini-hidden" />
+            <input id="DocID" name="DocID" class="mini-hidden" />
+            <input name="MergeDocID" class="mini-hidden" />
+            <input name="Audit" class="mini-hidden" />
+            <input name="AuditID" class="mini-hidden" />
+            <input name="DeptCountersign" class="mini-hidden" />
+            <input name="DeptCountersignID" class="mini-hidden" />
+            <input name="WorksSecretary" class="mini-hidden" />
+            <input name="WorksSecretaryID" class="mini-hidden" />
+            <input name="Review" class="mini-hidden" />
+            <input name="ReviewID" class="mini-hidden" />
+            <input name="LeaderCountersign" class="mini-hidden" />
+            <input name="LeaderCountersignID" class="mini-hidden" />
+            <input name="LeaderIssue" class="mini-hidden" />
+            <input name="LeaderIssueID" class="mini-hidden" />
+            <input name="Status" class="mini-hidden" />
+            <div class='formDiv' align="center" style="padding-bottom: 100px;">
+                <h1 align="center">
+                    文件签发单
+                </h1>
+                <fieldset class="formDiv">
+                    <legend>基本信息</legend>
+                    <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+                        <tbody>
+                            <tr class="hideRow">
+                                <td width="15%" style="border-width: 0px"></td>
+                                <td width="35%" style="border-width: 0px"></td>
+                                <td width="15%" style="border-width: 0px"></td>
+                                <td width="35%" style="border-width: 0px"></td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    文稿标题
+                                </td>
+                                <td colspan="3">
+                                    <input name="Title" class="mini-textbox" required="true" style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr status="TaoHong" style="display: none">
+                                <td>
+                                    文号
+                                </td>
+                                <td colspan="3">
+                                    <input name="ZiHao" class="mini-textbox" style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    拟稿人
+                                </td>
+                                <td>
+                                    <input name="DrafterID" textname="Drafter" class="mini-buttonedit" required="true"
+                                           style="width: 100%;" />
+                                </td>
+                                <td style="padding-left: 20px;">
+                                    拟稿日期
+                                </td>
+                                <td>
+                                    <input name="DraftDate" class="mini-datepicker" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    拟稿部门
+                                </td>
+                                <td>
+                                    <input name="DraftDeptID" textname="DraftDept" required="true" class="mini-buttonedit"
+                                           allowinput="false" style="width: 100%" />
+                                </td>
+                                <td style="padding-left: 20px;">
+                                    部门负责人
+                                </td>
+                                <td>
+                                    <input name="DeptLeaderID" textname="DeptLeader" class="mini-buttonedit" required="true"
+                                           style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    密级
+                                </td>
+                                <td>
+                                    <input name="MiJi" class="mini-combobox" required="true" style="width: 100%;" valuefield="value"
+                                           textfield="text" data="PostingMiJi" />
+                                </td>
+                                <td style="padding-left: 20px;">
+                                    紧急程度
+                                </td>
+                                <td>
+                                    <input name="HuanJi" class="mini-combobox" required="true" style="width: 100%;" valuefield="value"
+                                           textfield="text" data="PostingHuanJi" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    正文份数
+                                </td>
+                                <td>
+                                    <input name="FenShu" class="mini-textbox" vtype="int" onvaluechanged="onFenShuChanged"
+                                           style="width: 100%;" />
+                                </td>
+                                <td style="padding-left: 20px;">
+                                    附件份数
+                                </td>
+                                <td>
+                                    <input name="FuJianFenShu" class="mini-textbox" vtype="int" onvaluechanged="onFenShuChanged"
+                                           style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    总份数
+                                </td>
+                                <td>
+                                    <input name="ZongFenShu" class="mini-textbox" readonly style="width: 100%;" />
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    主送
+                                </td>
+                                <td colspan="3">
+                                    <input name="ZhuSongID" textname="ZhuSong" class="mini-buttonedit" allowinput="false"
+                                           style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    抄送
+                                </td>
+                                <td colspan="3">
+                                    <input name="ChaoSongID" textname="ChaoSong" class="mini-buttonedit" allowinput="false"
+                                           style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    分发范围
+                                </td>
+                                <td colspan="3">
+                                    <table class="formTable" cellpadding="2" border="0" bordercolor="#000000" width="100%"
+                                           style='table-layout: fixed; border: 0px solid; border-bottom-width: 0; border-collapse: collapse;
+                                    cellpadding: 0; cellspacing: 0; margin-top: 1px; text-align: center;'>
+                                        <tr>
+                                            <td width="15%">
+                                                门户
+                                            </td>
+                                            <td width="85%">
+                                                <input name="CompanyDeptID" textname="CompanyDept" class="mini-buttonedit" allowinput="false"
+                                                       style="width: 100%;" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                特定人员
+                                            </td>
+                                            <td>
+                                                <input name="SpecificStaffID" textname="SpecificStaff" class="mini-buttonedit" style="width: 100%;" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr status="Draft">
+                                <td>
+                                    发文附件
+                                </td>
+                                <td colspan="3">
+                                    <input name="Files" class="mini-multifile" style="width: 100%" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+                <fieldset class="formDiv">
+                    <legend>签字信息</legend>
+                    <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+                        <tbody>
+                            <tr status="Draft">
+                                <td width="15%">
+                                    拟稿人意见
+                                </td>
+                                <td width="85%">
+                                    <div name="DraftOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr status="Audit">
+                                <td>
+                                    部门领导意见<br />
+                                    （核稿意见）
+                                </td>
+                                <td>
+                                    <div name="AuditOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr status="DeptCountersign">
+                                <td>
+                                    相关部门/相关领导意见<br />
+                                    （会稿意见）
+                                </td>
+                                <td>
+                                    <div name="DeptCountersignOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr status="WorksSecretary">
+                                <td>
+                                    总经理工作部秘书意见
+                                </td>
+                                <td>
+                                    <div name="WorksSecretaryOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr status="WorksLeader">
+                                <td>
+                                    总经理工作部主任意见<br />
+                                    （审核意见）
+                                </td>
+                                <td>
+                                    <div name="ReviewOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr status="LeaderCountersign">
+                                <td>
+                                    相关公司领导意见<br />
+                                    （会签意见）
+                                </td>
+                                <td>
+                                    <div name="LeaderCountersignOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr status="LeaderIssue">
+                                <td>
+                                    公司领导意见（签发意见）
+                                </td>
+                                <td>
+                                    <div name="LeaderIssueOpnion" class="mini-auditsign" style="height: 100%">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+    <div title="  正  文  " name="MainBody" >
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingMiJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingHuanJi))
+    @Html.GetBasicInfo(true, false, false, false)
+
+    addSingleOrgSelector("DraftDeptID");
+    addMultiOrgSelector("ZhuSongID");
+    addMultiOrgSelector("ChaoSongID");
+    addSingleOrgSelector("CompanyDeptID", {
+        OrgType: "Org,Dept,ManufactureDept"
+    });
+    addSingleUserSelector("DrafterID");
+    addSingleUserSelector("DeptLeaderID");
+    addMultiUserSelector("SpecificStaffID");
+
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var wordRevise = ["DeptCountersign", "LeaderCountersign"];
+    var pdfBrowse = ["Print", "Complete"];
+    var funcType = getQueryString("FuncType");
+
+    function onFormSetData(data) {
+        var status = data["Status"];
+
+        //步骤可见控制
+        $.each($.trim(data["ExecutedSteps"]).split(','), function (i, step) {
+            if (step != "") {
+                $("#dataForm [status='" + step + "']").show();
+            }
+        });
+        $("#dataForm [status='" + status + "']").show();
+        if (typeof mini.getbyName(status + "ID") != "undefined") {
+            var id = mini.getbyName(status + "ID").getValue();
+            if (id == "") {
+                mini.getbyName(status + "ID").setValue(user.UserID);
+                if (typeof mini.getbyName(status) != "undefined")
+                    mini.getbyName(status).setValue(user.UserName);
+            }
+            else {
+                if (id.indexOf(user.UserID) == -1) {
+                    mini.getbyName(status + "ID").setValue(id + "," + user.UserID);
+                    if (typeof mini.getbyName(status) != "undefined")
+                        mini.getbyName(status).setValue(mini.getbyName(status).getValue() + "," + user.UserName);
+                }
+            }
+        }
+
+        //可编辑控制
+        if (funcType.toLowerCase() != "view") {
+            $.each($.trim(data["ExecutedSteps"]).split(','), function (i, step) {
+                $.each($("#dataForm [status='" + step + "'] [uid]"), function (i, dom) {
+                    mini.getbyUID($(dom).attr("uid")).setReadOnly(true);
+                    mini.getbyUID($(dom).attr("uid")).addCls("asLabel");
+                });
+            });
+
+            $.each($("#dataForm [status='" + status + "'] [uid]"), function (i, dom) {
+                mini.getbyUID($(dom).attr("uid")).setReadOnly(false);
+                mini.getbyUID($(dom).attr("uid")).removeCls("asLabel");
+                if (status == "TaoHong")
+                    mini.getbyUID($(dom).attr("uid")).setRequired(true);
+            });
+        }
+
+    }
+
+    function onFenShuChanged(e) {
+        var FenShu = 0;
+        if (!isNaN(parseInt(mini.getbyName("FenShu").getValue()))) {
+            FenShu = parseInt(mini.getbyName("FenShu").getValue());
+        }
+        var FuJianFenShu = 0;
+        if (!isNaN(parseInt(mini.getbyName("FuJianFenShu").getValue()))) {
+            FuJianFenShu = parseInt(mini.getbyName("FuJianFenShu").getValue());
+        }
+        mini.getbyName("ZongFenShu").setValue(FenShu + FuJianFenShu);
+    }
+
+    function onActiveChanged(e) {
+        if (e.tab.name == "MainBody") {
+            if ($.trim(e.tab.url) == "") {
+                var data = {
+                    Status: mini.getbyName("Status").getValue(),
+                    DocID: mini.getbyName("DocID").getValue(),
+                    MergeDocID: mini.getbyName("MergeDocID").getValue()
+                };
+                var status = data["Status"];
+                if (pdfBrowse.join(',').indexOf(status) == -1) {
+                    var url = "MainBody?FormStatus=" + status;
+                    if ($.trim(data["DocID"]) != "")
+                        url += "&DocID=" + data["DocID"];
+                    if (wordRevise.join(',').indexOf(status) > -1) {
+                        url += "&IsRevise=true";
+                    }
+                    if (funcType.toLowerCase() == "view") {
+                        url += "&IsReadOnly=true";
+                    }
+                    e.sender.loadTab(url, e.tab);
+                }
+                else {
+                    if ($.trim(data["MergeDocID"]) != "") {
+                        window.open("/filestore/download.aspx?FileID=" + data["MergeDocID"]);
+
+                    }
+                }
+            }
+        }
+    }
+
+    function onFormSaving() {
+        if (mini.getbyName("Status").getValue() == "TaoHong" && mini.getbyName("MergeDocID").getValue() == "") {
+            var rtn = true;
+            msgUI("发文没有套红签章,是否需要?", 3, function (action) {
+                if (action == "ok") {
+                    var tabs = mini.get("tabs1");
+                    tabs.activeTab(tabs.getTab("MainBody"));
+                    rtn = false;
+                }
+                else if (action == "close" || action == "cancel") {
+                    rtn = false;
+                }
+            });
+            return rtn;
+        }
+        else {
+            return true;
+        }
+    }
+
+    $(function () {
+        initComments();
+    });
+
+    //个人批语
+    function initComments() {
+        var miniAdvice = mini.getbyName("Advice");
+        if (miniAdvice) {
+            addExecuteParam("UserID", user.UserID);
+            execute("GetUserComments", {
+                validateForm: false,
+                onComplete: function (data) {
+                    var cb = new mini.ComboBox();
+                    cb.set({
+                        id: "cbAdviceComment",
+                        width: "98%",
+                        showNullItem: true,
+                        borderStyle: "padding-bottom:1px",
+                        data: data,
+                        showNullItem: true,
+                        textField: "Comment",
+                        valueField: "Comment",
+                        onvaluechanged: function (e) {
+                            miniAdvice.setValue(e.sender.getValue());
+                        }
+                    });
+                    $(miniAdvice.getEl()).before(cb.getEl());
+                }
+            });
+
+            var miniConfirm = mini.getbyName("btnConfirm");
+            if (miniConfirm != null) {
+                miniConfirm.on("click", function (e) {
+                    addExecuteParam("Comment", miniAdvice.getValue());
+                    addExecuteParam("UserID", user.UserID);
+                    addExecuteParam("UserName", user.UserName);
+                    execute("AddComment", {
+                        onComplete: function (data) {
+                            if (data) {
+                                var cb = mini.get("cbAdviceComment");
+                                var cbData = cb.getData();
+                                cbData.splice(1, 0, {
+                                    Comment: miniAdvice.getValue()
+                                });
+                                cb.setData(cbData);
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+    }
+
+</script>

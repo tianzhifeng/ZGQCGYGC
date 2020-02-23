@@ -1,0 +1,129 @@
+﻿<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="4">
+    <div region="north" height="400px" expanded="true" showspliticon="true" showheader="false"
+        style="border-top: 0; border-bottom: 0;">
+        <div id="departDataGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;"
+            ondrawsummarycell="onDrawDepartSummaryCell" allowresize="false" idfield="id"
+            pagesize="20" onselectionchanged="onDataGridRowClick" borderstyle="border:0"
+            showpager="false" showsummaryrow="true">
+            <div property="columns">
+                <div type="indexcolumn" width="30px">
+                </div>
+                <div field="UserName" headeralign="center" width="80" allowsort="true" align="center">
+                    员工姓名</div>
+                <div field="UserDeptName" width="*" headeralign="center" allowsort="true" align="center">
+                    部门名称</div>
+                @Html.Raw(ViewBag.ColumnHearder)
+                <div header="工作工时" headeralign="center">
+                    <div property="columns">
+                        <div field="TotalNormalValue" headeralign="center" width="80" allowsort="true" align="right"
+                            decimalplaces="1" datatype="float" summarytype='sum'>
+                            正常工时</div>
+                        <div field="TotalAdditionalValue" headeralign="center" width="80" allowsort="true"
+                            align="right" decimalplaces="1" datatype="float" summarytype='sum'>
+                            加班工时</div>
+                        <div field="TotalWorkHourValue" headeralign="center" width="80" allowsort="true"
+                            align="right" decimalplaces="1" datatype="float" summarytype='sum'>
+                            总工时</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" showheader="false" style="border-bottom: 0;
+        border-right: 0;" class="tree-backcolor">
+        <div id="workHourGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;"
+            borderstyle="border:0" ondrawsummarycell="onDrawSummaryCell" showsummaryrow="true"
+            fitcolumns="true" showsummaryrow="true" oncellbeginedit="OnCellBeginEdit" sortfield="ProjectID,WorkHourDate"
+            sortorder="desc,desc" showpager="false">
+            <div property="columns">
+                <div type="indexcolumn" width="30px">
+                </div>
+                <div field="UserName" headeralign="center" width="80" allowsort="true" align="center">
+                    姓名</div>
+                <div field="WorkHourDate" dateformat="yyyy-MM-dd" allowsort="true" headeralign="center"
+                    width="100" align="center">
+                    工时日期</div>
+                <div field='NormalValue' name='NormalValue' headeralign='center' allowsort='true'
+                    align='right' datatype="float" width='80' decimalplaces='1' summarytype='sum'>
+                    正常工时</div>
+                <div field='AdditionalValue' name='AdditionalValue' width='80' headeralign='center'
+                    allowsort='true' align='right' datatype="float" decimalplaces='1' summarytype='sum'>
+                    加班工时</div>
+                <div field='WorkHourValue' name='WorkHourValue' width='80' headeralign='center' allowsort='true'
+                    align='right' datatype="float" decimalplaces='1' summarytype='sum'>
+                    总工时</div>
+                <div field="WorkContent" headeralign="center" width="*" allowsort="true" align="left">
+                    详细工作内容</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        loadData();
+    })
+
+    function loadData(queryData) {
+
+        var dataGrid = mini.get("departDataGrid");
+        dataGrid.setUrl("GetEmployeeByProjectInfoID");
+        var id = getQueryString("ID");
+        var projectInfoID = getQueryString("ProjectInfoID");
+        var startTime = getQueryString("StartTime");
+        var endTime = getQueryString("EndTime");
+        if (startTime == "undefined") startTime = "";
+        if (endTime == "undefined") endTime = "";
+        dataGrid.load({ ProjectInfoID: projectInfoID, StartTime: startTime,
+            EndTime: endTime
+        });
+    }
+
+
+    function onDrawSummaryCell(e) {
+        var record = e.record;
+        if (e.field == "UserName") {
+            e.cellHtml = "总计: ";
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+        else
+            e.cellStyle = "text-align:right; color:Brown";
+
+        if (e.column.summaryType != undefined && e.column.summaryType == "sum")
+            e.cellHtml = e.value.toFixed(1);
+    }
+
+    function onDrawDepartSummaryCell(e) {
+        var record = e.record;
+        if (e.field == "UserName") {
+            e.cellHtml = "总计: ";
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+        else
+            e.cellStyle = "text-align:right; color:Brown";
+
+        if (e.column.summaryType != undefined && e.column.summaryType == "sum")
+            e.cellHtml = e.value.toFixed(1);
+    }
+    
+   
+</script>
+<script type="text/javascript">
+    //dataGrid行点击事件
+    function onDataGridRowClick(e) {
+        if (e.selected) {
+            var dataGrid = mini.get("workHourGrid");
+            var userID = e.selected.ID;
+            var userDeptID = e.selected.UserDeptID;
+            dataGrid.setUrl("GetProjectWorkHourList?UserID=" + userID + "&DeptID=" + userDeptID);
+            var projectInfoID = getQueryString("ProjectInfoID");
+            var startTime = getQueryString("StartTime");
+            var endTime = getQueryString("EndTime");
+            if (startTime == "undefined") startTime = "";
+            if (endTime == "undefined") endTime = "";
+            dataGrid.load({ ProjectInfoID: projectInfoID, StartTime: startTime,
+                EndTime: endTime
+            });
+        }
+    }
+</script>

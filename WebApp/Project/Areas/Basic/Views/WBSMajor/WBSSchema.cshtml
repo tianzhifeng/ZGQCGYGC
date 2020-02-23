@@ -1,0 +1,756 @@
+﻿@{
+    ViewBag.Title = "WBSSchema";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-menubutton" plain="true" iconcls="icon-add" menu="#toolBarMenu">操作</a>
+                <a class="mini-menubutton" plain="true" iconcls="icon-add" menu="#popupMenu">导入</a>
+                @*<a class="mini-button" iconcls="icon-user" onclick="ImportUser" plain="true">从OBS选择人员</a>*@
+                <a class="mini-button" iconcls="icon-user" onclick="SelectMultiUser" plain="true">批量设置人员</a>
+                <a class="mini-button" iconcls="icon-save" onclick="save" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delWBS" plain="true">删除</a>
+                <a class="mini-button" iconcls="mini-pager-reload" onclick="refresh();" plain="true">刷新</a>
+            </td>
+            <td style="white-space: nowrap; ">
+                &nbsp;
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入节点名称或编号" onenter="treeCascadeSearch();"
+                       onbuttonclick="treeCascadeSearch();" />
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="treeGrid" class="mini-treegrid" style="width: 100%; height: 100%;" url="" autoload="false"
+         showtreeicon="true" iconfield="WBSType" borderstyle="border-right:0;" treecolumn="Name"
+         idfield="VirtualID" parentfield="ParentID" resultastree="false" allowresize="false" onload="onTreeLoad"
+         expandonload="true" allowcelledit="true" allowcellselect="true" editnextonenterkey="true"
+         contextmenu="#treeMenu" multiselect="true" oncellbeginedit="OnCellBeginEdit"
+         allowresize="false" fitcolumns="false" virtualscroll="@ViewBag.VirtualScroll" rowheight="" defaultrowheight="25"
+         ondrawcell="onDrawingCell" onnodeselect="onNodeSelected" ondragstart="onDragStart">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div type="indexcolumn">
+            </div>
+            <div name="Name" field="Name" width="300" headeralign="center" vtype="required" allowdrag="true">
+                任务名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="200" headeralign="center" allowdrag="true">
+                编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div name="ChargeUserID" field="ChargeUserID" displayfield="ChargeUserName" width="80" 
+                headeralign=" center" align="center" allowdrag="true">
+                负责人
+                <input name='ChargeUserID' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+            </div>
+            <div field="PlanStartDate" dateformat="yyyy-MM-dd" width="90" headeralign="center"
+                 align="center" allowdrag="true">
+                计划开始时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+            </div>
+            <div field="PlanEndDate" dateformat="yyyy-MM-dd" width="90" headeralign="center"
+                 align="center" allowdrag="true">
+                计划完成时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+            </div>
+            <div field="RelateMileStone" width="200" headeralign="center" align="left" allowdrag="true">
+                关联计划
+            </div>
+            @{
+                var roleDefineDt = ViewBag.roleColumns as System.Data.DataTable;
+                foreach (System.Data.DataRow row in roleDefineDt.Rows)
+                {
+                    var title = row["RoleName"];
+                    var field = row["RoleCode"] + "UserID";
+                    var displayfield = row["RoleCode"] + "UserName";
+
+                    <div name="@field" field="@field" displayfield="@displayfield" width="80" headeralign=" center" align="left" allowdrag="true">
+                        @title
+                        <input name='@field' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen"></ul>
+<ul id="toolBarMenu" class="mini-menu" onbeforeopen="onBtnBeforeOpen"></ul>
+<ul id="popupMenu" class="mini-menu" style="display: none;" onbeforeopen="onImportBtnBeforeOpen">
+@*    <li iconcls="icon-set" onclick="importWBSNode">从其他项目导入</li>
+    <li iconcls="icon-set" onclick="importStandardWBS">从标准WBS模板导入</li>*@
+    <li iconcls="icon-package" onclick="importPackage" id="btnImportPackage" enabled="false">从工作包词典导入</li>
+</ul>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+    var lockedWBSType = "@Html.Raw(ViewBag.lockedWBSType)";
+    var NodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+    @Html.Raw(ViewBag.SelectorScript)
+    addSingleUserSelector("ChargeUserID");
+</script>
+
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+<script type="text/javascript">
+    var projectClass = "@ViewBag.ProjectClass";
+    var projectLevel = "@ViewBag.ProjectLevel";
+    var structDefineList=@Html.Raw(ViewBag.StructDefineList);
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var spaceCode = getQueryString("SpaceCode");
+    var url = "GetWBSTreeList?ProjectInfoID=" + projectInfoID+"&SpaceCode="+spaceCode;
+    $("#treeGrid").attr("url", url);
+
+    function pageLoad() {
+        mini.get("treeGrid").load();
+    }
+
+    function onTreeLoad(e) {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        e.sender.collapseLevel(level);
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+
+        if (!node ||!node.VirtualID||(node.WBSType == "Major"&&node.VirtualWBSType!="Major")) {
+            e.cancel = true;
+            return;
+        }
+        execute("GetMenu?ID=" + node.VirtualID + "&ShowDeleteBtn=true", {
+            async:false, showLoading: false, refresh: false, onComplete: function (data) {
+                if(data.length>0)
+                    menu.setItems(data);
+                else
+                    e.cancel = true;
+            }, validateForm: false
+        });
+    }
+
+    function onBtnBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        if(!node){
+            msgUI("请选择一个节点");   e.cancel = true;
+            return;
+        }
+
+        if (!node ||!node.VirtualID||(node.WBSType == "Major"&&node.VirtualWBSType!="Major")) {
+            e.cancel = true;
+            return;
+        }
+        execute("GetMenu?ID=" + node.VirtualID + "&ShowDeleteBtn=false", {
+            async:false, showLoading: false, refresh: false, onComplete: function (data) {
+                if(data.length>0)
+                    menu.setItems(data);
+                else
+                {
+                    e.cancel = true;
+                    msgUI("没有可加载的菜单");
+                }
+            }, validateForm: false
+        });
+    }
+
+    function onImportBtnBeforeOpen(e) {
+        var tree = mini.get("treeGrid");
+        var nodes = tree.getSelectedNodes();
+        addExecuteParam("SelectNodes", mini.encode(nodes));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("ValidateImportPackageButton", {
+            async:false, showLoading: false, refresh: false, onComplete: function (data) {
+                if(data=="True")
+                    mini.get("btnImportPackage").setEnabled(true);
+                else
+                    mini.get("btnImportPackage").setEnabled(false);
+            }, validateForm: false
+        });
+    }
+
+    function gotoGantt() {
+        window.location.href = "/Project/Gantt/WBSGantt/WBSGantt" + window.location.search;
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var tree = mini.get("treeGrid");
+        var showAll = mini.get("showWorkTask").getValue();
+        tree.load({ IncludeWorkTask: showAll });
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("treeGrid");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function viewVersionList() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=WBSVersionList&ProjectInfoID=" + projectInfoID;
+        openWindow(url, {
+            refresh: false, title: "计划版本信息", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+    
+    function onDragStart(e) {
+        var tree = e.sender;
+        var dispText = e.node.Name;
+        if (e.nodes.length > 1) {
+            dispText = "";
+            for (var i = 0; i < e.nodes.length; i++) {
+                dispText += e.nodes[i].Name + "</br>";
+            }
+        }
+        e.dragText = dispText;
+    }
+
+    function onNodeSelected(e) {
+        var node = e.node;
+        if (node.ID) {
+        }
+    }
+
+    function wbsBatchOpr() {
+        var url = "WBSBatchOperate";
+    }
+
+    function addNode(e) {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个WBS节点"); return; }
+        var wbsType = e.sender.name;
+        var Ids = "";
+        for (var i = 0; i < nodes.length; i++) {
+            if (i == nodes.length - 1)
+                Ids += nodes[i].VirtualID;
+            else
+                Ids += nodes[i].VirtualID + ",";
+        }
+        var url = "/Project/Basic/WBS/WBSAdd"; var width = "70%"; var height = "80%";
+        if (e.sender.attrDefine == "true") {
+            url = "/Project/Basic/WBS/WBSAddWithAttrDefine"; width = "50%"; height = "40%";
+        }
+        var title = e.sender.text;
+        url += "?ParentIDs=" + Ids + "&Type=" + wbsType;
+        openWindow(url, {
+            refresh: false, title: title, width: width, height: height,
+            onDestroy: function (data) {
+                debugger
+                if(!data||data.length==0||data=="close"){return;}
+                var roleCodes = "";
+                var wBSTypeRoleCode = "";
+                var typeDef = $.grep(structDefineList,function(item,index){return item.Code==wbsType});
+                if(typeDef.length>0)
+                {
+                    roleCodes = typeDef[0]["RoleCodes"];
+                    wBSTypeRoleCode = typeDef[0]["WBSTypeRoleCode"];
+                }
+                for (var i = 0; i < nodes.length; i++) {
+                    var parentNode = nodes[i];
+                    for (var m = 0; m < data.length; m++) {
+                        var childNode = data[m];
+                        childNode["RoleCodes"] = roleCodes;
+                        childNode["WBSTypeRoleCode"] = wBSTypeRoleCode;
+                        if(childNode.ParentID==parentNode.VirtualID){
+                            treeGrid.addNode(childNode,childNode.SortIndex,parentNode);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function refresh() {
+        var tree = mini.get("treeGrid");
+        tree.reload();
+    }
+
+    function delWBS() {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个WBS节点"); return; }
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (node.WBSType == "Project") {
+                msgUI("项目节点无法删除");
+                return;
+            }
+            else if(!node.MajorCode||node.VirtualWBSType=="Major"){
+                msgUI("只能删除专业下节点");
+                return;
+            }
+        }
+        msgUI("删除WBS将删除下层所有子节点，是否继续？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("WBSInfo", mini.encode(nodes));
+            execute("DeleteWBS", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    for (var i = 0; i < nodes.length; i++) {
+                        treeGrid.removeNode(nodes[i]);
+                    }
+                }, validateForm: false
+            });
+        });
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        var locked = true;
+        if (lockedWBSType.indexOf(record.WBSType) < 0)
+            locked = false;
+
+        if (record.WBSType == "Project") {
+            e.cancel = true;
+        }
+        else if(!record.MajorCode){
+            e.cancel = true;
+        }
+        else if(record.VirtualWBSType=="Major"&&(field=="Name"||field=="Code")){
+            e.cancel = true;
+        }
+        else if (field && field != "ChargeUserID" && field.indexOf("UserID") > 0) {
+            if (record.RoleCodes) {
+                if (record.RoleCodes.indexOf(field.replace("UserID", "")) < 0) {
+                    e.cancel = true;
+                }
+                else
+                    SetSelectorURL(field, urlConstant.multiScopeUser, {
+                        Aptitude: {
+                            Major: record.MajorCode, ProjectClass: projectClass,
+                            Position: field.replace("UserID", ""), AptitudeLevel: projectLevel, ProjectInfoID: projectInfoID
+                        }
+                    });
+            }
+            else {
+                e.cancel = true;
+            }
+        }
+        else if(field && field == "ChargeUserID")
+        {
+            if(record.VirtualWBSType=="Major")
+                SetSelectorURL(field, urlConstant.multiScopeUser, {
+                    Aptitude: {
+                        Major: record.WBSValue, ProjectClass: projectClass,
+                        Position:"MajorPrinciple", AptitudeLevel: projectLevel, ProjectInfoID: projectInfoID
+                    }
+                });
+            else
+                SetSelectorURL("ChargeUserID",urlConstant.singleUser,{Aptitude:{}});
+        }
+        else if ((field == "Name") && locked) {
+            e.cancel = true;
+        }
+    }
+
+    function onDrawingCell(e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        var locked = true;
+        if (lockedWBSType.indexOf(record.WBSType) < 0)
+            locked = false;
+        if (record.WBSType == "Project") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if(!record.MajorCode){
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if(record.VirtualWBSType=="Major"&&(field=="Name"||field=="Code")){
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if (field && field != "ChargeUserID" && field.indexOf("UserID") > 0) {
+            if (record.RoleCodes) {
+                if (record.RoleCodes.indexOf(field.replace("UserID", "")) < 0) {
+                    e.cellStyle = "background:#F0F0F0";
+                }
+            }
+            else {
+                e.cellStyle = "background:#F0F0F0";
+            }
+        }
+        else if ((field == "Name") && locked) {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        if (field == "RelateMileStone") {
+            e.cellStyle = "background:#F0F0F0";
+            if (e.value) {
+                var list = mini.decode(e.value);
+                var name = "";
+                for (var i = 0; i < list.length; i++) {
+                    name += list[i].Name + ",";
+                }
+                e.cellHtml = name.length > 0 ? "<a href='javascript:openRelateMileToCoopPlan()'>"+name.substring(0, name.length - 1)+"</a>"  : "";
+            }
+        }
+    }
+
+    function openRelateMileToCoopPlan() {
+        var treeGrid = mini.get("treeGrid");
+        var wbsNode = treeGrid.getSelectedNode();
+        var relateMileStone = mini.decode(wbsNode["RelateMileStone"]);
+        var ids = "";
+        for (var i = 0; i < relateMileStone.length; i++) {
+            var mile = relateMileStone[i];
+            ids += mile.ID + ",";
+        }
+        if(ids.length>0)
+            ids=ids.substring(0,ids.length-1);
+        openWindow("/MvcConfig/UI/List/PageView?TmplCode=CooperationPlanView&MileStoneID="+ids, {
+            refresh: false, title: "查看提资计划", width: "80%", height: "90%", addQueryString: false
+        });
+    }
+
+    function save() {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getChanges();
+        if (nodes.length == 0)
+            return;
+        treeGrid.validate();
+        if (treeGrid.isValid() == false) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);
+        }
+        addExecuteParam("WBSInfo", mini.encode(nodes));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("SaveData", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.accept();
+            }, validateForm: false
+        });
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("treeGrid");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+
+        if (effect == "add") {
+            e.effect = "no";
+        }
+        else if (targetNode.NodeType != node.NodeType||targetNode.ParentID!=node.ParentID) {
+            e.effect = "no";
+        }
+    }
+
+    function publish() {
+        if (!projectInfoID) {
+            msgUI("没有指定项目ID，无法提交"); return;
+        }
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getChanges();
+        treeGrid.validate();
+        if (treeGrid.isValid() == false) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);
+        }
+        addExecuteParam("WBSInfo", mini.encode(nodes));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("SaveData", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                execute("PublishWBSBulk", { showLoading: true, refresh: false, onComplete: function (responseData) {
+                    if(!responseData||!responseData.FormID)return;
+                    var url = "/Project/AutoUI/WBSVersion/PageView?FlowCode=WBSVersion&TmplCode=WBSVersion&ID=" + responseData.FormID;
+                    openWindow(url, {
+                        refresh: false, title: "WBS策划审批", width: "80%", height: "90%",
+                        onDestroy: function (data) {
+                            if (data == "close") return;
+                            window.location.reload();
+                        }
+                    });
+                }, validateForm: false, resetFormData:false
+                });
+            }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function saveUser() {
+        var userGrid = mini.get("userGrid");
+        var treeGrid = mini.get("treeGrid");
+        var wbsNode = treeGrid.getSelectedNode();
+        var rows = userGrid.getChanges();
+        addExecuteParam("userInfo", mini.encode(rows));
+        addExecuteParam("wbsid", wbsNode.ID);
+        execute("SaveWBSUserInfo", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                userGrid.accept();
+                userGrid.load();
+            }, validateForm: false
+        });
+    }
+        
+    function importPackage(e) {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = mini.get("treeGrid").getSelectedNodes();
+        if (treeGrid.getChanges("modified").length > 0) {
+            msgUI("您有修订的内容没有保存，请确认需要导入并放弃修订内容吗？", 2, function (result) {
+                if (result != "ok") return;
+                _importPackage();
+            });
+        }
+        else {
+            _importPackage();
+        }    
+
+        function _importPackage() {
+            var url = "/MvcConfig/UI/List/PageView?TmplCode=PetrifactionPackageDicSelector&MajorCodeValue={SpaceCode}";
+            openWindow(url, {
+                refresh: false, title: "从工作包词典导入", width: "80%", height: "80%",
+                onDestroy: function (data) {
+                    if (!data || data.length == 0 || data == "close") {
+                        return;
+                    }
+                    addExecuteParam("ProjectInfoID", projectInfoID);
+                    addExecuteParam("TargetNodes", mini.encode(nodes));
+                    addExecuteParam("DataSource", mini.encode(data));
+                    execute("PackageWBSCopy", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            window.location.reload();
+                        }, validateForm: false
+                    });
+                }
+            });
+        }
+    }
+
+    function treeCascadeSearch(treeName) {
+        var tree = mini.get("treeGrid");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            var array = [];
+            var nodes = tree.findNodes(function (node) {
+                var text = node["Name"] ? node["Name"].toLowerCase() : "";
+                var text1 = node.Code ? node.Code.toLowerCase() : "";
+                if (text.indexOf(key) != -1||text1.indexOf(key)!=-1) {
+                    array.push(node.ID);
+                    return true;
+                }
+            })
+            for (var i = 0; i < nodes.length; i++) {
+                tree.cascadeChild(nodes[i], function (node) {
+                    array.push(node.ID);
+                });
+            }
+            tree.filter(function (node) {
+                if (array.indexOf(node.ID) > -1){
+                    return true;
+                }
+            });
+        }
+    }
+
+
+    function treeSearch() {
+        var tree = mini.get("treeGrid");
+        var key = mini.get("key").getValue();
+        var matchedNodes=[];
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    matchedNodes.push(node);
+                    return true;
+                }
+                var text1 = node.Code ? node.Code.toLowerCase() : "";
+                if (text1.indexOf(key) != -1) {
+                    matchedNodes.push(node);
+                    return true;
+                }
+                for (var i = 0; i < matchedNodes.length; i++) {
+                    if(node.FullID.indexOf( matchedNodes[i].FullID)>=0){
+                        return true;
+                    }
+                }
+            });
+        }
+    }
+
+    function ImportUser() {
+        var wbsType = "Major";
+        var treeGrid = mini.get("treeGrid");
+        var node = mini.get("treeGrid").getSelectedNode();
+        if (node) wbsType = node.WBSType;
+        var url = "../OBSUserSelect/OBSUserSelect?ProjectInfoID=" + projectInfoID + "&WBSType=" + wbsType;
+        openWindow(url, {
+            refresh: false, title: "OBS人员导入", width: 800, height: 500,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                var nodes = treeGrid.getSelecteds();
+                var wbslist = "";
+                if (nodes.length > 0) {
+                    addExecuteParam("WBSList", mini.encode(nodes));
+                }
+                addExecuteParam("UserList", mini.encode(data));
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                execute("ImportUserFormOBS", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        loadingwbs(mini.get("viewType").getValue());
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function SelectMultiUser() {
+        var wbsType = "Major";
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getSelecteds();
+        if(nodes.length==0)
+        {
+            msgUI("请至少选择一个WBS节点"); return;
+        }
+        var roleCodes = [];        var majorCodes = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            var otherRoleCodes = node["RoleCodes"];
+            if(otherRoleCodes)
+            {
+                for (var j = 0; j < otherRoleCodes.split(',').length; j++) {
+                    var otherRoleCode = otherRoleCodes.split(',')[j]
+                    if(otherRoleCode&&$.inArray(otherRoleCode,roleCodes)<0)
+                        roleCodes.push(otherRoleCode);
+                }
+            }
+            var nodeMajorValue = node["MajorCode"];
+            if(nodeMajorValue&&$.inArray(nodeMajorValue,majorCodes)<0)
+                majorCodes.push(nodeMajorValue);
+        }
+        var url = "../../Selector/WBSMultiUserSelect/WBSMultiUserSelect?ProjectInfoID=" + projectInfoID + "&RoleCodes=" + roleCodes;
+        if(userAptitude)
+            url+="&MajorCodes=" + majorCodes;
+        openWindow(url, {
+            refresh: false, title: "批量设置人员", width: 1000, height: 500,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                var wbslist = "";
+                $.each(nodes,function (index,node) {
+                    if(node["WBSType"]=="Project") return true;
+                    var updateData = {};
+                    var nodeMajorValue = node["MajorCode"]||"";//当前节点是否属于专业节点下层
+                    //非负责人字段
+                    if(node.RoleCodes)
+                    {
+                        $.each(node.RoleCodes.split(','),function (_index,_roleCode) {
+                            //专业及专业下层节点都需要根据专业进行过滤
+                            var userIDs =[]; var userNames =[] ;
+                            for (var i = 0; i < data.length; i++) {
+                                var fitem = data[i];
+                                if(_roleCode!=fitem["RoleCode"]) continue;
+                                if(nodeMajorValue == fitem["MajorValue"]||!fitem["MajorValue"])
+                                {
+                                    if($.inArray(fitem["ID"],userIDs)<0)
+                                    {
+                                        userIDs.push(fitem["ID"]);
+                                        userNames.push(fitem["Name"]);
+                                    }
+                                }
+                            }
+                            if(userIDs.length>0)
+                            {
+                                updateData[_roleCode+"UserID"] = userIDs.join(',');
+                                updateData[_roleCode+"UserName"] = userNames.join(',');
+                            }
+                        })
+                    }
+                    //设置负责人字段
+                    var _WBSTypeRoleCode = node.WBSTypeRoleCode||"ChargeUser";
+                    if (userAptitude && node["VirtualWBSType"]=="Major")
+                        _WBSTypeRoleCode =  node.WBSTypeRoleCode;//启用资质情况下，专业节点的负责人必须是确定的RoleCode 不能是ChargeUser
+                    if(_WBSTypeRoleCode)
+                    {
+                        var userIDs =[]; var userNames =[] ;
+                        for (var i = 0; i < data.length; i++) {
+                            var fitem = data[i];
+                            if(_WBSTypeRoleCode!=fitem["RoleCode"]&&fitem["RoleCode"]!="ChargeUser") continue;
+                            if(nodeMajorValue == fitem["MajorValue"]||!fitem["MajorValue"])
+                            {
+                                if($.inArray(fitem["ID"],userIDs)<0)
+                                {
+                                    userIDs.push(fitem["ID"]);
+                                    userNames.push(fitem["Name"]);
+                                }
+                            }
+                        }
+                        if(userIDs.length>0)
+                        {
+                            updateData["ChargeUserID"] = userIDs.join(',');
+                            updateData["ChargeUserName"] = userNames.join(',');
+                        }
+                    }
+                    treeGrid.updateRow(node, updateData);
+                })
+            }
+        });
+    }
+
+    function relateMileStone(e) {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length != 1) { msgUI("请选择一个WBS节点"); return; }
+        var row = nodes[0];
+        openWindow("/MvcConfig/UI/List/PageView?TmplCode=CooperationMileStoneSelector&ProjectInfoID=" + projectInfoID + "&Major=" + row["MajorCode"], {
+            data: mini.decode(row.RelateMileStone),
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                var json = [], name = "";
+                var baseStartDate = null, baseEndDate = null;
+                if (row["BasePlanStartDate"]) baseStartDate = new Date(row["BasePlanStartDate"]);
+                if (row["BasePlanEndDate"]) baseEndDate = new Date(row["BasePlanEndDate"]);
+                for (var i = 0; i < data.length; i++) {
+                    json.push({ ID: data[i].ID, Name: data[i].Name, PlanStart: data[i].PlanStartDate, PlanFinish: data[i].PlanFinishDate });
+                    var sd = null, fd = null;;
+                    if (data[i]["PlanStartDate"]) sd = new Date(data[i]["PlanStartDate"])
+                    if (data[i]["PlanFinishDate"]) fd = new Date(data[i]["PlanFinishDate"]);
+                    if (baseStartDate == null)
+                        baseStartDate = sd;
+                    else if(sd!=null&&baseStartDate<sd)
+                        baseStartDate = sd;
+                    if (baseEndDate == null)
+                        baseEndDate = fd;
+                    else if (fd!=null&&baseEndDate > fd)
+                        baseEndDate = fd;
+                    if (i == data.length - 1)
+                        name += data[i].Name;
+                    else
+                        name += data[i].Name + ",";
+                }
+                treeGrid.updateRow(row, { RelateMileStone: mini.encode(json), BasePlanStartDate: baseStartDate,BasePlanEndDate:baseEndDate });
+            }
+        });
+    }
+</script>

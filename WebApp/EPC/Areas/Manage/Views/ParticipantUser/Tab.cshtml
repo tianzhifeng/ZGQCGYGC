@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Tab";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div id="tabs1" class="mini-tabs" activeIndex="0" style="width:100%;height:100%;">
+    <div title="设备供应商" url="/MvcConfig/UI/List/PageView?TmplCode=ParticipantSupplier&UserType=EquipmentSupplier&SupplierClass=制造商" >
+        1
+    </div>
+    <div title="分包商" url="/MvcConfig/UI/List/PageView?TmplCode=ParticipantSupplier&UserType=Subcontractor&SupplierClass=工程建设商" >
+        2
+    </div>
+    <div title="业主" url="/MvcConfig/UI/List/PageView?TmplCode=ParticipantCustomer&UserType=Customer">
+        3
+    </div>
+    <div title="监理方" url="/MvcConfig/UI/List/PageView?TmplCode=ParticipantSuperVisor&UserType=Supervisor">
+        4
+    </div>
+</div>

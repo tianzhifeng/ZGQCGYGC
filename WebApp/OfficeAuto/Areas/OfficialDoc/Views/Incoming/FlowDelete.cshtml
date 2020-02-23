@@ -1,0 +1,169 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td style="width: *;">
+                <a class="mini-button" plain="true" id="btnDelete" iconcls="icon-remove" onclick="deleteFlowClick">流程删除</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入文件名称或来文机关或收文编号" style="width: 300px;" 
+                    onenter="quickSearch('Title,JiGuan,Code');" onbuttonclick="quickSearch('Title,JiGuan,Code');" />
+            </td>
+            <td width="90">
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%;height: 100%;" allowMoveColumn="false" url="GetListFlow">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Title" headeralign="center" align="left" width="*" allowsort="true">
+                文件名称</div>
+           <div field="JiGuan" headeralign="center" align="left" width="100" allowsort="true">
+                来文机关</div>
+            <div field="Type" width="80" headeralign="center" align="left" allowsort="true">
+                收文类别</div>
+            <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                收文编号</div>
+            <div field="HuanJi" width="60" headeralign="center" allowsort="true" align="center">
+                重要度</div>
+            <div field="ShouWenDate" width="80" headeralign="center" allowsort="true" align="center" dateFormat="yyyy-MM-dd">
+                收文日期</div>
+            <div field="Status" width="60" headeralign="center" allowsort="true" align="center">
+                环节</div>
+            <div field="InsFlowID" width="60" headeralign="center" allowsort="true" align="center" renderer="onTraceRender">
+                跟踪</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 80%; height: 240px;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr class="hideRow">
+                <td width="15%">
+                </td>
+                <td width="35%">
+                </td>
+                <td width="15%">
+                </td>
+                <td width="35%">
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    文件名称
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$Title" style="width: 90%" class="mini-textbox" /> 
+                </td>
+                <td width="15%" align="center">
+                    来文机关
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$JiGuan" style="width:90%;" class="mini-textbox" />
+                </td>
+            </tr>
+             <tr>
+                <td width="15%" align="center">
+                    收文类别
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$Type" class="mini-combobox" multiSelect="true" style="width:90%;"
+                        valueField="value" textField="text" data="IncomingType" />
+                </td>
+                <td width="15%" align="center">
+                    收文编号
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$Code" style="width:90%;" class="mini-textbox" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    收文日期
+                </td>
+                <td width="35%" align="left">
+                    <input name="$FR$ShouWenDate" style="width: 100px;" class="mini-datepicker" />
+                    -
+                    <input name="$TO$ShouWenDate" style="width: 100px;" class="mini-datepicker" />
+                </td>
+                <td width="15%" align="center">
+                    紧急程度
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$HuanJi" class="mini-combobox" multiSelect="true" style="width:90%;"
+                        valueField="value" textField="text" data="IncomingHuanJi" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    状态
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$Status" class="mini-combobox" multiSelect="true" style="width:90%;"
+                        valueField="value" textField="text" data="IncomingStatus" />
+                </td>
+                <td width="15%" align="center">
+                </td>
+                <td width="35%" align="left">
+                </td>
+            </tr>
+       </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("OA.IncomingType")
+    @Html.GetEnum(typeof(OfficeAuto.Logic.IncomingHuanJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.IncomingStatus))
+
+</script>
+<script type="text/javascript">
+    addGridLink("dataGrid", "Title", "Form?ID={ID}&FuncType=View", { title: "收文查看", width: "800px", height: "85%" });
+    addGridEnum("dataGrid", "Type", "IncomingType");
+    addGridEnum("dataGrid", "HuanJi", "IncomingHuanJi");
+    addGridEnum("dataGrid", "Status", "IncomingStatus");
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+
+    function onTraceRender(e) {
+        var s = "";
+        if ($.trim(e.value) != "") {
+            s = "<a href='javascript:;' onclick='flowTrace({ ID: \"" + e.record["ID"] + "\"})'>跟踪</a>";
+        }
+        return s;
+    }
+
+    function deleteFlowClick(e) {
+        var row = grid.getSelected();
+        if (row === undefined) {
+            msgUI("请选择一条发文记录");
+            return;
+        }
+        msgUI("确认删除\"" + row["Title"] + "\"收文流程?", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("FlowID", row.InsFlowID);
+                execute("DeleteInsFlow", {
+                    actionTitle: "流程删除",
+                    onComplete: function (data) {
+                        grid.reload();
+                    }
+                });
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,357 @@
+﻿@{
+    ViewBag.Title = "项目综合查询";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-fit" id='divLayout'>
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div region="west" showheader="false" visible="false" width="200" style="border-top:0px">
+            <div class="mini-toolbar gw-grid-toolbar" style="text-align:right;border-bottom:solid 1px #CCCCCC">
+                <a id="layerSet" class='mini-button' style="margin-right:2px;margin-top:6px" iconcls='icon-add' plain='false' onclick='setlayer'>层级设置</a>
+            </div>
+            <div class="mini-fit">
+                <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetTreeList" onexpand="onexpand" onload="ontreeDataLoad"
+                    allowdrag="false" allowdrop="false" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false" iconfield="IconClass"
+                    expandonload="false" onnodeselect="onNodeSelect"></ul>
+            </div>
+        </div>
+        <div region="center" style="border-top:0px">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a id="btnSearchView" class='mini-button' iconcls='icon-add' plain='false' onclick='changeSearchView'>切换EPS视图</a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号 " style="width: 250px;"
+                                   onenter="thisQuickSearch();" onbuttonclick="thisQuickSearch();" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="mini-fit" id='divGrid'>
+                <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                     idfield="ID" multiselect="true" showcolumns="false">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Content" width="*" headeralign="center" allowsort="false" renderer="onContentRenderer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.ProjectState))
+    var categories = @Html.Raw(ViewBag.Categories);
+    var categoriesForSelect = [];
+    @*@Html.GetEnum("Project.Phase")*@
+</script>
+<script type="text/javascript">
+
+    normalParamSettings.searchFields = "Name,SerialNumber";
+
+    function onContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+        var $img = $("<img>").attr("width", "74px").attr("height", "16px").attr("border", "0px").attr("align", "absmiddle");
+
+        //第一行
+        var $tr1td = $("<td></td>").append($("<h3 style='display:inline'></h3>").text(rec.Name));
+        $tr1td.append($('<span style="padding-left:20px"></span>').text("（" + rec.SerialNumber + "）"));
+        var $tr1 = $("<tr></tr>").append($tr1td);
+        $table.append($("<tr></tr>").append($tr1));
+
+        //第二行
+        var title = $.trim(rec.Name);
+        var $tr2td = $("<td></td>");
+        $contractValue = $('<span>合同金额（元）:<span/><a style="padding-left:5px" href="javascript:void();" onclick="openProjectInfo(\'合同金额\',\'/MvcConfig/UI/List/PageView?TmplCode=ContractInfoInSpace\',\'' + rec.ID + '\')">' + formatCurrency(rec.ContractRMBValue) + '</a>');
+        $tr2td.append($contractValue);
+
+        $summaryReceiptValue = $('<span class="leftDistance">预算金额（元）:<span/><a style="padding-left:5px" href="javascript:void();" onclick="openProjectInfo(\'预算金额\',\'/EPC/ExpenseControl/ControlSheet/TreeList?FuncType=View\',\'' + rec.ID + '\')">' + formatCurrency(rec.Budget) + '</a>');
+        $tr2td.append($summaryReceiptValue);
+
+        $canReceiptValue = $('<span class="leftDistance">应收款金额（元）:<span/><a style="padding-left:5px" href="javascript:void();" onclick="openProjectInfo(\'应收款金额\',\'/MvcConfig/UI/List/PageView?TmplCode=ProjectPlanReceiptQuery\',\'' + rec.ID + '\')">' + formatCurrency(rec.ContractPlanValue) + '</a>');
+        $tr2td.append($canReceiptValue);
+
+        $receiptRatio = $('<span class="leftDistance">到款率：' + rec.ReceiptRate + '%<span/>');
+        $tr2td.append($receiptRatio);
+        var $tr2 = $("<tr></tr>").append($tr2td);
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td = $("<td></td>");
+        var PhaseContent = "";
+        //$(Phase).each(function (i, row) {
+        //    var phaseList = rec.Phase.split(',');
+        //    for (var i = 0; i < phaseList.length; i++)
+        //        if (row.value == phaseList[i]) {
+        //            PhaseContent += "," + row.text;
+        //        }
+        //});
+        //PhaseContent = PhaseContent.substring(1);
+        (!rec.ChargerDeptName) ? rec.ChargerDeptName = "" : rec.ChargerDeptName = rec.ChargerDeptName;
+        (!rec.ChargerUserName) ? rec.ChargerUserName = "" : rec.ChargerUserName = rec.ChargerUserName;
+        $tr3td.append($('<h0></h0>').text("业务类型：" + rec.ProjectClass));
+        $tr3td.append($('<h0  class="leftDistance"></h0>').text("责任部门：" + rec.ChargerDeptName));
+        $tr3td.append($('<h0  class="leftDistance"></h0>').text("项目经理：" + rec.ChargerUserName));
+        $tr3td.append($('<h0  class="leftDistance"></h0>').text("立项日期：" + mini.formatDate(rec.CreateDate, "yyyy-MM-dd")));
+        var $tr3 = $("<tr></tr>").append($tr3td);
+        $table.append($tr3);
+
+        //第四行
+        $engineeringInfo = $('<h0><a href="javascript:void();" onclick="openProjectInfo(\'' + rec.Name + '\',\'/MvcConfig/UI/BI/PageView?TmplCode=MainBoard\',\'' + rec.ID + '\')">打开项目空间</a></h0>');
+        var $tr4td = $("<td></td>");
+        $tr4td.append($engineeringInfo);
+
+        $projPanel = $('<h0><a href="javascript:void();" class="leftDistance" onclick="openProjectInfo(\'' + rec.Name + '\',\'/MvcConfig/UI/BI/PageView?TmplCode=ProjectMonitor\',\'' + rec.ID + '\')" >项目管理看板</a></h0>');
+        $tr4td.append($projPanel);
+
+        $ISOForm = $('<h0><a href="javascript:void();" class="leftDistance" onclick="openProjectInfo(\'' + rec.Name + '\',\'/EPC/Manage/ISO/FileView\',\'' + rec.ID + '\')" >ISO表单查询</a></h0>');
+        $tr4td.append($ISOForm);
+
+        $flowTrace = $('<h0><a href="javascript:void();" class="leftDistance" onclick="openProjectInfo(\'' + rec.Name + '\',\'/EPC/Manage/ScheduleTrace/TraceList?ScheduleCode=ProjectPlan\',\'' + rec.ID + '\')" >项目进度跟踪</a></h0>');
+        $tr4td.append($flowTrace);
+
+        $inOutMonitor = $('<h0><a href="javascript:void();" class="leftDistance" onclick="openProjectInfo(\'' + rec.Name + '\',\'/EPC/Finance/EngineeringCashFlow/List\',\'' + rec.ID + '\')" >项目收支分析</a></h0>');
+        $tr4td.append($inOutMonitor);
+
+        $costMonitor = $('<h0><a href="javascript:void();" class="leftDistance" onclick="openProjectInfo(\'' + rec.Name + '\',\'/EPC/ReportAndAnalysis/CostAnalysis\',\'' + rec.ID + '\')" >项目费用分析</a></h0>');
+        $tr4td.append($costMonitor);
+
+        $reportMonitor = $('<h0><a href="javascript:void();" class="leftDistance" onclick="openProjectInfo(\'' + rec.Name + '\',\'/MvcConfig/UI/List/PageView?TmplCode=TCMConstructionReports\',\'' + rec.ID + '\')" >项目报告查看</a></h0>');
+        $tr4td.append($reportMonitor);
+
+        var stateName = "";
+        $(ProjectState).each(function (i, row) {
+            if (row.value == rec.State) {
+                stateName = row.text;
+            }
+        });
+        $state = $('<span class="stateSpan ' + rec.State + '">' + stateName + '</span>');
+        $tr4td.append($state);
+
+        var $tr4 = $("<tr></tr>").append($tr4td);
+        $table.append($tr4);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+    function openProjectInfo(Name, linkUrl, ProjectInfoID) {
+        if (!ProjectInfoID || !linkUrl) return;
+        if (ProjectInfoID) {
+            linkUrl += (linkUrl.indexOf("?") >= 0 ? "&" : "?") + "EngineeringInfoID=" + ProjectInfoID;
+        }
+
+        openWindow(linkUrl, {
+            refresh: false, title: Name, width: "90%", height: "90%",
+            onDestroy: function () { }
+        });
+    }
+
+    function formatCurrency(num) {
+        num = num.toString().replace(/\$|\,/g, '');
+        if (isNaN(num))
+            num = "0";
+        sign = (num == (num = Math.abs(num)));
+        num = Math.floor(num * 100 + 0.50000000001);
+        cents = num % 100;
+        num = Math.floor(num / 100).toString();
+        if (cents < 10)
+            cents = "0" + cents;
+        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3) ; i++)
+            num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+            num.substring(num.length - (4 * i + 3));
+        return (((sign) ? '' : '-') + num + '.' + cents);
+    }
+
+    function changeSearchView() {
+        var val = mini.get("btnSearchView").text;
+        if (val == '切换EPS视图') {
+            $("#divTabs").hide();
+            mini.get("mainlayout").showRegion('west');
+            mini.get("btnSearchView").setText('切换原视图');
+        }
+        else if (val == '切换原视图') {
+            $("#divTabs").show();
+            mini.get("mainlayout").hideRegion('west');
+            mini.get("btnSearchView").setText('切换EPS视图');
+        }
+        SetGridHeight();
+        thisQuickSearch();
+    }
+
+    function setlayer() {
+        var catData = {
+            FullData:categories,
+            ForSelect:categoriesForSelect
+        }
+        openWindow('CategoryParamConfig', {
+            width: 420, height: 330, data: catData, onDestroy: function (s) {
+                if (s != "close") {
+                    categoriesForSelect = s;
+                    var keyArr = [];
+                    for(i = 0; i< s.length; i++)
+                    {
+                        keyArr.add(s[i].Key);
+                    }
+                    var dataTree = mini.get("dataTree");
+                    dataTree.setUrl("GetTreeList?categoryOrder=" + keyArr.join());
+                }
+            }
+        });
+    }
+
+    function onNodeSelect(){
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelected();
+        if(!node)
+            return;
+
+        var params = getParams(node);
+
+        addExecuteParam("searchKey",mini.get("key").getValue());
+        addExecuteParam("categoryList", params);
+        execute("GetList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var grid = mini.get("dataGrid");
+                grid.setData(data.data);
+            }, validateForm: false
+        });
+
+    }
+
+    function thisQuickSearch()
+    {
+        var val = mini.get("btnSearchView").text;
+        if (val == '切换EPS视图') {
+            tabSearch();
+        }
+        else if (val == '切换原视图') {
+            onNodeSelect();
+        }
+    }
+
+    function ontreeDataLoad()
+    {
+        var dataTree = mini.get("dataTree");
+        var root = dataTree.getRootNode();
+        if(root)
+        {
+            loadConditionNodeCount(root.children);
+        }
+    }
+
+    function onexpand(e)
+    {
+        var dataTree = e.sender;
+        var node = e.node;
+
+        var childNodes = dataTree.getChildNodes(node);
+        loadConditionNodeCount(childNodes);
+    }
+
+    function loadConditionNodeCount(nodes)
+    {
+        var dataTree = mini.get("dataTree");
+        var paramsArr = [];
+        for(k=0; k < nodes.length;k++)
+        {
+            var cNode = nodes[k];
+            var params = getParams(cNode);
+            paramsArr.push( { Name:cNode.Name, Params: params} );
+        }
+        addExecuteParam("listData", paramsArr);
+        execute("FindCountOfNodeCondition", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                if(data && data != '')
+                {
+                    for(i=0; i < nodes.length;i++)
+                    {
+                        dataTree.updateNode(nodes[i],{Name:data[i]});
+                    }
+                }
+            }, validateForm: false
+        });
+    }
+
+    function getParams(node)
+    {
+        var dataTree = mini.get("dataTree");
+        var parents = dataTree.getAncestors(node);
+        var params = [];
+        params.push({ Value: node.Value, Field: node.Field});
+        for(i=0;i<parents.length;i++)
+        {
+            params.push({ Value: parents[i].Value, Field: parents[i].Field});
+        }
+        return params;
+    }
+
+</script>
+<style>
+    .mini-modal {
+        opacity: .9;
+        background: #ccc;
+    }
+
+    .stateSpan {
+        padding: 0px 8px !important;
+        float: right !important;
+        border-radius: 15px;
+        font-size: 12px;
+        background-color: transparent !important;
+        margin-right: 0px !important;
+    }
+
+    .Create {
+        background-color: #FFF;
+        color: #82bf00;
+        border: 1px solid #82bf00;
+    }
+
+    .Bid {
+        background-color: #FFF;
+        color: #27c9db;
+        border: 1px solid #27c9db;
+    }
+
+    .Plan {
+        background-color: #FFF;
+        color: #d6cc5c;
+        border: 1px solid #d6cc5c;
+    }
+
+    .Execute {
+        background-color: #FFF;
+        color: #2b88d8;
+        border: 1px solid #2b88d8;
+    }
+
+    .Finish {
+        background-color: #FFF;
+        color: #e062c6;
+        border: 1px solid #e062c6;
+    }
+
+    .Pause {
+        background-color: #FFF;
+        color: #e89f41;
+        border: 1px solid #e89f41;
+    }
+
+    .Terminate {
+        background-color: #FFF;
+        color: #c63c39;
+        border: 1px solid #c63c39;
+    }
+
+    .leftDistance {
+        padding-left: 20px;
+    }
+</style>

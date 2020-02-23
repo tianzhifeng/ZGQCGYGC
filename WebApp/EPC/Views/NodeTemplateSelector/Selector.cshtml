@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="east" region="east" width="400" showclosebutton="false" showspliticon="false" showheader="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">选择
+                        </a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataTree" class="mini-treegrid" style="width: 100%; height: 100%;" url="" showtreeicon="true" showcheckbox="true"
+                treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" iconfield="NodeType" multiselect="true"
+                allowresize="true" fitcolumns="false" expandonload="true" checkrecursive="true" autocheckparent="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px;">
+                <div property="columns">
+                    <div name="Name" field="Name" width="238" headeralign="center">名称</div>
+                    <div field="Code" width="80" headeralign="center">编号</div>
+                    <div field="NodeType" width="80" align="center" headeralign="center">节点类型</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="false"
+                borderstyle="border:0px;"
+                onselectionchanged="onSelectionChanged">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="Name" width="200" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="Code" width="120" headeralign="center" allowsort="true" align="center">
+                        编号
+                    </div>
+                    <div field="ProjectClass" width="120" headeralign="center" allowsort="true" align="center">
+                        项目类型
+                    </div>
+                    <div field="Scale" headeralign="center" width="120" allowsort="true" align="center">
+                        规模
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.ProjectClass")
+    @Html.GetEnum("Base.NodeType")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "ProjectClass", "ProjectClass");
+    addGridEnum("dataTree", "NodeType", "NodeType");
+
+    function onSelectionChanged(e) {
+        var dataTree = mini.get("dataTree");
+        if (e.selected) {
+            var url = "GetTreeList?NodeTemplateID=" + e.selected.ID;
+            dataTree.setUrl(url);
+            dataTree.load();
+        }
+        else {
+            dataTree.clearRows();
+        }
+    }
+
+    function returnValue() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getCheckedNodes();
+        if (nodes.length == 0) {
+            msgUI("您选择一个节点");
+            return;
+        }
+        closeWindow(nodes);
+    }
+</script>

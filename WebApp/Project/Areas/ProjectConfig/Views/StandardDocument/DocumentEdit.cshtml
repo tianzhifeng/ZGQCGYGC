@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "DocumentEdit";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="42" showspliticon="false" showheader="false"
+        allowresize="false" splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <form id="dataForm" method="post">
+        <input name="ID" class="mini-hidden" />
+        <input name="StandardID" class="mini-hidden" />
+        <input name="FileName" class="mini-hidden" />
+        <div class="formDiv">
+            <fieldset>
+                <legend>基本信息</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                名称
+                            </td>
+                            <td>
+                                <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                            </td>
+                            <td>
+                                编号
+                            </td>
+                            <td>
+                                <input name="Code" class="mini-textbox" style="width: 100%" required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                标准发布机构
+                            </td>
+                            <td>
+                                <input name="PublishMechanism" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                            <td>
+                                发布日期
+                            </td>
+                            <td>
+                                <input name="PublishDate" class="mini-datepicker" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                版本
+                            </td>
+                            <td>
+                                <input name="Version" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                            <td>
+                                状态
+                            </td>
+                            <td>
+                                <input name="State" class="mini-combobox" style="width: 100%;" multiselect='false'
+                                    valuefromselect='true' data='StandardState' required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                附件
+                            </td>
+                            <td colspan="3">
+                                <input name="Attachment" class="mini-singlefile" style="width: 100%;" onchange='setFileName' />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.StandardState")
+</script>
+<script type="text/javascript">
+
+    function setFileName() {
+        var fileInfo = mini.getbyName("Attachment");
+
+        if (!fileInfo.file) return;
+
+        var fileName = getMiniFileName(fileInfo.file);
+        mini.getbyName("FileName").setValue(fileName);
+    }
+
+</script>

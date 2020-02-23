@@ -1,0 +1,172 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td></td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="@ViewBag.KeyEmptyText" onenter="quickSearch('FlowName,TaskName,CreateTime,SendTaskUserNames,TaskUserName');"
+                       onbuttonclick="quickSearch('FlowName,TaskName,CreateTime,SendTaskUserNames,TaskUserName');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    @ViewBag.detail
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetMyDelegateList"
+         multiselect="true" pagesize="20" ondrawcell="OnDrawCell" sortfield="Urgency,CreateTime"
+         sortorder="desc,desc">
+        <div property="columns">
+            <div field="Urgency" width="40" headeralign="center" allowsort="true">
+                @ViewBag.urgent
+            </div>
+            <div field="TaskName" width="250" headeralign="center" allowsort="true" renderer="onTaskLinkRenderer">
+                @ViewBag.taskName
+            </div>
+            <div field="FlowName" width="150" textalign="center" allowsort="true" headeralign="center">
+                @ViewBag.flowName
+            </div>
+            <div field="Status" width="65" headeralign="center" allowsort="true" renderer="onEnumRenderer">
+                @ViewBag.linkState
+            </div>
+            <div field="SendTaskUserNames" width="55" align="center" allowsort="true" headeralign="center">
+                @ViewBag.sender
+            </div>
+            <div field="CreateTime" width="130" align="center" allowsort="true" headeralign="center"
+                 dateformat="yyyy-MM-dd HH:mm:ss">
+                @ViewBag.sendTime
+            </div>
+            <div field="ExecUserName" width="60" align="center" allowsort="true" headeralign="center">
+                @ViewBag.entrustment
+            </div>
+            <div field="ExecTime" width="130" align="center" allowsort="true" headeralign="center"
+                 dateformat="yyyy-MM-dd HH:mm:ss">
+                @ViewBag.exeTime
+            </div>
+            <div field="FlowTrace" width="40" align="center" headeralign="center">
+                @ViewBag.flow
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="@ViewBag.detail" style="width: 800px; height: 200px;"
+     showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="15%" align="center">
+                        @ViewBag.taskName
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$TaskName" style="width: 90%" class="mini-textbox" />
+                    </td>
+                    <td width="15%" align="center">
+                        @ViewBag.flowName
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$FlowName" style="width: 90%" class="mini-textbox" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%" align="center">
+                        @ViewBag.sender
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$SendTaskUserNames" style="width: 90%" class="mini-textbox" />
+                        @*   <input name="$IL$SendTaskUserIDs" textname="SendTaskUserNames" style="width: 90%"
+                            class="mini-buttonedit" allowinput="true" />*@
+                    </td>
+                    <td width="15%" align="center">
+                        @ViewBag.sendTime
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$FR$CreateTime" style="width: 41%;" class="mini-datepicker" />
+                        <span>-</span>
+                        <input name="$TO$CreateTime" style="width: 41%;" class="mini-datepicker" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%" align="center">
+                        @ViewBag.entrustment
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$ExecUserName" style="width: 90%" class="mini-textbox" />
+                        @*  <input name="$IN$ExecUserID" textname="ExecUserName" style="width: 90%" class="mini-buttonedit"
+                            allowinput="true" />*@
+                    </td>
+                    <td width="15%" align="center">
+                        @ViewBag.exeTime
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$FR$ExecTime" style="width: 41%;" class="mini-datepicker" />
+                        -
+                        <input name="$TO$ExecTime" style="width: 41%;" class="mini-datepicker" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button mini-button-plain" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">@ViewBag.ok</a>
+            <a class="mini-button mini-button-plain" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">@ViewBag.reset</a>
+        </div>
+    </div>
+</div>
+<ul id="popupMenu" class="mini-menu" style="display: none;"></ul>
+<script type="text/javascript">
+    var TaskTypeData = [{ "value": "Normal", "text": "审批任务" }, { "value": "Delegate", "text": "委托任务" }];
+    var TaskStatusData = [{ "value": "Processing", "text": "流程中" }, { "value": "Complete", "text": "已完成" }];
+    //为Grid枚举列指定枚举定义
+    addGridEnum("dataGrid", "Status", "TaskStatusData");
+
+    //选人控件
+    //    addMultiUserSelector("$IL$SendTaskUserIDs");
+    //    addMultiUserSelector("$IN$ExecUserID");
+</script>
+<script type="text/javascript">
+    mini.parse();
+
+    var grid = mini.get("dataGrid");
+
+</script>
+<script type="text/javascript">
+    function onTaskLinkRenderer(e) {
+        var rec = e.record;
+        var url = $.trim(rec.FormUrl);
+        if (url.indexOf("?") > 0)
+            url += "&";
+        else
+            url += "?";
+        url += "TaskExecID=" + rec.ID + "&ID=" + $.trim(rec.FormInstanceID);
+        if ($.trim(rec.ExecTime) != "null" && $.trim(rec.ExecTime) != "") {
+            url += "&TaskStatus=Finished";
+        }
+        var s = '<a href="javascript:void(0);" onclick="ExecuteFormFlow(\'' + url + '\',\'' + $.trim(rec.TaskName) + '\',\'' + $.trim(rec.FormWidth) + '\',\'' + $.trim(rec.FormHeight) + '\')">' + $.trim(e.value) + '</a>';
+        return s;
+    }
+
+    function ExecuteFormFlow(urlstr, taskName, formWidth, formHeight) {
+        if (urlstr && urlstr != "") {
+            if ($.trim(formWidth) == "") formWidth = "880";
+            if ($.trim(formHeight) == "") formHeight = "85%";
+            openWindow(urlstr, { title: taskName, width: formWidth, height: formHeight });
+        }
+    }
+    function OnDrawCell(e) {
+        if (e.field == "Urgency") {
+            if (e.value == "1")
+                e.cellHtml = "<span class='icon-row-urgency' title='紧急' style='cursor:hand;float:center;'></span>";
+            else
+                e.cellHtml = "<span class='icon-row-urgency-not' title='一般' style='cursor:hand;float:center;'></span>";
+        }
+        if (e.field == "FlowTrace") {
+            e.cellHtml = "<span class='fa fa-fw fa-sitemap' title='查看' onclick='openTrace()' style='cursor:hand;float:center;cursor: pointer;color:#00e;'></span>";
+        }
+    }
+
+    function openTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID={FormInstanceID}&FuncType=FlowTrace";
+        openWindow(url, { title: "流程跟踪", width: 1000, height: "85%" });
+    }
+
+</script>

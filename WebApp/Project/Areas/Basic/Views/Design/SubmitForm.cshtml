@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "设计人成果提交";
+}
+<div class="mini-fit">
+    <form id="dataForm" method="post" url="GetMainInfo">
+    <fieldset>
+        <legend>任务信息</legend>
+        <table width="100%" border="0" cellpadding="0" cellspacing="2">
+            <tr>
+                <td style="width: 15%">
+                    项目名称
+                </td>
+                <td colspan="3" style="padding-right: 40px;">
+                    <input name="ProjectInfoName" style="width: 100%" class="mini-textbox" enabled="false" />
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 15%">
+                    项目编号
+                </td>
+                <td style="width: 35%; padding-right: 40px;">
+                    <input name="ProjectInfoCode" style="width: 100%" class="mini-textbox" enabled="false" />
+                </td>
+                <td style="width: 15%">
+                    专业
+                </td>
+                <td style="width: 35%; padding-right: 40px;">
+                    <input name="Major" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" data="Major"
+                        enabled="false" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    子项名称
+                </td>
+                <td style="padding-right: 40px;">
+                    <input name="SubProjectName" style="width: 100%" class="mini-textbox" enabled="false" />
+                </td>
+                <td>
+                    子项编号
+                </td>
+                <td style="padding-right: 40px;">
+                    <input name="SubProjectCode" style="width: 100%" class="mini-textbox" enabled="false" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    卷册名称
+                </td>
+                <td style="padding-right: 40px;">
+                    <input name="TaskWorkName" style="width: 100%" class="mini-textbox" enabled="false" />
+                </td>
+                <td>
+                    卷册编号
+                </td>
+                <td style="padding-right: 40px;">
+                    <input name="TaskWorkCode" style="width: 100%" class="mini-textbox" enabled="false" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    </form>
+    <div class="mini-fit">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="addlist();">批量增加</a>
+                        <a class="mini-button" iconcls="icon-add" onclick="addProduct()">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="editProduct()">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delProduct()">删除</a>
+                        <a class="mini-button" iconcls="icon-goto" onclick="startFlow" id="selectAudit">启动校审</a>
+                        <a class="mini-button" iconcls="icon-addnew" onclick="FinishTask">完成任务</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Code" width="80" allowsort="true" align="center">
+                        编号</div>
+                    <div field="Name" width="*" allowsort="true" align="left">
+                        名称</div>
+                    <div field="FileType" width="60" allowsort="true" align="center">
+                        类型</div>
+                    <div field="ToA1" width="60" allowsort="true" align="center">
+                        折合A1</div>
+                    <div field="AuditState" width="80" allowsort="true" allowsort="true" align="center">
+                        校审状态</div>
+                    <div field="CreateUser" width="80" allowsort="true" align="center">
+                        提交人</div>
+                    <div field="SubmitDate" width="100" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                        提交日期
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+@Html.GetEnum("Project.Major");
+@Html.GetEnum("Project.ProductFileType");
+@Html.GetEnum(typeof(Project.Logic.AuditState));
+    var ModeCode = "@Html.Raw(ViewBag.ModeCode)";
+</script>
+<script type="text/javascript">
+    var wbsID = getQueryString("WBSID");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var taskWorkID = getQueryString("TaskWorkID");
+    var activityID = getQueryString("ActivityID");
+
+    addGridEnum("dataGrid", "FileType", "ProductFileType");
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    if (ModeCode.indexOf("ElectricalPower") >= 0) {
+        $("#selectAudit").hide();
+    }
+
+    function addlist() {
+        var url = "/Project/Basic/WorkSpace/BatchAdd?ProjectInfoID=" + projectInfoID + "&WBSID=" + wbsID;
+        openWindow(url, { refresh: true, title: "批量增加", width: 750, height: 450,
+            onDestroy: function (data) {
+                if (data != "close")
+                    mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function addProduct() {
+        add({ url: "/Project/Basic/Product/Edit", height: 400 });
+    }
+
+    function editProduct() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        var editFlag = true;
+        $.each(rows, function (i, e) {
+            if (e.AuditState != "Create" && e.AuditState != "Design")
+                editFlag = false;
+        })
+        if (editFlag)
+            edit({ url: "/Project/Basic/Product/Edit", height: 400 });
+        else
+        { msgUI("已经发起校审的成果不能编辑"); return; }
+    }
+
+    function delProduct() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        var editFlag = true;
+        var message = "";
+        $.each(rows, function (i, e) {
+            if (e.AuditState != "Create" && e.AuditState != "Design")
+            { editFlag = false; message = "已经发起校审的成果不能删除。"; }
+            else if (e.State == "Change")
+            { editFlag = false; message = "已经变更的成果不能删除。"; }
+            else if (e.State == "InInvalid")
+            { editFlag = false; message = "已经作废的成果不能删除。"; }
+            else if (e.Version != 1)
+            { editFlag = false; message = "已经升版的成果不能删除。"; }
+        })
+        if (editFlag)
+            del();
+        else
+        { msgUI(message); return; }
+    }
+
+    function startFlow() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请至少选择一个成果"); return; }
+
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].AuditState != "Create") {
+                msgUI("您选中的成果中，存在已经发起校审的成果，请重新选择"); return;
+            }
+        }
+        var productIDs = getValues(rows, "ID");
+        addExecuteParam("ProductIDs", productIDs);
+        addExecuteParam("WBSID", wbsID);
+        execute("/Project/Basic/WorkSpace/IsProductCanAudit", {
+            showLoading: true, onComplete: function (data) {
+                var flowCode = "ProjectExecutive_Auditor";
+                if (data && data.auditModeInfo && data.auditModeInfo.auditModeInfo == "OneByOne") {
+                    flowCode = "ProjectExecutive_AuditorOneByOne";
+                }
+                var formUrl = "/Project/AutoUI/AuditView/PageView?TmplCode=ProjectExecutive_Auditor&ProjectInfoID="
+                        + projectInfoID + "&WBSID=" + wbsID + "&MajorCode=@ViewBag.MajorCode&BatchID=" + data.BatchID + "&PhaseValue=" + rows[0]["PhaseValue"];
+                flowAdd(flowCode, {
+                    url: formUrl, title: "送校审",
+                    width: "70%", height: "90%",
+                });
+            }
+        });
+    }
+
+    function FinishTask() {
+
+        msgUI("您确定需要完成该设计任务吗？", 2, function (data) {
+            if (data != "ok") return;
+            addExecuteParam("ActivityID", activityID);
+            execute("FinishTask", { showLoading: true, refresh: false, onComplete: function (data) {
+                closeWindow();
+            }, validateForm: false
+            });
+        });     
+    }
+
+</script>

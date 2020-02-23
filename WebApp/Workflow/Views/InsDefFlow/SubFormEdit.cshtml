@@ -1,0 +1,83 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="save({action:'SaveSubForm'});">保存</a>
+                <a class="mini-button" id="btnCancel" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" id="btnHelp" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" style="top: 30px; position: relative;" url="GetSubForm">
+<input name="ID" class="mini-hidden" />
+<input name="DefFlowID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        名称
+                    </td>
+                    <td>
+                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                    <td>
+                        所属数据库
+                    </td>
+                    <td>
+                        <input name="ConnName" class="mini-combobox" style="width: 100%" data="connEnum"  required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单表名称
+                    </td>
+                    <td colspan="3">
+                        <input name="TableName" class="mini-textbox" style="width: 100%"  required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单地址
+                    </td>
+                    <td colspan="3">
+                        <input name="FormUrl" class="mini-textbox" style="width: 100%"  required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单宽度
+                    </td>
+                    <td>
+                        <input name="FormWidth" class="mini-textbox" style="width: 100%" />
+                    </td>
+                    <td>
+                        表单高度
+                    </td>
+                    <td>
+                        <input name="FormHeight" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+@Html.GetEnum("connEnum")
+</script>

@@ -1,0 +1,289 @@
+﻿@{
+    ViewBag.Title = "岗位资格汇总审批";
+}
+@if (string.IsNullOrEmpty(Request["IsPreView"]) &&
+    string.IsNullOrEmpty(Request["FlowCode"]) &&
+    string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+else if ((!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"])) && System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"].ToLower() == "true")
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if ((!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) ||
+    (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view")))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0;
+        left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                        保存 </a><a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                            取消 </a>
+                </td>
+                <td id="btnRight">
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+<div class="mini-fit" id="Area" style="padding-top: 5px;">
+    <div id="Name" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="基本信息">
+            <form id="dataForm" method="post" align="center" autogetdata="false">
+            <input name="ID" class="mini-hidden" />
+            @Html.Raw(ViewBag.HiddenHtml)
+            <div class="formDiv">
+                @Html.Raw(ViewBag.FormHtml)
+            </div>
+            @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+            {
+                <div class="flow-msg">
+                    <fieldset class="formDiv">
+                        <legend>操作信息</legend>
+                        <div id="comment">
+                        </div>
+                    </fieldset>
+                </div>
+                <br />
+                <br />
+                <script type="text/javascript">
+                    function onCommentLoad(e) {
+                        if (e.data.length == 0)
+                            $("#commentGrid").hide();
+                    }
+                </script>
+            }
+            </form>
+        </div>
+        <div title="岗位资格详情">
+            <div id="toolbarProducts" class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                        新增：<a style="background-color:#00CC00">绿色</a> 变更：<a style="background-color:#0099FF"> 蓝色</a> 删除:<a style="background-color:#CC3300">红色</a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id='PostInfo' multiselect='true' allowalternating='false' showsummaryrow='true'
+                    showindexcolumn='false' showcheckcolumn='false' pagesize='50' style='width: 100%;
+                    height: 80%;' class='mini-datagrid' allowcellvalid='true' multiselect='true'
+                    allowcelledit='true' allowcellselect='true' showpager='true' allowunselect='false'
+                    sortmode='client' url="GetPostInfoList" ondrawcell='ondrawcell'>
+                    <div property='columns'>
+                        <div type='indexcolumn'>
+                        </div>
+                        <div type='checkcolumn'>
+                        </div>
+                        <div name='UsersName' field='UsersName' header='姓名' width='80' align='center' visible='true'
+                            allowsort='true' header='姓名'>
+                        </div>
+                        <div name='Number' field='Number' header='工号' width='80' align='center' visible='true'
+                            allowsort='true' header='工号'>
+                        </div>
+                        <div name='DepartmentName' field='DepartmentName' header='部门' width='100' align='left'
+                            visible='true' allowsort='true' header='部门'>
+                        </div>
+                        <div name='Title' field='Title' header='职称' width='80' align='center' visible='true'
+                            allowsort='true' header='职称'>
+                        </div>
+                        <div name='Registeredqualification' field='Registeredqualification' header='注册资质上岗资格证'
+                            width='120' align='center' visible='true' allowsort='true' header='注册资质上岗资格证'>
+                        </div>
+                        <div name='Professional' field='Professional' header='专业' width='60' align='left'
+                            visible='true' allowsort='true' header='专业'>
+                        </div>
+                        <div name='Designer' field='Designer' header='设计人' width='60' align='center' visible='true'
+                            allowsort='true' header='设计人'>
+                        </div>
+                        <div name='Standardized' field='Standardized' header='标准化' width='60' align='center'
+                            visible='true' allowsort='true' header='标准化'>
+                        </div>
+                        <div name='Reader' field='Reader' header='校对人' width='60' align='center' visible='true'
+                            allowsort='true' header='校对人'>
+                        </div>
+                        <div name='Reviewer' field='Reviewer' header='审核人' width='60' align='center' visible='true'
+                            allowsort='true' header='审核人'>
+                        </div>
+                        <div name='Professionaldesign' field='Professionaldesign' header='专业设计总负责人' width='110'
+                            align='center' visible='true' allowsort='true' header='专业设计总负责人'>
+                        </div>
+                        <div name='Comprehensivedesigner' field='Comprehensivedesigner' header='综合设计总负责人'
+                            width='110' align='center' visible='true' allowsort='true' header='综合设计总负责人'>
+                        </div>
+                        <div name='Interndesigner' field='Interndesigner' header='实习设计总负责人' width='110' align='center'
+                            visible='true' allowsort='true' header='实习设计总负责人'>
+                        </div>
+                        <div name='Projectmanager' field='Projectmanager' header='项目经理' width='80' align='center'
+                            visible='true' allowsort='true' header='项目经理'>
+                        </div>
+                        <div name='Securitymanager' field='Securitymanager' header='安全经理' width='80' align='center'
+                            visible='true' allowsort='true' header='安全经理'>
+                        </div>
+                        <div name='architect' field='architect' header='项目经理(建造师)' width='80' align='center'
+                            visible='true' allowsort='true' header='项目经理(建造师)'>
+                        </div>
+                        <div name='Projecttechnicalleader' field='Projecttechnicalleader' header='项目技术负责人'
+                            width='80' align='center' visible='true' allowsort='true' header='项目技术负责人'>
+                        </div>
+                        <div name='Builder' field='Builder' header='施工员' width='80' align='center' visible='true'
+                            allowsort='true' header='施工员'>
+                        </div>
+                        <div name='Materials' field='Materials' header='材料员' width='80' align='center' visible='true'
+                            allowsort='true' header='材料员'>
+                        </div>
+                        <div name='Resposible' field='Resposible' header='资料员' width='80' align='center'
+                            visible='true' allowsort='true' header='资料员'>
+                        </div>
+                        <div name='Safe' field='Safe' header='安全员' width='80' align='center' visible='true'
+                            allowsort='true' header='安全员'>
+                        </div>
+                        <div name='Quality' field='Quality' header='质量员' width='80' align='center' visible='true'
+                            allowsort='true' header='质量员'>
+                        </div>
+                        <div name='Machinist' field='Machinist' header='机械员' width='80' align='center' visible='true'
+                            allowsort='true' header='机械员'>
+                        </div>
+                        <div name='Gauger' field='Gauger' header='计量员' width='80' align='center' visible='true'
+                            allowsort='true' header='计量员'>
+                        </div>
+                        <div name='Costmember' field='Costmember' header='造价员' width='80' align='center'
+                            visible='true' allowsort='true' header='造价员'>
+                        </div>
+                        <div name='Laborclerk' field='Laborclerk' header='劳务员（民管员）' width='100' align='center'
+                            visible='true' allowsort='true' header='劳务员（民管员）'>
+                        </div>
+                        <div name='Operator' field='Operator' header='试验员' width='80' align='center' visible='true'
+                            allowsort='true' header='试验员'>
+                        </div>
+                    </div>
+                </div>
+                @{
+                    if (System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"].ToLower() == "false")
+                    {
+                    <div style='width: 100%; height: 80px;'>
+                    </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+   var formData=@Html.Raw(ViewBag.FormData);
+   var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+   var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var tip = new mini.ToolTip();
+            tip.set({
+                target: document,
+                selector: '[data-tooltip]'
+            });
+
+            var form = new mini.Form("dataForm");
+            form.setData(formData);
+            form.setChanged(false);
+
+            //将地址栏参数赋值给form的空值隐藏控件
+            $("form .mini-hidden").each(function () {
+                var name = $(this).attr("name");
+                if (hasQueryString(name)) {
+                    var field = mini.getbyName(name);
+                    if (field.getValue() == "")
+                        field.setValue(getQueryString(name));
+                }
+            });
+
+            //大字段赋值给Grid
+            $("form .mini-datagrid").each(function () {
+                var id = $(this).attr("id");
+                if ((formData || 0)[id] != undefined)
+                    mini.get(id).setData(mini.decode(formData[id]));
+            });
+
+            var _returnForm = null;
+            //调用界面上的onFormSetValue方法
+            if (typeof (onFormSetData) != "undefined")
+                _returnForm = onFormSetData(formData);
+
+            //流程：加载FlowBar
+            var flowMenubar = mini.get("flowMenubar");
+            if (flowMenubar != undefined) {
+                flowLoadMenubar(_returnForm);
+            }
+        });
+
+    </script>
+    <script type="text/javascript">
+        function onSummaryRenderer(e) {
+            var title = "";
+            switch (e.column.summaryType) {
+                case "count":
+                    title = "总数：";
+                    break;
+                case "max":
+                    title = "最大：";
+                    break;
+                case "min":
+                    title = "最小：";
+                    break;
+                case "sum":
+                    title = "总计：";
+                    break;
+                case "avg":
+                    title = "平均：";
+                    break;
+            }
+            e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+            return e.cellHtml;
+        }
+    </script>
+    <script type="text/javascript">
+        var isNew = "@Html.Raw(ViewBag.IsNew)";
+        var FlowPhaseValue = "@Html.Raw(ViewBag.FlowPhase)";
+    </script>
+    <script type="text/javascript">
+        function ondrawcell(e) {
+
+            var field = e.field;
+            var row = e.row;
+
+            if (!field ||  field == "UsersName" || field == "Number" || field == "DepartmentName" || field == "Title" || field == "Registeredqualification")
+                return;
+            debugger;
+            if (!row[e.field] && !row["Old_" + e.field])
+                return;
+
+            if ((!row["Old_" + e.field] || row["Old_" + e.field] == "否") && row[e.field] && row[e.field] != "否"){
+                //新增
+                e.cellStyle = "background-color:#00CC00"; //绿色
+            } else if (row["Old_" + e.field] && row["Old_" + e.field] != "否" && row[e.field] == "否"){
+                //删除
+                e.cellStyle = "background-color:#CC3300"; //红色
+            } else if (row["Old_" + e.field] && row["Old_" + e.field] != "否" && row[e.field] != "否" && row[e.field] != row["Old_" + e.field]) {
+                //变更
+                e.cellStyle = "background-color:#0099FF"; //蓝色
+            }
+
+        }
+        
+    </script>

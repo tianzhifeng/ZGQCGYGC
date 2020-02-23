@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "附件信息";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+        splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="CloseWin();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div title="center" region="center">
+        <form id="dataForm" method="post" align="center" autogetdata="false">
+            <div class="formDiv">
+                <table class="ke-zeroborder" style="width: 100%;" cellpadding="2" border="0">
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%">PDF校审文件</td>
+                            <td>
+                                <input name="Attachment" class="mini-multifile" style="width: 100%;" filter="PDF|*.pdf"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    function CloseWin() {
+        if (!mini.getbyName("Attachment").getValue()) {
+            msgUI("请至少上传一个PDF校审文件");
+            return;
+        }
+        var auditID = getQueryString("AuditID");
+        var changeAuditID = getQueryString("ChangeAuditID");
+        var auditStep = getQueryString("AuditStep");
+        var file = mini.getbyName("Attachment").files.toString();
+        if (file != "") {
+            var _multiSave = function () {
+                execute("MultiSaveAuditFile", {
+                    async: false, showLoading: true, refresh: false, onComplete: function (data) {
+                        if (data.errorFiles.length > 0)
+                        {
+                            var errorStrs = "以下文件未能批量提取校审意见，请单独上传：";
+                            for (var i = 0; i < data.errorFiles.length; i++) {
+                                var item =data.errorFiles[i];
+                                errorStrs+="<br/>【"+item.name+"】:"+item.message;
+                            }
+                            msgUI(errorStrs, 2, function (result) {
+                                closeWindow(data);
+                            });
+                        }
+                        else
+                            closeWindow(data);
+                    }, validateForm: false
+                });
+            }
+            addExecuteParam("AuditID", auditID);
+            addExecuteParam("ChangeAuditID", changeAuditID);
+            addExecuteParam("AuditStep", auditStep);
+            addExecuteParam("FileIDs", file);
+            msgUI("是否需要覆盖之前上传的校审文件？", 3, function (action) {
+                if (action == "ok") {
+                    addExecuteParam("IsOverride", true);
+                    _multiSave();
+                }
+                else if (action == "no") {
+                    addExecuteParam("IsOverride", false);
+                    _multiSave();
+                }
+            })
+        }
+    }
+</script>

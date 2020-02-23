@@ -1,0 +1,216 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="对比列表" region="north" height="180" showspliticon="true" showheader="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="addVersion" plain="true">增加对比版本</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType" allowinput="false"
+                                  onvaluechanged="onShowTypeChanged" value="All" /> &nbsp;
+                        <div id="showAll" name="showAll" checked="false" class="mini-checkbox" text="显示明细" onvaluechanged="onCheckBoxValueChanged"></div>
+                        &nbsp;&nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 sortmode="client" showpager="false" borderstyle="border-bottom:0px;">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="remove" width="60" headeralign="center" allowsort="false">
+                        取消对比
+                    </div>
+                    <div field="VersionName" width="*" headeralign="center" allowsort="false">
+                        版本名称
+                    </div>
+                    <div field="VersionType" width="120" headeralign="center" allowsort="false" align="center">
+                        版本类型
+                    </div>
+                    <div field="VersionNumber" width="120" headeralign="center" allowsort="false"
+                         align="center">
+                        版本号
+                    </div>
+                    <div field="CreateUser" width="120" headeralign="center" allowsort="false"
+                         align="center">
+                        创建人
+                    </div>
+                    <div field="CreateDate" width="150" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false"
+                         align="center">
+                        创建日期
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+             url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" borderstyle="border:0px;"
+             multiselect="true" borderstyle="border-left:0px;" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType"
+             allowresize="false" fitcolumns="false">
+            <div property="columns">
+                <div type="indexcolumn"></div>
+                <div name="Name" field="Name" width="270" headeralign="center" allowsort="false">
+                    科目名称
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }];
+
+    addGridButton("dataGrid", "remove", {
+        linkText: "取消对比",
+        onButtonClick: function (row) {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.removeRow(row);
+            dataGrid.accept();
+            setDeviceGridColumns();
+        }
+    });
+
+    function addVersion() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=BudgetComparisonMultiSelector&EngineeringInfoID=" + engineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "预算版本选择", width: "70%", height: "70%",
+            onDestroy: function (data) {
+                if (data && data.length > 0 && data != "close") {
+                    for (var i = 0; i < data.length; i++) {
+                        var version = data[i];
+                        var dataGrid = mini.get("dataGrid");
+                        var dataRow = dataGrid.findRow(function (row) {
+                            if (row.ID == version.ID) { return true; }
+                            else { return false; }
+                        });
+                        if (!dataRow) {
+                            dataRow = {
+                                ID: version.ID, VersionName: version.VersionName, VersionNumber: version.VersionNumber,
+                                CreateDate: version.CreateDate, CreateUser: version.CreateUser, VersionType: version.VersionType
+                            };
+                            dataGrid.addRow(dataRow);
+                        }
+                    }
+                    setDeviceGridColumns();
+
+                }
+                loadData();
+            }
+        });
+    }
+
+    function setDeviceGridColumns() {
+        var dataTree = mini.get("dataTree");
+        var dataGrid = mini.get("dataGrid");
+        if (dataTree && dataGrid) {
+            var allColumns = dataTree.getColumns();
+            var verstionList = dataGrid.getData();
+            var treeColumns = [];
+            for (var m = 0; m < allColumns.length; m++) {
+                if (allColumns[m].VersionID) {
+                    continue;
+                }
+                treeColumns.push(allColumns[m]);
+            }
+
+            for (var i = 0; i < verstionList.length; i++) {
+                var headerColumn = { headerAlign: "center", header: verstionList[i].VersionName, VersionID: verstionList[i].ID };
+                var columns = [];
+
+                var field0 = verstionList[i].ID + "_Quantity";
+                var field0Title = "数量";
+                var column0 = { field: field0, headerAlign: "center", align: "right", width: 80, header: field0Title };
+                columns.push(column0);
+
+                var field1 = verstionList[i].ID + "_UnitPrice";
+                var field1Title = "单价（元）";
+                var column1 = { field: field1, headerAlign: "center", align: "right", width: 80, header: field1Title, dataType: "currency" };
+                columns.push(column1);
+
+                var field2 = verstionList[i].ID + "_TotalValue";
+                var field2Title = "总价（元）";
+                var column2 = { field: field2, summaryType: "sum", headerAlign: "center", align: "right", width: 120, header: field2Title, dataType: "currency" };
+                columns.push(column2);
+                headerColumn.columns = columns;
+                treeColumns.push(headerColumn);
+            }
+            dataTree.set({ columns: treeColumns });
+        }
+    }
+
+    function loadData() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getData();
+        var listIDs = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (i == rows.length - 1) {
+                listIDs += rows[i].ID;
+            }
+            else {
+                listIDs += rows[i].ID + ",";
+            }
+        }
+        var ShowDetail = mini.get("showAll").getValue();
+        addExecuteParam("ListIDs", listIDs);
+        addExecuteParam("ShowDetail", ShowDetail);
+        execute("GetTreeList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var dataTree = mini.get("dataTree");
+                dataTree.loadList(data, "ID", "ParentID");
+                var showType = mini.getbyName("ShowType").getValue();
+                if (showType == "Diff") {
+                    dataTree.filter(function (node) {
+                        if (node.Diff == "True") {
+                            return true;
+                        }
+                    });
+                }
+            }, validateForm: false
+        });
+    }
+
+    function onDrawingCell(e) {
+        var dataGrid = mini.get("dataGrid");
+        var versionList = dataGrid.getData();
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (versionList.length > 1) {
+            if (record.Diff == "True") {
+                e.cellStyle = " background: yellow;";
+            }
+            if (record.NodeType != "Detail") {
+                e.cellStyle += "font-weight:bolder; ";
+            }
+        }
+    }
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        if (e.value == "Diff") {
+            tree.filter(function (node) {
+                if (node.Diff == "True") {
+                    return true;
+                }
+            });
+        }
+        else {
+            tree.clearFilter();
+        }
+    }
+
+
+    function onCheckBoxValueChanged(e) {
+        loadData();
+    }
+
+</script>

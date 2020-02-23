@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "NodeTab";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>设计项目管理</title>
+    <link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+    <link href="/PortalLTE/Scripts/dist/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="/MvcConfig/Scripts/CSS/dndx-detail.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="dnd-r-head" id="_head">
+        
+    </div>
+    <div id="menuBox" class="dnd-r-tab of">
+        <ul id="tabDetailList_tab">
+        </ul>
+        <div class="next">
+        </div>
+        <div class="test">
+        </div>
+        <div class="prep">
+        </div>
+    </div>
+    <div class="dnd-box">
+        <iframe id="tabDetailList" src="" frameborder="0px" style="border: 0px; width: 100%; height: 100%"></iframe>
+    </div>
+</body>
+</html>
+<script src="/ProjectLTE/Scripts/jQuery/jQuery-2.2.0.min.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+        var maxCount = Math.floor(($("html").width() - 230) / 200);
+        var tab = $(".dnd-r-tab");
+        var items = tab.find("li");
+        var index = 0;
+        var dc = items.length - maxCount;
+        if (dc > 0) {
+            var next = tab.find(".next");
+            var prep = tab.find(".prep");
+            next.show();
+            var flag = true;
+            next.click(function () {
+                if (index < dc && flag) {
+                    flag = false;
+                    tab.find("li:eq(" + (index++) + ")").animate({ "margin-left": "-200px" }, 300);
+                    setTimeout(function () {
+                        flag = true;
+                        index > 0 && prep.show();
+                        index === dc && next.hide();
+                    }, 300);
+                }
+            });
+
+            prep.click(function () {
+                if (index >= 0 && flag) {
+                    flag = false;
+                    tab.find("li:eq(" + (--index) + ")").animate({ "margin-left": "0" }, 300);
+                    setTimeout(function () {
+                        flag = true;
+                        index === 0 && prep.hide();
+                        index < dc && next.show();
+                    }, 300);
+                }
+            });
+
+            items.click(function () {
+                $(this).addClass("active");
+                $(this).siblings().removeClass("active");
+            });
+        }
+        $(".dnd-r-head").html(parent.headHtml);
+    });
+
+
+    function clickTab(t, index, ids) {
+        var cur = $(t);
+        cur.find("li").addClass("active");
+        cur.siblings("a").find("li.active").removeClass("active");
+        var url = parent.engineerJson.Tabs[index].url;
+        tabDetailList.src = url.replace('{' + url.match(/[^\{]+(?=\})/gm) + '}', ids);
+    }
+
+
+</script>

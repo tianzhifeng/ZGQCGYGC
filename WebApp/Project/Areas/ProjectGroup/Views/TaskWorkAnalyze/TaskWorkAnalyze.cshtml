@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "TaskWorkAnalyze";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入姓名或工号" style="width: 200px;"
+                    onenter="tabSearch();" onbuttonclick="tabSearch();" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;" id="GridArea">
+    <div id="dataGrid" url="GetPersonList" class="mini-datagrid" style="width: 100%; height: 100%;" ondrawcell="onDrawCell"
+        idfield="ID" multiselect="true" sortfield="Summary" sortorder="desc">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="Name" width="100" allowsort="true" headeralign="center" allowsort="true"
+                align="center">
+                姓名
+            </div>
+            <div field="WorkNo" width="100" headeralign="center" allowsort="true" allowsort="true"
+                align="left">
+                工号
+            </div>
+            <div field="DeptName" width="120" headeralign="center" allowsort="true" allowsort="true"
+                align="center">
+                部门
+            </div>
+            <div field="Designer" width="80" headeralign="center" align="right" allowsort="true">
+                设计人
+            </div>
+            <div field="Collactor" width="80" headeralign="center" align="right" allowsort="true">
+                校对人
+            </div>
+            <div field="Auditor" width="80" headeralign="center" align="right" allowsort="true">
+                审核人
+            </div>
+            <div field="Approver" width="80" headeralign="center" align="right" allowsort="true">
+                审定人
+            </div>
+            <div field="Mapper" width="80" headeralign="center" align="right" allowsort="true">
+                制图人
+            </div>
+            <div field="Summary" width="80" headeralign="center" align="right" allowsort="true" renderer="onLinkRender">
+                合计
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; display: none;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">姓名
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$Name" style="width: 85%;" class="mini-textbox" />
+                    </td>
+                    <td width="10%" align="center">工号
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$WorkNo" class="mini-textbox" style="width: 85%" />
+                    </td>
+                    <td width="10%" align="center">部门
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$EQ$DeptID" class="mini-buttonedit" style="width: 85%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">实际完成日期
+                    </td>
+                    <td align="left">
+                        <input class="mini-datepicker" name="$FR$FactEndDate" id="FactEndDateStart" style="width: 85%;"
+                            ondrawdate="onDrawStartDate(e,'FactEndDateEnd')" />
+                    </td>
+                    <td align="center">至
+                    </td>
+                    <td align="left">
+                        <input class="mini-datepicker" name="$TO$FactEndDate" id="FactEndDateEnd" style="width: 85%;"
+                            ondrawdate="onDrawEndDate(e,'FactEndDateStart')" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询
+            </a><a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+</script>
+<script type="text/javascript">
+    addSingleOrgSelector('$EQ$DeptID', { returnParams: 'value:ID,text:Name' });
+    normalParamSettings.searchFields = "Name,WorkNo";
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field != "Name" && field && field != "WorkNo" && field != "DeptName") {
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:onGridLink(\'' + e.record._uid + '\',\'' + e.field + '\')">' + e.value + '</a>&nbsp; ';
+            else {
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+                e.cellHtml = '0';
+            }
+        }
+    }
+
+
+    function onGridLink(UID, field) {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getRowByUID(UID);
+        var tabData = GetTabsData();
+        queryData = {};
+        for (var i = 0; i < tabData.length; i++) {
+            queryData["$IN$" + tabData[i].queryfield] = tabData[i].value;
+        }
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=TaskWorkList&userID=" + row.ID + "&Field=" + field + "UserID";
+        var width = "80%"; var height = "80%";
+        openWindow(url, { data: queryData, width: width, height: height, title: "查看" });
+    }
+
+    function onDrawStartDate(e, endID) {
+        var date = e.date;
+        var end = mini.get(endID).value;
+        if (end == null || end == "" || end == undefined)
+            return;
+        if (date.getTime() > end.getTime()) {
+            e.allowSelect = false;
+        }
+    }
+
+    function onDrawEndDate(e, startID) {
+        var date = e.date;
+        var start = mini.get(startID).value;
+        if (start == null || start == "" || start == undefined)
+            return;
+        var date = e.date;
+        if (date.getTime() < start.getTime()) {
+            e.allowSelect = false;
+        }
+    }
+</script>

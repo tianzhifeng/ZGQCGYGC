@@ -1,0 +1,31 @@
+﻿.blur {
+    -webkit-filter: blur(5px); /* Chrome, Opera */
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
+
+.toolbar {
+    position: relative;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    cursor: default;
+}
+
+.mini-button-icon {
+    padding-left: 0px !important;
+    background-image: none !important;
+}
+
+.productPos {
+    color: hsl(0,0%,85%) !important;
+    border: 1px solid transparent !important;
+    background: none !important;
+}
+
+.tempPos {
+    color: hsl(0,0%,85%) !important;
+    border: 1px solid transparent !important;
+    background: none !important;
+}

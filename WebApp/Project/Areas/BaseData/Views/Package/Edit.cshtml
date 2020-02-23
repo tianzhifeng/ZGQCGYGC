@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "工作包定义";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+        splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                    <td id="btnRight">
+                        <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <form id="dataForm" method="post">
+        <input name="ID" class="mini-hidden" />
+        <div class="formDiv">
+            <fieldset>
+                <legend>基本信息</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                工作包名称
+                            </td>
+                            <td>
+                                <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                            </td>
+                            <td>
+                                工作包编号
+                            </td>
+                            <td>
+                                <input name="Code" class="mini-textbox" style="width: 100%" required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                专业
+                            </td>
+                            <td>
+                                <input name="MajorCode" class="mini-combobox" required="true" style="width: 100%;" textfield="text" valuefield="value"
+                                    data="Major" allowinput="false" textName="MajorName" />
+                            </td>
+                            <td>
+                                阶段
+                            </td>
+                            <td>
+                                <input name="PhaseCode" class="mini-combobox" required="true" style="width: 100%;" textfield="text" valuefield="value"
+                                    data="Phase" allowinput="false" textName="PhaseName" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                工作包类型
+                            </td>
+                            <td>
+                                <input name="PackageType" class="mini-combobox" required="true" style="width: 100%;" textfield="text" valuefield="value"
+                                    data="PackageType" allowinput="true" />
+                            </td>
+                            <td>
+                                项目类型
+                            </td>
+                            <td>
+                                <input name="ProjectClass" class="mini-combobox" required="true" style="width: 100%;" textfield="text" valuefield="value"
+                                    data="ProjectClass" allowinput="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                校审级别
+                            </td>
+                            <td>
+                                <input name="AuditLevel" class="mini-combobox" required="true" style="width: 100%;" textfield="text" valuefield="value"
+                                    data="AuditLevel" allowinput="true" />
+                            </td>
+                            <td>
+                                额定工时
+                            </td>
+                            <td>
+                                <input name="WorkLoad" class="mini-textbox" style="width: 100%" required="true" vtype="float" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                折合A1数
+                            </td>
+                            <td>
+                                <input name="DrawingCount" class="mini-textbox" style="width: 100%" required="true" vtype="float" />
+                            </td>
+                            <td>
+                                
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                备注
+                            </td>
+                            <td colspan="3">
+                                <input name="Remarkt" class="mini-textarea" style="width: 100%; height: 200px;" vtype="maxLength:100" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var Major = @Html.Raw(ViewBag.Major)
+    var Phase = @Html.Raw(ViewBag.Phase)
+    @Html.GetEnum("Project.PackageType");
+    @Html.GetEnum("Project.ProjectClass");
+    @Html.GetEnum("Project.AuditLevel");
+
+
+</script>
+

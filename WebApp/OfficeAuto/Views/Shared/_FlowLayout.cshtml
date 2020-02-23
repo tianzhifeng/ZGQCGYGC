@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+ <script type="text/javascript">
+       
+        //GetBasicInfo参数分别为：当前用户信息、按钮字段权限、动态文件服务器地址和当前流程环节
+        //请根据具体需要调整true或false
+        @Html.GetBasicInfo(true, false, false, true)
+
+    </script>
+    @Scripts.Render("/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js")
+    @Scripts.Render("/CommonWebResource/CoreLib/MiniUI/miniui.js")
+    @Scripts.Render("/CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")
+    @Scripts.Render("/MvcConfig/miniuiExt.js")
+    @Scripts.Render("/CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")
+    
+  @Scripts.Render("/CommonWebResource/CoreLib/MiniUI/customCtrl.js")
+</head>
+<body style="background-color:#fff">
+    <div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+             splitsize="0" style="border: 0;">
+            @Html.GetFlowbar()
+        </div>
+        <div title="center" region="center" style="border: 0;">
+            @RenderBody()
+        </div>
+    </div>
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+
+        //GetBasicInfo参数分别为：当前用户信息、按钮字段权限、动态文件服务器地址和当前流程环节
+        //请根据具体需要调整true或false
+        @Html.GetBasicInfo(true, false, false, true)
+
+        preInit();
+    </script>
+</body>
+
+</html>

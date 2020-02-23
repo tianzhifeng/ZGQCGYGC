@@ -1,0 +1,247 @@
+﻿@{
+    ViewBag.Title = "NavigationSettings";
+}
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="returnValue();" plain="true">确定</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm" autogetdata="false">
+            <input name="ID" class="mini-hidden" />
+            <fieldset class="formDiv">
+                <legend>基础信息</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td>header显示</td>
+                        <td colspan="3" style="padding-right:40px;">
+                            <input name="MainTitle" style="width: 100%" class="mini-textbox" emptytext="请输入标题名称"  required="true" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>样式</td>
+                        <td style="padding-right:40px;">
+                            <input name="Style" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="BlockStyle" allowinput="false" />
+                        </td>
+                        <td></td>
+                        <td style="padding-right:40px;"></td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>分类定义</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td colspan="4">
+                            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <a class="mini-button" iconcls="icon-add" onclick="addRow({}, { gridId: 'tagDefineGrid', isLast: true })">添加</a>
+                                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({ gridId: 'tagDefineGrid' });">移除</a>
+                                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('tagDefineGrid');">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('tagDefineGrid');">下移</a>
+                                        </td>
+                                        <td style="white-space: nowrap;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="tagDefineGrid" class="mini-datagrid" style="width: 100%; height: 250px;" url="" allowcellvalid="true" multiselect="false" allowcelledit="true" allowcellselect="true"
+                                 showpager="false" allowunselect="false" onselectionchanged="onTagDefineSelectionChanged">
+                                <div property="columns">
+                                    <div type="checkcolumn"></div>
+                                    <div field="Title" width="*" align="left" vtype="required;">
+                                        标题
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="ColumnCount" width="100" align="left" vtype="required;int;">
+                                        <a href="#" title="分类对应列数，写法:1 则占一列的宽度">列数</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>项定义</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td colspan="4">
+                            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <a class="mini-button" iconcls="icon-add" onclick="addItemRow()">添加</a>
+                                            <a class="mini-button" iconcls="icon-remove" onclick="removeItemRow();">移除</a>
+                                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('itemDefineGrid');">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('itemDefineGrid');">下移</a>
+                                        </td>
+                                        <td style="white-space: nowrap;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="itemDefineGrid" class="mini-datagrid" style="width: 100%; height: 350px;" url="" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true"
+                                 showpager="false" allowunselect="false" oncellcommitedit="onItemCellCommitEdit">
+                                <div property="columns">
+                                    <div type="checkcolumn"></div>
+                                    <div field="Name" width="100" align="left" vtype="required;">
+                                        <a href="#" title="选择一条分类,填写这个分类下的项的名称">名称</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="ConnName" width="150" autoshowpopup="true" align="center" vtype="required;">
+                                        数据库连接
+                                        <input property="editor" class="mini-combobox" style="width: 100%;" data="ConnEnum" />
+                                    </div>
+                                    <div field="SQL" width="200" align="left" vtype="required;">
+                                        SQL
+                                        <input property="editor" class="mini-textarea" style="width: 100%;" />
+                                    </div>
+                                    <div field="onclick" width="100" align="left" vtype="required;">
+                                        OnClick
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="LinkUrl" width="180" align="left" vtype="required;">
+                                        <a href="#" title="PC端打开的URL地址">链接URL</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="MobileLinkUrl" width="*" align="left" vtype="required;">
+                                        <a href="#" title="写法/Report/List?TmplCode=LeaderQuery&EngineeringInfoID={ID}&Title={Name},TmplCode为图表编号、{ID}为参数">移动端URL</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof( Config.ConnEnum))
+</script>
+<script type="text/javascript">
+    var BlockStyle = [{ text: "蓝色", value: "blue" }, { text: "红色", value: "red" }, { text: "绿色", value: "green" },
+    { text: "紫色", value: "purple" }, { text: "橙色", value: "orange" }];
+    function setData(data) {
+        if (data) {
+            var rowSettings = mini.decode(data);
+            var form = new mini.Form("dataForm");
+            form.setData(rowSettings);
+            form.setChanged(false);
+            if (rowSettings.tagDefine) {
+                var tagDefineGrid = mini.get("tagDefineGrid");
+                tagDefineGrid.setData(mini.decode(rowSettings.tagDefine));
+            }
+        }
+    }
+
+    function moveUp(gridId) {
+        var dataGrid = mini.get("#" + gridId);
+        if (dataGrid) {
+            var rows = dataGrid.getSelecteds();
+            dataGrid.moveUp(rows);
+        }
+    }
+
+    function moveDown(gridId) {
+        var dataGrid = mini.get("#" + gridId);
+        if (dataGrid) {
+            var rows = dataGrid.getSelecteds();
+            dataGrid.moveDown(rows);
+        }
+    }
+
+    function onTagDefineSelectionChanged(e) {
+        var columnGrid = mini.get("itemDefineGrid");
+        if (e.selected) {
+            if (e.selected.Item) {
+                columnGrid.setData(e.selected.Item);
+            }
+            else {
+                columnGrid.clearRows();
+            }
+        }
+    }
+
+    function onItemCellCommitEdit(e) {
+        var field = e.field;
+        setRowConfig();
+    }
+
+    function setRowConfig() {
+        var columnGrid = mini.get("itemDefineGrid");
+        var columnData = columnGrid.getData();
+        var dataGrid = mini.get("tagDefineGrid");
+        var row = dataGrid.getSelected();
+        if (row) {
+            row.Item = columnData;
+            dataGrid.updateRow(row, row);
+        }
+    }
+
+    function addItemRow() {
+        var dataGrid = mini.get("tagDefineGrid");
+        var columnGrid = mini.get("itemDefineGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一条分类定义记录"); return; }
+        var columnRow = {};
+        columnGrid.addRow(columnRow);
+        setRowConfig();
+    }
+
+    function removeItemRow() {
+        var columnGrid = mini.get("itemDefineGrid");
+        var row = columnGrid.getSelected();
+        if (row) {
+            columnGrid.removeRow(row);
+        }
+        setRowConfig();
+    }
+
+    function returnValue() {
+        var form = new mini.Form("dataForm");
+        form.validate();
+        if (!form.isValid()) {
+            msgUI("请检查页面填写内容格式"); return;
+        }
+        var formData = form.getData();
+
+        var tagDefineGrid = mini.get("tagDefineGrid");
+        tagDefineGrid.commitEdit();
+        tagDefineGrid.validate(); if (!tagDefineGrid.isValid()) { return; }
+        var tagDefine = tagDefineGrid.getData();
+        formData.tagDefine = tagDefine;
+        closeWindow(formData);
+    }
+</script>

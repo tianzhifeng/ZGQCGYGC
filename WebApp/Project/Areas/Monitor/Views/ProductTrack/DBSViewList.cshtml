@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "DBSViewList";
+}
+<div class="mini-layout" style="width: 100%; height: 100%;" splitsize='3'>
+    <div region="west" width="250" expanded="true" showspliticon="true" showheader="false"
+         style="border-top: 0; border-bottom: 0;">
+        <div class="mini-toolbar" style="border-left: 0; border-right: 0; border-top: 0;">
+            <table style="width: 100%">
+                <tr>
+                    <td>
+                        <input id="treekey" class="mini-buttonedit gw-searchbox" onenter="searchTree();"
+                               onbuttonclick="searchTree();" style="width: 100%" />
+                    </td>
+                    @*<td width="80px">
+                        </td>
+                        <td align="right">
+                        </td>*@
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="mytree" class="mini-tree" url="GetDBSTree" style="width: 100%; height: 100%;" showtreeicon="true"
+                textfield="Name" iconfield="DBSType" idfield="ID" enablehottrack="false" parentfield="ParentID"
+                resultastree="false" expandonload="true" onnodeselect="onNodeSelected" ondrawnode="onDrawNode"></ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%">
+                        @Html.ExportButton()
+                        <a class="mini-button" iconcls="icon-download" onclick="down('MainFile')" plain="true">批量下载成果</a>
+                        @{
+                            var ArchiveType = ViewBag.ArchiveType.Split(',');
+                            for (int i = 0; i < ArchiveType.Length; i++)
+                            {
+                                var file = ArchiveType[i];
+                                var name = "其他文件";
+                                if (file == "PdfFile") { name = "PDF文件"; file = "PDFFile"; }
+                                else if (file == "PlotFile") { name = "Plot文件"; }
+                                else if (file == "XrefFile") { name = "引用文件"; }
+                                else if (file == "DwfFile") { name = "Dwf文件"; }
+                                else if (file == "TiffFile") { name = "Tiff文件"; }
+                                else if (file == "SignPdfFile") { name = "盖章PDF文件"; }
+
+                                <a class="mini-button" iconcls="icon-download" onclick="down('@file')" plain="true">批量下载 @name</a>
+                            }
+                        }
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <div id="showAll" name="showAll" class="mini-checkbox" value="true" readonly="false"
+                             text="显示所有文件" onvaluechanged="onShowAllValueChanged">
+                        </div>
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入文件名称或编号" onenter="quickSearch('Code,Name');"
+                               onbuttonclick="quickSearch('Code,Name');" />
+                        @*<a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');">详细查询</a>*@
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="" borderstyle="border-bottom:0;border-left:0;border-right:0;"
+                 class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="ArchiveDate" width="100" dateformat="yyyy-MM-dd" headeralign="center"
+                         allowsort="true" align="center">
+                        归档日期
+                    </div>
+                    <div field="Name" width="300" headeralign="center" allowsort="true">
+                        文件名称
+                    </div>
+                    <div field="Code" width="120" headeralign="center" allowsort="true">
+                        编号
+                    </div>
+                    <div field="Catagory" width="150" headeralign="center" allowsort="true" align="center">
+                        分类
+                    </div>
+                    <div field="MajorValue" width="90" headeralign="center" allowsort="true " align="center">
+                        专业
+                    </div>
+                    <div field="CreateUser" headeralign="center" width="100" allowsort="true" align="center">
+                        创建人
+                    </div>
+                    <div field="CreateDate" width="120" headeralign="center" dateformat="yyyy-MM-dd"
+                         allowsort="true" align="center">
+                        创建日期
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 240px;">
+            <div class="queryDiv">
+                <form id="queryForm" method="post">
+                    <table>
+                        <tr>
+                            <td width="15%" align="center">
+                                文件名称
+                            </td>
+                            <td width="35%">
+                                <input name="$LK$Name" class="mini-textbox" style="width: 85%;" />
+                            </td>
+                            <td width="15%" align="center">
+                                编号
+                            </td>
+                            <td width="35%">
+                                <input name="$LK$Code" class="mini-textbox" style="width: 85%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                专业
+                            </td>
+                            <td align="left">
+                                <input name="$EQ$MajorValue" class="mini-combobox" data="Major" valuefield="value"
+                                       textfield="text" style="width: 85%" shownullitem="true" />
+                            </td>
+                            <td align="center">
+                                文件类型
+                            </td>
+                            <td align="left">
+                                <input name="$EQ$FileType" class="mini-combobox" data="[]" valuefield="value"
+                                       textfield="text" style="width: 85%" shownullitem="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                校审状态
+                            </td>
+                            <td align="left">
+                                <input name="$EQ$AuditState" class="mini-combobox" data="[]" valuefield="value"
+                                       textfield="text" style="width: 85%" shownullitem="true" />
+                            </td>
+                            <td align="center">
+                                会签状态
+                            </td>
+                            <td align="left">
+                                <input name="$EQ$CoSignState" class="mini-combobox" data="[]" valuefield="value"
+                                       textfield="text" style="width: 85%" shownullitem="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                出图状态
+                            </td>
+                            <td align="left">
+                                <input name="$EQ$PrintState" class="mini-combobox" data="[]" valuefield="value"
+                                       textfield="text" style="width: 85%" shownullitem="true" />
+                            </td>
+                            <td align="center">
+                                归档状态
+                            </td>
+                            <td align="left">
+                                <input name="$EQ$ArchiveState" class="mini-combobox" data="[]" valuefield="value"
+                                       textfield="text" style="width: 85%" shownullitem="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                <div>
+                    <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                        查询
+                    </a><a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" language="javascript">
+    @Html.GetEnum("Project.Major")
+</script>
+<script type="text/javascript">
+
+    addGridLink('dataGrid', 'Name', '/Project/Basic/Document/DocumentEdit?ID={ID}', { funcType: 'view', width: "50%", height: "60%" });
+    addGridEnum("dataGrid", "MajorValue", "Major");
+
+    function onShowAllValueChanged(e) {
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        if (!node) { return; }
+        var url = "GetDocumentList?DBSID=" + node.ID + "&ShowAll=" + e.value;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.load();
+    }
+
+    function onDrawNode(e) {
+        var tree = e.sender;
+        var node = e.node;
+        if (node.FileCount != 0)
+            e.nodeHtml = node.Name + "（" + node.FileCount + "）";
+        //e.nodeHtml = node.Name + "（文件：" + node.AllFileCount + "，已归档：" + node.AllArchiveFileCount + "）";
+    }
+
+    function onNodeSelected(e) {
+        var node = e.node;
+        //if (node.DBSAuth == "ReadOnly")
+        //    $(".mini-layout .mini-button").hide();
+        //else
+        //    $(".mini-layout .mini-button").show();
+        var showAll = mini.getbyName("showAll").getValue();
+        var url = "GetDocumentList?DBSID=" + node.ID + "&ShowAll=" + showAll;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.load();
+    }
+
+    function searchTree(e) {
+        var tree = mini.get("mytree");
+        var key = mini.get("treekey").getValue();
+        tree.filter(function (node) {
+            if (node.Name.indexOf(key) != -1) return true;
+        });
+    }
+
+    function down(fileType) {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows == undefined || rows.length == 0)
+            return msgUI("请选择需要下载的成果！", 1);
+        var filedIds = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i][fileType] != undefined && rows[i][fileType] != null && rows[i][fileType] != "") {
+                filedIds += rows[i][fileType].split('_')[0] + ",";
+            }
+        }
+        if (filedIds.length > 0)
+            filedIds = filedIds.substr(0, filedIds.length - 1);
+        else
+            return msgUI("无附件可下载！", 1);
+        DownloadFile(filedIds);
+    }
+</script>
+
+<style type="text/css">
+    .mini-layout-region-body {
+        overflow-y: hidden;
+    }
+
+    .Root {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .Folder {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .Mapping {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .Cloud {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/volume.png) no-repeat;
+    }
+</style>

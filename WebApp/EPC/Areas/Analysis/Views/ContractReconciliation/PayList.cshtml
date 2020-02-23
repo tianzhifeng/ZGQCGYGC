@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+    <table>
+        <tr>
+            <td></td>
+            <td class='gw-toolbar-right'>
+                <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class='mini-fit' id='divGrid'>
+    <div id="ContractList" class="mini-datagrid" style='width: 100%; height: 100%;'
+         url="GetContractList" onshowrowdetail="onShowRowDetail">
+        <div property="columns">
+            <div type="expandcolumn">#</div>
+            <div field="CustomerCode" width="80" headerAlign="center">供应商编号</div>
+            <div field="CustoemrName" width="200" headerAlign="center">供应商名称</div>
+            <div field="SX1" width="100" headerAlign="center">属性1</div>
+            @*<div field="SummaryInoviceAmount" width="150" headerAlign="center" align="right">
+                累计收票金额(元)
+            </div>*@
+            <div field="SummaryReceiptAmount" width="150" headerAlign="center" align="right">
+                累计付费金额(元)
+            </div>
+            @*<div field="SummaryUnReceiptAmount" width="150" headerAlign="center" align="right">
+                累计发票应付额(元)
+            </div>*@
+        </div>
+    </div>
+</div>
+<div id="ContractDetailListArea" style="display:none;">
+    <div id="ContractDetailList" class="mini-datagrid" style="width:100%;height:auto;"
+         url="GetContractList" onshowrowdetail="onContractDetailListShowRowDetail">
+        <div property="columns">
+            <div type="expandcolumn">#</div>
+            <div field="SX1" width="100" headerAlign="center">合同类型</div>
+            <div field="CustoemrName" width="200" headerAlign="center">供应商名称</div>
+            <div field="CustoemrName" width="200" headerAlign="center">项目名称</div>
+            <div field="CustoemrName" width="100" headerAlign="center">项目号</div>
+            <div field="CustoemrName" width="100" headerAlign="center">合同号</div>
+            <div field="CustoemrName" width="100" headerAlign="center">合同金额(元)</div>
+            @*<div field="SummaryInoviceAmount" width="150" headerAlign="center" align="right">
+                累计收票金额(元)
+            </div>*@
+            <div field="SummaryReceiptAmount" width="150" headerAlign="center" align="right">
+                累计付费金额(元)
+            </div>
+            @*<div field="SummaryUnReceiptAmount" width="150" headerAlign="center" align="right">
+                累计发票应付额(元)
+            </div>*@
+            <div field="CustomerCode" width="80" headerAlign="center">项目经理</div>
+            <div field="CustomerCode" width="80" headerAlign="center">归属部门</div>
+        </div>
+    </div>
+</div>
+
+<div id="SignleContractDetailListArea" style="display:none;">
+    <div id="SignleContractDetailList" class="mini-datagrid" style="width:100%;height:auto;"
+         url="GetContractList">
+        <div property="columns">
+            <div field="CustoemrName" width="100" headerAlign="center">合同号</div>
+            @*<div field="SummaryInoviceAmount" width="150" headerAlign="center" align="right">
+                发票金额(元)
+            </div>
+            <div field="CustoemrName" width="100" headerAlign="center">发票类型</div>
+            <div field="CustoemrName" width="100" headerAlign="center">开票日期</div>*@
+            <div field="SummaryReceiptAmount" width="150" headerAlign="center" align="right">
+                付款金额(元)
+            </div>
+            @*<div field="CustoemrName" width="100" headerAlign="center">收费类型</div>*@
+            <div field="CustoemrName" width="100" headerAlign="center">付款日期</div>
+        </div>
+    </div>
+</div>
+
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 690px; height: 150px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+            <table>
+                <tr><td width="15%">付款日期</td><td width="35%" nowrap="nowrap"><input name="$FR$ContractReturnDate" class="mini-datepicker" style='width:45%' />&nbsp;-&nbsp;<input name="$TO$ContractReturnDate" class="mini-datepicker" style='width:45%' /></td>
+            </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick='search()' iconcls='icon-find' style='margin-right: 20px;'>查询</a>
+            <a class='mini-button' onclick='clearQueryForm()' iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function onShowRowDetail(e) {
+
+        var contractGridList = mini.get("ContractList");
+        var contractDetailListArea = document.getElementById("ContractDetailListArea");
+        var contractDetailList = mini.get("ContractDetailList");
+
+        var grid = e.sender;
+        var row = e.record;
+
+        var td = grid.getRowDetailCellEl(row);
+        td.appendChild(contractDetailListArea);
+        contractDetailListArea.style.display = "block";
+    }
+    function onContractDetailListShowRowDetail(e) {
+
+        var contractDetailList = mini.get("ContractDetailList");
+        var signleContractDetailListArea = document.getElementById("SignleContractDetailListArea");
+        var signleContractDetailList = mini.get("SignleContractDetailList");
+
+        var grid = e.sender;
+        var row = e.record;
+
+        var td = grid.getRowDetailCellEl(row);
+        td.appendChild(signleContractDetailListArea);
+        signleContractDetailListArea.style.display = "block";
+    }
+
+</script>

@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "Authorize";
+}
+<div id="Name" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="400" expanded="true" showspliticon="true" showheader="false"
+         style="border: 0px;">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <div id="RoleType" class="mini-radiobuttonlist" onvaluechanged="onRoleValueChanged" name="roleType" repeatitems="4"
+                             textfield="text" valuefield="value" value="ProjectRoleType" data="roleType">
+                        </div>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" style="width: 150px;" emptytext="请输入编号或名称" onenter="quickSearch('RoleCode,RoleName');"
+                               onbuttonclick="quickSearch('RoleCode,RoleName');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetRoleList" showpager="false" class="mini-datagrid" style="width: 100%; height: 100%;"
+                 idfield="ID" multiselect="false" onselectionchanged="onRoleChange">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="RoleName" width="*" headeralign="center" allowsort="true">
+                        角色名称
+                    </div>
+                    <div field="RoleCode" width="120" headeralign="center" allowsort="true" align="center">
+                        编号
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0px;">
+        <div class="mini-fit">
+            <div id="mytreegrid" class="mini-treegrid" style="width: 100%; height: 100%;" url="" showtreeicon="true"
+                 iconfield="Type" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+                 allowresize="false" fitcolumns="false" expandonload="true" allowcelledit="true" allowcellselect="true"
+                 oncellclick="onTreeCellclick">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div name="Name" field="Name" width="200">
+                        名称
+                    </div>
+                    <div type="checkboxcolumn" field="FullControlAuth" truevalue="True" falsevalue="False" width="60">
+                        完全控制
+                    </div>
+                    <div type="checkboxcolumn" field="ViewAuth" truevalue="True" falsevalue="False" width="60">
+                        只读
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var roleType = [{ text: "项目角色", value: "ProjectRoleType" }, { text: "系统角色", value: "SysRoleType" }];
+    var spaceID = getQueryString("SpaceID");
+    function onRoleChange(e) {
+        var treeGrid = mini.get("mytreegrid");
+        var url = changeToFullUrl("GetSpaceTree");
+        if (e.selected) {
+            var requestUrl = url.split('?')[0] + "?roleCode=" + e.selected.RoleCode + "&SpaceID=" + spaceID;
+            treeGrid.load(requestUrl);
+        }
+    }
+
+    function onRoleValueChanged(e) {
+        mini.get("dataGrid").load({ RoleType: e.value });
+    }
+
+    function onTreeCellclick(e) {
+        if ((e.field == "ViewAuth" || e.field == "FullControlAuth" || e.field == "CurrentFullControlAuth") && e.value != undefined) {
+            var roleGrid = mini.get("dataGrid"); var role = roleGrid.getSelected();
+            var viewAuth = e.record.ViewAuth;
+            var fullControlAuth = e.record.FullControlAuth;
+            var currentFullControlAuth = e.record.CurrentFullControlAuth;
+            addExecuteParam("RoleCode", role.RoleCode);
+            addExecuteParam("SpaceDefineID", e.record.ID);
+            addExecuteParam("RoleType", role.RoleType);
+            var method = "SetAuth";
+            if (viewAuth == "False" && fullControlAuth == "False" && currentFullControlAuth == "False") method = "RemoveAuth";
+            if (e.field == "ViewAuth") addExecuteParam("authType", "View");
+            else if (e.field == "CurrentFullControlAuth")
+                addExecuteParam("authType", "CurrentFullControl");
+            else addExecuteParam("authType", "FullControl");
+            execute(method, {
+                showLoading: true, onComplete: function (data) {
+                    mini.get("mytreegrid").reload();
+                }
+            });
+        }
+    }
+
+</script>
+<style type="text/css">
+    .Root {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif) no-repeat;
+    }
+
+    .Catalog {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/subproject.gif) no-repeat;
+    }
+
+    .Feature {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+</style>

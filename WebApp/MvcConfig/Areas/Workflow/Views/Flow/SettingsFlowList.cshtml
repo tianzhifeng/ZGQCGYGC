@@ -1,0 +1,228 @@
+﻿
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div title="center" region="center" style="border: 0;">
+        <form id="dataForm" method="post" url="/Base/UI/List/GetLayoutGrid">
+        <div class="formDiv">
+            <fieldset>
+                <legend>基本属性</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="50%">
+                            </td>
+                            <td width="50%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                树形列表：
+                            </td>
+                            <td>
+                                <input name="isTreeGrid" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否多选：
+                            </td>
+                            <td>
+                                <input name="multiSelect" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示列菜单：
+                            </td>
+                            <td>
+                                <input name="showColumnsMenu" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示斑马纹：
+                            </td>
+                            <td>
+                                <input name="allowAlternating" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                锁定开始列：
+                            </td>
+                            <td>
+                                <input name="frozenStartColumn" class="mini-textbox" style="width: 100%;" vtype="int;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                锁定截至列：
+                            </td>
+                            <td>
+                                <input name="frozenEndColumn" class="mini-textbox" style="width: 100%;" vtype="int;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示汇总行：
+                            </td>
+                            <td>
+                                <input name="showSummaryRow" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单元格换行：
+                            </td>
+                            <td>
+                                <input name="allowCellWrap" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单元格编辑：<a href="javascript:$('#trAllowCellEditHelp').show()">说明</a>
+                            </td>
+                            <td>
+                                <input name="allowCellEdit" class="mini-combobox" value="false" data="yesNo" style="width: 100%"  onvaluechanged="allowCellEditChange"/>
+                            </td>
+                        </tr>
+                        <tr id="trAllowCellEditHelp" style="display:none">
+                            <td colspan="2">
+                                只有在基本信息页填写【涉及到的表】，才能单元格编辑<br />
+                                允许单元格编辑后：客户端排序、快查；不可分页、不能标签式查询、不能详查；
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单元格选择：
+                            </td>
+                            <td>
+                                <input name="allowCellSelect" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否分页：
+                            </td>
+                            <td>
+                                <input name="showPager" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+     <fieldset>
+                <legend>树形属性</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="50%">
+                            </td>
+                            <td width="50%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                上级列：
+                            </td>
+                            <td>
+                                <input name="parentField" class="mini-combobox" data="fieldEnum" valuefield="field" textfield="header" shownullitem="true" allowinput="true" style="width: 100%"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                是否展开：
+                            </td>
+                            <td>
+                                <input name="expandOnLoad" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                显示节点图标：
+                            </td>
+                            <td>
+                                <input name="showTreeIcon" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>事件属性</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="50%">
+                            </td>
+                            <td width="50%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                绘制单元格时发生：
+                            </td>
+                            <td>
+                                <input name="ondrawcell" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+
+<script type="text/javascript">
+
+    var yesNo = [{ "value": "true", "text": "是" }, { "value": "false", "text": "否" }];
+    var fieldEnum =@Html.Raw(ViewBag.FieldEnum)
+    function onFormSetData(data) {
+        if (!data.TableNames) {
+            mini.getbyName("allowCellEdit").setEnabled(false);
+        }
+        else {
+            mini.getbyName("allowCellEdit").setEnabled(true);
+            if (mini.getbyName("allowCellSelect").getValue() == "true")
+                mini.getbyName("showPager").setEnabled(false);
+        }
+    }
+
+    function allowCellEditChange(e) {
+        if (e.value == "true") {
+            mini.getbyName("allowCellSelect").setValue("true");
+            mini.getbyName("showPager").setValue("false");
+            mini.getbyName("showPager").setEnabled(false);
+        }
+        else {
+            mini.getbyName("allowCellSelect").setValue("false");
+            mini.getbyName("showPager").setValue("true");
+            mini.getbyName("showPager").setEnabled(true);
+        }
+    }
+    function save() {
+        var form = new mini.Form("#dataForm");
+        var data = form.getData(true, false);
+
+        addExecuteParam("Data", mini.encode(data));
+        execute('SetFlowList', {
+            onComplete: function (result) {
+                closeWindow();
+            }
+        });
+    }
+
+</script>
+

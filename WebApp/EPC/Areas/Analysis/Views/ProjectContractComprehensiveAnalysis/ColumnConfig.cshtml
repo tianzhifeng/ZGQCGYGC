@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "ColumnConfig";
+}
+<div id="Name" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="查询列信息" region="west" width="250" expanded="true" showspliticon="false">
+        @*<div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+            <table>
+                <tr>
+                    <td>
+                        @*<a class='mini-button' id='btnAdd' iconcls='icon-add' text='增加' enabled='true' onclick='addColumnConfig'></a>
+                        <a class='mini-button' id='btnModify' iconcls='icon-edit' text='编辑' enabled='true' onclick='editColumnConfig;'></a>
+                        <a class='mini-button' id='btnSelect' iconcls='icon-ok' text='选择' enabled='true' onclick='selectNode();'></a>
+                    </td>
+                    <td class='gw-toolbar-right'></td>
+                </tr>
+            </table>
+        </div>*@
+        <ul id="mytree" class="mini-tree" url="GetColumnConfigTree" style="width: 100%; height: 90%;"
+            textfield="Name" idfield="ID" enablehottrack="false" parentfield="ParentID"
+            resultastree="false" expandonload="false" onnodedblclick="OnColumnConfigTreeDBCclick"></ul>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-right: 0; border-bottom: 0;">
+        <div class="mini-toolbar" style="padding: 7px; border-top: 0; border-left: 0; border-right: 0;">
+            <table>
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button"
+                           iconcls="icon-remove" onclick="delColumn();">移除</a>
+                        <a class='mini-button' id='btnSelect' iconcls='icon-save' text='确认' enabled='true' onclick='saveColumns();'></a>
+                        <a class='mini-button' id='btnSelect' iconcls='icon-save' text='存版' enabled='true' onclick='returnList();'></a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="columnDataGrid" class="mini-datagrid" showpager="false" style="width: 100%;
+                        height: 100%;" url="" multiselect="true" borderstyle="border-left: 0; border-right: 0;">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="200" allowsort="true" align="center">
+                        一级列名
+                    </div>
+                    <div field="Name" width="200" allowsort="true" align="center">
+                        二级列名
+                    </div>
+                    <div field="IsLink" width="200" allowsort="true" align="center">
+                        是否超链接
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function addColumnConfig() {
+        var mytree = mini.get("mytree");
+        var node = mytree.getSelectedNode();
+        var parentID = "";
+        if (node && node.ID)
+            parentID = node.ID;
+        var level = 1;
+        if (node && node.Level) {
+            var tempLevel = parseInt(node.Level);
+            level = tempLevel + 1;
+        }
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=ProjectContractComprehensiveAnalysisEdit&ParentID=" + parentID + "&Level=" + level;
+        openWindow(url, {
+            width: "600", height: "300", title: "增加配置列", onDestroy: function myfunction() {
+                mytree.load("GetColumnConfigTree");
+            }
+        });
+    }
+
+    function selectNode() {
+        var mytree = mini.get("mytree");
+        var node = mytree.getSelectedNode();
+        var columnDataGrid = mini.get("columnDataGrid");
+        var existedRow = columnDataGrid.findRow(function (row) {
+            if (row.Name == node.Name) return true;
+        });
+        if (existedRow == undefined || existedRow == null) {
+            existedRow = { "Name": node.Name, "IsLink": "否" };
+            columnDataGrid.addRow(existedRow);
+        }
+    }
+
+    function OnColumnConfigTreeDBCclick(e) {
+        var node = e.node;
+        var columnDataGrid = mini.get("columnDataGrid");
+        var existedRow = columnDataGrid.findRow(function (row) {
+            if (row.Name == node.Name) return true;
+        });
+        if (existedRow == undefined || existedRow == null) {
+            existedRow = { "Name": node.Name, "IsLink": "否" };
+            columnDataGrid.addRow(existedRow);
+        }
+    }
+
+    function delColumn() {
+        var columnDataGrid = mini.get("columnDataGrid");
+        var selectedRows = columnDataGrid.getSelecteds();
+        columnDataGrid.removeRows(selectedRows);
+    }
+
+    function saveColumns() {
+        var columnDataGrid = mini.get("columnDataGrid");
+        var data = columnDataGrid.getData();
+        closeWindow(data);
+    }
+
+</script>

@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "AllCost";
+}
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" allowresize="false" showheader="false" width="500px" showclosebutton="false" showspliticon="false" style="border-top: 0px; ">
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetAllList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 showpager="false" showsummaryrow="true" borderstyle="border:0px" ondrawsummarycell="onDrawSummaryCell"
+                 ondrawcell="onDrawCell"
+                 onload="onGridLoad">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="SubjectName" width="150" headeralign="center" allowsort="true">
+                        科目名称
+                    </div>
+                    <div field="CostValue" width="*" summarytype="sum" datatype="currency" headeralign="center" allowsort="true" align="right">
+                        成本合计（元）
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0px; ">
+        <div id="pieChartContainer" class="mini-fit">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    function loadingChart(divID, option) {
+        $("#" + divID).highcharts($.extend(true,
+            option,
+            {
+
+            }));
+    }
+
+    function onGridLoad(e) {
+        if (e.result && e.result.pieChartData) {
+            loadingChart("pieChartContainer", e.result.pieChartData);
+        }
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var field = e.field;
+        e.cellStyle = "text-align:right; color:Brown";
+    }
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field != "SubjectName" && field) {
+            var belongMonth = field.replace("Month", "");
+            var belongYear = record["BelongYear"];
+            if (field == "CostValue") belongMonth = "";
+            e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + record.SubjectCode + '\',\'' + record.ProjectID + '\')">' + mini.formatNumber(e.value, "#,0") + '</a>&nbsp; ';
+        }
+    }
+
+    function viewDetailInfo(subjectCode, projectID) {
+        url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectCostDetail";
+        width = "70%"; height = "75%";
+        var queryData = { "$EQ$ProjectID": projectID };
+        queryData["$EQ$SubjectCode"] = subjectCode;
+        title = "成本明细";
+        openWindow(url, { data: queryData, width: width, height: height, title: title, addQueryString: false });
+    }
+
+
+
+</script>
+

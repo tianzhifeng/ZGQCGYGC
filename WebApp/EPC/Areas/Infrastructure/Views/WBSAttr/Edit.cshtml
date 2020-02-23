@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "WBS属性编辑";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+         splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div class="formDiv">
+            <div id="dataForm">
+                <input name="ID" class="mini-hidden" />
+                <input name="Type" class="mini-hidden" />
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                                <td width="15%"></td>
+                                <td width="35%"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    名称
+                                </td>
+                                <td>
+                                    <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                                </td>
+                                <td style="padding-left: 20px">
+                                    编码
+                                </td>
+                                <td>
+                                    <input name="Code" class="mini-textbox" required="true" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>分类</td>
+                                <td>
+                                    <input name="Class" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                           data="NodeClass" allowinput="false"  multiselect="true"/>
+                                </td>
+                                <td style="padding-left: 20px"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    排序号
+                                </td>
+                                <td>
+                                    <input name="SortIndex" class="mini-textbox" required="true" style="width: 100%" vtype="int" />
+                                </td>
+                                <td style="padding-left: 20px">是否枚举</td>
+                                <td>
+                                    <input name="IsEnum" class="mini-combobox" style="width: 100%;" textfield="text"
+                                           valuefield="value" data="TrueOrFalse" allowinput="false" multiselect="false"
+                                           required="true" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var TrueOrFalse = [{ text: "是", value: true }, { text: "否", value: false }];
+    @Html.GetEnum(typeof(EPC.Logic.NodeClass))
+</script>
+<script type="text/javascript">
+    //var saveBase = save;
+    //save = function () {
+    //    var rowID = mini.getbyName("ID").getValue();
+    //    var code = mini.getbyName("Code").getValue();
+    //    var name = mini.getbyName("Name").getValue();
+    //    addExecuteParam("rowID", rowID);
+    //    addExecuteParam("code", code);
+    //    addExecuteParam("name", name);
+    //    execute("AddAuditMode", {
+    //        onFail: function () {
+    //            msgUI("关联校审模式失败，请联系管理员！");
+    //        }
+    //    });
+
+    //    saveBase();
+    //}
+</script>

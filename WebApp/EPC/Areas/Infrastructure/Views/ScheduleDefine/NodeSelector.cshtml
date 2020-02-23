@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "NodeSelector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="onReturnValue();" plain="true">选择</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="closeWindow();" plain="true">取消</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="StructInfoID"
+        enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="true"></ul>
+</div>
+<script type="text/javascript">
+    var defineID = getQueryString("DefineID");
+    $("#dataTree").attr("url", "GetDefineNodes?DefineID=" + defineID);
+    function onReturnValue() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (node) {
+            closeWindow({ ID: node.StructInfoID, Name: node.Name, NodeType: node.NodeType });
+        }
+        else {
+            closeWindow({ ID: "", Name: "", NodeType: "" });
+        }
+    }
+</script>

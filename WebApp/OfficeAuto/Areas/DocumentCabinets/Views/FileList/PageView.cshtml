@@ -1,0 +1,230 @@
+﻿@{
+    Layout = ViewBag.Layout;
+}
+@*<script src="/PortalLTE/Scripts/jQuery/jquery.nicescroll.min.js"></script>*@
+<script type="text/javascript">
+    //请现在页面或Layout中引用脚本：“/CommonWebResource/CoreLib/HighCharts/highcharts.js”
+    //请调用showGirdChartSettings方法打开图表配置页
+
+    var groupbyFieldEnum = [
+    ];
+
+    var sumFieldEnum = [
+    ];
+
+    function showChart() {
+        createChart('title', 'name', []);
+    }
+
+</script>
+
+@Html.Raw(ViewBag.ListHtml)
+
+<script type="text/javascript">
+    @Html.Raw(ViewBag.Script)
+    @Html.Raw(ViewBag.FixedFields)
+</script>
+<script type="text/javascript">
+    $(".gw-grid-toolbar").find("td").first().prepend(
+        '<a id="btnAdd" class="mini-button mini-button-plain" iconcls="icon-add" onclick="doAdd" plain="true">增加</a>' +
+        '<a id="btnEdit" class="mini-button mini-button-plain" iconcls="icon-edit" onclick="doEdit" plain="true">编辑</a>' +
+        '<a id="btnDel" class="mini-button mini-button-plain" iconcls="icon-remove" onclick="del" plain="true">删除</a>' +
+        '<a id="btnInvalid" class="mini-button mini-button-plain" iconcls="icon-cancel" onclick="doInvalid" plain="true">作废</a>' +
+        '<a id="btnValid" class="mini-button mini-button-plain" iconcls="icon-ok" onclick="doValid" plain="true">取消作废</a>');
+
+    function doAdd() {
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=FileInfo&DocumentInfoID=" + getQueryString("DocumentInfoID");
+        openWindow(url, {
+            title: "增加文件", width: 950, height: 550, addQueryString: false
+        });
+    }
+
+    function doEdit() {
+        var rows = mini.get("dataGrid").getSelecteds();
+        if (rows.length != 1)
+            return msgUI("请选择一条记录！");
+        var url = "/OfficeAuto/DocumentCabinets/Files/Edit?ID=" + rows[0].ID + "&DocumentInfoID=" + getQueryString("DocumentInfoID");
+        openWindow(url, {
+            title: "编辑", width: 950, height: 550, addQueryString: false
+        });
+    }
+
+    function doInvalid() {
+        var grid = mini.get("dataGrid");
+        var row = grid.getSelected();
+        if (row) {
+            if (row.IsValid == "T") {
+                msgUI("是否确认作废？", 2, function (action) {
+                    if (action == "ok") {
+                        addExecuteParam("ID", row.ID);
+                        execute("/OfficeAuto/DocumentCabinets/Files/DoInvalid", { actionTitle: "作废" });
+                    }
+                });
+            } else {
+                msgUI("该记录已作废！");
+            }
+        } else {
+            msgUI("请选择一条记录！");
+        }
+    }
+
+    function doValid() {
+        var grid = mini.get("dataGrid");
+        var row = grid.getSelected();
+        if (row) {
+            if (row.IsValid == "F") {
+                msgUI("是否确认取消作废？", 2, function (action) {
+                    if (action == "ok") {
+                        addExecuteParam("ID", row.ID);
+                        execute("/OfficeAuto/DocumentCabinets/Files/DoValid", { actionTitle: "取消作废" });
+                    }
+                });
+            } else {
+                msgUI("该记录未作废！");
+            }
+        } else {
+            msgUI("请选择一条记录！");
+        }
+    }
+</script>
+<script type="text/javascript">
+    function exportList(currentPage) {
+        if (currentPage)
+            $("input[name='exportCurrentPage']").val("true");
+        else
+            $("input[name='exportCurrentPage']").val("false");
+        ExportExcel(getQueryString("TmplCode"), "dataGrid", "");
+    }
+
+    //Word导出
+    function exportWord(tmplCode) {
+        var grid = mini.get("dataGrid");
+        if (grid.getSelecteds().length != 1) {
+            msgUI("请选择一行记录");
+            return;
+        }
+        if (tmplCode == undefined)
+            tmplCode = getQueryString("TmplCode");
+        var url = "/MvcConfig/UI/Word/Export?TmplCode=" + tmplCode + "&ID={ID}";
+        url = replaceUrl(url);
+        window.location.href = url;
+        // window.open(url);该代码会重新打开一个页面，企业微信pc端，打开后有1个空白页面，不会自动关闭
+    }
+
+    //pdf导出
+    function exportPdf(tmplCode) {
+        var grid = mini.get("dataGrid");
+        if (grid.getSelecteds().length != 1) {
+            msgUI("请选择一行记录");
+            return;
+        }
+        if (tmplCode == undefined)
+            tmplCode = getQueryString("TmplCode");
+        var url = "/MvcConfig/UI/Word/Export?pdf=true&TmplCode=" + tmplCode + "&ID={ID}";
+        url = replaceUrl(url);
+        window.location.href = url;
+        // window.open(url);该代码会重新打开一个页面，企业微信pc端，打开后有1个空白页面，不会自动关闭
+    }
+
+    //表单打印
+    function funPrintWord() {
+        var grid = mini.get("dataGrid");
+        if (grid.getSelecteds().length != 1) {
+            msgUI("请选择一行记录");
+            return;
+        }
+        var id = grid.getSelecteds()[0]["ID"];
+        var tmplCode = getQueryString("TmplCode");
+
+        printWord(tmplCode, id);
+
+    }
+
+    //Excel打印
+    function funPrintExcel() {
+        var grid = mini.get("dataGrid");
+        if (grid.getSelecteds().length == 0) {
+            msgUI("请选择要打印的记录！");
+            return;
+        }
+
+        var tmplCode = getQueryString("TmplCode");
+
+        var list = grid.getSelecteds();
+
+        if (list.length == 1) {
+            var id = list[0]["ID"];
+            printExcel(tmplCode, id, true);
+        }
+        else {
+            for (var i = 0; i < list.length; i++) {
+                var id = list[i]["ID"];
+                printExcel(tmplCode, id, false);
+            }
+        }
+    }
+
+    /*if (typeof (pageLoad) == "undefined") {
+        function pageLoad() {
+            var grid = mini.get("dataGrid");
+            var data = {};
+            var key = getQueryString("Sub_Key");
+            var keyID = getQueryString("Sub_ID");
+            if (key && grid != undefined && keyID) {
+                data["$IL$" + key] = keyID;
+                grid.load({ quickQueryFormData: mini.encode(data) });
+            }
+            //$('.mini-grid-rows-view').niceScroll({ cursorcolor: "#dfdfdf", cursorwidth: "5px", autohidemode: false });
+        }
+    }*/
+</script>
+
+<div id='QRCodeWindow' class='mini-window' title='二维码' style='width: 200px; height: 228px; display: none;'>
+    <div style='padding: 8px;'>
+        <div style="height:135px;border:dashed 1px #ccc;text-align:center;" id="QRCodeImg"></div>
+        <div style='text-align: center;' id="btnQRCode">
+
+        </div>
+    </div>
+</div>
+
+<div id='chartSettings' class='mini-window' title='统计图表生成' style='width: 690px; height: 245px; display: none;'>
+    <div style='padding: 20px;'>
+        <form id='queryForm'>
+            <table>
+                <tr>
+                    <td align='right'>
+                        统计项:
+                    </td>
+                    <td style='text-align: left'>
+                        <div id='groupbyField' class='mini-checkboxlist' multiselect='false' data='groupbyFieldEnum'>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width='20%' align='right'>
+                        统计项数值:
+                    </td>
+                    <td style='text-align: left'>
+                        <div id='sumField' class='mini-checkboxlist' multiselect='false' data='sumFieldEnum'>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan='2'></td>
+                </tr>
+                <tr>
+                    <td colspan='2' style='text-align: center;' class='queryDiv'>
+                        <div id='chartType' style='text-align: center;' class='mini-checkboxlist' multiselect='false'
+                             data='chartType'>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style='text-align: center;'>
+        <a class='mini-button' onclick='showChart();' iconcls='icon-find' style='margin-right: 20px;'>生成图表</a>
+        <a class='mini-button' onclick='hideWindow("chartSettings")' iconcls='icon-undo'>取消</a>
+    </div>
+</div>
+@Html.Raw(ViewBag.RightKeyHtml)

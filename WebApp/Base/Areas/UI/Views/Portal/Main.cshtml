@@ -1,0 +1,457 @@
+﻿<!-- Bootstrap 3.3.6 -->
+<link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+<!-- jQuery 2.2.0 -->
+<script src="/PortalLTE/Scripts/jQuery/jQuery-2.2.0.min.js"></script>
+<script src="/PortalLTE/Scripts/jQueryUI/jquery-ui.min.js"></script>
+
+<style>
+    table tr td {
+        font-family: "微软雅黑",Arial,sans-serif;
+        font-size: 14px;
+        height: 25px;
+        line-height: 25px;
+    }
+
+    .table-td-title {
+        width: 70px;
+        text-align: center;
+        height: 37px;
+        line-height: 37px;
+    }
+
+    .tr-title {
+        text-align: center;
+        height: 35px;
+        line-height: 35px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #666;
+        border-bottom: 1px solid #808080;
+    }
+
+    #rAndc {
+        display: none;
+    }
+
+    .mini-radiobuttonlist-td {
+        text-align: left;
+        padding-right: 8px;
+    }
+
+    input[type=checkbox], input[type=radio] {
+        margin: 0px 0 0;
+    }
+
+    #tr_SQL .mini-textbox-border{
+        height:98px !important;
+    }
+    .mini-radiobuttonlist table label {
+        font-size: 12px;
+        font-family: "微软雅黑",Arial,sans-serif;
+        line-height: 0px!important;
+        padding-top: 4px;
+    }
+</style>
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" id="splitter">
+        <div showcollapsebutton="false">
+            <iframe id="iframePortal" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+        <div size="320" minsize="250" showcollapsebutton="true" borderstyle="0px" style="background-color: #f5f5f5;">
+            <div class="mini-fit">
+                <form id="dataForm" method="post" autogetdata="false">
+                    <table style="width: 100%">
+                        <tr class="tr-title">
+                            <td colspan="4">模板配置(@ViewBag.Templet.Title)</td>
+                        </tr>
+
+                        <tr>
+                            <td class="table-td-title">模板:</td>
+                            <td colspan="3" style="text-align: center;">
+                                <input class="mini-radiobuttonlist" name="TempletType" textfield="text" valuefield="value" value="1r3c" data="TempletType" onvaluechanged="TempletValuechanged"></input>
+                            </td>
+                        </tr>
+                        <tr id="rAndc">
+                            <td class="table-td-title">行:</td>
+                            <td>
+                                <input name="Rows" class="mini-textbox" style="width: 72px;" required="true" inputstyle="font-weight: bold;font-size:14px;" value="2" /></td>
+                            <td class="table-td-title">列:</td>
+                            <td>
+                                <input name="Cols" class="mini-textbox" style="width: 72px;" required="true" inputstyle="font-weight: bold;font-size:14px;" value="2,3" /></td>
+                        </tr>
+                        <tr>
+                            <td class="table-td-title">列宽:</td>
+                            <td colspan="3">
+                                <input name="ColsWidth" class="mini-textbox" style="width: 230px;" required="true" value="4,4,4" inputstyle="font-weight: bold;font-size:14px;" /></td>
+                            </td>
+                        </tr>
+                        <tr class="tr-title" style="height: 30px; text-align: right;">
+                            <td colspan="4">
+                                <a class="mini-button" style="margin-right: 10px;" iconcls="icon-save" onclick="SubmitTemplet(false)">生成模板</a>
+
+                                <a class="mini-button" iconcls="icon-save" onclick="AddPortal(this)">添加块</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="font-size: 12px;">说明:列宽为12个等级(12为全屏,4为三分之一),每列用","分隔<br />
+                                自定义每行列数用","分隔，第二行起用"|"区分每行</td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; margin-top: 10px;" id="p_table">
+                        <tr class="tr-title">
+                            <td colspan="4">块配置</td>
+                        </tr>
+
+                        <tr>
+                            <td class="table-td-title">类型:</td>
+                            <td colspan="3" style="text-align: center;">
+                                <input name="Type" class="mini-radiobuttonlist" repeatitems="1" repeatlayout="table" repeatdirection="vertical" textfield="text" valuefield="value" value="Default" data="PortalType" onvaluechanged="PortalValuechanged"></input>
+                            </td>
+                        </tr>
+                        <tr id="tr_pTitle">
+                            <td class="table-td-title">标题:</td>
+                            <td colspan="3">
+                                <input name="Title" class="mini-textbox" style="width: 230px;" required="true" /></td>
+                        </tr>
+                        <tr id="tr_PublicInformation">
+                            <td class="table-td-title">使用栏目:</td>
+                            <td colspan="3">
+                                <div id="PublicInformCatalog" name="PublicInformCatalog" class="mini-combobox" style="width: 230px;" popupwidth="230" textfield="CatalogName" valuefield="ID"
+                                    url="GetPublicInformCatalog" showclose="true" onvaluechanged="PublicInformChanged" oncloseclick="onCloseClick">
+                                    <div property="columns">
+                                        <div header="栏目Key" field="CatalogKey"></div>
+                                        <div header="名称" field="CatalogName" renderer="onPublicInformCatalogRenderer"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="tr_conn">
+                            <td class="table-td-title" id="td_t_ConnName">所属模块:
+                            </td>
+                            <td id="td_i_ConnName">
+                                <input name="ConnName" class="mini-combobox" style="width: 105px;" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                            </td>
+                            <td style="text-align:center;" id="td_t_height">高度:
+                            </td>
+                            <td id="td_i_height">
+                                <input name="Height" class="mini-textbox" style="width: 50px;text-align:left;" />
+                            </td>
+                        </tr>
+                        <tr id="tr_SQL">
+                            <td class="table-td-title">SQL语句:</td>
+                            <td colspan="3">
+                                <input name="SQL" class="mini-textarea" style="width: 230px;height: 100px;"  required="true" /></td>
+                        </tr>
+                        <tr id="tr_Portal" hidden>
+                            <td class="table-td-title">Portal:</td>
+                            <td colspan="3">
+                                <div id="Portal" name="Portal" class="mini-combobox" style="width: 230px;" popupwidth="230" textfield="text" valuefield="value"
+                                    url="GetAllPortal" multiselect="false" showclose="true" onvaluechanged="PortalChanged" oncloseclick="onCloseClick">
+                                    <div property="columns">
+                                        <div header="名称" field="text"></div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr id="tr_DisplayType" hidden>
+                            <td class="table-td-title">显示类型:</td>
+                            <td colspan="3">
+                                <input name="DisplayType" id="DisplayType" class="mini-combobox"  style="width: 230px;" data="DisplayType" />
+                            </td>
+                        </tr>
+                        <tr id="tr_LinkUrl">
+                            <td class="table-td-title">连接地址:</td>
+                            <td colspan="3">
+                                <input name="LinkUrl" class="mini-textbox" style="width: 230px;"></input></td>
+                        </tr>
+                        <tr id="tr_MoreUrl">
+                            <td class="table-td-title">更多地址:</td>
+                            <td colspan="3">
+                                <input name="MoreUrl" class="mini-textbox" style="width: 230px;"></input></td>
+                        </tr>
+                        <tr class="tr-title" style="height: 30px;">
+                            <td colspan="4" style="text-align: right;"><a class="mini-button" iconcls="icon-save" onclick="CreatePortal(this)">保存</a></td>
+                        </tr>
+                        <tr><td colspan="4" style="font-size: 12px;">说明:查询语句内容标题字段Title、内容字段Content、时间字段CreateTime区分大小写</td></tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory)
+</script>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.PortalType))
+    @Html.GetEnum(typeof(Base.Logic.DisplayType))
+    var TempletType = [{ "value": "1r3c", "text": "一行三列" }, { "value": "1r2c", "text": "一行两列" }, { "value": "custom", "text": "自定义" }];
+
+    function onPortalTypeRenderer(e) {
+        for (var i = 0, l = PortalType.length; i < l; i++) {
+            var g = PortalType[i];
+            if (g.value == e.value) return g.text;
+        }
+        return "";
+    }
+
+    if(typeof (IsUseNewPortal) != 'undefined' && IsUseNewPortal.toLocaleLowerCase() == 'true')
+        $("#tr_DisplayType").show();
+
+    function typeEnabled(is){
+        mini.getbyName("Type").setEnabled(is);
+    }
+    function displayTypeHidden(is){
+        if(is)
+            $("#tr_DisplayType").show();
+        else
+            $("#tr_DisplayType").hide();
+    }
+
+    function TempletValuechanged(e) {
+        var value = e.value != undefined ? e.value : e;
+        if (value == "custom") {
+            $("#rAndc").show();
+            mini.getbyName("Rows").setValue("2");
+            mini.getbyName("Cols").setValue("2,3");
+            mini.getbyName("ColsWidth").setValue("6,6|4,4,4");
+        } else {
+            $("#rAndc").hide();
+            if (value == "1r3c") {
+                mini.getbyName("ColsWidth").setValue("4,4,4");
+            }else if (value == "1r2c") {
+                mini.getbyName("ColsWidth").setValue("6,6");
+            }else {
+                mini.getbyName("ColsWidth").setValue("6,6|4,4,4");
+            }
+        }
+    }
+
+    function board137(value){
+        var hidden = "Head";
+        var displayType = mini.get("DisplayType");
+        switch (value) {
+            case '@Base.Logic.DefaultPortal.board1':
+            case '@Base.Logic.DefaultPortal.board3':
+            case '@Base.Logic.DefaultPortal.board7':
+                 hidden = "Block";
+                break;
+        }
+        var data = new Array();
+        for (var i = 0; i < DisplayType.length; i++) {
+             if(DisplayType[i].value != hidden){
+                  data.push(DisplayType[i]);
+             }
+        }
+        displayType.setData(data);
+    }
+
+    function PortalChanged(e){
+        var value = e.value != undefined ? e.value : e;
+        switch (value) {
+            case '@Base.Logic.DefaultPortal.Task':
+            case '@Base.Logic.DefaultPortal.board2':
+            case '@Base.Logic.DefaultPortal.board5':
+            case '@Base.Logic.DefaultPortal.MailList':
+            case '@Base.Logic.DefaultPortal.board10':
+            case '@Base.Logic.DefaultPortal.board4':
+            case '@Base.Logic.DefaultPortal.board9':
+                displayTypeHidden(false);
+                break;
+            default:
+                displayTypeHidden(true);
+                board137(value);
+                break;
+        }
+    }
+
+    function PublicInformChanged(e){
+        var value = e.value != undefined ? e.value : e;
+        mini.getbyName("ConnName").setValue("Base");
+        mini.getbyName("SQL").setValue("select a.ID,a.Title,a.CreateTime,a.ContentText as Content,a.CreateUserName"+
+                                    " from S_I_PublicInformation a left join S_I_PublicInformCatalog b on a.CatalogId=b.ID"+
+                                    " where b.ID='" + value + "' ORDER BY Important DESC,Urgency DESC, CreateTime DESC");
+
+    }
+
+
+    function PortalValuechanged(e) {
+        function publicTR(){
+            $("#tr_Portal,#tr_LinkUrl").hide();
+            $("#tr_pTitle,#tr_MoreUrl,#tr_SQL,#td_t_ConnName,#td_i_ConnName,#td_t_height,#td_i_height,#tr_DisplayType,#tr_PublicInformation").show();
+        }
+        var linkUrl = mini.getbyName("LinkUrl");
+        var moreUrl = mini.getbyName("MoreUrl");
+        var value = e.value != undefined ? e.value : e;
+        var displayType = mini.get("DisplayType");
+        if (value == "Link") {
+            $("#tr_LinkUrl,#tr_pTitle,#td_t_height,#td_i_height").show();
+            $("#tr_SQL,#tr_Portal,#td_t_ConnName,#td_i_ConnName,#tr_MoreUrl,#tr_PublicInformation,#tr_DisplayType").hide();
+        } else if (value == "Now") {
+            $("#tr_LinkUrl,#tr_pTitle,#tr_MoreUrl,#tr_SQL,#td_t_ConnName,#td_i_ConnName,#td_t_height,#td_i_height,#tr_PublicInformation,#tr_DisplayType").hide();
+            $("#tr_Portal").show();
+            var data = new Array();
+            for (var i = 0; i < DisplayType.length; i++) {
+                if(DisplayType[i].value != "Block"){
+                    data.push(DisplayType[i]);
+                }
+            }
+            displayType.setData(data);
+        }else if (value == "News") {
+            $("#tr_MoreUrl,#tr_pTitle,#td_t_height,#td_i_height,#tr_PublicInformation").show();
+            $("#tr_SQL,#tr_Portal,#td_t_ConnName,#td_i_ConnName,#tr_LinkUrl").hide();
+        }else{
+            publicTR();
+            var data = new Array();
+            for (var i = 0; i < DisplayType.length; i++) {
+                if(DisplayType[i].value != "Head"){
+                    data.push(DisplayType[i]);
+                }
+            }
+            displayType.setData(data);
+        }
+    }
+
+
+    function SubmitTemplet(e) {
+        var form = new mini.Form("#dataForm");
+        var type = mini.getbyName("TempletType").getValue();
+        if(type == undefined || type == "")
+        {
+            msgUI("请选择模板!");
+            return;
+        }else{
+            msgUI("模板生成后会清空,确认要生成吗？", 2,
+                function (action) {
+                    if (action == "ok") {
+                        CreateTemplet(e);
+                        bind();
+                    }
+                }
+            );
+        }
+    }
+    function onCloseClick(e) {
+        var obj = e.sender;
+        obj.setText("");
+        obj.setValue("");
+    }
+    function CreateTemplet(e) {
+        var form = new mini.Form("#dataForm");
+        jQuery.ajax({
+            url: changeToFullUrl('CreateTemplet'),
+            type: "post",
+            data: { ID: getQueryString("ID"), IsLoad: e, data: mini.encode(form.getData()) },
+            cache: false,
+            async: false,
+            success: function (text, textStatus) {
+                //增加新版报错分支
+                if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                if (!e)
+                    msgUI("生成成功!");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    bind();
+    CreateTemplet(true);
+    function bind() {
+        document.getElementById('iframePortal').src = "Portal?ID=" + getQueryString("ID");
+    }
+    var isNew = true, portalID = "";
+    function CreatePortal(e) {
+        var form = new mini.Form("#dataForm");
+        var type = mini.getbyName("Type").getValue();
+        var title = mini.getbyName("Title").getValue();
+        var connName = mini.getbyName("ConnName").getValue();
+        var SQL = mini.getbyName("SQL").getValue();
+        var linkUrl = mini.getbyName("LinkUrl").getValue();
+        var portal = mini.getbyName("Portal").getValue();
+        var publicInformCatalog = mini.getbyName("PublicInformCatalog").getValue();
+        if(type == 'Default'){
+            if(title == '' || connName == '' || SQL == ''){
+                msgUI("标题、所属模块、SQL语句不能为空");
+                return;
+            }else if(SQL.toLowerCase().indexOf('select') < 0){
+                msgUI("SQL语句不正确");
+                return;
+            }
+        }else if(type == 'News'){
+            if(title == '' || typeof(publicInformCatalog) == 'undefined'){
+                msgUI("标题、栏目不能为空");
+                return;
+            }
+        }else if(type == 'Link'){
+            if(title == '' || linkUrl == ''){
+                msgUI("标题、连接地址不能为空");
+                return;
+            }
+        }else{
+            if(portal == ''){
+                msgUI("Portal不能为空");
+                return;
+            }
+        }
+        jQuery.ajax({
+            url: changeToFullUrl('CreatePortal'),
+            type: "post",
+            data: { ID: getQueryString("ID"), isNew: isNew, data: mini.encode(form.getData()), portalID: portalID },
+            cache: false,
+            async: false,
+            success: function (text, textStatus) {
+                //增加新版报错分支
+                if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                bind();
+                isNew = false;
+                portalID = data;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    $("#p_table").hide();
+
+    function AddPortal(e) {
+        isNew = true;
+        var form = new mini.Form("#dataForm");
+
+        $("#p_table").show();
+        PortalValuechanged("Now");
+        mini.getbyName("Type").setValue('Now');
+        typeEnabled(true);
+        displayTypeHidden(false);
+        mini.getbyName("LinkUrl").setValue("");
+        mini.getbyName("MoreUrl").setValue("");
+    }
+
+
+    window.onload=function(){ 
+        setCategoryData('Base','');
+    } 
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+    }
+
+</script>

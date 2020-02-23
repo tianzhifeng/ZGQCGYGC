@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "项目群里程碑跟踪";
+    Layout = "../Shared/_LayoutRGantt.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%; padding: 5px;">
+                <img width="16" height="16" align="absmiddle" border="0" alt="正常完成" src="/Project/Scripts/Flag/images/NormalFinish.png">
+                正常完成<font class="fontnumber" id="NormalFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="进行中" src="/Project/Scripts/Flag/images/NormalUndone.png">
+                正常进行中<font class="fontnumber" id="NormalUndone">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期完成" src="/Project/Scripts/Flag/images/DelayFinish.png">
+                延期完成<font class="fontnumber" id="DelayFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期未完成" src="/Project/Scripts/Flag/images/DelayUndone.png">
+                延期未完成<font class="fontnumber" id="DelayUndone">(0)</font> <a class="mini-button" onclick="zoomIn()" iconcls="icon-zoomin" plain="true">放大</a>
+                <a class="mini-button" onclick="zoomOut()" iconcls="icon-zoomout" plain="true">缩小</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" style="width: 200px;" emptytext="请输入项目名称或编号" onenter="quickSearch('Name,Code');" onbuttonclick="quickSearch('Name,Code');" />
+                <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');" plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GanttDV">
+</div>
+<div id="pager" class="mini-pager" onpagechanged="onPageChanged" pagesize="10" style="width: 100%; background: #f0f3f7;" sizelist="[5,10,20,50,100,200]">
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 750px; height: 205px;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="20%" align="center">
+                    项目名称
+                </td>
+                <td width="30%">
+                    <input name="$LK$Name" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="20%" align="center">
+                    项目编号
+                </td>
+                <td width="30%">
+                    <input name="$LK$Code" class="mini-textbox" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    计划完成时间（起）
+                </td>
+                <td>
+                    <input name="$FR$PlanStartDate" class="mini-datepicker" style="width: 100%;" />
+                </td>
+                <td align="center">
+                    计划完成时间（止）
+                </td>
+                <td>
+                    <input name="$TO$PlanStartDate" class="mini-datepicker" style="width: 100%;" />
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    里程碑计划时间（起）
+                </td>
+                <td>
+                    <input name="MileStonePlanDateStart" class="mini-datepicker" style="width: 100%;" />
+                </td>
+                <td align="center">
+                    里程碑计划时间（止）
+                </td>
+                <td>
+                    <input name="MileStonePlanDateEnd" class="mini-datepicker" style="width: 100%;" />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="loadData();hideWindow('queryWindow')" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    mini.parse();
+    var gantt = initGantt();
+    var taskMenu = new RGanttTaskMenu();
+    gantt.setTaskMenu(taskMenu);
+    gantt.render(document.getElementById("GanttDV"));
+    var pagerData = { pageSize: 20, pageIndex: 0 };
+
+    loadData();
+    function loadData(queryData) {
+        gantt.loading();
+        if (!queryData)
+            queryData = new mini.Form("queryForm").getData();
+        addExecuteParam("queryFormData", mini.encode(queryData));
+        addExecuteParam("pageSize", pagerData.pageSize);
+        addExecuteParam("pageIndex", pagerData.pageIndex);
+        execute("GetMileStoneList", { refresh: false, onComplete: function (responseData) {
+            gantt.loadData(responseData.data);
+            gantt.unmask();
+            mini.get("pager").update(responseData["CurrentPage"], pager.pageSize, responseData["Total"]);
+            $("#NormalFinish").text("(" + responseData.NormalFinishCount + ")");
+            $("#NormalUndone").text("(" + responseData.NormalUndoneCount + ")");
+            $("#DelayFinish").text("(" + responseData.DelayFinishCount + ")");
+            $("#DelayUndone").text("(" + responseData.DelayUndoneCount + ")");
+        }, validateForm: false
+        });
+    }
+
+    function quickSearch(searchFields) {
+        var data = {};
+        var keyCo = mini.get("key");
+        var keys = searchFields.split(',');
+        for (i = 0, len = keys.length; i < len; i++) {
+            data["$IL$" + keys[i]] = keyCo.getValue();
+        }
+        data["IsOrRelation"] = "True"; //快速查询条件间为或关系
+        loadData(data);
+    }
+
+    function onPageChanged(e) {
+        pagerData["pageIndex"] = e.pageIndex;
+        pagerData["pageSize"] = e.pageSize;
+        loadData();
+    }
+
+
+    gantt.on('itemtooltipneeded', function (e) {
+        var task = e.task;
+        e.tooltip = "<div>项目名称：" + task.ProjectInfoName + "</div>"
+                + "<div>里程碑名称：" + task.DisplayName + "</div>"
+                + "<div style='clear:both;'>计划完成日期：" + mini.formatDate(task.Start, 'yyyy-MM-dd') + "</div>"
+                + "<div>实际完成日期：" + mini.formatDate(task.FactFinishDate, 'yyyy-MM-dd') + "</div>";
+    });
+
+    function initGantt() {
+        var gantt = new mini.RGantt();
+        gantt.setStyle("width:100%;height:100%;border:0px;");
+        gantt.setAllowResize(false);
+        gantt.setMultiSelect(true);
+        var currentDate = new Date();
+        gantt.setTimeLines([
+      { date: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()), text: "当前日期", style: "width:2px;background:red;" }
+        ]);
+        new RGanttSchedule(gantt);
+        gantt.setColumns([
+           { header: "项目名称", field: "Name", width: 250, headeralign: "center", align: "left", allowDrag: false, allowMove: false },
+           { header: "项目编号", field: "Code", width: 120, headeralign: "center", align: "left", allowDrag: false, allowMove: false },
+           { header: "项目负责人", field: "ChargeUserName", width: 80, headeralign: "center", align: "left", allowDrag: false, allowMove: false }
+       ]);
+        return gantt;
+    }
+
+    function zoomIn() {
+        gantt.zoomIn();
+    }
+    function zoomOut() {
+        gantt.zoomOut();
+    }
+
+</script>
+<style type="text/css">
+    .mini-rgantt .mini-splitter-handler
+    {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+    }
+    .icon-MileStone
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/flag_red.gif) no-repeat;
+    }
+</style>

@@ -1,0 +1,221 @@
+﻿
+
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="流水号规则设置">
+            <div class="mini-toolbar" id="btnDiv">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="save({action:'SaveSerialNumberSettings'});">保存</a>
+                            <a class="mini-button" id="btnCancel" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                        </td>
+                        <td id="btnRight"></td>
+                    </tr>
+                </table>
+            </div>
+            <form id="dataForm" method="post" url="GetSerialNumberSettings">
+                <div class="formDiv">
+                    <fieldset>
+                        <legend>基本信息</legend>
+                        <div>
+                            <table>
+                                <tr class="hideRow">
+                                    <td width="15%"></td>
+                                    <td width="35%"></td>
+                                    <td width="15%"></td>
+                                    <td width="35%"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        编号模板
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="Tmpl" class="mini-textbox" style="width: 100%;" required="true" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>是否使用序列号</td>
+                                    <td>
+                                        <input name="UserSerialNumber" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                               data="userSerialNumberEnum" allowinput="false" required="true" />
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        重复规则
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="ResetRule" class="mini-checkboxlist" style="width: 100%;" valuefield="value" data="ResetRuleEnum" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        分类
+                                    </td>
+                                    <td>
+                                        <input name="CategoryCode" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                    <td>
+                                        分支
+                                    </td>
+                                    <td>
+                                        <input name="SubCategoryCode" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        规范记录顺序号
+                                    </td>
+                                    <td>
+                                        <input name="OrderNumCode" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                    <td>
+                                        项目编号
+                                    </td>
+                                    <td>
+                                        <input name="PrjCode" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        组织编号
+                                    </td>
+                                    <td>
+                                        <input name="OrgCode" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                    <td>
+                                        用户编号
+                                    </td>
+                                    <td>
+                                        <input name="UserCode" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+            <br />
+            <br />
+            <div style="margin-left: 50px;">
+                说明<br />
+                年：YYYY或YY<br />
+                月：MM<br />
+                日：DD<br />
+                分类：CategoryCode<br />
+                分支：SubCategoryCode<br />
+                规范记录顺序：OrderNumCode<br />
+                项目：PrjCode<br />
+                组织：OrgCode<br />
+                用户：UserCode<br />
+            </div>
+        </div>
+        <div title="流水号维护" style="border:0;">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            @*<a class="mini-button" id="btnSerialNumber" onclick="synSerialNumber()" iconcls="icon-down" plain="true">更新流水号</a>*@
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcelledit="true" allowcellselect="true" multiselect="true" showpager="false"
+                     editnextonenterkey="true" editnextrowcell="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px" collapsegrouponload="false" url="GetSerialNumberList">
+                    <div property="columns">
+                        <div type="indexcolumn">
+                        </div>
+                        <div field="Code" width="120" allowsort="true" align="center">
+                            表单编号
+                        </div>
+                        <div field="YearCode" width="60" align="center" allowsort="true">
+                            年份
+                        </div>
+                        <div field="MonthCode" align="center" width="60" allowsort="true">
+                            月份
+                        </div>
+                        <div field="DayCode" align="center" width="60" allowsort="true">
+                            天
+                        </div>
+                        <div field="CategoryCode" width="80" align="center" allowsort="true">
+                            分类
+                        </div>
+                        <div field="SubCategoryCode" width="100" align="center" allowsort="true">
+                            分支
+                        </div>
+                        <div field="OrderNumCode" width="80" align="center" allowsort="true">
+                            规范记录顺序号
+                        </div>
+                        <div field="PrjCode" width="100" align="center" allowsort="true">
+                            项目编号
+                        </div>
+                        <div field="OrgCode" width="80" align="center" allowsort="true">
+                            组织编号
+                        </div>
+                        <div field="UserCode" width="80" align="center" allowsort="true">
+                            用户编号
+                        </div>
+                        <div field="Number" width="60" headeralign="center" align="center" allowsort="true">
+                            流水号
+                            <input property="editor" class="mini-textbox" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var ResetRuleEnum = [
+        { value: 'YearCode', text: '年' },
+        { value: 'MonthCode', text: '月' },
+        { value: 'DayCode', text: '日' },
+        { value: 'CategoryCode', text: '分类' },
+        { value: 'SubCategoryCode', text: '分支' },
+        { value: 'OrderNumCode', text: '规范记录顺序' },
+        { value: 'PrjCode', text: '项目' },
+        { value: 'OrgCode', text: '组织' },
+        { value: 'UserCode', text: '用户' }
+    ];
+
+    var userSerialNumberEnum = [
+        { text: "提交时生成编号", value: "Submit" },
+        { text: "流程结束时生成编号", value: "FlowEnd" },
+        { text: "仅获取时生成编号", value: "OnlyGet" },
+        { text: "不使用流水号", value: "None" }
+    ];
+
+    function openHelp() {
+        var window = mini.get('helpWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.onscroll = scroll;
+        window.queryWindowId = window.id;
+        window.show();
+    }
+
+    function synSerialNumber() {
+        var settings = $.extend(true, {}, executeParamSettings);
+        var grid = mini.get(settings.gridId);
+        addExecuteParam("FormID", getQueryString("FormID"));
+        execute("GetMaxSerialNumber", {
+            actionTile: '更新', onComplete: function (result) {
+                msgUI("符合当前条件的流水号更新为:" + result + ",是否要更新?", 2, function (action) {
+                    if (action == "ok") {
+                        addExecuteParam("Number", result);
+                        execute("UpdateSerialNumber", {
+                            onComplete: function () {
+                                grid.reload();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Slider";
+}
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.min.js" type="text/javascript"></script>
+<link href="/Project/Scripts/EngineeringSpace/css/bootstrap.min.css" rel="stylesheet"
+    type="text/css" />
+<link href="/Project/Scripts/EngineeringSpace/css/font-awesome.min.css" rel="stylesheet"
+    type="text/css" />
+<script src="/Project/Scripts/EngineeringSpace/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+<link href="/Project/Scripts/EngineeringSpace/css/slider.css" rel="stylesheet" type="text/css" />
+<script>
+    $("body").css("background-color", "");
+</script>
+<div id="slider-container" class="sideTree">
+    <div class="nav-slider clearfix">
+        <div class="clearfix">
+            <span class="icon-double-angle-left close-slider pull-right"></span>
+        </div>
+        <div class="pull-left">
+            <img src="/Project/Scripts/EngineeringSpace/images/control-slider.png" alt="">
+            <span class="title">功能目录</span>
+        </div>
+    </div>
+    <div class="divsplit">
+    </div>
+    <div class="slider-container-content spbg">
+        <ul id="tree" class="mini-tree" style="width: 100%; height: 100%;" contextmenu="#treeMenu"
+            url="" showtreeicon="true" textfield="Name" iconfield="Type" idfield="ID" enablehottrack="false"
+            parentfield="ParentID" resultastree="false" expandonload="3" showarrow="true"
+            onnodeclick="onNodeClick(e)" expandonnodeclick="true">
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tree").niceScroll({ cursorborder: "none" });
+    })
+    mini.parse();
+    var groupID = getQueryString("GroupInfoID");
+    var tree = mini.get("tree");
+
+    $(function () {
+        tree.load("GetSliderResTree?GroupInfoID=" + groupID);
+    });
+
+    $(".close-slider").on("click", function () {
+        for (var i = 0; i < $("#iframe-container .iframe-item", window.parent.document).length; i++) {
+            if ($("#iframe-container .iframe-item", window.parent.document).eq(i).css("display") == "block") {
+                $("#iframe-container .iframe-item", window.parent.document).eq(i).find(".item-content").animate({
+                    "padding-left": "44px"
+                }, 300);
+                $("#iframe-container .iframe-item", window.parent.document).eq(i).find(".item-slider").animate({
+                    left: "-250px"
+                }, 300, function () {
+                    $(".control-img", window.parent.document).show();
+                    $("#navss .nav-pills li[class='active']", window.parent.document).attr("showTree-id", "F");
+                });
+            }
+        }
+    });
+
+    function onNodeClick(e) {
+        if (e.node.Url) {
+            var engineeringInfoID = getQueryString("EngineeringInfoID");
+            var url = e.node.Url;
+            if (url.indexOf("?") >= 0)
+                url += "&";
+            else
+                url += "?";
+            url += "GroupInfoID=" + groupID + "&Type=Engineering&EngineeringInfoID=" + engineeringInfoID;
+            window.parent.setRightUrl(url);
+            if (window.parent.setFuncMenuText) {
+                window.parent.setFuncMenuText(e.node.Name);
+            }
+        }
+    }
+
+</script>

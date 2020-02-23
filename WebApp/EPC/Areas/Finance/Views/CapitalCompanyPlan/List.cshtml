@@ -1,0 +1,504 @@
+﻿<div class="mini-toolbar">
+    <table style="width:100%">
+        <tr style="width:100%">
+            <td style="width:50%">
+                @{
+                    //流程结束
+                    if (ViewBag.FlowEnd)
+                    {
+                        <a class="mini-button" iconcls="icon-add" onclick="makePlan()" plain="true">编制计划</a>
+                        <a class="mini-button" iconcls="icon-flowstart" onclick="flowTrace()" plain="true">流程跟踪</a>
+                    }
+                    else
+                    {
+                        //过程
+                        if (ViewBag.FlowPhase == "Processing")
+                        {
+                            <a class="mini-button" iconcls="icon-edit" onclick="autoCalc">读取数据</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="savelist();" plain="true">保存</a>
+                            <a class="mini-button" iconcls="icon-flowstart" onclick="flowTrace()" plain="true">流程跟踪</a>
+                        }
+                        //未启动流程
+                        else
+                        {
+                            <a class="mini-button" iconcls="icon-edit" onclick="startFlow" plain="true">提交审批</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="autoCalc">读取数据</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="savelist();" plain="true">暂存</a>
+                            <a class="mini-button" iconcls="icon-cancel" onclick="revert();" plain="true">撤销</a>
+                        }
+                    }
+                }
+            </td>
+            <td style="text-align:right;width:50%">
+                @if (!ViewBag.FlowEnd)
+                {
+                    @Html.Raw("起始月：")
+                    <input name="BeginDate" class="mini-monthpicker" required="true" onvaluechanged="planDateChange" allowinput="true" />
+                    @Html.Raw("&nbsp;&nbsp; &nbsp;截止月：")
+                    <input name="EndDate" class="mini-monthpicker" required="true" onvaluechanged="planDateChange" allowinput="true" />
+                }
+                else
+                {
+                    @Html.Raw("当前版本：")
+                    <a href="javascript:void();" onclick="viewHistoryList();">@ViewBag.PlanCount</a>@Html.Raw(" &nbsp;&nbsp;")
+                }
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div class="mini-fit">
+    <div id="Detail" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+         url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" oncellbeginedit="onCellBeginEdit"
+         oncellendedit="onCellEndEdit" multiselect="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="CapitalPlanType"
+         allowresize="false" fitcolumns="false" allowleafdropin="true">
+
+        <div property='columns'>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var yearAndMonthCol = @Html.Raw(ViewBag.YearAndMonthCol);
+    var yearAndMonthColPre = '@Html.Raw(ViewBag.YearAndMonthColPre)';
+    var latestPlanID = '@Html.Raw(ViewBag.LatestPlanId)';
+    var flowEnd = "@Html.Raw(ViewBag.FlowEnd)";
+    var justAdd = "@Html.Raw(ViewBag.JustAdd)";
+    var templateCode = getQueryString("templateCode");
+
+    function pageLoad()
+    {
+        if(yearAndMonthCol.length >0)
+        {
+            var bdate = mini.getbyName("BeginDate");
+            if(bdate)
+            {
+                var myDate=new Date()
+                myDate.setFullYear(yearAndMonthCol[0].year,yearAndMonthCol[0].month-1,1);
+                bdate.setValue(myDate);
+            }
+            var edate = mini.getbyName("EndDate");
+            if(edate)
+            {
+                var myDate=new Date()
+                myDate.setFullYear(yearAndMonthCol[yearAndMonthCol.length-1].year,yearAndMonthCol[yearAndMonthCol.length-1].month-1,1);
+                edate.setValue(myDate);
+            }
+
+            setColumn();
+            if(justAdd == "True")
+            {
+                if(!templateCode)
+                {
+                    msgUI('url参数中没有模板参数templateCode');
+                    return;
+                }
+                loadDetailFrom("GetTemplateList?templateCode=" + templateCode);
+            }
+            else if(latestPlanID&&latestPlanID!=''){
+                addExecuteParam("id", latestPlanID);
+                loadDetailFrom("GetBudgetList");
+            }
+        }
+        else
+        {
+            var bdate = mini.getbyName("BeginDate");
+            if(bdate)
+                bdate.setValue(new Date());
+        }
+    }
+
+    function makePlan() {
+        if(!templateCode)
+        {
+            msgUI('未指定模板(url参数中没有模板参数templateCode)');
+            return;
+        }
+
+        msgUI("您确定需要编制计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            //addExecuteParam("ContractInfoID", contractInfoID);
+            execute("MakePlan?templateCode=" + templateCode, {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function savelist(onComplete)
+    {
+        var dataTree = mini.get('Detail');
+        var bdate = mini.getbyName("BeginDate");
+        var edate = mini.getbyName("EndDate");
+        addExecuteParam("listData", dataTree.data);
+        addExecuteParam("latestPlanID", latestPlanID);
+        addExecuteParam("beginDate", bdate.text);
+        addExecuteParam("endDate", edate.text);
+        execute("SaveList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.accept();
+                if(onComplete)
+                {
+                    onComplete();
+                }
+            }, validateForm: false
+        });
+    }
+
+    function revert()
+    {
+        msgUI("撤销操作将撤销所有的编辑内容，您确定要继续吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("latestPlanID", latestPlanID);
+            execute("Revert", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function startFlow()
+    {
+        var dataTree = mini.get('Detail');
+        savelist(function(){
+            dataTree.accept();
+            var url = "/EPC/Finance/CapitalCompanyPlan/PageView?TmplCode=CapitalCompanyPlan&FlowCode=CapitalCompanyPlan&ID=" + latestPlanID;
+            openWindow(url, {
+                refresh: false, title: "公司资金计划提交", width: "90%", height: "90%",
+                onDestroy: function (data) {
+                    if (data == "close") return;
+                    window.location.reload();
+                }
+            });
+        })
+    }
+
+    function flowTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + latestPlanID;
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "80%", height: "85%",
+            onDestroy: function () { }
+        });
+    }
+
+    function viewHistoryList()
+    {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=CapitalCompanyPlan";
+        openWindow(url, {
+            refresh: false, title: "历史计划", width: "80%", height: "85%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onDrawingCell(e)
+    {
+        var dataGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        if(field && field != 'Name')
+        {
+            var tmps= $.grep(yearAndMonthCol, function(n,i){
+                return n.colName == field;
+            });
+
+            if(tmps.length > 0 && record.HaveLink)
+            {
+                if(record.SourceLink.indexOf("{year}") == -1)
+                {
+                    msgUI('\''+record.Name+'\'的\''+field+'对应计划数据窗体url链接中未包含参数{year}');
+
+                }
+                else if(record.SourceLink.indexOf("{month}") == -1)
+                {
+                    msgUI('\''+record.Name+'\'的\''+field+'\'对应计划数据窗体url链接中未包含参数{month}');
+                }
+                else
+                {
+                    var link = record.SourceLink.replace('{year}',tmps[0].year).replace('{month}',tmps[0].month);
+                    e.cellHtml = '<a style="cursor:pointer;color:blue;text-decoration:underline" onclick="thisOpenWindow(\'' + link + '\')">' + e.cellHtml + '</a>';
+                }
+            }
+        }
+
+        if(record.ParentID == '')
+        {
+            if(record.CapitalPlanType == "Total")
+            {
+                //e.cellStyle = "background:yellow;font-weight:bold;"
+                if(field && field !='Name')
+                {
+                    if(record[field] > 0)
+                    {
+                        e.cellStyle+="color:green";
+                    }
+                    else
+                    {
+                        e.cellStyle+="color:red";
+                    }
+                }
+            }
+            else if(record.CapitalPlanType == "Initial")
+            {
+                //e.cellStyle = "background:#BBFFFF;";
+            }
+            else if(record.CapitalPlanType == "In")
+            {
+                //e.cellStyle = "background:green;color:white";
+            }
+            else if(record.CapitalPlanType == "Out")
+            {
+                //e.cellStyle = "background:red;color:white";
+            }
+        }
+    }
+
+    //为了打开窗体的click
+    var clickForOpenWindow = false;
+    function thisOpenWindow(url)
+    {
+        openWindow(url,{ width: '70%', height: '60%' });
+        clickForOpenWindow = true;
+    }
+    function onCellBeginEdit(e)
+    {
+        if(clickForOpenWindow)
+        {
+            e.cancel = true;
+            clickForOpenWindow = false;
+        }
+        if(flowEnd == 'True')
+        {
+            e.cancel = true;
+        }
+        else if (e.row.IsReadOnly)
+        {
+            e.cancel = true;
+        }
+
+    }
+
+    function onCellEndEdit(e)
+    {
+        var field = e.field;
+        var parentId = e.row.ParentID;
+        reCalcParent(parentId, field);
+        reCalcTotal(field);
+    }
+
+    function planDateChange() {
+
+        yearAndMonthCol = [];
+        var beginDate = mini.getbyName('BeginDate').value;
+        var nowDate = new Date();
+        var nowYearMonth = new Date(nowDate.getFullYear(),nowDate.getMonth(),1);
+
+        var endDate = mini.getbyName('EndDate').value;
+        if (beginDate == '' || endDate == '')
+            return;
+
+        //if(beginDate < nowYearMonth)
+        //{
+        //    msgUI('起始月不能小于当前月');
+        //    return;
+        //}
+        //else if(beginDate > endDate)
+        //{
+        //    msgUI('起始月不能大于截止月');
+        //    return;
+        //}
+
+        yearAndMonthCol = getYearAndMonth(mini.formatDate(beginDate, 'yyyy-MM-dd'), mini.formatDate(endDate, 'yyyy-MM-dd'));
+
+        setColumn();
+
+        if(justAdd == "True")
+        {
+            if(!templateCode)
+            {
+                msgUI('url参数中没有模板参数templateCode');
+                return;
+            }
+            loadDetailFrom("GetTemplateList");
+        }
+        else if(latestPlanID&&latestPlanID!=''){
+            addExecuteParam("id", latestPlanID);
+            loadDetailFrom("GetBudgetList");
+        }
+    }
+
+    function setColumn()
+    {
+        var columns = [
+            { type: "indexcolumn", width: 40 },
+            { field: "Name", name: "Name", width: 180, headerAlign: "center", align: "left", allowSort: false, header: "名称\\日期" }
+        ];
+
+        for (i = 0; i < yearAndMonthCol.length; i++) {
+            var tmp = yearAndMonthCol[i];
+            columns.push({ field: tmp.colName, width: 120, headerAlign: "center", align: "right", numberFormat: '0.00', vtype:'required;float',  allowSort: false, header: tmp.year + '年' + tmp.month+'月', editor: { type: "textbox" }  });
+        }
+        var dataTree = mini.get('Detail');
+        dataTree.set({ columns: columns });
+        dataTree.frozenColumns(0,1);
+    }
+
+    function loadDetailFrom(url)
+    {
+        var dataTree = mini.get('Detail');
+        addExecuteParam("monthColArr", yearAndMonthCol);
+        execute(url, {
+            showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                if (data) {
+                    dataTree.loadList(data, "ID", "ParentID");
+                }
+            }
+        });
+    }
+
+    function getNode(ID) {
+        var dataTree = mini.get('Detail');
+        var nodes = dataTree.findNodes(function (node) {
+            if (node.ID == ID) return true;
+        });
+
+        if (nodes.length == 0)
+            return;
+
+        return nodes[0];
+    }
+
+    function getTopNode(parentID)
+    {
+        var dataTree = mini.get('Detail');
+        var tops = dataTree.findNodes(function(node){
+            if(node.ID == parentID) return true;
+        });
+
+        if (tops.length == 0)
+            return;
+
+        return tops[0];
+    }
+
+    function getTotalNode()
+    {
+        var dataTree = mini.get('Detail');
+        var total = dataTree.findNodes(function (node) {
+            if (node.CapitalPlanType == 'Total') return true;
+        });
+
+        if(total&& total.length > 0)
+        {
+            return total[0];
+        }
+    }
+
+    function reCalcParent(id, field)
+    {
+        var currentNode = getNode(id);
+        if (!currentNode)
+            return;
+
+        var dataTree = mini.get('Detail');
+        var children = dataTree.findNodes(function(node){
+            if(node.ParentID == id) return true;
+        });
+
+        var res = 0;
+        for(i=0;i<children.length;i++)
+        {
+            var tmp = parseFloat(children[i][field]);
+            res += isNaN(tmp) ? 0 : tmp;
+        }
+
+        eval("mini.get('Detail').updateNode(currentNode, { " + field + ": res });");
+        reCalcParent(currentNode.ParentID,field);
+    }
+
+    function reCalcTotal(field)
+    {
+        var totalNode = getTotalNode();
+        if (!totalNode)
+            return;
+
+        var dataTree = mini.get('Detail');
+        var parents = dataTree.findNodes(function (node) {
+            if (node.ParentID == '' && node.CapitalPlanType != 'Total') return true;
+        });
+
+        var res = 0;
+        for (i = 0; i < parents.length; i++) {
+            var tmp = parseFloat(parents[i][field]);
+            var addOrSub = parseFloat(parents[i].AddOrSub);
+            res += isNaN(tmp) ? 0 : addOrSub * tmp;
+        }
+
+        eval("mini.get('Detail').updateNode(totalNode, { " + field + ": res });");
+    }
+
+    function autoCalc() {
+        var allChildren = mini.get('Detail').getAllChildNodes();
+        for (i = 0; i < yearAndMonthCol.length; i++) {
+            var nodesHaveSource = [];
+            for (j = 0; j < allChildren.length; j++) {
+
+                if (allChildren[j].HaveSource) {
+                    nodesHaveSource.push(allChildren[j]);
+                }
+            }
+
+            if (nodesHaveSource.length > 0) {
+                addExecuteParam("nodesHaveSource", nodesHaveSource);
+                addExecuteParam("yearAndMonth", yearAndMonthCol[i]);
+                execute("GetSourceResult", {
+                    showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                        if (data) {
+                            for (k = 0; k < data.length; k++) {
+                                var node = getNode(data[k].ID)
+                                eval("mini.get('Detail').updateNode(node, { " + data[k].colName + ": " + data[k].SourceVal + " });");
+                                reCalcParent(data[k].ParentID, data[k].colName);
+                                reCalcTotal(data[k].colName);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    function getYearAndMonth(start, end) {
+        var result = [];
+        var starts = start.split('-');
+        var ends = end.split('-');
+        var staYear = parseInt(starts[0]);
+        var staMon = parseInt(starts[1]);
+        var endYear = parseInt(ends[0]);
+        var endMon = parseInt(ends[1]);
+        result.push({ colName: yearAndMonthColPre + staYear + '_' + staMon, year: staYear, month: staMon });
+        while (staYear <= endYear) {
+            if (staYear === endYear) {
+                while (staMon < endMon) {
+                    staMon++;
+                    result.push({ colName: yearAndMonthColPre + staYear + '_' + staMon, year: staYear, month: staMon });
+                }
+                staYear++;
+            } else {
+                staMon++;
+                if (staMon > 12) {
+                    staMon = 1;
+                    staYear++;
+                }
+                result.push({ colName: yearAndMonthColPre + staYear + '_' + staMon, year: staYear, month: staMon });
+            }
+        }
+
+        return result;
+    }
+</script>
+

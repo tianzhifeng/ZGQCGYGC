@@ -1,0 +1,143 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="250px;" style="padding: 5px; overflow: auto;">
+        <ul id="dataTree" class="mini-tree" data="treeData" showtreeicon="true" textfield="fieldName" onnodedblclick="nodeDblClick">
+        </ul>
+    </div>
+    <div>
+        <div class="mini-toolbar gw-grid-toolbar">
+            <table>
+                <tr>
+                    <td>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <a class="mini-button" id="btnOK" iconcls="icon-ok" onclick="ok();">确定</a>
+                        <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="remove();">删除</a>
+                        <a class="mini-button" id="btnMoveUp" iconcls="icon-up" onclick="moveUp();">上移</a>
+                        <a class="mini-button" id="btnMoveDown" iconcls="icon-down" onclick="moveDown();">下移</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true" showpager="false" allowcelledit="true" allowcellselect="true" oncellbeginedit="OnCellBeginEdit" oncellcommitedit="cellcommitedit">
+                <div property="columns">
+                    @*                    <div type="comboboxcolumn" field="relation" width="80px" autoshowpopup="true" align="center">
+                        关系
+                        <input property="editor" class="mini-combobox" style="width: 100%;" data="relation" onitemclick="commitEdit" />
+                    </div>*@
+                    <div field="fieldName" width="150px">
+                        字段名称</div>
+                    <div type="comboboxcolumn" field="queryType" width="80px" autoshowpopup="true" align="center">
+                        查询方式
+                        <input property="editor" class="mini-combobox" style="width: 100%;" data="queryType" onitemclick="commitEdit" />
+                    </div>
+                    <div field="fieldValue" displayfield="fieldValueText" width="*" autoshowpopup="true">
+                        查询值
+                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div width="5px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var relation = [{ value: "and", text: "and" }, { value: "or", text: "or"}];
+    var queryType = [{ value: "in", text: "包含" }, { value: "like", text: "类似于" }, { value: ">", text: "大于" }, { value: "<", text: "小于" }, { value: ">=", text: "大于等于" }, { value: "<=", text: "小于等于"}];
+    var ctrlType = [{ value: "text", text: "文本框" }, { value: "date", text: "日期框" }, { value: "dropdown", text: "下拉框"}];
+
+    var treeData = window.Owner.treeData;
+    var dataGrid;
+    function pageLoad() {
+        mini.get("dataTree").setData(treeData);
+        dataGrid = mini.get("dataGrid");
+    }
+    function nodeDblClick(e) {
+        if (!e.isLeaf) return;
+        var node = mini.clone(e.node);
+        node.relation = "and";
+        dataGrid.addRow(node);
+    }
+
+    function commitEdit() {
+        dataGrid.commitEdit();
+    }
+    function moveUp() {
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+    function moveDown() {
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+    function remove() {
+        var rows = dataGrid.getSelecteds();
+        dataGrid.removeRows(rows, false);
+    }
+    function OnCellBeginEdit(e) {
+        var record = e.record;
+        var field = e.field
+        if (field != "fieldValue") return;
+
+        if (record.ctrlType == "date") {
+            e.editor = new mini.DatePicker();
+        }
+        else if (record.ctrlType == "combobox") {
+            e.editor = new mini.ComboBox();
+            e.editor.set({ multiSelect: "true", valueField: "value" });
+            if (record.enumKey) {
+                eval("e.editor.setData(window.Owner." + record.enumKey + ");");
+            }
+            else {
+                e.editor.load("GetEnumData?tableName=" + record.table + "&fieldCode=" + record.fieldCode);
+            }
+        }
+        else {
+            e.editor = new mini.TextBox();
+        }
+        e.editor.on("valuechanged", function (e1) {
+            if (record.ctrlType == "combobox") {
+                window.v = e1.value;
+                window.t = e1.sender.text;                
+            }
+            else if (record.ctrlType == "date") {
+                window.v = mini.formatDate(e1.value, "yyyy-MM-dd");
+                window.t = window.v;
+            }
+            else {
+                window.v = e1.value;
+                window.t = window.v;
+            }
+            dataGrid.updateRow(e.row, { fieldValue: window.v, fieldValueText: window.t });
+            dataGrid.commitEditRow(e.row);
+        });
+    }
+    function cellcommitedit(e) {
+        var record = e.record;
+        var field = e.field
+        if (field != "fieldValue") return;
+        e.value = window.v;
+        e.text = window.t;
+        //dataGrid.updateRow(record, { fieldValueText: window.t });
+    }
+
+    function setData(data) {
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                dataGrid.addRow(data[i]);
+            }
+        }
+    }
+
+    function ok() {
+        var data = mini.clone(dataGrid.getData());
+        for (var i = 0; i < data.length; i++) {
+            delete data[i]._id;
+            delete data[i]._level;
+            delete data[i]._state;
+            delete data[i]._uid;
+        }
+        closeWindow(data);
+    }
+</script>

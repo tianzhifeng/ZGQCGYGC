@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "发传真列表";
+    ViewBag.FlowCode = "SendFax";
+    ViewBag.FlowName = "发传真流程";
+}
+<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="flowAdd('@ViewBag.FlowCode',{title:'@ViewBag.FlowName',width: 800,height:550})">
+                    启动发传真流程</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入发件人" style="width: 200px;"
+                    onenter="quickSearch('SendUserName');" onbuttonclick="quickSearch('SendUserName');" />
+                <a class="mini-button" onclick="showWindow('queryWindow');" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetList" idfield="ID" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" pagesize="20">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="FlowPhase" renderer="onEnumRender" headeralign="center" width="50" allowsort="true" align="center">
+                状态</div>
+            <div field="CreateDate" headeralign="center" width="50" allowsort="true" align="center"
+                dateformat="yyyy-MM-dd">
+                传真时间</div>
+            <div field="FaxTheme" headeralign="center" width="100" allowsort="true" align="center">
+                传真主题</div>
+            <div field="SendUserName" width="80" headeralign="center" allowsort="true" align="center">
+                发件人</div>
+            <div field="SendDept" headeralign="center" width="100" allowsort="true" align="center">
+                发件人部门</div>
+            <div field="FaxNumber" headeralign="center" width="100" allowsort="true" align="center">
+                传真号码</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 720px; height: 180px;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="10%" align="center">
+                    传真时间
+                </td>
+                <td width="40%" align="left">
+                    <input name="$FR$CreateDate" style="width: 100px;" class="mini-datepicker" />
+                    -
+                    <input name="$TO$CreateDate" style="width: 100px;" class="mini-datepicker" />
+                </td>
+                <td width="10%" align="center">
+                    发件人
+                </td>
+                <td width="40%" align="left">
+                    <input name="$IN$SendUserID" textName="SendUserName" style="width: 85%;" class="mini-buttonedit" />
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    传真号码
+                </td>
+                <td align="left">
+                    <input name="$LK$FaxNumber" style="width: 85%;" class="mini-textbox" />
+                </td>
+                <td align="center">
+                    状态
+                </td>
+                <td align="left">
+                    <input name="$IN$FlowPhase" class="mini-combobox" style="width:85%;" data="SendFaxStatus" multiSelect="true" />     
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(OfficeAuto.Logic.SendFaxStatus))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.FaxTheme))
+    addGridEnum("dataGrid", "FaxTheme", "FaxTheme");
+    addGridEnum("dataGrid", "FlowPhase", "SendFaxStatus");
+    addMultiUserSelector("$IN$SendUserID");
+</script>
+<script type="text/javascript">
+    addGridButton("dataGrid", "FaxTheme",
+    {
+        onButtonClick: function (row) {
+            openWindow("Edit?FlowCode=@ViewBag.FlowCode&ID=" + row.ID,
+               { title: "@ViewBag.FlowName", width: 800, height: 550,
+                   onDestroy: function (data) {
+                       if (data != "close")
+                           mini.get("dataGrid").reload();
+                   }
+               }
+               );
+        }
+    });
+
+    addGridButton("dataGrid", "FlowPhase",
+    {
+        onButtonClick: function (row) {
+            flowTraceByID({ ID: row.ID });
+        }
+    });
+    
+</script>

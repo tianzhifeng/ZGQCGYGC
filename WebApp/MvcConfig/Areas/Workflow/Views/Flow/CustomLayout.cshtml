@@ -1,0 +1,57 @@
+﻿<form id="form1">
+    <div style="padding-left: 15px; padding-bottom: 5px; padding-right: 15px; padding-top: 5px;">
+        <div>
+            <table style="width: 100%;">
+                <tr class="hideRow">
+                    <td width="15%"></td>
+                    <td width="45%"></td>
+                    <td width="12%"></td>
+                    <td width="28%"></td>
+                </tr>
+                <tr>
+                    <td>标题
+                    </td>
+                    <td>
+                        <input name="Title" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                    <td>列数
+                    </td>
+                    <td>
+                        <input name="Cols" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>方式
+                    </td>
+                    <td colspan="3">
+                        <input class="mini-radiobuttonlist" name="LayoutMode" textfield="text" valuefield="value" value="fieldset" data="LayoutMode"></input>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+    <div class="mini-toolbar" style="padding-left: 110px;">
+        <table>
+            <tr>
+                <td>
+                    <a class="mini-button" iconcls="icon-save" onclick="add();">确认</a>
+                    <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script type="text/javascript">
+    var LayoutMode = [{ "value": "fieldset", "text": "fieldset" }, { "value": "table", "text": "table" }];
+    function add() {
+        var form = new mini.Form("#form1");
+        var data = form.getData(true, false);
+        form.validate();
+        if (form.isValid() == false) {
+            msgUI("请输入必须信息!");
+            return;
+        }
+        closeWindow(data);
+    }
+</script>

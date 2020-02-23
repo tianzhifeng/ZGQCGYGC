@@ -1,0 +1,313 @@
+﻿@{
+    ViewBag.Title = "MajorList";
+}
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="450" showheader="false" expanded="true" showspliticon="false"
+        style="border: 0px;" allowresize="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0; border-left: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="add({gridId:'dataTree',width:'50%',height:'50%'});" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="edit({ gridId:'dataTree',width: '50%', height: '50%' });" plain="true">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del({ gridId:'dataTree' })" plain="true">删除</a>
+                        <a id="view" class="mini-button" iconcls="icon-view" plain="true" visible="false">专业设计输入查看</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入资料名称" style="width: 150px;"
+                            onenter="treeSearch" onbuttonclick="treeSearch" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataTree" class="mini-treegrid" style="width: 100%; height: 100%;" allowresize="false"
+                url="GetTreeList" showtreeicon="true" expandonload="true" onnodeselect="onnodeselect"
+                treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" ondrawcell="ondrawcell"
+                iconfield="Type" allowresize="true" fitcolumns="true">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div name="Name" field="InfoName" width="300" headeralign="center">
+                        名称
+                    </div>
+                    <div field="LastUploadDate" width="100" headeralign="center" dateformat="yyyy-MM-dd"
+                        align="center">
+                        最近上传日期
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0px;">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0; border-left: 1px;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" id="upload" iconcls="icon-add" onclick="upload();" plain="true">上传文件</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="fileKey" emptytext="请输入文件名称" style="width: 200px;"
+                            onenter="quickSearch('Name',{queryBoxId:'fileKey',gridId:'documentGrid'});" onbuttonclick="quickSearch('Name',{queryBoxId:'fileKey',gridId:'documentGrid'});" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" style="height: 100px;">
+            <div id="documentGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+                idfield="ID" multiselect="true" showpager="false">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="DelFile" width="60" headeralign="center" align="center">
+                        移除
+                    </div>
+                    <div field="Name" width="*" headeralign="center" allowsort="true">
+                        文件名称
+                    </div>
+                    <div field="CreateUser" width="70" headeralign="center" allowsort="true" align="center">
+                        上传人
+                    </div>
+                    <div field="CreateDate" width="90" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true"
+                        align="center">
+                        上传日期
+                    </div>
+                    <div field="AuditState" width="80" headeralign="center" align="center">
+                        评审状态
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfo =@Html.Raw(ViewBag.ProjectInfo);
+</script>
+<script type="text/javascript">
+
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var spaceCode = getQueryString("SpaceCode");
+    $("#dataTree").attr("url", "GetMajorList?ProjectInfoID=" + projectInfoID + "&SpaceCode=" + spaceCode);
+    $("#import").hide();
+    $("#upload").hide();
+
+    addGridButton("documentGrid", "Name", {
+        linkText: "", onButtonClick: function (row) {
+            if (!row.Files) { msgUI("没有可供下载的文件"); return; }
+            DownloadFile(escape(row.Files));
+        }
+    });
+
+    addGridButton("documentGrid", "DelFile", {
+        linkText: "移除", onButtonClick: function (row) {
+            msgUI("您确定需要移除该文件吗？", 2, function (result) {
+                if (result != "ok") {
+                    return;
+                }
+                addExecuteParam("ID", row.ID);
+                execute("DeleteDoc", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        var dataGrid = mini.get("documentGrid");
+                        dataGrid.reload();
+                        mini.get("dataTree").reload();
+                    }, validateForm: false
+                });
+            });
+        }
+    });
+
+    function pageLoad() {
+        if (getQueryString("FuncType").toLowerCase() == "view") {
+            $(".mini-toolbar").show();
+            $(".mini-button").hide();
+            $("#view").show();
+        }
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.InfoName ? node.InfoName.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onnodeselect(e) {
+        var dataGrid = mini.get("documentGrid");
+        if (e.node && e.node.Type == "InputInfo") {
+            $("#upload").show();
+            var url = "GetDocument?InputID=" + e.node.ID + "&Catagory=" + spaceCode;
+            dataGrid.setUrl(url);
+            dataGrid.load();
+        }
+        else {
+            $("#upload").hide();
+            dataGrid.clearRows();
+        }
+    }
+
+    function ondrawcell(e) {
+        var rec = e.record;
+        var field = e.field;
+        if (field == "InfoName" && rec.Type == "InputInfo") {
+            e.cellHtml = rec.InfoName + "（" + rec.FileCount + "）";
+        }
+    }
+
+    function upload() {
+        var url = "/Project/SWFUpload/Upload";
+        openWindow(url, { refresh: false, title: "文件上传", width: 700, height: 260,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                var dataTree = mini.get("dataTree");
+                var node = dataTree.getSelectedNode();
+                addExecuteParam("FileID", data);
+                addExecuteParam("InputID", node.ID);
+                addExecuteParam("Catagory", spaceCode);
+                execute("AddDocument", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        var url = "GetDocument?InputID=" + id;
+                        var docGrid = mini.get("documentGrid");
+                        docGrid.setUrl(url);
+                        docGrid.load();
+                        mini.get("dataTree").reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+
+    function onCatagoryChanged(e) {
+        var dataGrid = mini.get("dataGrid");
+        var url = "GetMajorList?ProjectInfoID=" + projectInfoID + "&SpaceCode=" + e.value;
+        dataGrid.setUrl(url);
+        quickSearch('Name');
+    }
+
+    function onDataGridLoad(e) {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.mergeColumns(["InputType"]);
+    }
+
+    function modifyInput() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row.length == 0) { msgUI("请选择一条记录"); return; }
+        if (row.Catagory != spaceCode) {
+            msgUI("项目级资料不能进行编辑操作"); return;
+        }
+        edit({ width: '50%', height: '50%' });
+    }
+
+    function importProduct() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node || node.Type != "InputInfo") return;
+        var dataGrid = mini.get("dataTree");
+        var url = "/Project/Selector/ProjectInputSelect/ProductSelector?ProjectInfoID=" + projectInfo.ID;
+        openWindow(url, { refresh: false, title: "导入成果", width: "80%", height: "80%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                addExecuteParam("InputID", node.ID);
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("FileField", "MainFile");
+                addExecuteParam("NameField", "Name");
+                addExecuteParam("Catagory", spaceCode);
+                execute("ImportFiles", { showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                    mini.get("documentGrid").reload();
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function importBusinessDocument() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node || node.Type != "InputInfo") return;
+        var dataGrid = mini.get("dataTree");
+        var url = "/Project/Selector/ProjectInputSelect/BusinessDocSelector?ProjectInfoID=" + projectInfo.ID;
+        openWindow(url, { refresh: false, title: "导入前期资料", width: "70%", height: "80%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                addExecuteParam("InputID", node.ID);
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("FileField", "FileID");
+                addExecuteParam("NameField", "FileName");
+                addExecuteParam("Catagory", spaceCode);
+                execute("ImportFiles", { showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                    mini.get("documentGrid").reload();
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function importProjectInput() {
+        var dataGrid = mini.get("dataTree");
+        var url = "/Project/Selector/ProjectInputSelect/ProjectInputSelector?ProjectInfoID=" + projectInfo.ID;
+        openWindow(url, { refresh: false, title: "导入设计输入资料", width: "80%", height: "80%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                addExecuteParam("ListData", mini.encode(data));
+                execute("ImportInput", { showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function importEngineeringInput() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node || node.Type != "InputInfo") return;
+        var dataGrid = mini.get("dataTree");
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=DataCollectionSelector&GroupInfoID=" + projectInfo.GroupRootID;
+        openWindow(url, { refresh: false, title: "导入工程资料", width: "70%", height: "80%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                addExecuteParam("InputID", node.ID);
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("FileField", "Attachment");
+                addExecuteParam("NameField", "FileName");
+                addExecuteParam("Catagory", spaceCode);
+                execute("ImportFiles", { showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload(); mini.get("documentGrid").reload();
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+</script>
+<style type="text/css">
+    .mini-tabs-body
+    {
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .InfoType
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .InputInfo
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/item.gif) no-repeat;
+    }
+</style>

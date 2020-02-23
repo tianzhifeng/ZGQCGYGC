@@ -1,0 +1,57 @@
+
+.yanqiweiwancheng
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/90.png) no-repeat;
+        text-align:center;
+        display:block;
+}
+.jinxingzhong
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/175.png) no-repeat;
+        text-align:center;
+        display:block;
+}
+.zhengchang
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/79.png) no-repeat;
+        text-align:center;
+        display:block;
+}
+.yanqiwancheng
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/warning.png) no-repeat;
+        text-align:center;
+        display:block;
+}
+.redflag
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/red.gif) no-repeat;
+        text-align:center;
+        display:block;
+}
+.greenflag
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/green.gif) no-repeat;
+        text-align:center;
+        display:block;
+}
+.yellowflag
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/yellow.gif) no-repeat;
+        text-align:center;
+        display:block;
+}
+.yellow2flag
+{
+     width:16px;height:16px;overflow:hidden;margin:auto;
+        background:url(images/yellow2.gif) no-repeat;
+        text-align:center;
+        display:block;
+}

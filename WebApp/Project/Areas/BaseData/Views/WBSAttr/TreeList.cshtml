@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "";
+}
+<div id="Name" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="WBS定义" region="west" width="200" expanded="true" showspliticon="false">
+        <ul id="mytree" class="mini-tree" url="GetTree" style="width: 100%; height: 100%;"
+            showtreeicon="true" textfield="Name" idfield="ID" enablehottrack="false" parentfield="ParentID"
+            resultastree="false" expandonload="0" onnodeselect="onNodeSelect" iconfield="Type">
+        </ul>
+    </div>
+    <div title="center" region="center">
+        <div id="subLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+            <div title="west" region="west" showheader="false" width="750" expanded="true" showspliticon="false">
+                <div class="mini-toolbar" style="padding: 0px; border-bottom: 1px; border-top: 0;
+                    border-left: 0; border-right: 0;">
+                    <table>
+                        <tr>
+                            <td style="width: 100%;">
+                                <a class="mini-button" iconcls="icon-add" onclick="addAttr();">增加</a> <a class="mini-button"
+                                    iconcls="icon-edit" onclick="edit({width:'50%',height:'60%'});">编辑</a> <a class="mini-button"
+                                        iconcls="icon-remove" onclick="delAttr();">删除</a>
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');"
+                                    onbuttonclick="quickSearch('Code,Name');" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList"
+                        multiselect="true" borderstyle="border-left: 0; border-right: 0;" onselectionchanged="onSelectionChanged"
+                        showpager="false">
+                        <div property="columns">
+                            <div type="checkcolumn">
+                            </div>
+                            <div field="Name" width="80" allowsort="true" align="center">
+                                名称
+                            </div>
+                             @if(System.Configuration.ConfigurationManager.AppSettings["IsUseMultilingual"] == "True")
+                             {
+                                <div field="NameEN" width="80" allowsort="true" align="center">
+                                    名称(英文)
+                                </div>
+                             }
+                            <div field="Code" width="80" allowsort="true" align="center">
+                                值
+                            </div>
+                            <div field="WBSCode" width="80" allowsort="true" align="center">
+                                编号
+                            </div>
+                            <div field="BelongMode" width="120" allowsort="true" align="left">
+                                可应用业务类型
+                            </div>
+                            <div field="SortIndex" width="60" allowsort="true" align="center">
+                                排序
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div title="center" region="center" visible="false" style="border-top: 0; border-right: 0; border-bottom: 0;">
+                <div class="mini-toolbar" style="padding: 7px; border-top: 0; border-left: 0; border-right: 0;">
+                    <table>
+                        <tr>
+                            <td style="width: 100%;">
+                                <a class="mini-button" iconcls="icon-add" onclick="addDept();">设置关联部门</a> <a class="mini-button"
+                                    iconcls="icon-remove" onclick="delDept();">移除关联部门</a>
+                            </td>
+                            <td style="white-space: nowrap;">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="deptDataGrid" class="mini-datagrid" showpager="false" style="width: 100%;
+                        height: 100%;" url="" multiselect="true" borderstyle="border-left: 0; border-right: 0;">
+                        <div property="columns">
+                            <div type="checkcolumn">
+                            </div>
+                            <div field="DeptName" width="200" allowsort="true" align="center">
+                                关联部门
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.ProjectClass")
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "BelongMode", "ProjectClass");
+
+
+    function addAttr() {
+        var node = mini.get("mytree").getSelectedNode();
+        if (!node) { msgUI("请选择一个节点记录"); return; }
+        var settings = { width: "50%", height: "60%", url: "Edit?Type=" + node.ID };
+        add(settings);
+    }
+
+    function delAttr() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        var rowIDs = getValues(rows, "ID");
+        addExecuteParam("rowIDs", rowIDs)
+        execute("DeleteAuditMode", { onComplete: function () {
+            msgUI("删除成功！");
+            grid.reload();
+        }, onFail: function () {
+            msgUI("删除关联校审模式失败，请联系管理员！");
+        }
+        });
+    }
+
+    function onSelectionChanged(e) {
+        var datagrid = mini.get("deptDataGrid");
+        var url = changeToFullUrl("GetDeptInfo");
+        if (e.selected) {
+            datagrid.setUrl(url.split('?')[0] + "?WBSAttrDefineID=" + e.selected.ID);
+            datagrid.load();
+        }
+        else {
+            datagrid.clearRows();
+        }
+    }
+
+    function addDept() {
+        var grid = mini.get("dataGrid");
+        var row = grid.getSelected();
+        if (!row) { msgUI("请选择一个WBS属性"); return; }
+        openWindow(urlConstant.multiOrg + "&OrgType=Org,Dept,ManufactureDept", {
+            width: 300, onDestroy: function (data) {
+                if (!data || data == "close" || data == "") return;
+                addExecuteParam("DeptInfo", mini.encode(data));
+                addExecuteParam("WBSAttrID", row.ID);
+                execute("SaveDeptInfo", { onComplete: function (data) { mini.get("deptDataGrid").reload(); } });
+            }
+        });
+    }
+
+    function delDept() {
+        var grid = mini.get("deptDataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) msgUI("当前没有选择要操作的记录，请重新确认！", 1)
+        addExecuteParam("DeptInfo", mini.encode(rows));
+        execute("DelDeptInfo", { onComplete: function (data) { mini.get("deptDataGrid").reload(); } });
+    }
+
+    function onNodeSelect(e) {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(dataGrid.url.split('?')[0] + "?Type=" + e.node.ID);
+        dataGrid.load();
+    }
+</script>
+<style type="text/css">
+    .Root
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/setting.gif) no-repeat;
+    }
+    
+    .Child
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+</style>

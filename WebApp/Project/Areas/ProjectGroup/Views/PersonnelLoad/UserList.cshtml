@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "部门人员项目监控";
+}
+<div id="mainlayout" class="mini-layout" splitsize="3" style="width: 100%; height: 100%;"
+     borderstyle="border-right:0px;">
+    <div region="west" width="250" expanded="true" showspliticon="true" showheader="false"
+         style="border-top: 0; border-bottom: 0;">
+        <div class="mini-fit">
+            <ul id="dataTree" url="GetTree" class="mini-tree" style="width: 100%; height: 100%;"
+                iconfield="Type" showtreeicon="true" textfield="Name" idfield="ID" enablehottrack="false"
+                parentfield="ParentID" resultastree="false" expandonload="2" onnodeselect="onNodeSelect">
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+        <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        @Html.ExportButton()
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入姓名或部门" onenter="quickSearch('UserName,DeptName');"
+                               onbuttonclick="quickSearch('UserName,DeptName');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetUserList" class="mini-datagrid" style="width: 100%; height: 100%;" ondrawcell="onDrawCell"
+                 borderstyle="border-left:0px" sortField="UserName" sortOrder="asc">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="UserName" width="150" headeralign="center" align="center" allowsort="true">
+                        姓名
+                    </div>
+                    <div field="DeptName" width="*" headeralign="center" align="left" allowsort="true">
+                        部门
+                    </div>
+                    <div header="项目状态" headeralign="center">
+                        <div property="columns">
+                            <div field="Plan" width="100" headeralign="center" align="right">
+                                策划中
+                            </div>
+                            <div field="Execute" width="100" headeralign="center" align="right">
+                                设计中
+                            </div>
+                            <div field="Finish" width="100" headeralign="center" align="right">
+                                已完工
+                            </div>
+                            <div field="Pause" width="100" headeralign="center" align="right">
+                                已暂停
+                            </div>
+                            <div field="Terminate" width="100" headeralign="center" align="right">
+                                已终止
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function onNodeSelect(e) {
+        var DataGrid = mini.get("dataGrid");
+        DataGrid.setUrl(DataGrid.url.split('?')[0] + "?OrgID=" + e.node.ID);
+        DataGrid.load();
+    }
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field != "UserName" && field && field != "DeptName") {
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:openDetail(\'' + record.UserID + '\',\'' + e.field + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+    }
+    function openDetail(userID, State) {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=PersonnelLoad&UserID=" + userID + "&State=" + State;
+        openWindow(url, {
+            refresh: false, title: "项目信息", width: "90%", height: "80%",
+            onDestroy: function () { }
+        });
+    }
+
+    function pageLoad() {
+        var tree = mini.get("dataTree");
+        var node = tree.getRootNode();
+        node = tree.getChildNodes(node)[0];
+        tree.selectNode(node);
+        var e = {};
+        e.node = node;
+        if (e.node != null) {
+            onNodeSelect(e);
+        }
+    }
+</script>
+<style type="text/css">
+    .Org {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+
+    .Dept {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/dept.gif) no-repeat;
+    }
+
+    .ManufactureDept {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/cutover.png) no-repeat;
+    }
+
+    .SubDept {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+
+    .Post {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/user.png) no-repeat;
+    }
+</style>

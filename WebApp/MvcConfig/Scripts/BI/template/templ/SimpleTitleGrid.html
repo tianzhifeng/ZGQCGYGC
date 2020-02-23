@@ -1,0 +1,27 @@
+﻿<script id="SimpleTitleGrid" type="text/x-jquery-tmpl">
+    <div class="BIinfo-block ${Style}">
+        <div class="BIinfo-block-content">
+            <span class="title"><i>|</i>${Title}</span>
+            {{each Tag}}
+            <span class="text" style="font-size: 12px;  display: flex; line-height:${$value.RowHeight};height:${$value.RowHeight}; margin: 0px 10px 12px 10px; padding: 12px 10px 0 10px;  border-top: 1px solid #ddd; ">
+                {{if $value.Image}}
+                <img style="width: 17px; height: 17px; vertical-align: middle; margin-right:3px;" src="${$value.Image}" />
+                {{/if}}
+                <span style="font-size:13px;width:30%;float:left">${$value.Title}</span>
+                <label style="float:right;width:70%;text-align: right;">
+                    {{if $value.LinkUrl}}
+                    <a href="javascript:void(0);" onclick="openUrl('${$value.LinkUrl}', '${$value.Title}', '${$value.width}', '${$value.height}')" style="font-size: 16px; font-weight: bold; margin: 0px 5px;">${$value.Value}</a>
+                    {{else}}
+                    <a href="javascript:void(0);" style="font-size: 16px; font-weight: bold; margin: 0px 5px;">${$value.Value}</a>
+                    {{/if}}
+                    ${$value.Unit}
+                </label>
+                {{if $value.Prefix}}
+                <label style="display:inline-block;"> ${$value.Prefix}</label>
+                {{/if}}
+            </span>
+            {{/each}}
+            <span class="text" style="font-size: 12px;overflow: hidden; margin: 0px 10px 2px 10px; padding: 0 10px; display: block; border-top: 1px solid #ddd; "></span>
+        </div>
+    </div>
+</script>

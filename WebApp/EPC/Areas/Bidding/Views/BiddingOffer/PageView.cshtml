@@ -1,0 +1,840 @@
+﻿@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+
+<link href="@Url.Content("/CommonWebResource/Theme/Default/Tab/images/style.css")" rel="stylesheet" type="text/css" />
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="报价审批表" id="BiddingForm" name="BiddingForm">
+            <form id="dataForm" method="post" align="center" autogetdata="false">
+                <input name="ID" class="mini-hidden" />
+                @Html.Raw(ViewBag.HiddenHtml)
+                <div class="formDiv" style="background-color: #fff;">
+                    @Html.Raw(ViewBag.FormHtml)
+                </div>
+                @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+                {
+                    <div style="padding-left: 35px; padding-right: 35px; padding-bottom: 65px;">
+                        <fieldset>
+                            <legend style="font-weight: bold; margin-left: 35px;">操作信息</legend>
+                            <div id="comment">
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <script type="text/javascript">
+                        function onCommentLoad(e) {
+                            if (e.data.length == 0)
+                                $("#commentGrid").hide();
+                        }
+                    </script>
+                }
+            </form>
+
+            @if (!string.IsNullOrEmpty(Request["IsPreView"]))
+            {
+            }
+            else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+            {
+                @Html.GetFlowbar()
+            }
+            else
+            {
+                <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0;
+        left: 0; z-index: 100;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                                    保存
+                                </a> <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                                    取消
+                                </a>
+                            </td>
+                            <td id="btnRight"></td>
+                        </tr>
+                    </table>
+                </div>
+            }
+        </div>
+        <div title="报价费用总览" id="AllFee" name="AllFee">
+            <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;" id="AllToolBar" name="AllToolBar">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="addNode('dataTree')" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delNode('dataTree')" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="saveNode('dataTree')" plain="true">保存</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="reloadTree('dataTree')" plain="true">刷新</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="GetAllTree?BiddingOfferID=@ViewBag.FormID" showtreeicon="true"
+                     treecolumn="Name" idfield="CBSID" parentfield="CBSParentID" resultastree="false" allowresize="false" fitcolumns="false" iconfield="NodeType"
+                     multiselect="true" expandonload="0" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+                     oncellbeginedit="OnCellBeginEdit" oncellendedit="onCellEndEdit" ondrawcell="onDrawingCell">
+                    <div property="columns">
+                        <div type="checkcolumn"></div>
+                        <div name="Name" field="Name" width="300" headeralign="center">
+                            名称 <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Model" width="100" headeralign="center">
+                            规格/ 型号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Material" width="100" headeralign="center">
+                            材质<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Branding" width="100" headeralign="center">
+                            品牌<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+
+                        <div field="Quantity" width="50" headeralign="center" align="right" vtype="float">
+                            数量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="UnitPrice" numberformat="#,0.00" width="80" headeralign="center" align="right" vtype="float">
+                            单价（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="TotalValue" numberformat="#,0.00" width="90" headeralign="center" align="right" vtype="float">
+                            合价（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Remark" width="200" headeralign="center">
+                            备注<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="设备材料费用" id="DeviceFee">
+            <div id="divTabs" class="DivTab" style="width: 100%; overflow: hidden;">
+                @{
+                    if (ViewBag.DeviceTab != null)
+                    {
+                        var tab = ViewBag.DeviceTab as Formula.Tab;
+                        var style = ""; var moreTabClass = "tab_menu_img_up";
+                        if (!tab.IsDisplay)
+                        {
+                            style = "display: none";
+                            moreTabClass = "tab_menu_img_down";
+                        }
+                        foreach (var category in tab.Categories)
+                        {
+                            var radio = "";
+                            if (!category.Multi)
+                            {
+                                radio = "T";
+                            }
+                            <div class="tab_menu_bg" style="@style">
+                                <table style="width:100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td class="tab_menu_left_w" valign="top">
+                                            <span class="tab_menu_left">@category.Name：</span>
+                                        </td>
+                                        <td>
+                                            <ul class="tab_menu_top" queryfield="@category.QueryField" querymethod="@category.Method">
+                                                @{
+                            foreach (var item in category.Items)
+                            {
+                                if (item.IsDefault)
+                                {
+                                    var className = "current";
+                                    if (item.Value == "All")
+                                    {
+                                        className = "currentall";
+                                    }
+                                    <li>
+                                        <a class="@className" onclick="menuCheckd('@radio');" href="javascript:void(0)" value="@item.Value"><span></span>@item.Name</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a onclick="menuCheckd('@radio');" href="javascript:void(0)" value="@item.Value"><span></span>@item.Name</a>
+                                    </li>
+                                }
+
+                            }
+                                                }
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        }
+                        <div id="divMoreTabs" class="menu_indent">
+                            <div onclick="ShowHideMoreTabs()" class="@moreTabClass" style="cursor: pointer;border-top:0px;">
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;" id="DeviceToolBar" name="DeviceToolBar">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-excel" onclick="importExcel" plain="true">Excel导入</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="importNodes" plain="true">节点模板导入</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="addNode('deviceTree','@ViewBag.DeviceRootID','true')" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delNode('deviceTree')" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="saveNode('deviceTree')" plain="true">保存</a>
+                            <a class="mini-button" iconcls="mini-pager-reload" onclick="reloadTree('deviceTree')" plain="true">刷新</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit" id="fitArea">
+                <div id="deviceTree" class="mini-treegrid" style="width:100%;height:100%;" url="GetDeviceTree?BiddingOfferID=@ViewBag.FormID" showtreeicon="true"
+                     treecolumn="Name" idfield="CBSID" parentfield="CBSParentID" resultastree="false" allowresize="false" fitcolumns="false" iconfield="NodeType"
+                     multiselect="true" expandonload="true" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+                     allowcellwrap="true" oncellbeginedit="OnCellBeginEdit" oncellendedit="onCellEndEdit" ondrawcell="ondeviceTreeDrawingCell">
+                    <div property="columns">
+                        <div type="checkcolumn"></div>
+                        <div name="SqueNo" field="SqueNo" width="40" headeralign="center" align="center">
+                            序号 <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div name="Name" field="Name" width="300" headeralign="center">
+                            名称 <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="MajorCode" displayfield="MajorName" width="80" headeralign="center" align="center" autoshowpopup="true">
+                            专业分类<input property="editor" class="mini-combobox" style="width:100%;" data="BOMMajor" textfield="text" valuefield="value" />
+                        </div>
+                        <div field="Model" width="200" headeralign="center">
+                            规格/ 型号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Material" width="100" headeralign="center">
+                            材质<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Branding" width="100" headeralign="center">
+                            品牌<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Unit" width="50" headeralign="center" align="right">
+                            单位<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Quantity" width="50" headeralign="center" align="right" vtype="float">
+                            数量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="UnitPrice" numberformat="#,0.00" width="80" headeralign="center" align="right" vtype="float">
+                            单价（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="TotalValue" numberformat="#,0.00" width="90" headeralign="center" align="right" vtype="float">
+                            合价（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="PriceList" width="60" headeralign="center">
+                            价格参考
+                        </div>
+                        <div field="Remark" width="200" headeralign="center">
+                            备注<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="施工安装费用" id="ConstructionFee" name="ConstructionFee">
+            <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;" id="AllToolBar" name="AllToolBar">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="addNode('constructionTree','@ViewBag.ConstructionRootID')" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delNode('constructionTree')" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="saveNode('constructionTree')" plain="true">保存</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="reloadTree('constructionTree')" plain="true">刷新</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="constructionTree" class="mini-treegrid" style="width:100%;height:100%;" url="GetConstructionTree?BiddingOfferID=@ViewBag.FormID" showtreeicon="true"
+                     treecolumn="Name" idfield="CBSID" parentfield="CBSParentID" resultastree="false" allowresize="false" fitcolumns="false" iconfield="NodeType"
+                     multiselect="true" expandonload="true" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+                     oncellbeginedit="OnCellBeginEdit" oncellendedit="onCellEndEdit" ondrawcell="onDrawingCell">
+                    <div property="columns">
+                        <div type="checkcolumn"></div>
+                        <div name="Name" field="Name" width="300" headeralign="center">
+                            名称 <input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="ExtraField1" width="100" headeralign="center">
+                            编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="ExtraField2" width="300" headeralign="center">
+                            项目特征<input property="editor" class="mini-textarea" style="width: 100%;" />
+                        </div>
+                        <div field="Unit" width="50" headeralign="center" align="right">
+                            单位<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Quantity" width="50" headeralign="center" align="right">
+                            数量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="UnitPrice" numberformat="#,0.00" width="80" headeralign="center" align="right" vtype="float">
+                            单价（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="TotalValue" numberformat="#,0.00" width="90" headeralign="center" align="right" vtype="float">
+                            合价（元）<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                        <div field="Remark" width="100" headeralign="center">
+                            备注<input property="editor" class="mini-textbox" style="width: 100%;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+    @Html.GetEnum("Base.BOMMajor")
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+
+     
+    function ondeviceTreeDrawingCell(e)
+    {
+        if(e.field=='PriceList'&&e.row.NodeType == 'Detail')
+        {
+            e.cellHtml = '<a href="javascript:void(0)" onclick="openWindow(\'/MvcConfig/UI/List/PageView?TmplCode=EquipmentMaterialPriceTemplateView&Name='+e.row.Name+'\')">价格参考</a>';
+        }
+    }
+
+
+    function onFormSetData(formData) {
+        if(BidOfferLabor&&BidOfferLabor.length>0&&typeof( BidOfferLabor[0].totalvalue)!="undefined"){
+            var co =  mini.getbyName("LaborFee");
+            if(co){
+                co.setValue(BidOfferLabor[0].totalvalue);
+            }
+        }
+        if(BidOfferDevice&&BidOfferDevice.length>0&&typeof( BidOfferDevice[0].totalvalue)!="undefined"){
+            var co =  mini.getbyName("DeviceFee");
+            if(co){
+                co.setValue(BidOfferDevice[0].totalvalue);
+            }
+        }
+    }
+
+    var ID = getQueryString("ID");
+    var funcType = getQueryString("FuncType");
+    normalParamSettings.gridId = "deviceTree";
+    windowParamSettings.gridId = "deviceTree";
+
+    function caculateScale() {
+        var directFee =0;
+        var dExp = mini.getbyName("DirectExpense");
+        if(dExp){
+            directFee = parseFloat(dExp.getValue());  //直接费合计
+            if (isNaN(directFee)) directFee = 0;
+        }
+        var indirectFee =0;
+        var iDExp =  mini.getbyName("InDirectExpense");
+        if(iDExp){
+            indirectFee = parseFloat(iDExp.getValue()); //间接费合计
+            if (isNaN(indirectFee)) indirectFee = 0;
+        }
+
+
+        var bidFee = 0;
+        var bidFeeCo = mini.getbyName("BidFee");
+        if(bidFeeCo){
+            bidFee = parseFloat(bidFeeCo.getValue());     //预算总计
+            if (isNaN(bidFee)) bidFee = 0;
+        }
+
+        var taxFee =0;
+        var taxFeeCo = mini.getbyName("TaxFee");
+        if(taxFeeCo){
+            taxFee = taxFeeCo.getValue();
+            if (isNaN(taxFee)) { taxFee = 0; msgUI("请输入数字！"); }
+            if (taxFee == "") { taxFee = 0; }
+            taxFee = parseFloat(taxFee); //增值税费
+            if (taxFee < 0) { msgUI("请输入正数！"); }
+        }
+
+        var offer =0;// mini.getbyName("Offer").getValue();
+        var offerCo = mini.getbyName("Offer");
+        if(offerCo){
+            offer= offerCo.getValue();
+            if (isNaN(offer)) { offer = 0; }
+            offer = parseFloat(offer); //报价
+            if (offer < 0) { msgUI("请输入正数！"); }
+        }
+      
+
+        var raiseScale = 0;//加价率
+        if (offer > 0) {
+            raiseScale = (offer - bidFee) / offer * 100; //加价率=（投标价-预算总计）/投标价
+        }
+        var RaiseScaleCo =    mini.getbyName("RaiseScale");
+        if(RaiseScaleCo){
+            RaiseScaleCo.setValue(raiseScale.toFixed(2));
+        }
+
+        var profitRate = 0;//毛利率
+        if (offer > 0) {
+            profitRate = (offer - bidFee) / offer * 100;  //毛利率=（投标价-预算合计）/投标价
+        }
+        if(mini.getbyName("ProfitRate")){
+            mini.getbyName("ProfitRate").setValue(raiseScale.toFixed(2));
+        }
+
+        var profitWithOutTax = 0; //税前利润
+        profitWithOutTax = offer - bidFee - taxFee;   //息税前利润=投标价-预算总计-增值税及附加
+        if(mini.getbyName("ProfitWithOutTax")){
+            mini.getbyName("ProfitWithOutTax").setValue(profitWithOutTax.toFixed(2));
+        }
+
+
+        var profitRateWithOutTax = 0; //税前毛利率
+        if (offer > 0) {
+            profitRateWithOutTax = (offer - bidFee - taxFee) / offer * 100; //息税前利润率=（投标价-直接费小计-其他费用小计-增值税及附加）/投标价
+
+        }
+        if(mini.getbyName("ProfitRateWithOutTax")){
+            mini.getbyName("ProfitRateWithOutTax").setValue(profitRateWithOutTax.toFixed(2));
+        }    
+    }
+
+    function addNode(treeID, rootID, validateMajorCode) {
+        var dataTree = mini.get(treeID);
+        var node = dataTree.getSelectedNode();
+        var parentID = "";
+        if (node) {
+            parentID = node.ID;
+        }
+        else {
+            var parentNode = dataTree.getRootNode()
+            parentID = parentNode.children[0].ID;
+            node = parentNode.children[0];
+        }
+
+        var tabData = GetTabsData();
+        var majorCode = "all";
+        if (tabData.length > 0)
+            majorCode = tabData[0].value;
+        if (!validateMajorCode) { validateMajorCode = "false"; }
+        addExecuteParam("ParentID", parentID);
+        addExecuteParam("MajorCode", majorCode);
+        addExecuteParam("ValidateMajorCode", validateMajorCode);
+        execute("AddSubNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                if (data) {
+                    dataTree.addNode(data, "add", node);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function delNode(treeID) {
+        var dataTree = mini.get(treeID);
+        var nodes = dataTree.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个节点"); return; }
+        msgUI("删除该节点将会删除下级所有子节点，您确定需要删除吗？", 2, function (act) {
+            if (act == "ok") {
+                addExecuteParam("NodeInfo", mini.encode(nodes));
+                execute("DeleteNode", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataTree.removeNodes(nodes);
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function saveNode(treeID) {
+        var treeGrid = mini.get(treeID);
+        treeGrid.commitEdit(); treeGrid.accept();
+        var nodes = treeGrid.getList();
+        if (nodes.length == 0)
+            return;
+        treeGrid.validate();
+        if (treeGrid.isValid() == false) {
+            var error = treeGrid.getCellErrors()[0];
+            var txt = error.errorText;
+            if (error.column.header)
+                txt = error.column.header + "：" + txt;
+            msgUI(txt, 1);
+            return;
+        }
+        addExecuteParam("NodeInfo", mini.encode(nodes));
+        addExecuteParam("BidOfferID", ID);
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.accept();
+                msgUI("保存成功");
+                if (treeID != "dataTree")
+                    mini.get("dataTree").reload();
+                if (treeID != "deviceTree")
+                    mini.get("deviceTree").reload();
+                if (treeID != "constructionTree")
+                    mini.get("constructionTree").reload();
+                reloadForm();
+            }, validateForm: false
+        });
+    }
+
+    function reloadTree(treeId) {
+        var tree = mini.get(treeId);
+        if (tree) {
+            tree.reload();
+        }
+    }
+
+    function reloadForm() {
+        addExecuteParam("ID", ID);
+        execute("ReloadForm", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                if (data) {
+                    var form = new mini.Form("dataForm");
+                    form.setData(data);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function onDrawingCell(e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.CanEdit == "0") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if (record.TypeInfo == "Detail") {
+            e.cellStyle = "background:#fceee2";
+        }
+        else {
+            //if(field!="Name"&&field!="Code"){
+            //    e.cellStyle = "background:#F0F0F0";
+            //}
+        }
+        if (funcType == "View") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+    }
+
+    function onCellEndEdit(e) {
+        var sender = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (field == "Quantity" || field == "UnitPrice") {
+            var quantity = parseFloat(record.Quantity);
+            var unitPrice = parseFloat(record.UnitPrice);
+            if (!isNaN(quantity) && !isNaN(unitPrice)) {
+                var totalValue = unitPrice * quantity;
+                sender.updateRow(record, { TotalValue: totalValue });
+            }
+            sumTotalValue(sender, record);
+        }
+        else if (field == "TotalValue") {
+            sumTotalValue(sender, record);
+        }
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (record.CanEdit == "0") {
+            e.cancel = true;
+        }
+        else {
+            //if(field!="Name"&&field!="Code"&&record.TypeInfo!="Detail"){
+            //    e.cancel = true;
+            //}
+        }
+        if (funcType == "View") {
+            e.cancel = true;
+        }
+
+        if (field == "MajorCode" && record.NodeType != "Detail") {
+            e.cancel = true;
+        }
+    }
+
+    function importExcel() {
+        var validateUrl = "/EPC/Bidding/BiddingOffer/ValidateData?BidOfferID=" + ID;
+        var saveUrl = "/EPC/Bidding/BiddingOffer/SaveExcelData?BidOfferID=" + ID;
+        ImportExcel("Bid_Import", validateUrl, saveUrl);
+    }
+
+    function importNodes() {
+        var url = "/EPC/NodeTemplateSelector/Selector";
+        openWindow(url, {
+            refresh: false, title: "节点模板导入", width: "70%", height: "80%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") {
+                    return;
+                }
+                var templateIds = "";
+                for (var i = 0; i < data.length; i++) {
+                    if (i == data.length - 1) {
+                        templateIds += data[i].ID;
+                    }
+                    else {
+                        templateIds += data[i].ID + ",";
+                    }
+                }
+                addExecuteParam("NodeIDs", templateIds);
+                addExecuteParam("BidInfoID", ID);
+                execute("ImportNodeTemplate", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        mini.get("deviceTree").reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function sumTotalValue(tree, node) {
+        if (!tree || !node) return;
+        var parentNode = getParent(tree, node);
+        if (parentNode) {
+            var children = getChildren(tree, parentNode);
+            var totalValue = 0;
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                var childTotalValue = parseFloat(child.TotalValue);
+                if (isNaN(childTotalValue))
+                    childTotalValue = 0;
+                totalValue += childTotalValue;
+            }
+            tree.updateRow(parentNode, { TotalValue: totalValue });
+            sumTotalValue(tree, parentNode);
+        }
+    }
+
+    function getParent(tree, child) {
+        if (!tree) {
+            return null;
+        }
+        var list = tree.findNodes(function (node) {
+            if (node.CBSID == child.CBSParentID) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+        if (list.length > 0) {
+            return list[0];
+        }
+        else
+            return null;
+    }
+
+    function getChildren(tree, parentNode) {
+        if (!tree || !parentNode) {
+            return null;
+        }
+        return tree.findNodes(function (node) {
+            if (node.CBSParentID == parentNode.CBSID) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+    }
+
+    //菜单选中取消
+    function menuCheckd(radio) {
+        var $a = $(event.srcElement);
+        var $tab_menu = $a.parent().parent();
+        if ($a.attr("value") == "All") {
+            if (!($a.hasClass("currentall"))) {
+                //'全部'选中
+                $tab_menu.find("a[value='All']").addClass("currentall");
+                $tab_menu.find("a[value!='All']").removeClass("current");
+            }
+        }
+        else {
+            if ($a.hasClass("current")) {
+                //取消
+                if (radio == "T") { return; }
+                $a.removeClass("current");
+                //如果都取消，则'全部'选中
+                if ($tab_menu.find("a.current").length == 0) {
+                    $tab_menu.find("a[value='All']").addClass("currentall");
+                }
+            }
+            else {
+                //单选则先取消所有
+                if (radio == "T") {
+                    $tab_menu.find("a[value!='All']").removeClass("current");
+                }
+                //选中
+                $a.addClass("current");
+                //取消'全部'
+                $tab_menu.find("a[value='All']").removeClass("currentall");
+            }
+        }
+        tabSearch();
+    }
+
+    function ShowHideMoreTabs() {
+        var img = $("#divMoreTabs").find("div");
+        var arrMoretabs = $("#divTabs").find("div.tab_menu_bg");
+        if ($(img).hasClass("tab_menu_img_down")) {
+            $(img).removeClass("tab_menu_img_down").addClass("tab_menu_img_up");
+            arrMoretabs.each(function (i) {
+                if (i >= 0)
+                    $(this).show();
+            });
+        }
+        else {
+            $(img).removeClass("tab_menu_img_up").addClass("tab_menu_img_down");
+            arrMoretabs.each(function (i) {
+                if (i >= 0)
+                    $(this).hide();
+            });
+        }
+        SetGridHeight();
+    }
+
+    $(window).resize(function () {
+        SetGridHeight();
+    });
+    function SetGridHeight() {
+        $(".mini-fit").each(function () {
+            var layout = mini.get("#" + $(this).attr("id"));
+            if (layout)
+                layout.doLayout();
+        });
+    }
+
+    //获取标签数据
+    function GetTabsData() {
+        var data = [];
+        $.each($("#divTabs").find("ul.tab_menu_top"), function (i, ulTab) {
+            if ($(ulTab).find("a.currentall").length == 0) {
+                var tabData = {};
+                tabData.queryfield = $(ulTab).attr("queryfield");
+                tabData.querymethod = $(ulTab).attr("querymethod");
+                var vals = [];
+                $(ulTab).find("a.current").each(function (i) {
+                    vals.push($(this).attr("value"));
+                });
+                tabData.value = vals.join(',');
+                data.push(tabData);
+            }
+        });
+        return data;
+    }
+
+    function tabSearch() {
+        var tabData = GetTabsData();
+        var majorCode = "all";
+        if (tabData.length > 0)
+            majorCode = tabData[0].value;
+        var tree = mini.get("deviceTree");
+        if (tree) {
+            tree.load({ MajorCode: majorCode });
+        }
+    }
+
+    function onFlowLoadedMenubar(data) {
+        var button = { iconCls: "icon-add", id: "btnChange", onclick: "upgradeBidOffer();", routingParams: null, text: "调整报价" };
+        if (formData) {
+            if (formData.FlowPhase == "End") {
+                data.splice(0, 0, button);
+            }
+        }
+        return data;
+    }
+
+    function upgradeBidOffer() {
+        if (formData) {
+            if (formData.FlowPhase != "End") {
+                msgUI("审批流程尚未结束，无法调整报价"); return;
+            }
+            msgUI("您确定需要升版投标预算，重新报价吗？", 2, function (result) {
+                if (result != "ok") return;
+                addExecuteParam("EngineeringInfoID", formData.EngineeringInfoID);
+                execute("/EPC/Bidding/BiddingOffer/UpgradBidOffer", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        var url = "/EPC/Bidding/BiddingOffer/PageView?TmplCode=BidOffer&FlowCode=BidOffer&RelateField=EngineeringInfoID&AllowUpperVersion=false&EngineeringInfoID=" + formData.EngineeringInfoID;
+                        window.location = url;
+                    }, validateForm: false
+                });
+            });
+        }
+        else {
+            msgUI("没有找到报价就，无法调整报价");
+        }
+    }
+</script>
+
+
+<style type="text/css">
+    body {
+        background-color: #fff;
+    }
+</style>

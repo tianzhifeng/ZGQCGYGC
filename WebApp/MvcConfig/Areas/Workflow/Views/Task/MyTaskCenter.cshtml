@@ -1,0 +1,33 @@
+﻿<style type="text/css">
+    .mini-tabs-position-left .mini-tabs-header
+    {
+        width: 38px;
+    }
+</style>
+<div class="mini-tabs" activeindex="0" id="MyTabs" newline="true" tabposition="left"
+    tabposition="top" style="width: 100%; height: 100%">
+    <div title="@ViewBag.Task" url="/MvcConfig/WorkFlow/Task/MyUndoList">
+    </div>
+    <div title="@ViewBag.Completed" url="/MvcConfig/WorkFlow/Task/MyDoneList">
+    </div>
+    <div title="@ViewBag.Replace" url="/MvcConfig/WorkFlow/Task/MyDelegateList">
+    </div>
+    <div title="@ViewBag.Daily" url="/MvcConfig/WorkFlow/Task/MyNormalTaskList">
+    </div>
+</div>
+<script type="text/javascript">
+    //<font color='#b70e0f'>10</font>
+    mini.parse();
+    $(function () {
+        var actTab;
+        var tabs = mini.get("MyTabs");
+        var status = getQueryString("Status");
+        if (status == "Done") {
+            actTab = tabs.getTab(1);
+        } else {
+            actTab = tabs.getTab(0);
+        }
+        tabs.activeTab(actTab);
+    });
+
+</script>

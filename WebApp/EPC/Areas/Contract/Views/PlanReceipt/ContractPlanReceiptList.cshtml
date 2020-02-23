@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "收款计划列表";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table>
+        <tr>
+            <td style="white-space: nowrap;"></td>
+            <td style="white-space: nowrap; width: 100%;">
+                @Html.ExportButton()
+            </td>
+            @*<td style="white-space: nowrap; width: 100%;">
+                </td>
+                <td style="white-space: nowrap;">
+                    <input class="mini-buttonedit searchbox" id="key" emptytext="请输入客户或名称或编号或合同名称" style="width: 240px;"
+                        onenter="tabSearch()" onbuttonclick="tabSearch()" />
+                    <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                        详细查询</a>
+                </td>*@
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GridArea">
+    <div id="dataGrid" class="mini-datagrid" showpager="false" url="GetPlanReceiptList"
+         showsummaryrow="true" multiselect="false" style="width: 100%; height: 100%" ondrawsummarycell="onDrawSummaryCell"
+         virtualscroll="true" ondrawcell="OnDrawCell" editnextonenterkey="true" sortfield="PlanDate"
+         sortorder="asc">
+        <div property="columns">
+            <div type="indexcolumn" width="30">
+            </div>
+            <div field="Name" headeralign="center" width="200" allowsort="true" align="left">
+                计划收款名称
+            </div>
+            <div field="PlanValue" datatype="currency" currencyunit="￥" headeralign="center"
+                 width="100" allowsort="true" align="right" vtype="required;float;min:0.1">
+                计划收款金额(元)
+            </div>
+            <div field="PlanDate" dateformat="yyyy-MM" width="80" headeralign="center"
+                 allowsort="true" align="center">
+                计划收款年月
+            </div>
+            <div field="State" width="80" headeralign="center" allowsort="true" align="center">
+                状态
+            </div>
+            <div field="FactInvoiceValue" width="100" datatype="currency" currencyunit="￥" headeralign="center"
+                 allowsort="true" align="right">
+                累计开票金额(元)
+            </div>
+            <div field="FactValue" name="ReceiptAmount" width="100" datatype="currency"
+                 currencyunit="￥" headeralign="center" allowsort="true" align="right" summaryType="sum">
+                实际到款金额(元)
+            </div>
+            <div field="FactDate" width="80" headeralign="center" allowsort="true" align="center"
+                 dateformat="yyyy-MM-dd">
+                到款时间
+            </div>
+            <div field="BadDebtValue" datatype="currency" currencyunit="￥" width="100" headeralign="center"
+                 allowsort="true" align="right">
+                坏账金额
+            </div>
+            <div field="ProductionDept" displayfield="ProductionDeptName" width="90" headeralign="center"
+                 allowsort="true" align="center">
+                生产责任部门
+            </div>
+            <div field="ProductionChargerUserName" width="90" headeralign="center" allowsort="true" align="center">
+                生产负责人
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.PlanReceiptState))
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "State", "PlanReceiptState");
+
+    function OnDrawCell(e) {
+        var record = e.record;
+        if (e.field == "State") {
+            if (record.IsDelay == "T") {
+                e.cellStyle = "color:#e00000;font-weight:bold;background:#e6b7b7";
+            }
+            else if (record.State == "Receipted") {
+                e.cellStyle = "color:#2da100;background:#c6d7e6";
+            }
+            else if (record.State == "PartReceipted") {
+                e.cellStyle = "color:#0a6aad;background:#e6dfbd";
+            }
+            else if (record.State == "UnFinished") {
+                e.cellStyle = "color:#8e3e84;background:#e6cfe3";
+            }
+            else if (record.State == "BadDebt") {
+                e.cellStyle = "color:#777777;background:#e5e5e5";
+            }
+        }
+    }
+
+    function onDrawSummaryCell(e) {
+        e.cellStyle = " text-align: right;color:red";
+    }
+
+</script>

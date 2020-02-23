@@ -1,0 +1,235 @@
+﻿@{
+    ViewBag.Title = "WBSGantt";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                WBS视角：<input value="Project" id="viewType" class="mini-combobox" style="width: 70px;" textfield="text"
+                    valuefield="value" data="transForm" onvaluechanged="onViewChange" />
+                <a class="mini-menubutton" plain="true" iconcls="icon-import" menu="#popupMenu">导入</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delWBS" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-ok" onclick="publish" plain="true">发布</a>
+                <a class="mini-button" iconcls="icon-zoomin" onclick="zoomIn" plain="true">放大</a>
+                <a class="mini-button" iconcls="icon-zoomout" onclick="zoomOut" plain="true">缩小</a>
+                <a class="mini-button" iconcls="icon-goto" onclick="gotoStandard" plain="true">转到标准视图</a>
+            </td>
+            <td style="white-space: nowrap; color: Red;">
+                灰色单元格不可编辑&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GanttDV">
+</div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+</ul>
+<ul id="popupMenu" class="mini-menu" style="display: none;">
+    <li iconcls="icon-package" onclick="importPackage">从工作包词典导入</li>
+    <li iconcls="icon-set" onclick="importWBSNode">从项目导入</li>
+</ul>
+<script type="text/javascript">
+    var lockedWBSType = "@Html.Raw(ViewBag.lockedWBSType)";
+    var transForm = @Html.Raw(ViewBag.TransForm);
+    var defaultViewType ="@Html.Raw(ViewBag.DefaultViewType)";
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+    
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+
+    var gantt = initGantt();
+    gantt.render(document.getElementById("GanttDV"));
+
+    loadData("Project");
+    function loadData(viewType) {
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        addExecuteParam("ViewType", viewType);
+        gantt.loading();
+        execute("GetTree", { refresh: false, onComplete: function (data) {
+            var list = mini.arrayToTree(data, "children", "UID", "ParentTaskUID");
+            gantt.loadTasks(list);
+            gantt.unmask();
+        }, validateForm: false
+        });
+    }
+
+    function onViewChange(e) {
+        loadData(e.value);
+    }
+
+    function gotoStandard() {
+        window.location.href = "/Project/Basic/WBS/WBS" + window.location.search;
+    }
+
+    function publish() {
+        var nodes = gantt.getTaskList();
+        if (nodes.length == 0)
+            return;
+        var viewType = mini.get("viewType").getValue();
+        addExecuteParam("WBSInfo", mini.encode(nodes));
+        addExecuteParam("ViewType", viewType);
+        execute("PublishWBS", { showLoading: true, refresh: false, onComplete: function (data) {
+            gantt.acceptChanges();
+        }, validateForm: false
+        });
+    }
+
+    function importPackage(e) {
+        var url = "/Project/Basic/TaskPackage/TaskPackageImport";
+        openWindow(url, { refresh: false, title: "工作包导入", width: 950, height: 500,
+            onDestroy: function (data) {
+                if (data == "close" || !data || data.length == 0) return;
+                addExecuteParam("DataSource", mini.encode(data));
+                execute("ImportPackage", { showLoading: true, refresh: false, onComplete: function (data) {
+                    loadData(mini.get("viewType").getValue());
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function importWBSNode(e) {
+        var node = gantt.getSelected();
+        if (!node) {
+            var nodes = gantt.findTasks("WBSType", "Project");
+            if (nodes.length == 0) { msgUI("没有项目根节点的情况下无法进行导入操作"); return; }
+            node = nodes[0];
+        }
+        openWindow("/Project/Basic/WBS/WBSImport", { refresh: false, title: "WBS导入", width: 950, height: 500,
+            onDestroy: function (nodes) {
+                if (nodes == "close" || !nodes || nodes.length == 0) return;
+                addExecuteParam("TargetInfo", mini.encode(node));
+                addExecuteParam("DataSource", mini.encode(nodes));
+                execute("WBSCopy", { showLoading: true, refresh: false, onComplete: function (data) {
+                    loadData(mini.get("viewType").getValue());
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function delWBS() {
+        var nodes = gantt.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个WBS节点"); return; }
+        msgUI("删除WBS将删除下层所有子节点，是否继续？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("WBSInfo", mini.encode(nodes));
+            execute("DeleteWBS", { showLoading: true, refresh: false, onComplete: function (data) {
+                loadData(mini.get("viewType").getValue());
+            }, validateForm: false
+            });
+        });
+    }
+
+    function zoomIn() {
+        gantt.zoomIn();
+    }
+    function zoomOut() {
+        gantt.zoomOut();
+    }
+
+    gantt.on("cellbeginedit", function (e) {
+        var record = e.record, column = e.column, field = e.field;
+        var record = e.record, field = e.field;
+        var locked = true;
+        if (lockedWBSType.indexOf(record.WBSType) < 0)
+            locked = false;
+        var viewLocked = false;
+        var viewType = mini.get("viewType").getValue();
+        if (defaultViewType.indexOf(viewType) < 0) {
+            viewLocked = true;
+        }
+        if ((field == "Name" || field == "Code") && record.WBSType == "Project") {
+            e.cancel = true;
+        }
+        else if (viewLocked && (field == "Name" || field == "Code" || !record.ID)) {
+            e.cancel = true;
+        }
+        else if ((field == "Name") && locked) {
+            e.cancel = true;
+        }
+    });
+
+    gantt.on("taskclick", function (e) {
+
+
+    });
+
+    gantt.on("drawcell", function (e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        var locked = true;
+        if (lockedWBSType.indexOf(record.WBSType) < 0)
+            locked = false;
+
+        var viewLocked = false;
+        var viewType = mini.get("viewType").getValue();
+        if (defaultViewType.indexOf(viewType) < 0) {
+            viewLocked = true;
+        }
+        if (field == "ChargeUserName") e.cellStyle = "background:#F0F0F0";
+        if ((field == "Name" || field == "Code") && record.WBSType == "Project") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if (viewLocked && (field == "Name" || field == "Code" || !record.ID)) {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if ((field == "Name") && locked) {
+            e.cellStyle = "background:#F0F0F0";
+        }
+
+        if (e.column.field == "Start" || e.column.field == "Finish") {
+            var d = e.value;
+            if (d) {
+                e.cellHtml = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+            }
+        }
+
+
+    });
+
+
+    function initGantt() {
+        var gantt = new PlusGantt();
+        gantt.setStyle("width:100%;height:100%;border:0px;");
+        new RGanttSchedule(gantt);
+        gantt.setAllowResize(false);
+        gantt.setMultiSelect(true);
+        gantt.setAllowDragDrop(true);
+        gantt.setColumns([
+            { header: "", field: "index", width: 30, cellCls: "mini-checkcolumn", align: "center", allowDrag: false, allowMove: false },
+            { header: "", field: "WBSType", width: 30, cellCls: "mini-checkcolumn", align: "center", allowDrag: false, allowMove: false, visible: false },
+            { header: mini.Gantt.Name_Text, field: "Name", width: 300, name: "taskname", headeralign: "center",
+                editor: { type: "textbox" }
+            },
+              { header: "负责人", field: "ChargeUserName", width: 80
+              },
+              { header: mini.Gantt.Start_Text, field: "Start", width: 80,
+                  editor: {
+                      type: "datepicker"
+                  }
+              },
+            { header: mini.Gantt.Finish_Text, field: "Finish", width: 80,
+                editor: {
+                    type: "datepicker"
+                }
+            }
+        ]);
+        //设置节点列
+        gantt.setTreeColumn("taskname");
+        return gantt;
+    }
+</script>
+<style type="text/css">
+    .mini-splitter-border
+    {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+    }
+</style>

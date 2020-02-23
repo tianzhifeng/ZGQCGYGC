@@ -1,0 +1,171 @@
+﻿@section scripts{
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/kindeditor-min.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/lang/zh_CN.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/Base/Scripts/KindEditor/themes/default/default.css")" rel="stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript">
+        KindEditor.ready(function (K) {
+            window.editor = K.create('textarea.KindEditor', {
+                uploadJson: '/Base/PortalBlock/KindEditor/Upload',
+                fileManagerJson: '/Base/PortalBlock/KindEditor/FileManager',
+                allowFileManager: true,
+                resizeType: 0,
+                items: ["source", "|", "undo", "redo", "|", "preview", "print", "template", "code", "cut", "copy", "paste", "plainpaste", "wordpaste",
+                    "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "insertorderedlist", "insertunorderedlist", "indent", "outdent", "subscript", "superscript", "clearhtml", "quickformat", "selectall", "|", "fullscreen", "/", "formatblock", "fontname", "fontsize", "|", "forecolor", "hilitecolor", "bold", "italic", "underline", "strikethrough", "lineheight", "removeformat", "|", "image", "multiimage", "flash", "media", "insertfile", "table", "hr", "emoticons", "baidumap", "pagebreak", "anchor", "link", "unlink", "|", "about"]
+            });
+            if (getQueryString("FuncType").toLowerCase() == "view") {
+                window.editor.readonly(true);
+            }
+        });
+    </script>
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            帮助名称
+                        </td>
+                        <td colspan="3">
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            所属模块
+                        </td>
+                        <td>
+                            <input name="ConnName" class="mini-combobox" style="width: 100%" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                        </td>
+                        <td>
+                            所属分类
+                        </td>
+                        <td>
+                            <input name="CategoryID" class="mini-combobox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            页面地址
+                        </td>
+                        <td colspan="3">
+                            <input name="Url" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            帮助页类型
+                        </td>
+                        <td colspan="3">
+                            <div class="mini-radiobuttonlist" name="HelpPageType" textfield="text" valuefield="value" value="page" data="helpPageType" onvaluechanged="onTypeChanged">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="trUrl">
+                        <td>
+                            帮助页地址
+                        </td>
+                        <td colspan="3">
+                            <input name="HelpUrl" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr id="trPage">
+                        <td colspan="4">
+                            <textarea name="Layout" class="KindEditor" style="width: 100%; height: 400px;"></textarea>
+                        </td>
+                    </tr>
+                    <tr id="trFile">
+                        <td>
+                            上传附件
+                        </td>
+                        <td colspan="3">
+                            <input name="HelpFile" class="mini-singlefile" style="width: 90%"  />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory);
+</script>
+<script type="text/javascript">
+    var helpPageType = [{ value: 'page', text: '页面' }, { value: 'url', text: '地址'},{ value: 'file', text: '附件'}];
+    function onTypeChanged(e) {
+        if (e.value == "page") {
+            $("#trUrl").hide();
+            $("#trPage").show();
+            $("#trFile").hide();
+        }
+        else if(e.value=="url") {
+            $("#trUrl").show();
+            $("#trPage").hide();
+            $("#trFile").hide();
+        }
+        else{
+            $("#trUrl").hide();
+            $("#trPage").hide();
+            $("#trFile").show();
+        }
+    }
+</script>
+<script type="text/javascript">
+    function onFormSetData(data) {
+        onTypeChanged({ value: data.HelpPageType });
+
+        var connName = getQueryString("ConnName");
+        var categoryID = getQueryString("CategoryID");
+        if (connName) {
+            mini.getbyName("ConnName").setValue(connName);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(data.ConnName, data.CategoryID);
+        }
+
+        var categoryCode = getQueryString("CategoryCode");
+        if (categoryCode && categoryCode != "{CategoryCode}") {
+            if (mini.getbyName("Code"))
+                mini.getbyName("Code").setValue(categoryCode + "_");
+        }
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+        mini.getbyName("CategoryID").setData(CateEnum);
+        mini.getbyName("CategoryID").setValue(categoryID);
+    }
+</script>

@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td></td>
+                        <td colspan="3" style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td width="15%">模板名称</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                        </td>
+                        <td width="15%">模板编码</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Code" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>应用于模式</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="ModeKey" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="Mode" allowinput="false" multiselect="true" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="Remark" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:200" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>列表字段配置</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <div class="mini-toolbar" style="border-left-width: 0px; border-top-width: 0px; border-bottom-width: 0px;">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <a class="mini-button" iconcls="icon-add" onclick="addRow({Visible:'true'},{gridId: 'DisplayColJson',createId:true,isLast:true})">添加</a>
+                                            <a class="mini-button" iconcls="icon-import" onclick="importField();">导入</a>
+                                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({ gridId: 'DisplayColJson' });">移除</a>                                            
+                                            <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+                                        </td>
+                                        <td class="gw-toolbar-right" style="align: right">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="DisplayColJson" url="" class="mini-datagrid" style="width: 100%; height: 240px;" allowcelledit="true" showpager="false" allowcellselect="true" idfield="Code" multiselect="true">
+                                <div property="columns">
+                                    <div type="checkcolumn">
+                                    </div>
+                                    <div field="Code" name="Code" width="100" headeralign="center" align="left" allowsort="true">
+                                        编号
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="Name" name="Name" width="150" headeralign="center" align="left" allowsort="true">
+                                        名称
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    @*<div field="NameLink" name="NameLink" width="120" headeralign="center" align="left" allowsort="true">
+                                        名称链接
+                                        <input property="editor" class="mini-textarea" style="width: 100%;" />
+                                    </div>*@
+                                    <div field="Width" width="60">
+                                        列宽度
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="Align" width="50" autoshowpopup="true" align="center">
+                                        对齐
+                                        <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="align" onitemclick="commitEdit" />
+                                    </div>                                    
+                                    <div type="checkboxcolumn" field="IsDisplay" name="IsDisplay" truevalue="true" falsevalue="false" width="60" align="center" headeralign="center">
+                                        是否显示
+                                    </div>
+                                    <div type="checkboxcolumn" field="IsCustomSearch" name="IsCustomSearch" truevalue="true" falsevalue="false" width="60" align="center" headeralign="center">
+                                        自定义查询
+                                    </div>
+                                    <div type="checkboxcolumn" field="IsQuickSearch" name="IsQuickSearch" truevalue="true" falsevalue="false" width="30" align="center" headeralign="center">
+                                        快查
+                                    </div>
+                                    <div type="checkboxcolumn" field="IsAttr" name="IsAttr" truevalue="true" falsevalue="false" width="60" align="center" headeralign="center">
+                                        是否扩展字段
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var align = [{ value: "left", text: "靠左" }, { value: "center", text: "居中" }, { value: "right", text: "靠右" }];    @Html.GetEnum("Base.Mode")
+</script>
+<script>
+    function onFormSetData(e)
+    {
+        if (e.DisplayColJson)
+        {
+            var dataGrid = mini.get("DisplayColJson");
+            dataGrid.addRows(mini.decode(e.DisplayColJson));
+        }
+    }
+
+    function moveUp() {
+        var dataGrid = mini.get("DisplayColJson");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("DisplayColJson");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+    function commitEdit() {
+        var grid = mini.get("DisplayColJson");
+        grid.commitEdit();
+    }
+    function importField() {
+        msgUI("确认导入字段吗？", 2, function (act) {
+            if (act == "ok") {
+                execute("GetPropertyList", {
+                    onComplete: function (data) {
+                        var grid = mini.get("DisplayColJson");
+                        $.each(data, function (index, item) {
+                            var row = grid.findRow(function (row) {
+                                return row.Code == item.Code;
+                            });
+
+                            if (!row)
+                            {
+                                grid.addRow(item);
+                            }
+                        })
+                        
+                    }
+                });
+            }
+        });
+    }
+</script>

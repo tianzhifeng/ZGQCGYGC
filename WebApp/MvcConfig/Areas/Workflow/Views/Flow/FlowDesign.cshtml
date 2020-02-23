@@ -1,0 +1,379 @@
+﻿<div class="mini-splitter" vertical="true" style="width: 100%; height: 100%; border: 0px" handlersize="0" allowresize="false">
+    <div showcollapsebutton="false" style="border: 0px" size="40">
+        <div class="mini-toolbar" id="btnDiv" style="border-top: 0px; border-left: 0px;">
+            <table>
+                <tr>
+                    <td>
+                        <span style="float: left; margin-top: 3px;">
+                            <a class="mini-button" iconcls="icon-add" id="createFlow" onclick="add(false);">创建流程</a>
+                        </span>
+                    </td>
+                    <td id="btnRight">
+                        <span style="margin-left: 3px; font-size: 13px;">切换:</span>
+                        <span style="margin-right: 5px; width: 200px;">
+                            <input name="HistoryUseFlow" id="_history" class="mini-combobox" allowinput="true" shownullitem="false" onitemclick="onItemClickHistoryFlow" style="width: 235px; margin-left: 6px; margin-right: 6px;" shownullitem="true" allowinput="true" /></span>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+               @*         <span class="separator"></span>
+                        <a class="mini-button" iconcls="icon-up" onclick="prev();">上一步</a>
+                        <a class="mini-button" iconcls="icon-down" onclick="next();">下一步</a>*@
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div showcollapsebutton="false" borderstyle="border:0px">
+        <div id="divDes" style="font-family: 'Microsoft YaHei'; display: none; font-size: 25px; font-weight: bold; text-align: center; width: 100%; margin-top: 150px;">请创建一个流程试试吧!</div>
+        <iframe id="flow-iframe" style="border: 0px" scrolling="no" width="100%" height="100%"></iframe>
+    </div>
+</div>
+<div id="addFlowWindow" class="mini-window" title="流程基本信息" style="width: 330px; min-height: 130px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="newForm" method="post">
+
+            <div style="padding-left: 15px; padding-bottom: 5px; padding-right: 15px; padding-top: 5px;">
+                <div>
+                    <table style="width: 100%; text-align: left;">
+                        <tr class="hideRow">
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                        </tr>
+                        <tr id="trFlowCode">
+                            <td style="padding-right: 6px;">关联表单
+                            </td>
+                            <td colspan="3">
+                                <input name="FlowCode" class="mini-combobox" data="UseFormList" textField="Name" valueField="Code"  style="width: 100%;" shownullitem="false" shownullitem="true" allowinput="true" required="true" onvaluechanged="onFlowCodeChanged" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">流程名称
+                            </td>
+                            <td colspan="3">
+                                <input name='Title' emptytext='请输入流程名称' required="true" class='mini-textbox' style='width: 100%;' onvaluechanged="onTitleValueChanged" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">表名
+                            </td>
+                            <td colspan="3">
+                                <input name='TableName' required="true" class='mini-textbox' style='width: 100%;' />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mini-toolbar" style="padding-left: 40px;">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-save" onclick="save();">保存</a>
+                            <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<style type="text/css">
+    .list_button {
+        width: auto;
+        height: 19px;
+        display: block;
+        position: relative;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #ccc;
+        border-image: initial;
+        padding: 4px 22px 4px 1px;
+        overflow: hidden;
+        margin-top: 1px;
+    }
+
+    .mini-listbox {
+        position: relative;
+        background: #f9f9f9;
+        overflow: hidden;
+    }
+
+    .mini-popup {
+        background: white;
+        border: 1px solid #ccc;
+        overflow: auto;
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+    }
+
+    .mini-listbox td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        overflow: hidden;
+        line-height: 22px;
+        cursor: default;
+        padding-left: 4px;
+        padding-right: 2px;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+        text-align: left;
+        color: #000;
+    }
+
+    #_history .mini-buttonedit-input {
+        background: none;
+        border: 0;
+        line-height: 19px;
+        font-family: Verdana;
+        font-size: 9pt;
+        padding: 0;
+        margin: 0;
+        outline: none;
+        z-index: 1;
+        cursor: text;
+        width: 100%;
+        height: 19px;
+        float: right;
+        _position: absolute;
+        _left: 2px;
+        _top: 0px;
+        /*cursor: pointer;
+        text-decoration: underline;*/
+        color: #0000ee;
+    }
+
+    #createFlow {
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+
+        #createFlow .icon-add {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+    .mini-splitter-pane2-vertical {
+        border: 0;
+    }
+</style>
+<script type="text/javascript">
+    var UseFormList = @Html.Raw(ViewBag.UseFormList);
+    var flowFormID = getCache("_CacheFlowFormID");
+    var categoryID = getCache("_CacheCategoryID");
+    var isEdit = false;
+    function pageLoad() {
+        getUseFlowList();
+    }
+
+    var lists = [];
+    function getUseFlowList() {
+        var FlowID = getCache("_CacheFlowID");
+        addExecuteParam("CategoryID", categoryID);
+        execute('GetUseFlowList', {
+            onComplete: function (result) {
+                if (result) {
+                    for (var i = 0; i < result.length; i++) {
+                        var c = result[i];
+                        lists.push({ value: c.ID, code: c.Code, text: c.Name, tableName: c.TableName });
+                    }
+                    mini.getbyName("HistoryUseFlow").setData(lists);
+          
+                    if (!FlowID && lists.length > 0) {
+                        FlowID = lists[0].value;
+                        setCache("_CacheFlowID", FlowID);
+                    }
+                    if(FlowID){
+                        $("#flow-iframe").attr("src", "/Workflow/DefFlow/Edit?ID=" + FlowID + "&editable=1&IsFlowNav=true");
+                        $("#divDes").hide();
+                        $("#btnRight").show();
+                    }else{
+                        $("#divDes").show(); 
+                        $("#btnRight").hide();
+                    }
+                    if (lists.length == 0)
+                        removeCache("_CacheFlowID");
+                    mini.getbyName("HistoryUseFlow").setValue(FlowID);
+                }
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $("#_history span").each(function () {
+            if ($(this).hasClass("mini-buttonedit-border")) {
+                $(this).removeClass("mini-buttonedit-border");
+                $(this).addClass("list_button");
+            }
+        });
+        $("#_history input").each(function () {
+            if ($(this).hasClass("mini-buttonedit-input")) {
+                $(this).attr("readonly", "readonly");
+            }
+        });
+        $("#_history .mini-buttonedit-input").click(function () {
+            //edit();
+        });
+    });
+
+
+    function onItemClickHistoryFlow(e) {
+        var FlowID = getCache("_CacheFlowID");
+        if (e.item.value != '' && e.item.value != FlowID) {
+            setCache("_CacheFlowID", e.item.value);
+            window.location.reload();
+        }
+    }
+
+    
+    function add(is){
+        var form = new mini.Form("#newForm");
+        var fields = form.getFields();
+        mini.getbyName("FlowCode").setValue('');
+        mini.getbyName("FlowCode").setText('');
+        mini.getbyName("Title").setValue('');
+        mini.getbyName("TableName").setValue('');
+        for (var i = 0, l = fields.length; i < l; i++) {
+            var c = fields[i];
+            if (c.name == "FlowCode") {
+                if (c.setReadOnly) c.setReadOnly(false);
+                if (c.addCls) c.removeCls("asLabel");
+                $("#trFlowCode").show();
+            }
+        }
+        openWindow(is);
+    }
+
+    function edit() {
+        var FlowID = getCache("_CacheFlowID");
+        if (!FlowID) {
+            msgUI("没找到可编辑的流程!");
+            return;
+        }
+        var form = new mini.Form("#newForm");
+        var fields = form.getFields();
+        for (var i = 0, l = fields.length; i < l; i++) {
+            var c = fields[i];
+            if (c.name == "FlowCode") {
+                if (c.setReadOnly) c.setReadOnly(true);
+                if (c.setIsValid) c.setIsValid(true);      //去除错误提示
+                if (c.addCls) c.addCls("asLabel");  
+                $("#trFlowCode").hide();
+            }
+        }
+        for (var i = 0; i < lists.length; i++) {
+            var c = lists[i];
+            if (c.value == FlowID) {
+                mini.getbyName("FlowCode").setValue(c.code);
+                mini.getbyName("FlowCode").setText(c.text);
+                mini.getbyName("Title").setValue(c.text);
+                mini.getbyName("TableName").setValue(c.tableName);
+            }
+        }
+        openWindow(true);
+    }
+
+    function openWindow(is) {
+        isEdit = is;
+        var window = mini.get('addFlowWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.onscroll = scroll;
+        window.queryWindowId = window.id;
+        window.show();
+    }
+
+    function save() {
+        var flowCode = mini.getbyName("FlowCode").getValue();
+        var title = mini.getbyName("Title").getValue();
+        var tableName = mini.getbyName("TableName").getValue();
+        if ($.trim(title) == '' || $.trim(tableName) == '') {
+            msgUI("请输入表单名称与表名!");
+            return;
+        }
+        if (checkSpecialchar(title) || checkSpecialchar(flowCode))
+            return;
+        var form = new mini.Form("#newForm");
+        var data = form.getData(true, false);
+        addExecuteParam("CategoryID", categoryID);
+        addExecuteParam("FlowID", getCache("_CacheFlowID"));
+        addExecuteParam("IsEdit", isEdit);
+        addExecuteParam("Data", mini.encode(data));
+        execute('EditFlow', {
+            onComplete: function (result) {
+                setCache("_CacheFlowID", result.ID);
+                msgUI("保存成功!", 1, function (action) {
+                    if (action == "ok") {
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+
+    }
+
+    function del() {
+        var flowID = getCache("_CacheFlowID");
+        if (!flowID) {
+            msgUI("没找到可删除的流程!");
+            return;
+        }
+        var flowName = mini.getbyName("HistoryUseFlow").getText();
+        msgUI("确认要删除(" + flowName + ")流程吗？", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("ID", flowID);
+                execute('DeleteFlow', {
+                    onComplete: function (result) {
+                        removeCache("_CacheFlowID");
+                        msgUI("删除成功", 1, function (action) {
+                            if (action == "ok") {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                });
+            } 
+        });
+    }
+
+    function next() {
+        window.parent.flowNavBar(window.parent.FlowUse);
+    }
+    function prev() {
+        window.parent.flowNavBar(window.parent.FlowForm);
+    }
+    function closeWindow() {
+        var window = mini.get('addFlowWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.queryWindowId = window.id;
+        window.hide();
+    }
+
+    function onTitleValueChanged(e) {
+        var tableName = mini.getbyName("TableName").getValue();
+        if (!tableName) {
+            var value = window.parent.getPYCode(mini.getbyName("Title").getValue());
+            mini.getbyName("TableName").setValue("T_UI_" + value);
+        }
+    }
+
+    function onFlowCodeChanged(e){
+        if(e.selected){
+            mini.getbyName("Title").setValue(e.selected.Name);
+            mini.getbyName("TableName").setValue(e.selected.TableName);
+        }
+    }
+</script>

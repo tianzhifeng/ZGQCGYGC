@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "PerformanceTab";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+            </td>
+            <td style="white-space: nowrap;">
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入项目名称' onenter="quickSearch('Name');"
+                    onbuttonclick="quickSearch('Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetPerformanceList" style="width: 100%;
+        height: 100%;" ondrawsummarycell="onDrawSummaryCell" showsummaryrow="true">
+        <div property="columns">
+            <div type="indexcolumn" width="30px">
+            </div>
+            <div field="Name" headeralign="center" width="150" allowsort="true" align="left">
+                项目名称</div>
+            <div field="ProjectClass" headeralign="center" width="60" allowsort="true" align="center">
+                项目类型</div>
+            <div field="PhaseValue" headeralign="center" width="60" allowsort="true" align="center">
+                设计阶段</div>
+            <div field="ProjectLevel" headeralign="center" width="60" allowsort="true" align="center">
+                项目规模</div>
+            <div field="ProjectRole" headeralign="center" width="150" allowsort="true" align="left">
+                项目任职</div>
+            <div field="ProjectState" headeralign="center" width="60" allowsort="true" align="center">
+                项目状态</div>
+            <div field="FactFinishDate" headeralign="center" width="80" allowsort="true" dateformat="yyyy-MM-dd"
+                align="center">
+                日期</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+@Html.GetEnum("System.ProjectClass")
+@Html.GetEnum("System.AptitudeLevel")
+@Html.GetEnum("Project.ProjectState")
+@Html.GetEnum("Project.Phase")
+@Html.GetEnum(typeof(Project.Logic.AuditRoles))
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "ProjectClass", "ProjectClass");
+    addGridEnum("dataGrid", "ProjectLevel", "AptitudeLevel");
+    addGridEnum("dataGrid", "ProjectState", "ProjectState");
+    addGridEnum("dataGrid", "PhaseValue", "Phase");
+    addGridEnum("dataGrid", "ProjectRole", "AuditRoles");
+    
+</script>

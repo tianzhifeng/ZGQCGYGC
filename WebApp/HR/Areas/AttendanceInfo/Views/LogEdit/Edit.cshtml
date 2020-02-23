@@ -1,0 +1,78 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save" id="btnSave">
+                    保存
+                </a> <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                    取消
+                </a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <input name="SourceID" class="mini-hidden" />
+    <div class="basediv">
+        <table cellpadding="0" cellspacing="0" align="center" style="width: 100%;">
+            <tr align="center">
+                <td style="font-size: 16pt; font-weight: bold; line-height: 35px; text-align: center;">
+                    日常考勤修改
+                </td>
+            </tr>
+        </table>
+        <table width="100%" cellpadding="5" cellspacing="0" border="1" bordercolor="#333333"
+               bordercolordark="#FFFFFF">
+            <tr>
+                <td width="17%">
+                    部门
+                <td width="33%">
+                    @ViewBag.OrgName
+                </td>
+                <td width="17%">
+                    员工姓名
+                </td>
+                <td width="33%">
+                    @ViewBag.UserName
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    类型
+                </td>
+                <td>
+                    @ViewBag.CheckType
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    修改原因&nbsp;&nbsp;<b style="color: red;">*</b>
+                </td>
+                <td colspan="3">
+                    <input name="ModifyReason" class="mini-textarea" style="width: 100%" required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    工作日期
+                </td>
+                <td>
+                    <input name="WorkDay" class="mini-datepicker" style="width: 100%" format="yyyy-MM-dd" required="true" />
+                </td>
+                <td>
+                    考勤时间&nbsp;&nbsp;<b style="color: red;">*</b>
+                </td>
+                <td>
+                    <input name="CheckDate" class="mini-datepicker" style="width: 100%" format="yyyy-MM-dd HH:mm" required="true" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script type="text/javascript">
+
+</script>

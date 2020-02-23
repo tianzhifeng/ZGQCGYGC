@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "WBSAttributeEdit";
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save({closeWindow:false});">
+                    保存</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>属性信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%">
+                        </td>
+                        <td width="35%">
+                        </td>
+                        <td width="15%">
+                        </td>
+                        <td width="35%">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            名称
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                        <td>
+                            编号
+                        </td>
+                        <td>
+                            <input name="Code" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>负责人</td>
+                        <td> <input name="ChargeUserID" textname="ChargeUserName" class="mini-buttonedit" style="width: 100%;"
+                                    emptytext="请输入拼音..." /></td>
+                    </tr>
+                    <tr>
+                            <td>
+                                计划开始
+                            </td>
+                            <td>
+                                <input name="PlanStartDate" class="mini-datepicker" style="width: 100%;" />
+                            </td>
+                            <td>
+                                计划结束
+                            </td>
+                            <td>
+                                <input name="PlanEndDate" class="mini-datepicker" style="width: 100%" />
+                            </td>
+                        </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+    </form>
+</div>
+<script type="text/javascript>
+    addSingleUserSelector("ChargeUserID");
+</script>

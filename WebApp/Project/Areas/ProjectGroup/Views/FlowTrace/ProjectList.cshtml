@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "ProjectList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="gridArea">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div field="view" width="70" headeralign="center" allowsort="true">
+                跟踪
+            </div>
+            <div name="Name" field="Name" width="300" headeralign="center" allowsort="true">
+                项目名称
+            </div>
+            <div field="Code" width="150" headeralign="center" allowsort="true">
+                项目编号
+            </div>
+            <div field="ChargeUserName" width="90" headeralign="center" allowsort="true" align="center">
+                项目负责人
+            </div>
+            <div field="ChargeDeptName" headeralign="center" width="120" allowsort="true">
+                责任部门
+            </div>
+            <div field="ProjectClass" headeralign="center" width="120" allowsort="true" align="center">
+                业务类型
+            </div>
+            <div field="PhaseName" headeralign="center" width="120" allowsort="true">
+                阶段
+            </div>
+            <div field="State" headeralign="center" width="90" allowsort="true" align="center" align="center" align="center">
+                状态
+            </div>
+            <div field="ProjectLevel" headeralign="center" width="90" allowsort="true" align="center">
+                项目规模
+            </div>
+            <div field="CreateDate" width="120" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                立项日期
+            </div>
+            <div field="CustomerName" headeralign="center" width="250" allowsort="true">
+                客户名称
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState))
+    @Html.GetEnum("System.AptitudeLevel")
+    @Html.GetEnum("FlowPhase")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "State", "ProjectCommoneState");
+    addGridEnum("dataGrid", "ProjectLevel", "AptitudeLevel");
+    //addGridLink("dataGrid", "Name", "URL?ProjectInfoID={ID}", { funcType: "view", title:"",height: 600, width: 800 });
+    addGridButton("dataGrid", "view", {
+        linkText: "跟踪",
+        onButtonClick: function (row) {
+            var url = "/Project/Monitor/FlowTrace/List?ProjectInfoID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: row.Name, width: "80%", height: "90%",
+                onDestroy: function () { }
+            });
+        }
+    });
+    var searchFields = "Name,Code,SearchIndexField";
+</script>

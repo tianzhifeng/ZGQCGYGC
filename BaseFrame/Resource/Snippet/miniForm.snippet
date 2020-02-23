@@ -1,0 +1,52 @@
+﻿<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>miniForm</Title>
+    <Author>dingx_new</Author>
+    <Shortcut>miniForm</Shortcut>
+    <Description>miniUI的Form</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>Name</ID>
+        <Default>Name</Default>
+      </Literal>
+    </Declarations>
+    <Code Language="HTML">
+      <![CDATA[
+<form id="dataForm" method="post" style="top: 30px; position: relative;">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%"></td>
+                    <td width="35%"></td>
+                    <td width="15%"></td>
+                    <td width="35%"></td>
+                </tr>
+                <tr>                    
+                    <td>名称</td>
+                    <td>
+                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                    <td>编号</td>
+                    <td>
+                        <input name="Code" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+]]>
+    </Code>
+  </Snippet>
+</CodeSnippet>

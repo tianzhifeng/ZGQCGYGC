@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "设校审模式定义列表";
+}
+<div class="mini-fit">
+    <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-bottom: 0;">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 100%;">
+                    <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="mini-fit">
+        <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+            idfield="ID" multiselect="false" allowcelledit="true" allowcellselect="true" editnextonenterkey="true"
+            editnextrowcell="true" showpager="false">
+            <div property="columns">
+                <div type="indexcolumn">
+                </div>
+                <div field="PhaseValue" vtype="required" width="100" align="center">
+                    阶段编号
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="PhaseName" vtype="required" width="250" align="center">
+                    阶段名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div name="AuditMode" autoshowpopup="true" type="comboboxcolumn" field="AuditMode"
+                    width="300" align="center">
+                    校审模式
+                    <input property="editor" class="mini-combobox" multiselect="false" style="width: 100%;"
+                        data="AuditMode" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var AuditMode = [{ "text": "一校一审", "value": "OneByOne" }, { "text": "一校两审", "value": "OneByTwo"}];
+
+</script>
+<script type="text/javascript">
+    var modeID = getQueryString("ModeID");
+
+    function save() {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.validate();
+        if (!dataGrid.isValid()) {
+            msgUI("输入的信息有错误，请检查输入的数据格式");
+            dataGrid.clearSelect();
+            return;
+        }
+        var gridData = dataGrid.getData();
+        addExecuteParam("ListData", mini.encode(gridData));
+        execute("SaveList", {
+            showLoading: true, onComplete: function (data) {
+                msgUI("保存成功。");
+                dataGrid.reload();
+            }
+        });
+    }
+</script>

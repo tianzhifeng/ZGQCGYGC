@@ -1,0 +1,391 @@
+﻿@{
+    ViewBag.Title = "物资采购状态";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<script src="@Url.Content("/EPC/Scripts/Design/Bom/jquery.tmpl.js")" type="text/javascript"></script>
+
+<style type='text/css'>
+    .stepInfo
+    {
+        width: 955px;
+        height: 150px;
+        padding: 0px;
+        margin: 0px;
+        color: black;
+    }
+
+        .stepInfo li
+        {
+            float: left;
+            width: 213px;
+            height: 4px;
+            background: #E4E4E4;
+            list-style-type: none;
+            margin-top: 66px;
+        }
+
+    .stepIco
+    {
+        height: 25px;
+        width: 25px;
+        border-radius: 12px;
+        text-align: center;
+        position: absolute;
+        top: 77px;
+    }
+
+    .stepIcoPre1 + .stepIco
+    {
+        background-color: #6FB2DC;
+    }
+
+    .stepIcoPre2 + .stepIco
+    {
+        background-color: #E4E4E4;
+    }
+
+    .stepText
+    {
+        width: 100px;
+        left: -37px;
+        top: -22px;
+        position: absolute;
+    }
+
+    .planText
+    {
+        width: 100px;
+        left: -37px;
+        top: 27px;
+        text-align: left;
+        position: absolute;
+    }
+
+    .realText
+    {
+        width: 100px;
+        left: -37px;
+        top: 45px;
+        text-align: left;
+        position: absolute;
+    }
+
+    .countText
+    {
+        width: 100px;
+        left: -37px;
+        top: 70px;
+        position: absolute;
+    }
+</style>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%; background-color: white">
+        <tr>
+            <td style="white-space: nowrap;">展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;&nbsp;
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="treeSearch"
+                    onbuttonclick="treeSearch" />
+                &nbsp;&nbsp;
+                <div id="showAll" name="showAll" checked="false" class="mini-checkbox" text="仅显示延期" onvaluechanged="onCheckBoxValueChanged"></div>
+                &nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="treeArea">
+    <div id="dataTree" class="mini-treegrid" style="width: 100%; height: 100%;" url="" showtreeicon="true" multiselect="true"
+        treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowcellwrap="true" iconfield="NodeType"
+        allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true" oncellbeginedit="OnCellBeginEdit"
+        expandonload="true" onload="onload" ondrawcell="onDrawingCell" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="false"
+        allowresize="false" fitcolumns="true">
+        <div property="columns">
+            <div name="Name" field="Name" width="250" headeralign="center" allowsort="false">名称</div>
+            <div field="Code" width="80" headeralign="center" allowsort="false" align="center">编号</div>
+            <div field="Unit" width="50" headeralign="center" allowsort="false" align="center">单位</div>
+            <div field="Quantity" width="70" align="right" headeralign="center" allowsort="false">设计量</div>
+            <div field="ContractQuantity" width="70" align="right" headeralign="center" allowsort="false">合同量</div>
+            <div field="ArriveQuantity" width="70" align="right" headeralign="center" allowsort="false">到货量</div>
+            <div header="设计提资" headeralign="center">
+                <div property="columns">
+                    <div field="PlanFetchDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">计划</div>
+                    <div field="FactFetchDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">实际</div>
+                </div>
+            </div>
+            <div header="询价比价" headeralign="center">
+                <div property="columns">
+                    <div field="PlanInvitationDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">计划</div>
+                    <div field="FactInvitationDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">实际</div>
+                </div>
+            </div>
+            <div header="合同签订" headeralign="center">
+                <div property="columns">
+                    <div field="PlanContractDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">计划</div>
+                    <div field="FactContractDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">实际</div>
+                </div>
+            </div>
+            <div header="设备返资" headeralign="center">
+                <div property="columns">
+                    <div field="PlanReturnDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">计划</div>
+                    <div field="FactReturnDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">实际</div>
+                </div>
+            </div>
+            <div header="物资到货" headeralign="center">
+                <div property="columns">
+                    <div field="PlanArrivedDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">计划</div>
+                    <div field="FactArrivedDate" dateformat="yy-MM-dd" width="105" headeralign="center" allowsort="false" align="center">实际</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var NodeType = @Html.Raw(ViewBag.NodeTypeEnum)
+</script>
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div class="stepInfo">
+        <div style="position: absolute; left: 20px;">物资名称: ${Name}</div>
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        {{if bFetch}}
+        <div class="stepIcoPre1" />
+        {{else}}
+        <div class="stepIcoPre2" />
+        {{/if}}        
+        <div class="stepIco" style="left: 48px">
+            <div class="stepText">
+                设计提资
+            </div>
+            <div class="planText">
+                计划: ${PlanFetchDate}
+            </div>
+            <div class="realText">
+                {{if bFetch}}
+                {{if bFetchDateDelay}}
+                <div style="color: red">实际: ${FactFetchDate}</div>
+                {{else}}
+                实际: ${FactFetchDate}
+                {{/if}}
+                {{else}}
+                <div style="color: #E4E4E4">实际: </div>
+                {{/if}}
+            </div>
+            <div class="countText">
+                数量: ${Quantity}
+            </div>
+        </div>
+        {{if bInvitation}}
+        <div class="stepIcoPre1" />
+        {{else}}
+        <div class="stepIcoPre2" />
+        {{/if}}   
+        <div class="stepIco" style="left: 261px">
+            <div class="stepText">
+                询比价
+            </div>
+            <div class="planText">
+                计划: ${PlanInvitationDate}
+            </div>
+            <div class="realText">
+                {{if bInvitation}}
+                {{if bInvitationDateDelay}}
+                <div style="color: red">实际: ${FactInvitationDate}</div>
+                {{else}}
+                实际: ${FactInvitationDate}
+                {{/if}}
+                {{else}}
+                <div style="color: #E4E4E4">实际:</div>
+                {{/if}}
+            </div>
+        </div>
+        {{if bContract}}
+        <div class="stepIcoPre1" />
+        {{else}}
+        <div class="stepIcoPre2" />
+        {{/if}}   
+        <div class="stepIco" style="left: 474px">
+            <div class="stepText">
+                合同签订
+            </div>
+            <div class="planText">
+                计划: ${PlanContractDate}
+            </div>
+            <div class="realText">
+                {{if bContract}}
+                {{if bContractDateDelay}}
+                <div style="color: red">实际: ${FactContractDate}</div>
+                {{else}}
+                实际: ${FactContractDate}
+                {{/if}}
+                {{else}}
+                <div style="color: #E4E4E4">实际:</div>
+                {{/if}}
+            </div>
+            <div class="countText">
+                数量: ${ContractQuantity}
+            </div>
+        </div>
+        {{if bReturn}}
+        <div class="stepIcoPre1" />
+        {{else}}
+        <div class="stepIcoPre2" />
+        {{/if}}   
+        <div class="stepIco" style="left: 687px">
+            <div class="stepText">
+                设备返资
+            </div>
+            <div class="planText">
+                计划: ${PlanReturnDate}
+            </div>
+            <div class="realText">
+                {{if bReturn}}
+                {{if bReturnDateDelay}}
+                <div style="color: red">实际: ${FactReturnDate}</div>
+                {{else}}
+                实际: ${FactReturnDate}
+                {{/if}}
+                {{else}}
+                <div style="color: #E4E4E4">实际:</div>
+                {{/if}}
+            </div>
+        </div>
+        {{if bArrived}}
+        <div class="stepIcoPre1" />
+        {{else}}
+        <div class="stepIcoPre2" />
+        {{/if}}   
+        <div class="stepIco" style="left: 900px">
+            <div class="stepText">
+                物资到货
+            </div>
+            <div class="planText">
+                计划: ${PlanArrivedDate}
+            </div>
+            <div class="realText">
+                {{if bArrived}}
+                {{if bArrivedDateDelay}}
+                <div style="color: red">实际: ${FactArrivedDate}</div>
+                {{else}}
+                实际: ${FactArrivedDate}
+                {{/if}}
+                {{else}}
+                <div style="color: #E4E4E4">实际:</div>
+                {{/if}}
+            </div>
+            <div class="countText">
+                数量: ${ArriveQuantity}
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    //var url = "GoodProcurementState/GetList?EngineeringInfoID=" + engineeringInfoID + "&ShowAll=true";
+    //$("#dataTree").attr("url", url);
+    //normalParamSettings.gridId = "dataTree";
+
+    function onload() {
+        //collapseLevel();
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var tabData = GetTabsData();
+        cusTabSearch(tabData);
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType == "Detail" && field == "Name") {
+            e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+        }
+    }
+
+    var funcType = getQueryString("FuncType");
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        var isDelay = mini.get("showAll").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        }
+        else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function cusTabSearch(tabData) {
+        var tree = mini.get("dataTree");
+        var showDelay = "false";
+        if (mini.get("showAll")) {
+            showDelay = mini.get("showAll").getValue();
+        }
+
+        var url = "GoodProcurementState/GetList?EngineeringInfoID=" + engineeringInfoID + "&ShowDelay=" + showDelay;
+        //$("#dataTree").attr("url", url);
+        tree.setUrl(url);
+        var data = {};
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+        tree.load({
+            queryTabData: mini.encode(tabData), queryFormData: mini.encode(data)
+        });
+    }
+
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.showCellTooltip',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                var el = e.element;
+                var id = el.id;
+                var data = {};
+                var html = $("#formTemplate").tmpl(data);
+                tip.setContent(html);
+                if (id) {
+                    this.showLoading();
+                    addExecuteParam("ID", id);
+                    execute("GoodProcurementState/GetSing", {
+                        showLoading: false, refresh: false, onComplete: function (data) {
+                            var html = $("#formTemplate").tmpl(data);
+                            tip.setContent(html);
+                        }, validateForm: false
+                    });
+                }
+            }
+        });
+    });
+
+
+</script>

@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "PageView";
+    string picUrl = "GetPic/";
+}
+@using System.Collections.Generic;
+<style>
+    body{
+        background-color:transparent;
+    }
+
+    .mini-splitter-pane2{
+        border-left:none;
+    }
+
+    img {
+        border: none;
+    }
+
+    img.thumb_img {
+        cursor: pointer;
+        display: block;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    img#main_img {
+        cursor: pointer;
+        display: block;
+        margin:0 auto ;
+    }
+
+    #gotop {
+        cursor: pointer;
+        display: block;
+    }
+
+    #gobottom {
+        cursor: pointer;
+        display: block;
+    }
+
+    #showArea {
+        height: 420px;
+        overflow: hidden;
+    }
+    #describ{
+        margin-left:-424px;
+        position:absolute;
+        bottom:8px;
+        left:50%;
+        color:white;   
+        background-color:rgba(0,0,0,.5);
+        height:60px;
+        width:848px;
+        font-size:14px;
+        font-family: "微软雅黑",Arial,sans-serif;
+    }
+    #firsLine{
+        padding-top:6px;
+    }
+    #secondLine{
+        padding-top:3px;
+    }
+
+</style>
+
+<div class="mini-splitter" allowresize="false" style="width:100%;height:500px;background-color:#fff;border-radius:5px;">
+    <div showcollapsebutton="false" style="padding:5px;">
+        <div class="mini-fit">
+            @{ 
+                var dicList = ViewBag.ImgList as List<Dictionary<string,object>>;
+                var firstImg = dicList.Count > 0 ? dicList[0] : null;
+             }
+            <div id="describ">
+                <div style="padding-left:10px" id="firsLine">@(firstImg != null ? firstImg["FirstLine"] : "")</div>
+                <div style="padding-left:10px" id="secondLine">
+                    <span id="picNum">@(firstImg != null ? firstImg["PicNum"] : "")</span>
+                    <span style="padding-left:10px" id="publisher">发布人：@(firstImg != null ? firstImg["Publisher"] : "")</span>
+                    <span style="padding-left:10px" id="publishDate">发布时间：@(firstImg != null ? firstImg["PublishDate"] : "")</span>
+                </div>
+            </div>
+            <img src="@(firstImg != null ? (Url.Action(picUrl, new { fieldId = firstImg["ImgID"], width = 850, height = 480 })) : "")"
+                 alt="@(firstImg != null ? firstImg["ImgID"] : "")" onclick="viewBigImg(this)" id="main_img" />
+        </div>
+    </div>
+    <div size="105" showcollapsebutton="false" style="padding-top:5px;">
+        <img src="~/Scripts/Construction/images/gotop.gif" width="100" height="14" id="gotop" />
+        <div id="showArea">
+            @foreach (var img in @ViewBag.ImgList)
+            {
+                <img src="@Url.Action(picUrl, new { fieldId = img["ImgID"], width = 100, height = 50 })" alt="@img["ImgID"]" width="100" height="50" class="thumb_img" />
+                <div class="firstLine" style="display:none">@img["FirstLine"]</div>
+                <div style="display:none">@img["PicNum"]</div>
+                <div style="display:none">@img["Publisher"]</div>
+                <div style="display:none">@img["PublishDate"]</div>
+            }
+        </div>
+        <img src="~/Scripts/Construction/images/gobottom.gif" width="100" height="14" id="gobottom" />
+    </div>
+</div>
+<script language="javascript" type="text/javascript">    
+    var ipath = '/EPC/Scripts/Construction/images/'; //图片路径
+    var thumbs = $('.thumb_img');
+    for (var i = 0; i < thumbs.length; i++) {
+        thumbs[i].onclick = function ()
+        {
+            $('#main_img').attr("alt", this.alt);
+            $('#main_img').attr("src", "GetPic?fieldId=" + this.alt + "&width=850&height=480");
+            $('#FirstLine').html(this.nextElementSibling.innerText);
+            $('#picNum').html(this.nextElementSibling.nextElementSibling.innerText);
+            $('#publisher').html('发布人：' + this.nextElementSibling.nextElementSibling.nextElementSibling.innerText);
+            $('#publishDate').html('发布时间：' + this.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.innerText);
+        };
+    }
+
+    $('#gotop').click(function () {
+        $('#showArea').scrollTop($('#showArea').scrollTop() - 60);
+    })
+    $('#gobottom').click(function () {
+        $('#showArea').scrollTop($('#showArea').scrollTop() + 60);
+    })
+    function gotop() {
+        $('#showArea').scrollTop($('#showArea').scrollTop() - spec);
+    }
+    function gobottom() {
+        $('#showArea').scrollTop($('#showArea').scrollTop() + spec);
+    }
+
+    function viewBigImg(e) {       
+        openWindow('ViewBigImg?src=' + encodeURIComponent("GetPic?fieldId=" + e.alt), {
+            title: "原图查看", onDestroy: function (data) {
+
+            }
+        });
+    }
+</script>

@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号" style="width: 200px;" onenter="tabSearch();"
+                       onbuttonclick="tabSearch();" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitDiv" class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="FormName" width="120" headeralign="center" allowsort="true" align="center">
+                表单类型
+            </div>
+            <div field="FlowPhase" width="80" headeralign="center" allowsort="true" align="center">
+                流程状态
+            </div>
+            <div field="VersionNumber" width="60" headeralign="center" allowsort="true" align="center">
+                版本号
+            </div>
+            <div field="ProjectInfoName" width="350" headeralign="center" allowsort="true">
+                项目名称
+            </div>
+            <div field="ProjectInfoCode" width="150" headeralign="center" allowsort="true">
+                项目编号
+            </div>
+            <div field="ProjectInfoPhaseName" width="120" headeralign="center" allowsort="true">
+                设计阶段
+            </div>
+            <div field="ProjectInfoClass" width="80" headeralign="center" allowsort="true" align="center">
+                业务类型
+            </div>
+            <div field="ProjectInfoState" width="70" headeralign="center" allowsort="true" align="center">
+                项目状态
+            </div>
+            <div field="CreateUser" width="70" headeralign="center" allowsort="true" align="center">
+                创建人
+            </div>
+            <div field="CreateDate" width="100" headeralign="center" dateformat="yyyy-MM-dd"
+                 allowsort="true" align="center">
+                创建日期
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 700px; " showmodal="true"
+     allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryform" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">项目名称</td>
+                    <td width="23%" align="left"><input name="$LK$ProjectInfoName" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                    <td width="10%" align="center">项目编号</td>
+                    <td width="23%" align="left"><input name="$LK$ProjectInfoCode" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                    <td width="10%" align="center">项目负责人</td>
+                    <td width="23%" align="left">
+                        <input name="$LK$ProjectMangerName" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">创建日期</td>
+                    <td align="left">
+                        <input name="$FR$CreateDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                    <td align="center">至</td>
+                    <td align="left"><input name="$TO$CreateDate" class="mini-datepicker" style="width: 100%" /></td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("FlowPhase");
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FlowPhase", "FlowPhase");
+    addGridEnum("dataGrid", "ProjectInfoState", "ProjectCommoneState");
+    addGridLink("dataGrid", "FlowPhase", "/MvcConfig/Workflow/Trace/Diagram?ID={ID}", { funcType: "FlowTrace", height: "80%", width: "80%" });
+    addGridButton("dataGrid", "VersionNumber", {
+        onButtonClick: function (row) {
+            var url = row.LinkUrl.indexOf("?") >= 0 ? row.LinkUrl + "&FuncType=View&ID=" + row.ID : row.LinkUrl + "?FuncType=View&ID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "表单查看", height: "80%", width: "80%",
+                onDestroy: function () { }
+            });
+        }
+    });
+
+    var modeCode = getQueryString("ProjectModeCode");
+
+    normalParamSettings.searchFields = "ProjectInfoName,ProjectInfoCode";
+    function cusTabSearch(tabData, normalSettings) {
+
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+        }
+        var defineInfo = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "ISODefineType") {
+                defineInfo = tabDataInfo.value;
+                continue;
+            }
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        var url = "GetList?ModeCode=" + modeCode + "&DefineInfo=" + defineInfo;
+        grid.setUrl(url);
+        if (grid != undefined)
+            grid.load({
+                queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData)
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+</script>
+
+
+
+
+
+

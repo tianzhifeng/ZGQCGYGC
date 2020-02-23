@@ -1,0 +1,266 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0;
+    left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="returnData();">
+                    确定
+                </a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" id="btnHelp" onclick="showHelp()" iconcls="icon-help" plain="true">
+                    帮助
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" style="top: 35px; position: relative;" autogetdata="false">
+    <input name="typeOfSettings" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>图表参数</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            标题：
+                        </td>
+                        <td>
+                            <input name="title" class="mini-textbox" style="width: 100%" />
+                        </td>
+                        <td>
+                            副标题：
+                        </td>
+                        <td>
+                            <input name="subTitle" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            图表表头配置：
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <div class="mini-toolbar" style="border-bottom: 0px;">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <a class="mini-button" iconcls="icon-import" onclick="importFromDB();">从数据库导入</a>
+                                            @*<a class="mini-button" id="btnAddHeader" iconcls="icon-add" onclick="addRow({Code:'',Visible:'true'},{gridId:'dataGrid',createId:true,isLast:true});">
+                                                添加</a> <a class="mini-button" id="btnDeleteHeader" iconcls="icon-remove" onclick="delRow({gridId:'dataGrid'});">
+                                                    移除</a>*@ <a class="mini-button" iconcls="icon-up" onclick="moveUp('dataGrid');">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('dataGrid');">下移</a>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 305px;" allowcellvalid="true"
+                                 multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false">
+                                <div property="columns">
+                                    <div type="checkcolumn">
+                                    </div>
+                                    <div field="Code" width="100">
+                                        表头编号
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="Name" width="150" vtype="required;">
+                                        表头名称
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="width" width="60" align="right">
+                                        列宽
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="align" width="60" autoshowpopup="true" align="center">
+                                        对齐
+                                        <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;"
+                                               data="align" onitemclick="commitEdit" />
+                                    </div>
+                                    <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="60">
+                                        显示
+                                    </div>
+                                    <div field="data" width="120" align="left">
+                                        数据列表
+                                        <input property="editor" name="data" textname="data" class="mini-buttonedit" style="width: 100%"
+                                               onbuttonclick="onDataClick" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="SummaryType" width="60" autoshowpopup="true" align="center">
+                                        汇总方式
+                                        <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;"
+                                               data="SummaryType" onitemclick="commitEdit" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="NumberFormat" width="60" autoshowpopup="true" align="center">
+                                        数字格式化
+                                        <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;"
+                                               data="NumberFormat" onitemclick="commitEdit" />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.SummaryType))
+    @Html.GetEnum(typeof(Base.Logic.NumberFormat))
+var align=[{ value: 'left', text: '靠左' }, { value: 'center', text: '居中' }, { value: 'right', text: '靠右'}];
+
+</script>
+<script type="text/javascript">
+
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+
+</script>
+<script type="text/javascript">
+
+    function moveUp(gridId) {
+        var dataGrid = mini.get(gridId);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown(gridId) {
+        var dataGrid = mini.get(gridId);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        mini.getbyName("isDefinedURL").doValueChanged();
+    })
+
+    function setData(data) {
+        if (data != "false") {
+            var form = new mini.Form("dataForm");
+            var obj = mini.decode(data);
+
+            if (obj.formData.typeOfSettings && obj.formData.typeOfSettings == getQueryString("Type")) {
+                form.setData(obj.formData);
+                form.setChanged(false);
+
+                var grid = mini.get("dataGrid");
+                grid.setData(obj.listData);
+            }
+        }
+        else {
+            mini.getbyName("typeOfSettings").setValue(getQueryString("Type"));
+        }
+    }
+
+    function changeDefinedURL(e) {
+        if (e.value == "true") {
+            $("#definedURLText").show();
+            mini.getbyName("definedURL").show();
+            mini.getbyName("definedURL").setRequired(true);
+
+            $("#dataSourceTypeText").hide();
+            mini.getbyName("dataSourceType").hide();
+            $("#choiceDataSourceText").hide();
+            mini.getbyName("choiceDataSource").hide();
+            mini.getbyName("choiceDataSource").setRequired(false);
+            $("#connNameText").hide();
+            mini.getbyName("connName").hide();
+            mini.getbyName("connName").setRequired(false);
+            $("#defineDataSourceText").hide();
+            mini.getbyName("defineDataSource").hide();
+            mini.getbyName("defineDataSource").setRequired(false);
+
+            $("#tableHeaderSettings").hide();
+        }
+        else {
+            $("#definedURLText").hide();
+            mini.getbyName("definedURL").hide();
+            mini.getbyName("definedURL").setRequired(false);
+
+            $("#dataSourceTypeText").show();
+            mini.getbyName("dataSourceType").show();
+            mini.getbyName("dataSourceType").doValueChanged();
+
+            $("#tableHeaderSettings").show();
+        }
+    }
+
+    function changeDataSourceType(e) {
+        if (e.value == "选择") {
+            $("#choiceDataSourceText").show();
+            mini.getbyName("choiceDataSource").show();
+            mini.getbyName("choiceDataSource").setRequired(true);
+            $("#connNameText").hide();
+            mini.getbyName("connName").hide();
+            mini.getbyName("connName").setRequired(false);
+            $("#defineDataSourceText").hide();
+            mini.getbyName("defineDataSource").hide();
+            mini.getbyName("defineDataSource").setRequired(false);
+        }
+        else {
+            $("#choiceDataSourceText").hide();
+            mini.getbyName("choiceDataSource").hide();
+            mini.getbyName("choiceDataSource").setRequired(false);
+            $("#connNameText").show();
+            mini.getbyName("connName").show();
+            mini.getbyName("connName").setRequired(true);
+            $("#defineDataSourceText").show();
+            mini.getbyName("defineDataSource").show();
+            mini.getbyName("defineDataSource").setRequired(true);
+        }
+    }
+
+    function importFromDB() {
+        msgUI("确认从数据库表导入吗？", 2, function (act) {
+            if (act == "ok") {
+                var grid = mini.get("dataGrid");
+                execute("ImportItemFormDB", { onComplete: function (data) {
+                    grid.setData(mini.decode(data));
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function onDataClick() {
+        var btn = mini.getbyName("data");
+        var data = btn.getValue();
+        openWindow('/MvcConfig/Meta/Enum/EnumEdit', { width: 350, height: 300, data: data, onDestroy: function (s) {
+            if (s != "close") {
+                var d = s;
+                if (typeof (s) == "object" || typeof (s) == "array" || s.constructor == Array || s.constructor == Object)
+                    var d = mini.encode(s);
+                btn.setValue(d);
+                btn.setText(d);
+            }
+        }
+        });
+    }
+</script>
+<script type="text/javascript">
+    function returnData() {
+        var form = new mini.Form("dataForm");
+        if (form.validate()) {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.validate();
+            if (dataGrid.isValid()) {
+                var obj = {};
+                obj.formData = form.getData();
+                obj.headerData = dataGrid.getData();
+                closeWindow(obj);
+            }
+        }
+    }
+</script>

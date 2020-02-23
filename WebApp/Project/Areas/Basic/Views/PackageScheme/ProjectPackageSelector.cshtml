@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "ProjectPackageSelector";
+}
+
+<div class="mini-toolbar" style="padding: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" plain="true" onclick="returnValue()">选择</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="west" showheader="false" region="west" width="450" expanded="true" showspliticon="false"
+            style="border-bottom: 0;">
+            <div class="mini-toolbar   gw-grid-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0; border-left: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit searchbox" id="projectGridKey" emptytext="请输入项目编号或项目名称" style="width: 200px;"
+                                onenter="quickSearch('Code,Name',{gridId:'projectGrid',queryBoxId:'projectGridKey'});" onbuttonclick="quickSearch('Code,Name',{gridId:'projectGrid',queryBoxId:'projectGridKey'});" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="projectGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                    allowmovecolumn="false" allowresize="true" multiselect="false" url="GetProjectInfo"
+                    pagesize="20" onselectionchanged="onProjectSelectoinChanged">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" headeralign="center" width="200" allowsort="true" align="left">
+                            项目名称</div>
+                        <div field="Code" headeralign="center" width="100" allowsort="true" align="center">
+                            项目编号</div>
+                        <div field="ChargeUserName" headeralign="center" width="100" allowsort="true" align="center">
+                            项目负责人</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center" style="border-bottom: 0; border-right: 0;">
+            <div class="mini-toolbar  gw-grid-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入卷册名称或卷册编号" onenter="quickSearch('Name,Code');"
+                                onbuttonclick="quickSearch('Name,Code');" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" url="" borderstyle="border-bottom:0;border-left:0;border-right:0;"
+                    class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" name="Name" headeralign="center" width="200" allowsort="true" align="left">
+                            卷册名称</div>
+                        <div field="Code" name="Code" headeralign="center" width="100" allowsort="true" align="center">
+                            卷册编号</div>
+                        <div field="MajorValue" name="MajorValue" headeralign="center" width="100" allowsort="true" align="center">
+                            专业
+                        </div>
+                        <div field="PhaseValue" name="PhaseValue" headeralign="center" width="100" allowsort="true" align="center">
+                            阶段
+                        </div>
+                        <div field="DossierName" name="DossierName" headeralign="center" width="100" allowsort="true" align="center">
+                            卷名</div>
+                        <div field="DossierCode" name="DossierCode" headeralign="center" width="100" allowsort="true" align="center">
+                            卷号</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var headerNames = @Html.Raw(ViewBag.HeaderNames);
+
+    @Html.GetEnum("Project.Major");
+    @Html.GetEnum("Project.Phase");
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "MajorValue", "Major");
+    addGridEnum("dataGrid", "PhaseValue", "Phase");
+    
+    function pageLoad() {
+        var grid = mini.get("dataGrid");
+        $.each(headerNames,function(index,item) {
+            grid.updateColumn(item.Code, {header: item.Name});
+        });
+    }
+
+    function returnValue() {
+        var projectGrid = mini.get("projectGrid");
+        var project = projectGrid.getSelected();
+        if (project == null) {
+            msgUI("请至少选择一个项目！");
+            return;
+        }
+        var packageList = mini.get("dataGrid").getSelecteds();
+        if (packageList.length == 0) {
+            msgUI("是否导入【" + project.Name + "】的所有卷册？", 2, function (result) {
+                if (result != "ok") { return; }
+                closeWindow(mini.get("dataGrid").getData());
+            });
+
+        }
+        else
+            closeWindow(packageList);
+    }
+
+    function onProjectSelectoinChanged(e) {
+        var row = e.selected;
+        if (row != null) {
+            var projectInfoID = row.ID;
+            var url = "GetProjectPackageList?ProjectInfoID=" + projectInfoID + "&Majors=" + getQueryString("Majors") + "&Phases=" + getQueryString("Phases");
+            var grid = mini.get("dataGrid");
+            grid.setUrl(url);
+            grid.reload();
+        }
+    }
+
+</script>

@@ -1,0 +1,218 @@
+﻿<div id="divDes" style="font-family: 'Microsoft YaHei'; display: none; font-size: 25px; font-weight: bold; text-align: center; width: 100%; margin-top: 150px;">点击<a href="#" onclick="preView();">预览</a>看看吧!</div>
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="addRow({Visible:'true'},{createId:true,isLast:true})">添加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delRow();">移除</a>
+                <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+                <a class="mini-button" iconcls="icon-down" onclick="importField();">导入</a>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="saveLayoutField();">保存</a>
+            </td>
+            <td id="btnRight"><a class="mini-button" iconcls="icon-node" plain="true" onclick="preView();">预览</a></td>
+        </tr>
+    </table>
+</div>
+<div id="tabMinifit" style="height: 100%;">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false" url="GetNavLayoutField" onlycheckselection="true" onpreload="onPreLoad">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+
+            <div field="field" width="180" vtype="required;">
+                字段编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="header" width="*" vtype="required;">
+                字段名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+            {
+                <div field="HeaderEN" width="150" vtype="required;">
+                    英文名称
+                    <input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+            }
+            <div field="width" width="100">
+                列宽度
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="align" width="90" autoshowpopup="true" align="center">
+                对齐
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="align" onitemclick="commitEdit" />
+            </div>
+            <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="70">
+                显示
+            </div>
+            <div type="checkboxcolumn" field="allowSort" truevalue="true" falsevalue="false" width="70">
+                排序
+            </div>
+            <div type="checkboxcolumn" name="AllowSearch" field="AllowSearch" truevalue="true" falsevalue="false" width="70">
+                快查
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<style type="text/css">
+    #btnSave {
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+
+        #btnSave .icon-save {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+</style>
+<script type="text/javascript">
+    var ListType = [{ value: "nav", text: "导航配置" }, { value: "list", text: "数据配置" }];
+</script>
+<script type="text/javascript">
+
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+
+    function itemTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["QuerySettings"] = "";
+        var type = row["ItemType"];
+        if (type == "RadioButtonList" || type == "ComboBox" || type == "ButtonEdit" || type == "CheckBox")
+            row["QueryMode"] = "Equal";
+        else if (type == "CheckBoxList")
+            row["QueryMode"] = "In";
+        else if (type == "DatePicker")
+            row["QueryMode"] = "Between";
+        else if (type == "TextBox")
+            row["QueryMode"] = "Like";
+        else
+            row["QueryMode"] = "";
+        grid.updateRow(row);
+    }
+
+    function importField() {
+        msgUI("确认导入字段吗？", 2, function (act) {
+            if (act == "ok") {
+                execute("ImportField", {
+                    onComplete: function (data) {
+                        var grid = mini.get("dataGrid");
+                        grid.setData(mini.decode(data));
+                    }
+                });
+            }
+        });
+    }
+
+    function onPreLoad(e) {
+        var useType = getQueryString("UseType");
+        if (e.data.length < 1 && useType != 'Tabs') {
+            execute("ImportField", {
+                onComplete: function (data) {
+                    var grid = mini.get("dataGrid");
+                    grid.setData(mini.decode(data));
+                }
+            });
+        }
+    }
+
+    function pageLoad() {
+        var useType = getQueryString("UseType");
+        if (useType && useType == 'TreeCustom') {
+            $("#btnDiv,#tabMinifit").hide();
+            $("#divDes").show();
+        } else {
+            $("#btnDiv,#tabMinifit").show();
+            $("#divDes").hide();
+        }
+        var dataGrid = mini.get("#dataGrid");
+        if (useType == 'TreeGridCustom')
+            dataGrid.hideColumn("AllowSearch");
+        else
+            dataGrid.showColumn("AllowSearch");
+    }
+
+</script>
+<script type="text/javascript">
+    var align = [{ value: "left", text: "靠左" }, { value: "center", text: "居中" }, { value: "right", text: "靠右" }];
+    var queryModeEnum = [
+    { value: "Equal", text: "=" },
+    { value: "LessThan", text: "<" },
+    { value: "GreaterThan", text: ">" },
+    { value: "LessThanOrEqual", text: "<=" },
+    { value: "GreaterThanOrEqual", text: ">=" },
+    { value: "Like", text: "Like" },
+    { value: "In", text: "In" },
+    { value: "InLike", text: "InLike" },
+    { value: "StartsWith", text: "StartsWith" },
+    { value: "Between", text: "Between" }];
+
+    var ItemType = [
+        { value: 'TextBox', text: '单行文本框' },
+        { value: 'DatePicker', text: '日期选择框' },
+        { value: 'CheckBoxList', text: '多选框列表' },
+        { value: 'RadioButtonList', text: '单选框列表' },
+        { value: 'ComboBox', text: '组合下拉框' },
+        { value: 'ButtonEdit', text: '弹出选择框' },
+        { value: 'CheckBox', text: '复选框' }
+    ];
+</script>
+<script type="text/javascript">
+
+
+    function getitemTypeText(value) {
+        for (var i = 0; i < ItemType.length; i++) {
+            if (ItemType[i]["value"] == value)
+                return ItemType[i]["text"];
+        }
+    }
+
+    function onListValueChanged(e) {
+        window.parent.getIframe(getQueryString("ID"), getQueryString("TmplCode"), ListType[1].value);
+    }
+</script>
+<script type="text/javascript">
+
+    function saveLayoutField() {
+        addExecuteParam("layoutField", mini.get("dataGrid").getData());
+        execute("SaveTabNavLayout", {
+            actionTitle: "保存", onComplete: function (result) {
+                msgUI("保存成功");
+            }
+        });
+    }
+
+    function preView() {
+        var url = "/MvcConfig/UI/Layout/LayoutView?TmplCode={TmplCode}";
+        openWindow(url, { title: '预览', width: 1000, addQueryString: false });
+    }
+</script>

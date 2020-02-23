@@ -1,0 +1,40 @@
+﻿<script id="NoticeGrid" type="text/x-jquery-tmpl">
+    <div class="BIinfo-box-titlen">
+        <i>|</i>${Title}
+        {{if showmore}}
+        <span class="more" onclick="openUrl('${moreUrl}', '更多${Title}')">更多</span>
+        {{/if}}
+    </div>
+    {{if hasdata==1 }}
+    <div class="xnflow" style="overflow: auto;">
+        <div class="xnflow-wrap">
+            <div class="xnflow-wrap-list">
+                <ul>
+                    {{each List}}
+                    <li>
+                        <div class="icon"><img src="/MvcConfig/Scripts/BI/img/flow-right.png" width="15" height="15"></div>
+                        <div class="main" onclick="${$value.LinkUrl};">
+                            <div class="name">${$value.Title}</div>
+                            {{each $value.Tag}}
+                            <div class="message">${$value.Value}</div>
+                            {{/each}}
+                            {{if $value.DateTime}}
+                            <div class="time"> ${$value.DateTime}</div>
+                            {{/if}}
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <div class="xnflow" style="overflow: auto;">
+        <div class="xnflow-wrap">
+            <div class="xnflow-wrap-list">
+                <h2 style='color: #cdced2; font-size: 16px; text-align: center;'>暂无内容</h2>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+</script>

@@ -1,0 +1,303 @@
+﻿@{
+    ViewBag.Title = "Settings";
+}
+
+@section scripts{
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/mode/javascript/javascript.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.css")" rel="stylesheet" type="text/css" />
+}
+<style>
+    .CodeMirror {
+        border: 1px solid #ccc;
+        font-size: 13px;
+    }
+</style>
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="常用参数选择" region="east" showclosebutton="false" width="350px;" showspliticon="true">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;"></td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称或编号" style="width: 200px;" onenter="treeSearch();"
+                               onbuttonclick="treeSearch();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="dataTree" url="" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID" onbeforeexpand="onBeforeExpand"
+                enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="0" onnodedblclick="onNodeDblClick" ondrawnode="onDrawNode"
+                contextmenu="#treeMenu"></ul>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+                <div region="north" height="35" showspliticon="false" showheader="false" allowresize="false" splitsize="0" style="border: 0;">
+                    <div class="mini-toolbar" id="btnDiv">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 100%;">
+                                    <a class="mini-button" id="btnSave" iconcls="icon-save" onclick="SaveData();" plain="true">保存</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div title="center" region="center" style="border: 0;">
+                    <div id="dataForm">
+                        <input name="ID" class="mini-hidden" />
+                        <input name="ParentID" class="mini-hidden" />
+                        <div class="formDiv">
+                            <fieldset>
+                                <legend>基本信息</legend>
+                                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                                    <tr>
+                                        <td width="10%">计算式名称</td>
+                                        <td width="23%;">
+                                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                        </td>
+                                        <td width="10%" style="padding-left: 20px;">编码</td>
+                                        <td width="23%;">
+                                            <input name="Code" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                        </td>
+                                        <td width="10%" style="padding-left: 20px;">模块</td>
+                                        <td>
+                                            <input name="Module" class="mini-combobox" style="width: 100%" required="true"
+                                                   onvaluechanged="setCategoryData(this.getValue(), '');" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            分类
+                                        </td>
+                                        <td>
+                                            <input name="Category" class="mini-combobox" style="width: 100%" required="true" />
+                                        </td>
+                                        <td style="padding-left: 20px;">类型</td>
+                                        <td>
+                                            <input name="ParamType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                                   data="ArgumentType" allowinput="false" />
+                                        </td>
+                                        <td style="padding-left: 20px;">计算方式</td>
+                                        <td>
+                                            <div name="CalType" class="mini-radiobuttonlist" repeatitems="4" repeatlayout="table" repeatdirection="horizontal"
+                                                 textfield="text" valuefield="value" data="CalType">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="expressionRow">
+                                        <td>计算公式</td>
+                                        <td colspan="5">
+                                            <textarea id="Expression" name="editor" style="height:300px;"></textarea>
+                                            @*<input name="Expression" style="width: 100%;height:400px;" class="mini-textarea" vtype="maxLength:8000" />*@
+                                        </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li iconcls="icon-add" name="addInputArg" onclick="addParam('InputArg')">新增输入参数</li>
+    <li iconcls="icon-add" name="addRefArg" onclick="addParam('RefArg')">新增取值参数</li>
+    <li iconcls="icon-remove" name="remove" onclick="removeParam()">删除</li>
+</ul>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.ArgumentType))
+    @Html.GetEnum(typeof(Base.Logic.CalType))
+    var Categories = @Html.Raw(ViewBag.EnumCategory)
+</script>
+<script type="text/javascript">
+    var url = "GetParamTree";
+    var id = getQueryString("ID");
+    $("#dataTree").attr("url", url + "?ID=" + id);
+
+    var editor = null;
+    function onFormSetData(data) {
+        var myTextarea = document.getElementById('Expression');
+        var CodeMirrorEditor = CodeMirror.fromTextArea(myTextarea, {
+            mode: "text/javascript",
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            theme: "xq-light"
+        });
+        editor = CodeMirrorEditor;
+        editor.setSize('auto', '400px');
+        editor.setValue(data.Expression);
+        setFormItemDisabled("ParamType");
+        setCategoryData(data.Module, data.Category);
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("Module").setData(ConnEnum);
+        mini.getbyName("Module").setValue(connName);
+        mini.getbyName("Category").setData(CateEnum);
+        mini.getbyName("Category").setValue(categoryID);
+    }
+
+    function onBeforeExpand(e) {
+    }
+
+    function insertValue(textValue) {
+        editor.replaceSelection(textValue);
+    }
+
+    function onNodeDblClick(e) {
+        var node = e.node;
+        if (node && node.ParamType == "CalArg" && !node.Expression) {
+            msgUI("计算参数没有定义表达式，无法被插入"); return;
+        }
+        if (node && node.ID != id && node.NodeType == "Paramter") {
+            insertValue("{" + node.Code + "}");
+        }
+        if (node && node.ID != id && node.NodeType == "Func") {
+            insertValue("Func_" + node.Code + "()");
+        }
+    }
+
+    function insertNode(nodeID) {
+        var tree = mini.get("dataTree");
+        var nodes = tree.findNodes(function (treeNode) {
+            if (treeNode.ID == nodeID) return true;
+            else return false;
+        });
+
+        if (nodes == 0) {
+            return;
+        }
+        var node = nodes[0];
+        if (node.ParamType == "CalArg" && !node.Expression) {
+            msgUI("计算参数没有定义表达式，无法被插入"); return;
+        }
+        if (node && node.ID != id && node.NodeType == "Paramter") {
+            insertValue("{" + node.Code + "}");
+        }
+    }
+
+    function SaveData() {
+        var v = editor.getValue();
+        addExecuteParam("Expression", v);
+        save({ closeWindow: false });
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            e.htmlEvent.preventDefault();
+            return;
+        }
+
+        var addInputArg = mini.getbyName("addInputArg", menu);
+        var addRefArg = mini.getbyName("addRefArg", menu);
+        var removeItem = mini.getbyName("remove", menu);
+        addInputArg.hide();
+        addRefArg.hide();
+        removeItem.hide();
+
+        if (node.ID == id) {
+            addInputArg.show();
+            addRefArg.show();
+        }
+        else if (node.ParentID == id) {
+            removeItem.show();
+        }
+        else {
+            e.cancel = true;
+            e.htmlEvent.preventDefault();
+            return;
+        }
+    }
+
+    function onDrawNode(e) {
+        var tree = e.sender;
+        var node = e.node;
+        if (node.NodeType == "Paramter" || node.NodeType == "Func") {
+            e.nodeHtml = '' + node.Name + '&nbsp;<span onclick="insertNode(\'' + node.ID + '\');" title="插入" class="mini-button-icon icon-add"></span>';
+        }
+        if (node.NodeType == "Paramter") {
+            e.nodeStyle = 'font-weight:bold;';
+        }
+        else if (node.NodeType == "Func" && node.ID != "SysFuncRoot") {
+            e.nodeStyle = 'font-style:italic;font-weight:bold;';
+        }
+    }
+
+    function addParam(ParamType) {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            msgUI("请先选择一个本地参数节点"); return;
+        }
+        var url = "Edit?ParentID=" + node.ID + "&ParamType=" + ParamType;
+        openWindow(url, {
+            refresh: false, title: "本次参数增加", width: "60%", height: "60%", addQueryString: false,
+            onDestroy: function (data) {
+                if (data && data != "close") {
+                    tree.addNode(data, 0, node);
+                }
+            }
+        });
+    }
+
+    function removeParam() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            msgUI("请先选择一个本地参数节点"); return;
+        }
+        var v = editor.getValue();
+        if (v.indexOf("{" + node.Code + "}") >= 0) {
+            msgUI("表达式中已经使用了该参数，无法删除，请先在表达式中清空【" + "{" + node.Code + "}" + "】");
+            return;
+        }
+        msgUI("您确定要删除本地参数吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListIDs", node.ID);
+            addExecuteParam("IsSelf", "true");
+            execute("RemoveParam", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    tree.removeNode(node);
+                }, validateForm: false
+            });
+        });
+    }
+
+    function treeSearch() {
+        var dataTree = mini.get("dataTree");
+        var key = mini.get("key");
+        var keyValue = key.getValue();
+        if (keyValue) {
+            dataTree.filter(function (node) {
+                if (node.Name.indexOf(keyValue) >= 0 || node.Code.indexOf(keyValue) >= 0) {
+                    return true;
+                }
+                else return false;
+            });
+        }
+        else {
+            dataTree.clearFilter();
+        }
+    }
+
+</script>

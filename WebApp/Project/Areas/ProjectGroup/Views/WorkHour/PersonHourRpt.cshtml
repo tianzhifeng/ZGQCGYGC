@@ -1,0 +1,271 @@
+﻿@{
+    ViewBag.Title = "个人工时统计";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入员工姓名" onenter="tabSearch({searchFields:'UserName',IsOrRelation:'false'})"
+                       onbuttonclick="tabSearch({searchFields:'UserName',IsOrRelation:'false'})" />
+                <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitDiv" class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetPersonHourList" showtreeicon="true"
+         idfield="ID" ondrawcell="onDrawCell" pagesize="25" sizelist="[25,50,100,200,300,500]"
+         ondrawsummarycell="onDrawSummaryCell" style="width: 100%; height: 100%;" showsummaryrow="true">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="UserCode" headeralign="center" width="80" allowsort="true" align="center">
+                员工编号
+            </div>
+            <div field="UserName" headeralign="center" width="80" allowsort="true" align="center">
+                员工姓名
+            </div>
+            <div field="DeptName" headeralign="center" width="*" allowsort="true" align="left">
+                所属部门
+            </div>
+            <div header="工作类别" headeralign="center">
+                <div property="columns">
+                    @{
+                        var list = ViewBag.WorkHourTypeInfo as List<Formula.Helper.EnumItemInfo>;
+                        foreach (var item in list)
+                        {
+                            var field = item.Code + "Hours";
+                            <div field="@field" width="70" headeralign="center" allowsort="true" align="right"
+                                 summarytype="sum" datatype="float">
+                                @item.Name
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div header="工作工时" headeralign="center">
+                <div property="columns">
+                    <div field="NormalValue" width="80" headeralign="center" allowsort="true" align="right"
+                         summarytype="sum" decimalplaces="1" datatype="float">
+                        正班工时
+                    </div>
+                    <div field="AdditionalValue" width="80" headeralign="center" allowsort="true" align="right"
+                         summarytype="sum" decimalplaces="1" datatype="float">
+                        加班工时
+                    </div>
+                    <div field="WorkHourValue" width="60" headeralign="center" allowsort="true" align="right"
+                         summarytype="sum" decimalplaces="1" datatype="float">
+                        总工时
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 650px; height: 150px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+            <table>
+                <tr>
+                    <td width="15%" style="padding-left: 10px">
+                        工时日期
+                    </td>
+                    <td width="35%" nowrap="nowrap">
+                        <input id="startTime" name="$FR$WorkHourDate" class="mini-datepicker" style='width: 100%' />
+                    </td>
+                    <td width="15%" style="padding-left: 20px">
+                        至
+                    </td>
+                    <td width="35%" nowrap="nowrap">
+                        <input id="endTime" name="$TO$WorkHourDate" class="mini-datepicker" style='width: 100%' />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick="tabSearch({searchFields:'UserName',IsOrRelation:'false'})" iconcls='icon-find'
+               style='margin-right: 20px;'>查询</a> <a class='mini-button' onclick='clearQueryForm()'
+                                                     iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var startTime = "";
+    var endTime = "";
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field == "WorkHourValue") {
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:openTotalHours(\'' + record.ID + '\',\'' + record.UserName + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+        else if (field && field.indexOf("Hours") >= 0) {
+            var workHourType = field.replace("Hours", "");
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + workHourType + '\',\'' + record.ID + '\',\'' + record.UserName + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+        else if (field == "NormalValue") {
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:viewDetailInfo(\'\',\'' + record.ID + '\',\'' + record.UserName + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+        else if (field == "AdditionalValue") {
+            if (e.value > 0)
+                e.cellHtml = '<a href="javascript:viewWorkDetail(\'' + record.ID + '\',\'' + record.UserName + '\')">' + e.value + '</a>&nbsp; ';
+            else
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+        }
+
+    }
+
+    function viewWorkDetail(projectID, name) {
+        url = "/MvcConfig/UI/List/PageView?TmplCode=AdditionalWorkHourDetail&UserID=" + projectID;
+        var title = name + "加班工时明细";
+        openWindow(url, {
+            refresh: false, title: title, width: "85%", height: "75%", addQueryString: false,
+            onDestroy: function () { }
+        });
+    }
+
+    function viewDetailInfo(workHourType, userID, name) {
+        url = "/MvcConfig/UI/List/PageView?TmplCode=WorkHourDetail&UserID=" + userID;
+        if (workHourType)
+            url += "&WorkHourType=" + workHourType;
+        var title = name + "工时明细";
+        openWindow(url, {
+            refresh: false, title: title, width: "85%", height: "75%", addQueryString: false,
+            onDestroy: function () { }
+        });
+    }
+
+
+    function openTotalHours(id, deptName) {
+        var title = deptName + startTime + "至" + endTime + "工时明细";
+        openWindow("PersonProjectHourView?UserID=" + id + "&startTime=" + startTime + "&endTime=" + endTime, { title: title, width: "1000px", height: "90%" });
+    }
+
+    function cusTabSearch(tabData, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+            startTime = "";
+            endTime = "";
+            if (data['$FR$WorkHourDate'] != '')
+                startTime = data['$FR$WorkHourDate'].format("yyyy-MM-dd")
+            if (data['$TO$WorkHourDate'] != '')
+                endTime = data['$TO$WorkHourDate'].format("yyyy-MM-dd")
+        }
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "WorkHourDate") {
+                getStartEndDate(tabDataInfo.value, data);
+                continue;
+            }
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({
+                queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData), WorkHourStart: startTime, WorkHourEnd: endTime
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+
+    function getStartEndDate(workHourTabValue, detailData) {
+        var now = new Date(); //当前日期
+        var nowMonth = now.getMonth(); //当前月
+        var nowYear = now.getFullYear(); //当前年
+
+        if (workHourTabValue == "CurrentMonth") {
+            var compareDate = new Date(nowYear, nowMonth, 1).format("yyyy-MM-dd");
+            compareResDate(compareDate);
+        }
+        else if (workHourTabValue == "CurrentWeek") {
+            var compareDate = getWeekStartDate(now).format("yyyy-MM-dd");;
+            compareResDate(compareDate);
+        }
+        else if (workHourTabValue == "CurrentQuarter") {
+            var compareDate = new Date(nowYear, nowMonth - nowMonth % 3, 1).format("yyyy-MM-dd");
+            compareResDate(compareDate);
+
+        }
+        else if (workHourTabValue == "CurrentYear") {
+            var compareDate = new Date(nowYear, nowMonth, 1).format("yyyy-MM-dd");
+            compareResDate(compareDate);
+        }
+    }
+
+    function getWeekStartDate(time) {
+        var now = new Date(time);
+        var nowDayOfWeek = now.getDay();
+        var nowYear = now.getFullYear();
+        var nowMonth = now.getMonth();
+        var nowDay = now.getDate();
+        nowDayOfWeek = nowDayOfWeek == 0 ? 7 : nowDayOfWeek;
+        var weekStartDate = new Date(nowYear, nowMonth, nowDay - nowDayOfWeek + 1);
+        return weekStartDate;
+    }
+
+    function getWeekEndDate(time) {
+        var now = new Date(time);
+        var nowDayOfWeek = now.getDay();
+        var nowYear = now.getFullYear();
+        var nowMonth = now.getMonth();
+        var nowDay = now.getDate();
+        nowDayOfWeek = nowDayOfWeek == 0 ? 7 : nowDayOfWeek;
+        var weekEndDate = new Date(nowYear, nowMonth, nowDay + (6 - nowDayOfWeek + 1));
+        return weekEndDate;
+    }
+
+    function compareResDate(compareDate) {
+        var nowDate = new Date().format("yyyy-MM-dd");
+        if (startTime == "" || startTime != "" && compareDate > startTime)
+            startTime = compareDate;
+
+        if (endTime == "" || endTime != "" && nowDate < endTime)
+            endTime = nowDate;
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        if (e.field == "UserName") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: left;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+
+        if (e.column.decimalPlaces != undefined && e.column.decimalPlaces == "1")
+            e.cellHtml = parseFloat(e.value).toFixed(1);
+    }
+</script>

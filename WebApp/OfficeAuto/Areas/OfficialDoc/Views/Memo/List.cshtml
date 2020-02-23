@@ -1,0 +1,133 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td style="width: *;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="doStartFlow()" plain="true">
+                    启动便函签发单</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入文号或标题" style="width: 200px;"
+                    onenter="quickSearch('PaperNumber,Title');" onbuttonclick="quickSearch('PaperNumber,Title');" />
+            </td>
+            <td width="90px">
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowmovecolumn="false"
+        url="GetList">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="FlowPhase" width="40" headeralign="center" allowsort="true" align="center"
+                renderer="onEnumRender">
+                状态</div>
+            <div field="PaperNumber" width="60" headeralign="center" align="center" allowsort="true">
+                文号</div>
+            <div field="Title" width="200" headeralign="center" allowsort="true" align="left">
+                标题</div>
+            <div field="Dense" headeralign="center" align="center" width="40" allowsort="true">
+                密级</div>
+            <div field="UrgentSlow" headeralign="center" align="center" width="40" allowsort="true">
+                急缓</div>
+            <div field="MainSendUserName" width="60" headeralign="center" allowsort="true" align="center">
+                主送</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; height: 200px;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="15%" align="center">
+                    文号
+                </td>
+                <td width="35%" align="left">
+                    <input name="$LK$PaperNumber" style="width: 90%" class="mini-textbox" />
+                </td>
+                <td width="15%" align="center">
+                    标题
+                </td>
+                <td width="35%" align="left">
+                    <input name="$LK$Title" style="width: 90%" class="mini-textbox" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    密级
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$Dense" class="mini-combobox" multiselect="true" style="width: 90%;"
+                        valuefield="value" textfield="text" data="PostingMiJi" />
+                </td>
+                <td width="15%" align="center">
+                    紧急程度
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$UrgentSlow" class="mini-combobox" multiselect="true" style="width: 90%;"
+                        valuefield="value" textfield="text" data="PostingHuanJi" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    状态
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$FlowPhase" class="mini-combobox" multiselect="true" style="width: 90%;"
+                        valuefield="value" textfield="text" data="MemoStatus" />
+                </td>
+                <td width="15%" align="center">
+                </td>
+                <td width="35%" align="left">
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(OfficeAuto.Logic.MemoStatus))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingMiJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingHuanJi))
+    //addMultiUserSelector("$IN$MainSendUserNameID");
+    
+</script>
+<script type="text/javascript">
+    addGridLink("dataGrid", "Title", "Edit?ID={ID}&FuncType=View", { title: "便函查看", width: 800, height: 600 });
+    addGridEnum("dataGrid", "FlowPhase", "MemoStatus");
+    addGridEnum("dataGrid", "Dense", "PostingMiJi");
+    addGridEnum("dataGrid", "UrgentSlow", "PostingHuanJi");
+    addGridLink("dataGrid", "FlowPhase", "Edit?ID={ID}&FlowCode=Memo", {
+        title: "便函", width: 800, height: 600, refresh: true,
+        onDestroy: function (data) {
+            if (data == "close") {
+                mini.get("dataGrid").reload();
+            }
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+
+    function doStartFlow() {
+        url = "Edit?FlowCode=Memo";
+        flowAdd('Memo', { url: url, title: '便函流程', width: 800, height: 600, onDestroy: closeWindows });
+    }
+
+    function closeWindows() {
+        mini.get("dataGrid").load();
+    }
+
+</script>

@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+
+<div class="mini-fit" style="padding-top: 2px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="设备材料清单" url="TreeList?EngineeringInfoID=@ViewBag.EngineeringInfoID&SpaceCode=@ViewBag.SpaceCode&AuthType=@ViewBag.AuthType">
+        </div>
+        <div title="设备返资确认表" url="/MvcConfig/UI/List/PageView?TmplCode=ReturnDatFile&EngineeringInfoID=@ViewBag.EngineeringInfoID&SpaceCode=@ViewBag.SpaceCode&AuthType=@ViewBag.AuthType">
+        </div>
+    </div>
+</div>
+

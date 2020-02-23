@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "DetailList";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+        idfield="ID" multiselect="true" showpager="false" borderstyle="border:0" showsummaryrow="true"
+        ondrawsummarycell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="UserName" width="*" headeralign="center" allowsort="true">
+                人员姓名</div>
+            <div field="MistakeCount" width="120" headeralign="center" allowsort="true" align="right"
+                summarytype="sum" renderer="onLinkRender">
+                错误数量</div>
+            <div field="MistakeLevel" width="120" headeralign="center" allowsort="true" align="center">
+                错误类别</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+@Html.GetEnum("Project.MistakeLevel");
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "MistakeLevel", "MistakeLevel");
+
+    function setData(queryData) {
+        var grid = mini.get("dataGrid");
+        var mistakeType = getQueryString("MistakeType");
+        grid.setUrl("GetDetailInfo?MistakeType=" + mistakeType);
+        grid.load({ "queryFormData": mini.encode(queryData) });
+    }
+
+    function onLinkRender(e) {
+        var cls = "";
+        var uid = e.record._uid;
+        var s = '<a ' + cls + 'href="#" onclick="onGridLink(\'' + uid + '\',\'' + e.field + '\',\'' + e.sender.id + '\');">' + e.value + '</a>';
+        return s;
+    }
+
+    function onGridLink(UID, field, GridID) {
+        var dataGrid = mini.get(GridID);
+        var row = dataGrid.getRowByUID(UID);
+        var mistakeType = getQueryString("MistakeType");
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=SingleProjectMistakeDetail&MistakeType=" + mistakeType + "&UserID=" + row.UserID;
+        var width = "80%"; var height = "80%";
+        openWindow(url, { title: "错误明细", width: width, height: height });
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        //服务端汇总计算
+        if (e.field == "UserName") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: left;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+    }
+</script>

@@ -1,0 +1,249 @@
+﻿@{
+    ViewBag.Title = "分类维护";
+}
+<style>
+    .Org
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+    .Dept
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/dept.gif) no-repeat;
+    }
+    .ManufactureDept
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/cutover.png) no-repeat;
+    }
+    .SubDept
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+    .Post
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/user.png) no-repeat;
+    }
+
+    .dh-footmenu {
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+    }
+
+    .dh-fm-margin {
+        margin: 0 10px 10px 10px;
+        border: 1px solid #eeeeee;
+    }
+
+    .dh-fm-left {
+        width: 100%;
+        height: 26px;
+        overflow: hidden;
+        background-color: #eeeeee;
+    }
+
+        .dh-fm-left ul {
+            margin: 0px;
+            padding: 0px;
+            list-style-type: none;
+        }
+
+        .dh-fm-left li {
+            cursor: pointer;
+            font: 12px "Microsoft YaHei","Arial","Arial", Helvetica, sans-serif;
+            color: #000;
+            height: 26px;
+            line-height: 28px;
+            text-align: center;
+            margin-right: 1px;
+            overflow: hidden;
+            background-color: #FFF;
+            overflow: hidden;
+            padding: 0 10px;
+            float: left;
+        }
+
+            .dh-fm-left li.current {
+                color: #FFF;
+                background-color: #2d4f74;
+            }
+
+        *html .dh-fm-left li {
+            cursor: pointer;
+            font: 16px "Microsoft YaHei","Arial","Arial", Helvetica, sans-serif;
+            color: #000;
+            height: 57px;
+            line-height: 57px;
+            text-align: center;
+            margin-right: 1px;
+            overflow: hidden;
+            background-color: #FFF;
+            overflow: hidden;
+            padding: 0px 15px;
+            float: left;
+        }
+
+    .dh-fm-more {
+        cursor: pointer;
+        font: 14px "Microsoft YaHei","Arial","Arial", Helvetica, sans-serif;
+        color: #000;
+        width: 35px;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+        overflow: hidden;
+        background-color: #FFF;
+        overflow: hidden;
+    }
+
+    *html .dh-fm-more {
+        cursor: pointer;
+        font: 14px "Microsoft YaHei","Arial","Arial", Helvetica, sans-serif;
+        background: url(more.png) no-repeat;
+        background-position: 8px 19px;
+        color: #000;
+        width: 92px;
+        padding-left: 30px;
+        height: 57px;
+        line-height: 57px;
+        overflow: hidden;
+        background-color: #FFF;
+        overflow: hidden;
+    }
+</style>
+<div class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="组织/部门" region="west" width="250px" style="border-left: 1px" showspliticon="false">
+        <div style="padding: 5px 5px 0 5px;">
+            <div>
+                <input class="mini-buttonedit gw-searchbox" id="treeKey" style="width: 100%;" 
+                    emptytext="输入组织名称查询" onenter="searchTree({treeId:'tree'});" onbuttonclick="searchTree({treeId:'tree'});"  />
+            </div>
+        </div>
+        <div class="mini-fit" style="padding:10px">
+            <ul id="tree" class="mini-tree" url="GetOrgTree" style="overflow: hidden; width: 100%; height: 100%"
+                showtreeicon="true" textfield="Name" idfield="ID"  parentfield="ParentID" expandonload="0"
+                onnodeselect="onNodeSelect" resultastree="false">
+            </ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="getAll();" plain="true">全部</a>
+                        <a class="mini-button" iconcls="icon-sort" onclick="orderBy();" plain="true">按职务排序</a>
+                    </td>
+                    <td id="btnRight">
+                        <input class="mini-buttonedit gw-searchbox" id="key" emptytext="请输入员工名称" style="width: 200px;"
+                            onenter="searchKey();" onbuttonclick="searchKey();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" id="gridarea" style="overflow: hidden;">
+            <iframe id="myframe" frameborder="0" src="List" name="myframe" style="width: 100%; height: 99%; overflow-x: hidden;"
+                border="0" scrolling="yes"></iframe>
+        </div>
+        <div class="dh-footmenu">
+            <div class="dh-fm-margin">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td>
+                            <div class="dh-fm-left">
+                                <ul id="ulCharSearch">
+                                    <li class="current">A-Z</li>
+                                    <li>A</li>
+                                    <li>B</li>
+                                    <li>C</li>
+                                    <li>D</li>
+                                    <li>E</li>
+                                    <li>F</li>
+                                    <li>G</li>
+                                    <li>H</li>
+                                    <li>I</li>
+                                    <li>J</li>
+                                    <li>K</li>
+                                    <li>L</li>
+                                    <li>M</li>
+                                    <li>N</li>
+                                    <li>O</li>
+                                    <li>P</li>
+                                    <li>Q</li>
+                                    <li>R</li>
+                                    <li>S</li>
+                                    <li>T</li>
+                                    <li>U</li>
+                                    <li>V</li>
+                                    <li>W</li>
+                                    <li>X</li>
+                                    <li>Y</li>
+                                    <li>Z</li>
+                                </ul>
+                            </div>
+                        </td>
+                        
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var tree;
+    var sortIndex = "DESC";
+    var sortChar = "";
+    function pageLoad() {
+        tree = mini.get("tree");
+        $('#ulCharSearch').children().first().click(function () {
+            sortChar = "";
+            $(this).addClass('current').siblings().removeClass("current");
+            searchKey();
+        });
+        $('#ulCharSearch').children().not(":first").each(function () {
+            $(this).click(function () {
+                sortChar = $(this).html();
+                $(this).addClass('current').siblings().removeClass("current");
+                searchKey();
+            });
+        });
+    }
+    function onNodeSelect(e) {
+        sortChar = "";
+        var nodeId = e.node.ID;
+        var name = e.node.Name;
+        //$('#curDeptName').html(name);
+        if (nodeId != "0") {
+            var url = "List?DeptID=" + nodeId;
+            document.getElementById("myframe").src = url;
+        } else {
+            document.getElementById("myframe").src = "List";
+        }
+    }
+    function getAll() {
+        location.reload();
+    }
+    function orderBy() {
+        if (sortIndex == "DESC") {
+            sortIndex = "ASC";
+        }
+        else {
+            sortIndex = "DESC";
+        }
+        searchKey();
+    }
+    function searchChar(obj) {
+        sortChar = obj;
+        searchKey();
+    }
+    function searchKey() {
+        var keyValue = mini.get("key").getValue();
+        var node = tree.getSelectedNode();
+        var deptId;
+        if (node && node.ID != "0") {
+            deptId = node.ID;
+        } else {
+            deptId = "";
+        }
+        document.getElementById("myframe").src = "List?DeptID=" + deptId + "&EmployeeName=" + keyValue + "&SortIndex=" + sortIndex + "&SortChar=" + sortChar;
+    }
+</script>

@@ -1,0 +1,101 @@
+<div class="head bindParentData">
+    <button class="left" onclick="$monitor.goback(this)">
+        <i class="glyphicon glyphicon-menu-left"></i>
+    </button>
+    <span class="title" way-data="indexParams.Title"></span>
+    <button class="right">
+    </button>
+</div>
+<div class="filter un-prj-search bindParentData">
+    <div class="custom-select" data-id="filter2" onclick="$monitor.showFilter(this)">
+        <span data-id="Customer">按客户</span><i class="glyphicon"></i>
+    </div>
+    <div class="filter-cls">
+        <span class="money-cls" way-data="indexParams.TotalMoney" way-transform="transform-integer-data">
+        </span><span class="money-decimal-cls" way-data="indexParams.TotalMoney" way-transform="transform-decimal-data">
+        </span>万元，合同<span class="contract-num-cls" way-data="indexParams.ContractCount"></span>个
+    </div>
+</div>
+<!-- 过滤：下拉框 -->
+<div class="filter-content md-ttb" id="filter2">
+    <ul class="model-1">
+        <li class="active" onclick="filterByCondition('Customer',this)">按客户</li>
+        <li onclick="filterByCondition('Department',this)">按部门</li>
+        <li onclick="filterByCondition('ManagerUser',this)">按责任人</li>
+        <li onclick="filterByCondition('NotGroup',this)">不分组</li>
+    </ul>
+    <div class="mark">
+    </div>
+</div>
+<!-- 填写内容 -->
+<div class="content has-filter content-list scroll">
+    <div class="scroll-content">
+        <!--按照客户或负责人分组-->
+        <div class="list-model">
+            <div class="card-cls">
+                <div class="card-title-cls">
+                    <!--  <img class="img-cls"/>-->
+                    <span class="imgCls span-change-icon"></span>
+                    <div class="contract-info-cls">
+                        <div class="contract-num-cls" way-data="Name" onclick="showYou(this)">
+                        </div>
+                        <div>
+                            <span class="span-icon-special icon-contact"><span class="money-middle-cls pr-5"
+                                way-data="TotalMoney"></span><span class="text-family-cls">万元</span> <span class="text-family-cls hide-you">
+                                    ，共</span><span class="money-middle-cls num-cls hide-you" way-data="RecordNum"></span>
+                                <span class="text-family-cls hide-you" way-scope-break="true" way-data="superName.name">
+                                </span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rememberCls" way-data="ID">
+                </div>
+                <div class="contract-tips-cls" onclick="showContractDetail(this)">
+                    <span class="glyphicon glyphicon-chevron-down pr-5"></span>查看<span way-data="ContractCount"></span>个合同</div>
+                <div class="show-hide-cls" way-scope-break="true">
+                    <div class="contract-item-cls" onclick="showContractInfo(this)">
+                        <div class="left-item-cls">
+                            <div class="liCls margin-bottom" way-data="Name">
+                            </div>
+                            <div class="rememberCls" way-data="ID">
+                            </div>
+                            <div class="glyphicon glyphicon-menu-right right-icon-cls">
+                            </div>
+                        </div>
+                        <div class="font-size">
+                            <span class="span-new-icon icon-contact"><span class="money-middle-cls pr-5" way-data="ReceiptValue">
+                            </span>万元 </span><span class="icon-num">共<span way-data="RecordNum"></span>笔</span>
+                            <span class="span-clock-icon icon-lastTime" way-data="LastTime" way-transform="dateFormatter">
+                            </span><span class="span-clock-icon icon-signTime" way-data="SignDate" way-transform="dateFormatter">
+                            </span><span class="span-clock-icon icon-user" way-data="UserName"></span><span class="span-clock-icon icon-invoice"
+                                way-data="InvoiceDate" way-transform="dateFormatter"></span>
+                        </div>
+                    </div>
+                    <div class="contract-tips-cls" way-scope-break="true" onclick="closeContractDetail(this)">
+                        <span class="glyphicon glyphicon-chevron-up pr-5"></span>收起<span way-data="ContractCount"></span>合同</div>
+                </div>
+            </div>
+        </div>
+        <!--不分组-->
+        <div class="contract-model">
+            <div class="contract-item-cls border-none-cls color" onclick="showContractInfo(this)">
+                <div class="left-item-cls">
+                    <div way-data="Name" class="liCls margin-bottom">
+                    </div>
+                    <div class="rememberCls" way-data="ID">
+                    </div>
+                    <div class="glyphicon glyphicon-menu-right group-right-icon-cls">
+                    </div>
+                </div>
+                <div class="font-size">
+                    <span class="span-new-icon icon-contact"><span class="money-middle-cls pr-5" way-data="ReceiptValue">
+                    </span>万元 </span><span class="icon-num">共<span way-data="RecordNum"></span>笔</span>
+                    <span class="span-clock-icon icon-lastTime" way-data="LastTime" way-transform="dateFormatter">
+                    </span><span class="span-clock-icon icon-signTime" way-data="SignDate" way-transform="dateFormatter">
+                    </span><span class="span-clock-icon icon-user" way-data="UserName"></span><span class="span-clock-icon icon-invoice"
+                        way-data="InvoiceDate" way-transform="dateFormatter"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

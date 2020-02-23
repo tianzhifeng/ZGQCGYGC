@@ -1,0 +1,347 @@
+﻿@{
+    ViewBag.Title = "问题整改明细";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<script src="~/Scripts/Main/js/partial.js" type="text/javascript"></script>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addProblem();" id="btnAdd" visible="true">发起问题整改</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入问题名称或编号 " style="width: 250px;"
+                       onenter="thisQuickSearch();" onbuttonclick="thisQuickSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit" id='divGrid'>
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+         idfield="ID" multiselect="true" showcolumns="false">
+        <div property="columns">
+            @*<div type="checkcolumn"></div>*@
+            <div field="Content" width="*" headeralign="center" allowsort="false" renderer="onContentRenderer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var EngineeringInfo = getQueryString('EngineeringInfo');
+    normalParamSettings.searchFields = "Name,Code";
+    @*@Html.GetEnum("EPC.ContactStatus", "RectifiState");*@
+    var RectifiState = [
+{ "id": "Register", "value": "Register", "text": "待整改", "NameEN": null, "Category": "", "SubCategory": "", "Description": "", "sortindex": 0.0 },
+{ "id": "Rectify", "value": "Rectify", "text": "已整改", "NameEN": null, "Category": "", "SubCategory": "", "Description": "", "sortindex": 1.0 },
+{ "id": "Closed", "value": "Closed", "text": "已关闭", "NameEN": null, "Category": "", "SubCategory": "", "Description": "", "sortindex": 2.0 }]
+
+    function onContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+        var $img = $("<img>").attr("width", "74px").attr("height", "16px").attr("border", "0px").attr("align", "absmiddle");
+
+        //第一行
+        var stateHtml = "";
+        $(RectifiState).each(function (i, row) {
+            if (row.value == rec.RectifyState) {
+                stateHtml = "<span class='" + row.value + "' >[" + row.text + "]</span>&nbsp;";
+            }
+        });
+        var $tr1 = $("<tr></tr>");
+        $tr1.append("<td><h3 style='display:inline'>" + stateHtml + "<a href='javascript:void(0);' onclick='onViewProblem(\"" + rec.ID + "\")'>" + rec.Name + "</a></h3><span class='leftDistance'>检查时间：" + mini.formatDate(rec.CheckDate, 'yyyy-MM-dd') + "</span></td>");
+
+        var beforeRectifyPic = "";
+        if (rec.BeforeImprovePictrue) {
+            beforeRectifyPic = "<img class='pic' src='/EPC/Cooperation/Image/GetPic?fieldId=" + rec.BeforeImprovePictrue.split(",")[0] + "' onclick='$onViewImages(\"" + rec.BeforeImprovePictrue + "\")' /><div class='picTipLeft'>整改前</div>";
+            //beforeRectifyPicSrc +="&width=200&height=120";
+
+        }
+
+        var afterRectifyPic = "";
+        if (rec.AfterImprovePictrue) {
+            afterRectifyPic = "<img class='pic' src='/EPC/Cooperation/Image/GetPic?fieldId=" + rec.AfterImprovePictrue.split(",")[0] + "' onclick='$onViewImages(\"" + rec.AfterImprovePictrue + "\")' /><div class='picTipLeft'>整改后</div>";
+            //afterRectifyPicSrc +="&width=200&height=120";
+        }
+
+        $tr1.append("<td rowspan='4' class='divPic'><div class='divPic'>" + beforeRectifyPic + "</div></td>");
+        $tr1.append("<td rowspan='4' class='divPic'><div class='divPic'>" + afterRectifyPic + " </div></td>");
+
+        var buttonHtml = "";
+        switch (rec.RectifyState) {
+            case "Register"://待整改
+                buttonHtml = "<a class='plainBtn' href='javascript:void(0);' onclick='onEdit(\"" + rec.ID + "\")'><div>修改</div></a><br /><br /><a class='plainBtn' href='javascript:void(0);' onclick='onDelete(\"" + rec.ID + "\")'><div>删除</div></a>";
+                break;
+
+            case "Rectify"://已整改
+                buttonHtml = "<a class='plainBtn' href='javascript:void(0);' onclick='onReject(\"" + rec.ID + "\")'><div>重新整改</div></a><br /><br /><a class='plainBtn'  href='javascript:void(0);' onclick='onClose(\"" + rec.ID + "\")'><div>关闭问题</div></a>";
+                break;
+
+            case "Closed"://已关闭
+
+                break;
+        }
+        //buttonHtml += "<br /><br /><a class='plainBtn' href='javascript:void(0);' onclick='onRectify(\"" + rec.ID + "\")'><div>整改处理</div></a>";
+        buttonHtml += "<br /><br /><a class='plainBtn' href='javascript:void(0);' onclick='$onViewLog(\"" + rec.ID + "\")'><div>日志</div></a>";
+        $tr1.append("<td rowspan='4' class='divButton'><div class='divButton'>" + buttonHtml + "</div></td>");
+        $tr1.appendTo($table);
+
+        //第二行
+        var title = $.trim(rec.Problems);
+        var $tr2td = $("<td></td>");
+        $tr2td.append("<span>检查人：" + rec.CheckerName + "</span><span class='leftDistance'>问题类型：" + rec.ProType + "</span><span class='leftDistance'>工作内容：" + rec.Problems + "</span>");
+        var $tr2 = $("<tr></tr>").append($tr2td);
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td = $("<td></td>");
+        if (!rec.RectifyUserName)
+            rec.RectifyUserName = '';
+        $tr3td.append($('<h0></h0>').text("整改人：" + rec.RectifyUserName));
+        $tr3td.append($('<h0  class="leftDistance"></h0>').text("整改时间：" + mini.formatDate(rec.RectifyDate, "yyyy-MM-dd")));
+        $tr3td.append($('<h0  class="leftDistance"></h0>').text("关闭时间：" + mini.formatDate(rec.CloseDate, "yyyy-MM-dd")));
+        var $tr3 = $("<tr></tr>").append($tr3td);
+        $table.append($tr3);
+
+        //第四行
+        var $tr4td = $("<td></td>");
+        if (!rec.RectifyMeasures)
+            rec.RectifyMeasures = '';
+        $tr4td.append($('<h0></h0>').text("整改回复：" + rec.RectifyMeasures));
+        var $tr4 = $("<tr></tr>").append($tr4td);
+        $table.append($tr4);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+    function thisQuickSearch() {
+        tabSearch();
+    }
+
+    //发起“问题整改单”
+    function addProblem() {
+        var url = "Edit?TmplCode=TCMRectifyProblems&EngineeringInfo=" + EngineeringInfo;
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "60%", height: "80%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    //查看问题整改单
+    function onViewProblem(ID) {
+        var url = "/EPC/Cooperation/Problem/Detail?ID=" + ID;
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "80%", height: "90%", addQueryString: false
+        });
+    }
+
+    //修改
+    function onEdit(ID) {
+        var url = "Edit?TmplCode=TCMRectifyProblems&EngineeringInfo=" + EngineeringInfo + "&ID=" + ID;
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "80%", height: "70%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    //删除
+    function onDelete(ID) {
+        msgUI("您确定要重删除吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ID", ID);
+            execute("DeleteProblem", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+            });
+
+        });
+
+    }
+
+    //整改处理
+    function onRectify(ID) {
+        var url = "Edit?ID=" + ID + "&actionType=Rectify";
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "60%", height: "80%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    //重新整改
+    function onReject(ID) {
+        msgUI("您确定要重新整改吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ID", ID);
+            execute("Reject", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+            });
+        });
+
+        //var url = "Edit?ID=" + ID + "&actionType=Reject";
+        //openWindow(url, {
+        //    refresh: true, title: "问题整改单", width: "80%", height: "70%", addQueryString: false
+        //});
+
+    }
+
+    //关闭问题
+    function onClose(ID) {
+        msgUI("您确定要关闭问题吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ID", ID);
+            execute("Close", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+            });
+
+        });
+
+        //var url = "Edit?ID=" + ID + "&actionType=Close";
+        //openWindow(url, {
+        //    refresh: true, title: "问题整改单", width: "80%", height: "70%", addQueryString: false
+        //});
+    }
+</script>
+
+<style>
+    .divPic {
+        position: relative;
+        width: 200px;
+        height: 120px;
+    }
+
+    .divButton {
+        width: 100px;
+        height: 120px;
+    }
+
+    .picTipLeft {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: white;
+        background-color: #42433D;
+        opacity: 0.5;
+        padding: 3px;
+    }
+
+    .picTipRight {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: white;
+        background-color: #42433D;
+        opacity: 0.5;
+        padding: 3px;
+    }
+
+    .Register {
+        color: red;
+    }
+
+    .Rectify {
+        color: green;
+    }
+
+    .Closed {
+    }
+
+    .pic {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .plainBtn {
+        background: #bbdab0;
+        color: #3e6331;
+        width: 60px;
+        height: 20px;
+        line-height: 20px;
+        border-radius: 10px;
+        text-align: center;
+        display: block;
+        float: left;
+        text-decoration: none;
+        margin-top: -3px;
+    }
+
+    .mini-modal {
+        opacity: .9;
+        background: #ccc;
+    }
+
+    .stateSpan {
+        padding: 0px 8px !important;
+        float: right !important;
+        border-radius: 15px;
+        font-size: 12px;
+        background-color: transparent !important;
+        margin-right: 0px !important;
+    }
+
+    .Create {
+        background-color: #FFF;
+        color: #82bf00;
+        border: 1px solid #82bf00;
+    }
+
+    .Bid {
+        background-color: #FFF;
+        color: #27c9db;
+        border: 1px solid #27c9db;
+    }
+
+    .Plan {
+        background-color: #FFF;
+        color: #d6cc5c;
+        border: 1px solid #d6cc5c;
+    }
+
+    .Execute {
+        background-color: #FFF;
+        color: #2b88d8;
+        border: 1px solid #2b88d8;
+    }
+
+    .Finish {
+        background-color: #FFF;
+        color: #e062c6;
+        border: 1px solid #e062c6;
+    }
+
+    .Pause {
+        background-color: #FFF;
+        color: #e89f41;
+        border: 1px solid #e89f41;
+    }
+
+    .Terminate {
+        background-color: #FFF;
+        color: #c63c39;
+        border: 1px solid #c63c39;
+    }
+
+    .leftDistance {
+        padding-left: 20px;
+    }
+</style>

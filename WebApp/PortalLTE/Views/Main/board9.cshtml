@@ -1,0 +1,136 @@
+﻿<div id="{|ID|}" class="box box-primary" style="height:{|Height|}">
+    <div class="box-header">
+        <h3 class="box-title">
+            {|Title|}</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="ellipsis" onclick="morePJNews();">
+                <i class="fa fa-ellipsis-v"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" v-show="isLock()" data-widget="remove" onclick="$('#{|ID|}').data('hidden', 'true');dashboardChanged('{|ID|}');">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body" id="pjNewsList">
+        <ul class="list-group">
+            <li class="list-item" v-for="item in list">
+                <div style="cursor: pointer;" v-on:click="openWindow(item);">
+                    <div class="item-head">
+                        <div class="title nowrap  item-mark">
+                            {{item.Title}}
+                        </div>
+                    
+                    <div class="item-padding">
+                        <div class="item-content">
+                            {{item.ContentText}}
+                        </div>
+                    </div>
+                    <div class="date">
+                        {{item.CreateUserName}} {{item.CreateTime | filterDate }}
+                    </div>
+		</div>
+                </div>
+            </li>
+            <li class="list-item" v-for="item in list1">
+                <div style="cursor: pointer;" v-on:click="openWindow(item);">
+                    <div class="item-head">
+                        <div class="title nowrap  item-mark">
+                            {{item.Title}}
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+    function morePJNews() {
+        var url = "/Base/PortalBlock/PublicInformation/ListView?CatalogKey=PJNews";
+        var opts = {
+            url: url,
+            title: "项目公告",
+            width: "80%",
+            height: "80%",
+            showMaxButton: true,
+            ondestroy: function (action) {
+
+            }
+        };
+        if (NoPopupLayer && NoPopupLayer != "true")
+            mini.open(opts);
+        else
+            window.open(url);
+    }
+</script>
+<script>
+    var pjrNews = new Vue({
+        el: '#{|ID|}',
+        data: {
+            list: [],
+            list1: []
+        },
+        methods: {
+            openWindow: function (item) {
+                var url = "/Base/PortalBlock/PublicInformation/Views?ID=" + item.ID;
+                var opts = {
+                    url: url,
+                    title: item.Title,
+                    width: 800,
+                    height: 650,
+                    showMaxButton: true,
+                    ondestroy: function (action) {
+
+                    }
+                };
+                if (NoPopupLayer && NoPopupLayer != "true")
+                    mini.open(opts);
+                else
+                    window.open(url);
+            },
+            isLock: function (item) {
+                return getCache('isLockPortal') == 'false' || window.location.href.indexOf('/Base/UI/Portal/Portal') > 0;
+            }
+        },
+        filters: {
+            filterDate: function (input) {
+                var date = new Date(input);
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+                month = month < 10 ? "0" + month : month;
+                day = day < 10 ? "0" + day : day;
+                return year.toString().substr(2, 2) + "-" + month + "-" + day;
+            }
+        }
+    });
+    function GetPJNews() {
+        $.ajax({
+            url: "/PortalLTE/Main/GetPJNews",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var data = $.parseJSON(data);
+                if (data.length > 0) {
+                    pjrNews._data.list = [data[0]];
+                    data.shift();
+                    pjrNews._data.list1 = data;
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    GetPJNews();
+
+</script>

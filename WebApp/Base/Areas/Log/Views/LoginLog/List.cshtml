@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "登录日志";
+}
+<div class="mini-toolbar">
+    <table>
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input name='TimeFilter' class='mini-radiobuttonlist' style="display: inline-block; vertical-align: middle;"
+                    data='timeFilter' value="today" onvaluechanged="onFilterChange" />
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入账号或姓名" onenter="quickSearch('UserName,UserAccount');"
+                    onbuttonclick="quickSearch('UserName,UserAccount');" />
+                <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="UserAccount" width="120" align="center">
+                账号
+            </div>
+            <div field="UserName" width="100" align="center">
+                姓名
+            </div>
+            <div field="LoginDate" dateformat='yyyy-MM-dd' width="80" align="center">
+                日期
+            </div>
+            <div field="LoginTime" dateformat='HH:mm:ss' width="80" align="center">
+                时间
+            </div>
+            <div field="IPAddress" width="120" align="left">
+                IP地址
+            </div>
+            <div field="ComeForm" width="50" align="center">
+                来源
+            </div>
+        </div>
+    </div>
+</div>
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 690px; height: 165px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+            <table>
+                <tr>
+                    <td width="15%">账号</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$UserAccount" class="mini-textbox" style='width: 100%' /></td>
+                    <td width="15%">姓名</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$UserName" class="mini-textbox" style='width: 100%' /></td>
+                </tr>
+                <tr>
+                    <td width="15%">登录日期</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$FR$LoginDate" class="mini-datepicker" style='width: 45%' onvaluechanged='onDateChange' ondrawdate="onDrawDate"/>&nbsp;-&nbsp;
+                        <input name="$TO$LoginDate" class="mini-datepicker" style='width: 45%' onvaluechanged='onDateChange' ondrawdate="onDrawDate"/></td>
+                    <td width="15%">来源</td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$EQ$ComeForm" class="mini-combobox" data='from' style='width: 100%' /></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick='search()' iconcls='icon-find' style='margin-right: 20px;'>查询</a>
+            <a class='mini-button' onclick='clearQueryForm()' iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var from = [{ "value": "APP", "text": "APP" }, { "value": "MIS", "text": "MIS" }];
+    var timeFilter = [{ "value": "today", "text": "今天" }, { "value": "oneWeek", "text": "一周内" }];
+</script>
+<script type="text/javascript">
+    function onFilterChange() {
+        var TimeFilter = mini.getbyName("TimeFilter").getValue();
+        var dataGrid = mini.get("dataGrid");
+        if (TimeFilter == "today")
+            dataGrid.setUrl("GetList?TimeFilter=0&IsFilter=1");
+        else
+            dataGrid.setUrl("GetList?TimeFilter=7&IsFilter=1");
+        dataGrid.reload();
+    }
+
+    function onDateChange(e) {
+        var StartDate = mini.getbyName("$FR$LoginDate");
+        var EndDate = mini.getbyName("$TO$LoginDate");
+        if (e.sender.name == "$FR$LoginDate")
+            EndDate.minDate = e.value;
+        else {
+            StartDate.minDate = new Date(e.value - 30 * 24 * 60 * 60 * 1000);
+            StartDate.maxDate = e.value;
+        }
+    }
+
+    function onDrawDate(e) {
+        var date = e.date;
+        var d = new Date();
+
+        if (date.getTime() > d.getTime()) {
+            e.allowSelect = false;
+        }
+    }
+</script>

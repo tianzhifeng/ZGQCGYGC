@@ -1,0 +1,216 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+    <div size="150" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="/Base/Meta/Category/GetTree?RootFullID=0" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+                onnodeselect="onNodeSelect" expandonload="1" contextmenu="#treeMenu" iconfield="IconClass"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="FlowAdd();">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                        <a class="mini-button" iconcls="icon-copy" onclick="FlowCopy();">克隆</a>
+                        <a class="mini-button" iconcls="icon-clear" onclick="execute('SyncDefToInsDef?DefID={ID}',{actionTitle:'同步',refresh:false,mustSelectOneRow:true});" tooltip="将流程定义各个属性同步到流程定义实例">高级同步</a>
+                        <a id="btnExport" class="mini-button" iconcls="icon-download" onclick="exportSQL();">导出SQL</a>
+                        <a id="btnUpgradeFlow" class="mini-button" iconcls="icon-copy" onclick="upgradeFlow();">升级流程版本</a>
+                        @if (System.Configuration.ConfigurationManager.AppSettings["CorpAuthEnabled"].ToLower() == "true" && Request["listType"] != "subCompany")
+                        {
+                            <a class="mini-button" iconcls="icon-ok" onclick="SetCompanyAuth">授权到子公司</a>
+                        }
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入流程编号或流程名称" onenter="quickSearch('Code,Name');" onbuttonclick="quickSearch('Code,Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" url="GetRelationList" style="width: 100%; height: 100%;" multiselect="true" borderstyle="border-left:0px;border-right:0px">
+                <div property="columns">
+                    <div type="checkcolumn"></div>
+                    <div field="Code" width="120" allowsort="true">流程编号</div>
+                    <div field="Name" width="150" allowsort="true">流程名称</div>
+                    <div headeralign="center" header="相关业务数据">
+                        <div property="columns">
+                            <div field="ConnName" width="60" allowsort="true" align="center">库名</div>
+                            <div field="TableName" width="130" allowsort="true">表名</div>
+                        </div>
+                    </div>
+                    <div field="ModifyTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm:ss" width="120" allowsort="true">最后发布时间</div>
+                    <div field="SubForms" width="80" align="center">子表单集</div>
+                    <div field="ExportSql" width="60" align="center">导出SQL</div>
+                    <div field="AlreadyReleased" width="60" align="center">发布状态</div>
+                    @if (System.Configuration.ConfigurationManager.AppSettings["CorpAuthEnabled"].ToLower() == "true")
+                    {
+                        <div field="CompanyName" width="200">
+                            子公司权限
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="menuAddModule" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/ModuleEdit'});">增加模块</li>
+    <li name="menuEditModule" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/ModuleEdit'});">编辑模块</li>
+    <li name="menuDelModule" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除模块</li>
+    <li name="menuAddCategory" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/CategoryEdit?Code={Code}'});">增加分类</li>
+    <li name="menuEditCategory" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/CategoryEdit'});">编辑分类</li>
+    <li name="menuDelCategory" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除分类</li>
+</ul>
+<script type="text/javascript">
+    //树节点点击事件
+    var url = "GetRelationList";
+    //jQuery(".gw-grid-toolbar .mini-button").hide();
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            //jQuery(".gw-grid-toolbar .mini-button").show();
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID + "&NodeFullID=" + e.node.FullID + "&listType=" + getQueryString("listType"));
+            dataGrid.load();
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url + "?listType=" + getQueryString("listType"));
+            dataGrid.load();
+            //jQuery(".gw-grid-toolbar .mini-button").hide();
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var menuAddModule = mini.getbyName("menuAddModule", menu);
+        var menuEditModule = mini.getbyName("menuEditModule", menu);
+        var menuDelModule = mini.getbyName("menuDelModule", menu);
+        var menuAddCategory = mini.getbyName("menuAddCategory", menu);
+        var menuEditCategory = mini.getbyName("menuEditCategory", menu);
+        var menuDelCategory = mini.getbyName("menuDelCategory", menu);
+
+        if (node.ParentID == null || node.ParentID == "") {
+            menuAddModule.show();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else if (node.ParentID == "0") {
+            menuAddModule.hide();
+            menuEditModule.show();
+            menuDelModule.show();
+            menuAddCategory.show();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else {
+            menuAddModule.hide();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.show();
+            menuDelCategory.show();
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    var releaseStatus = [{ "value": "1", "text": "已发布" }, { "value": "0", "text": "修订中" }];
+</script>
+<script type="text/javascript">
+
+    function FlowAdd() {
+        openWindow("FlowAdd?CategoryID={ID}&ConnName={Code}&CategoryCode={CategoryCode}", {
+            paramFrom: "dataTree", title: "增加", width: 700, height: 300, onDestroy: function (obj) {
+                if (obj && obj.ID) {
+                    mini.get("dataGrid").reload();
+                    openWindow("Edit?editable=1&ID=" + obj.ID, { title: obj.Name, width: '1000', height: '600' });
+                }
+            }
+        });
+    }
+
+    function FlowCopy() {
+        execute("Clone?ID={ID}", {
+            actionTitle: "克隆", mustSelectOneRow: true, mustSelectOneRowMsg: "请选择一条现有的流程定义！", mustConfirm: true, onComplete: function (data) {
+                mini.get("dataGrid").reload();
+                openWindow("Edit?ID=" + data.ID + "&editable=1", { title: '克隆创建', width: '1000', height: '600' });
+            }
+        });
+    }
+
+    addGridEnum("dataGrid", "AlreadyReleased", "releaseStatus");
+    addGridButton("dataGrid", "AlreadyReleased", {
+        onButtonClick: function (row, settings, sender) {
+            if (row["AlreadyReleased"] == true)
+                execute("UnReleaseFlow?ID=" + row["ID"], {
+                    actionTitle: "撤销发布流程 [" + row["Name"] + "] ", mustConfirm: true, onComplete: function (data) {
+                        openWindow("Edit?ID=" + row["ID"] + "&editable=1", { title: '编辑流程', width: '90%', height: '85%', onDestroy: function () { mini.get("dataGrid").reload(); } });
+                    }
+                });
+            else
+                openWindow("Edit?ID=" + row["ID"] + "&editable=1", { title: '编辑流程', width: '90%', height: '85%', onDestroy: function () { mini.get("dataGrid").reload(); } });
+        }
+    });
+    addGridLink("dataGrid", "Name", "Edit?ID={ID}&FuncType=View&editable=0", { title: '查看流程', width: '90%', height: '85%' });
+    addGridLink("dataGrid", "SubForms", "SubFormList?DefFlowID={ID}", { linkText: '子表单列表', title: '子表单列表', width: '1000', height: '600' });
+
+    addGridButton("dataGrid", "ExportSql", {
+        linkText: '导出Sql', onButtonClick: function (row) {
+            var url = "/Workflow/DefFlow/ExportSql?DefID=" + row["ID"] + "&FileCode=Workflow_" + row["Code"];
+            window.location = url;
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    function exportSQL() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length > 0) {
+            var ids = getValues(rows, "ID");
+            var url = "/Workflow/DefFlow/ExportSqls?DefIDs=" + ids;
+            window.location = url;
+        }
+        else {
+            msgUI("请选择记录");
+        }
+    }
+
+    function upgradeFlow() {
+        execute("/Workflow/DefFlow/UpgradeFlow", {
+            onComplete: function (data) {
+                if (data) {
+                    msgUI("更新了" + data.Success + "条数据! 失败" + data.Failed + "条数据!失败错误请查看日志");
+                }
+            }
+        });
+    }
+
+    function SetCompanyAuth() {
+        openWindow("/MvcConfig/Auth/Org/Selector?SelectMode=Multi", {
+            mustSelectRow: true,
+            onDestroy: function (data) {
+                var selectRowIds = getValues(mini.get("dataGrid").getSelecteds(), "ID");
+                var orgIds = getValues(data, "ID");
+                var orgNams = getValues(data, "Name");
+
+                addExecuteParam("objIds", selectRowIds);
+                addExecuteParam("orgIds", orgIds);
+                addExecuteParam("orgNames", orgNams);
+                execute("SetCompanyAuth", { actionTitle: "授权" })
+            }
+        })
+    }
+</script>

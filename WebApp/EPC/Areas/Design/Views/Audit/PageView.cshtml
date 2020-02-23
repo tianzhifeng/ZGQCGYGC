@@ -1,0 +1,476 @@
+﻿@{
+    ViewBag.Title = "PageView";
+}
+@if (string.IsNullOrEmpty(Request["IsPreView"]) &&
+    string.IsNullOrEmpty(Request["FlowCode"]) &&
+    string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+else if ((!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"])) && System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"].ToLower() == "true")
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if ((!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) ||
+    (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view")))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">
+                        保存
+                    </a><a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                        取消
+                    </a>
+                </td>
+                <td id="btnRight"></td>
+            </tr>
+        </table>
+    </div>
+}
+<div class="mini-fit" id="Area" style="padding-top: 5px;">
+    <div id="Name" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="校审单">
+            <form id="dataForm" method="post" align="center" autogetdata="false">
+                <input name="ID" class="mini-hidden" />
+                @Html.Raw(ViewBag.HiddenHtml)
+                <div class="formDiv">
+                    @Html.Raw(ViewBag.FormHtml)
+                </div>
+                @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+                {
+                    <div style="margin-left: 35px; margin-right: 35px; margin-bottom: 85px;">
+                        <fieldset>
+                            <legend style="font-weight: bold; margin-left: 35px;">操作信息</legend>
+                            <div id="comment">
+                            </div>
+                        </fieldset>
+                    </div>
+                    <br />
+                    <br />
+                    <script type="text/javascript">
+                        function onCommentLoad(e) {
+                            if (e.data.length == 0)
+                                $("#commentGrid").hide();
+                        }
+                    </script>
+                }
+            </form>
+        </div>
+        <div title="成果列表">
+            <div id="toolbarProducts" class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="addProduct();">增加</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="selectProducts();">选择</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delProduct();" plain="true">删除</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="Products" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+                     idfield="ID" multiselect="true" showpager="false">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Edit" width="60" headeralign="center" align="center">
+                            编辑
+                        </div>
+                        <div field="Name" width="*" headeralign="center" allowsort="true">
+                            成果名称
+                        </div>
+                        <div field="Code" width="120" headeralign="center" allowsort="true" align="center">
+                            成果编号
+                        </div>
+                        <div field="CreateUser" width="120" headeralign="center" allowsort="true" align="center">
+                            提交人
+                        </div>
+                        <div field="MainFile" headeralign="center" width="120" allowsort="true" align="left">
+                            附件
+                        </div>
+                        <div field="SubmitDate" width="150" headeralign="center" dateformat="yyyy-MM-dd"
+                             allowsort="true" align="center">
+                            提交日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @{
+                if (System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"].ToLower() == "false")
+                {
+                    <div style='width: 100%; height: 80px;'>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+
+    var isNew = "@Html.Raw(ViewBag.IsNew)";
+    var productsUrl="GetProducts?AuditID=@ViewBag.AuditID";
+    if(isNew=="True"){
+        productsUrl="GetBatchProducts?BatchID=@ViewBag.BatchID";
+    }
+
+    $("#Products").attr("url",productsUrl);
+
+    ////意见列表绑定按钮
+    $("#toolbarAdviceDetail").find("td").first().prepend("<a class='mini-button' id='btnDelete' iconcls='icon-remove' onclick='removeMistakeRow();' visible='true'>移除</a>");
+    $("#toolbarAdviceDetail").find("td").first().prepend("<a class='mini-button' id='btnAdd' iconcls='icon-add' onclick='addMistake();' visible='true'>添加</a>");
+    //全局变量
+
+    var wbsID = getQueryString("WBSID");
+    var phaseValue = getQueryString("PhaseValue");
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear();
+    var currentMonth = currentDate.getMonth() + 1;
+    var currentQuarter = currentDate.getQuarter() + 1;
+
+
+
+    //成果列表注册drawcell事件
+    $(window).load(function () {
+        var productGrid = mini.get("Products");
+        productGrid.on("drawcell", function (e) {
+            onDrawProductGridCell(e);
+        });
+        var adviceGrid = mini.get("AdviceDetail");
+        adviceGrid.on("cellbeginedit", function (e) {
+            onAdviceDetailCellBeginEdit(e)
+        });
+        if (isNew == "True") {
+            $("#toolbarProducts").hide();
+        }
+        if(getQueryString("Trace")){
+            mini.get("toolbarProducts").hide();
+        }
+    });
+
+    function delProduct() {
+        var dataGrid = mini.get("Products");
+        var rows = dataGrid.getSelecteds();
+        msgUI("您确定要删除选中的成果吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("Products", mini.encode(rows));
+            execute("DeleteProducts", { showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+            });
+        });
+    }
+
+    //当前环节的
+    function IsCurrentStepExistedMistake() {
+        var mistakeGrid = mini.get("AdviceDetail");
+        var data = mistakeGrid.getData();
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Step && data[i].Step == FlowCurrentStepCode)
+                return true;
+        }
+        return false;
+    }
+
+    function setRequiredField() {
+        var column = getColumn("AdviceDetail", "ResponseContent")
+        //当前环节
+        if (column && FlowCurrentStepCode == "Design") {
+            column.vtype = "required";
+        }
+    }
+
+    //根据girdID和field获取指定列
+    function getColumn(gridID, field) {
+        var columns = getColumns(gridID);
+        if (columns) {
+            for (var i = 0; i < columns.length; i++) {
+                if (columns[i].field && columns[i].field == field)
+                    return columns[i];
+            }
+        }
+    }
+
+    //根据gridID获取dataGrid所有列
+    function getColumns(gridID) {
+        var dataGrid = mini.get(gridID);
+        if (dataGrid) {
+            var columns = dataGrid.columns;
+            return columns;
+        }
+    }
+
+    function onProductGridCellBeginEdit(e) {
+        var field = e.field;
+        if (FlowCurrentStepCode != "Design") {
+            e.cancel = true;
+        }
+    }
+
+    function onAdviceDetailCellBeginEdit(e) {
+        var field = e.field;
+        if (FlowCurrentStepCode == "Design" && field == "ResponseContent") {
+        }
+        else if (e.record.Step != FlowCurrentStepCode) {
+            e.cancel = true;
+        }
+    }
+
+    function onDrawProductGridCell(e) {
+        if (e.field == "MainFile" && e.value != "" && e.value != null) {
+            e.cellHtml = '<a href="#" onclick="DownloadFile(\'' + e.value + '\');">' + getMiniFileNames(e.value) + '<a>';
+        }
+        //附件
+        if (FlowCurrentStepCode == "Design") {
+            if (e.field == "Edit") {
+                e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/edit.gif' onclick='editProduct(\"" + e.record.ID + "\")'  />";
+            }
+        }
+    }
+
+    function getMiniFileNames(fileIds) {
+        var fileArray = fileIds.split(",");
+        var fileNames = "";
+        for (var i = 0; i < fileArray.length; i++) {
+            var start = fileArray[i].indexOf('_');
+            var end = fileArray[i].lastIndexOf('_');
+            if (end == start)
+                end = fileArray[i].length;
+            fileNames += fileArray[i].substr(start + 1, end - start - 1) + ",";
+        }
+        if (fileNames.length > 0)
+            fileNames = fileNames.substr(fileNames, fileNames.length - 1);
+        return fileNames;
+    }
+
+    function downLoad() {
+        var grid = mini.get("Products");
+        var rows = grid.getSelecteds();
+        if (rows == undefined || rows.length == 0)
+            return msgUI("请选择需要下载的附件！", 1);
+        var filedIds = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].MainFile != undefined && rows[i].MainFile != null && rows[i].MainFile != "") {
+                var fileId = "";
+                var Attachments = rows[i].MainFile.split('_');
+                if (Attachments.length > 0)
+                    fileId = Attachments[0];
+                filedIds += fileId + ",";
+            }
+        }
+        if (filedIds.length > 0)
+            filedIds = filedIds.substr(0, filedIds.length - 1);
+        else
+            return msgUI("无附件可下载！", 1);
+        DownloadFile(escape(filedIds));
+    }
+
+    function editProduct(id) {
+        var grid = mini.get("Products");
+        var row = grid.findRow(function (row) {
+            if (row.ID == id) return true;
+        });
+        if (row.AuditState != "Create" && row.AuditState != "Design") {
+            msgUI("已经发起校审的成果不能编辑。"); return;
+        }
+        openWindow("/EPC/Design/WorkSpace/DesignWorkSpaceEdit?ID=" + row.ID, { refresh: false, title: "成果编辑", width: 600, height: 400, addQueryString: false,
+            onDestroy: function () {
+                var ID = mini.getbyName("ID").getValue();
+                grid.setUrl(productsUrl);
+                grid.reload();
+            }
+        });
+    }
+
+    function addProduct() {
+        var grid = mini.get("Products");
+        var wbsNodeID = mini.getbyName("WBSID").getValue();
+        var auditID = mini.getbyName("ID").getValue();
+        var url = "/EPC/Design/WorkSpace/DesignWorkSpaceEdit?WBSID=" + wbsNodeID + "&AuditID=" + auditID;
+        openWindow(url, { refresh: false, title: "增加成果", width: 600, height: 400, addQueryString: false,
+            onDestroy: function (data) {
+                grid.reload();
+            }
+        });
+    }
+
+    function selectProducts() {
+        if (!wbsID)
+            wbsID = mini.getbyName("WBSID").getValue();
+        phaseValue = mini.getbyName("PhaseCode").getValue();
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectExecutive_ProductSelector&WBSID=" + wbsID + "&PhaseValue=" + phaseValue;
+        var auditID = mini.getbyName("ID").getValue();
+        openWindow(url, { refresh: false, title: "成果选择", width: 700, height: 600,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                addExecuteParam("Products", mini.encode(data));
+                addExecuteParam("ID", auditID);
+                execute("AddProducts", { showLoading: true, refresh: false, onComplete: function (data) {
+                    var grid = mini.get("Products");
+                    grid.reload();
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function onFormSaving() {
+        var products = mini.get("Products").getData();
+        addExecuteParam("Products", mini.encode(products));
+        return true;
+    }
+
+    //新增意见
+    function addMistake(mistaskContent) {
+        var mistakeGrid = mini.get("AdviceDetail");
+        var row = { Step: FlowCurrentStepCode, SubmitUser: user.UserID, SubmitUserName: user.UserName, SubmitDept: user.UserOrgID,
+            SubmitDeptName: user.UserOrgName,
+            MistakeYear: currentYear, MistakeMonth: currentMonth, MistakeSeason: currentQuarter,
+            CreateUser: user.UserID, CreateUserName: user.UserName, CreateDate: currentDate, MsitakeContent: mistaskContent
+        };
+        mistakeGrid.addRow(row, 0);
+    }
+
+    //删除意见
+    function removeMistakeRow() {
+        var dataGrid = mini.get("AdviceDetail");
+        if (dataGrid) {
+            var rows = dataGrid.getSelecteds();
+            if (rows.length > 0) {
+                var result = ValidateMistakeRowBeforeDelete();
+                if (result == true) {
+                    msgUI("确定要删除选中的意见吗?", 2, function (action) {
+                        if (action == "ok") {
+                            dataGrid.removeRows(rows);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    //删除意见之前的验证逻辑
+    function ValidateMistakeRowBeforeDelete() {
+        var dataGrid = mini.get("AdviceDetail");
+        var rows = dataGrid.getSelecteds();
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].SubmitUser != user.UserID) {
+                msgUI("问题内容【" + rows[i].MsitakeContent + "】记录不是您添加的记录，不能删除。");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //流程提交前执行的逻辑
+    function onFormSubmitting(foute) {
+        var products = mini.get("Products").getData();
+        addExecuteParam("Products", mini.encode(products));
+        return ValidateMistakeBeforeFormSubmit();
+    }
+
+    function ValidateMistakeBeforeFormSubmit() {
+        var dataGrid = mini.get("AdviceDetail");
+        var rows = dataGrid.getData();
+        if (rows != null && rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                var item = rows[i];
+                if(FlowCurrentStepCode == "Design")
+                {
+                    if((item.MsitakeContent && item.MsitakeContent != '')
+                    ||(item.MistakeType && item.MistakeType != ''))
+                    {
+                        if(!item.ResponseContent || item.ResponseContent == '')
+                        {
+                            msgUI('图号【'+item.ProductCode+'】的修改情况不能为空');
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+</script>

@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" onclick="Finish();" plain="true">完工</a>
+                <a class="mini-button" iconcls="icon-pause" onclick="Pause();" plain="true">暂停</a>
+                <a class="mini-button" iconcls="icon-stop" onclick="Terminate();" plain="true">终止</a>
+                <a class="mini-button" iconcls="icon-undo" onclick="Restart();" plain="true">恢复</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号" style="width: 200px;"
+                       onenter="quickSearch('Name,Code,ChargeUserName');" onbuttonclick="quickSearch('Name,Code,ChargeUserName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="GridArea">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+         idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="State" width="70" headeralign="center" allowsort="true" align="center">
+                项目状态
+            </div>
+            <div field="FactFinishDate" width="120" headeralign="center" dateformat='yyyy-MM-dd' allowsort="true" align="center">
+                完工日期
+            </div>
+            <div field="Code" width="120" headeralign="center" allowsort="true">
+                项目编号
+            </div>
+            <div field="Name" width="*" headeralign="center" allowsort="true">
+                项目名称
+            </div>
+            <div field="ProjectClass" width="80" headeralign="center" align="center" allowsort="true">
+                业务类型
+            </div>
+            <div field="PhaseName" width="150" headeralign="center" align="center" allowsort="true">
+                设计阶段
+            </div>
+            <div field="ChargeUserName" headeralign="center" width="100" allowsort="true" align="center">
+                项目负责人
+            </div>
+            <div field="ChargeDeptName" headeralign="center" width="120" allowsort="true" align="center">
+                项目责任部门
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "State", "ProjectCommoneState");
+
+    function Finish() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择要完工的项目！"); return; }
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i]["State"] == "Finish") { msgUI("已完工的项目不能设置！"); return; }
+        }
+
+        openWindow("Edit", {
+            width: 400, height: 400, title: "设置完工日期", onDestroy: function (data) {
+                if (data == "close") return;
+                addExecuteParam("ListData", mini.encode(rows));
+                addExecuteParam("factFinishDate", mini.formatDate(data.FactFinishDate, "yyyy-MM-dd"));
+                execute("Finish", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataGrid.reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function Pause() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择要暂停的项目"); return; }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("Pause", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function Terminate() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择要终止的项目"); return; }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("Terminate", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function Restart() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择要恢复的项目"); return; }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("Restart", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+</script>

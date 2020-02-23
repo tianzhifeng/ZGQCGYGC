@@ -1,0 +1,38 @@
+﻿<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>miniListbar</Title>
+    <Author>dingx_new</Author>
+    <Shortcut>miniListbar</Shortcut>
+    <Description>miniUI的Listbar</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>Name</ID>
+        <Default>Name</Default>
+      </Literal>
+    </Declarations>
+    <Code Language="HTML">
+      <![CDATA[
+<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="add();">增加</a>
+                <a class="mini-button" id="btnModify" iconcls="icon-edit" onclick="edit();">编辑</a>
+                <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="del();">删除</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');" onbuttonclick="quickSearch('Code,Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+]]>
+    </Code>
+  </Snippet>
+</CodeSnippet>

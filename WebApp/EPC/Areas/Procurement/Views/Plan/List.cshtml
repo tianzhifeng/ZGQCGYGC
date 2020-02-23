@@ -1,0 +1,687 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="关联设备材料明细" region="south" showsplit="true" showheader="true" height="200" showspliticon="false" showcollapsebutton="true"
+         headerstyle="font-size:12px;">
+        <div class="mini-fit">
+            <div id="detailGrid" url="" borderstyle="border:0px;" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 ondrawcell="onDrawingCell" showpager="false"
+                 allowcellwrap="true">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    @{
+                        if (!ViewBag.IsFlowEnd)
+                        {
+                            <div field="action" width="60" headeralign="center" align="center" renderer="onItemActionRender" allowsort="false">
+                                操作
+                            </div>
+                        }
+                    }
+                    <div field="Name" width="250" headeralign="center" allowsort="false" align="left">
+                        设备材料名称
+                    </div>
+                    <div field="Model" width="250" headeralign="center" allowsort="false" align="left">
+                        规格型号
+                    </div>
+                    <div field="MajorName" headeralign="center" width="90" allowsort="false" align="center">
+                        专业
+                    </div>
+                    <div field="ItemQuantity" width="50" headeralign="center" allowsort="false" align="right"
+                         align="center">
+                        数量<input property="editor" class="mini-textbox" style="width: 100%;" name="quantity" onvaluechanged="CheckValue()" />
+                    </div>
+                    <div field="Unit" headeralign="center" width="50" allowsort="false" align="center">
+                        单位
+                    </div>
+                    <div field="Branding" headeralign="center" width="120" allowsort="false" align="center">
+                        品牌
+                    </div>
+                    <div field="Material" headeralign="center" width="120" allowsort="false" align="center">
+                        材质
+                    </div>
+                    <div field="KKSCode" headeralign="center" width="120" allowsort="false" align="center">
+                        KKS编码
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        @{
+                            if (ViewBag.IsFirstPlan)
+                            {
+                                <a class="mini-button" iconcls="icon-add" onclick="startPlan" plain="true">编制采购计划</a>
+                            }
+                            else if (ViewBag.IsFlowEnd)
+                            {
+                                <a class="mini-button" iconcls="icon-add" onclick="upgrade" plain="true">升版采购计划</a>
+                            }
+                            else
+                            {
+                                if (ViewBag.FlowPhase == "Start")
+                                {
+                                    <a class="mini-button" iconcls="icon-edit" onclick="startFlow" plain="true">提交审批</a>
+                                }
+                                <a class="mini-button" iconcls="icon-add" onclick="addPackage" plain="true">增加</a>
+                                <a class="mini-button" iconcls="icon-remove" onclick="removePackage" plain="true">删除</a>
+                                <a class="mini-button" iconcls="icon-save" onclick="savePackage();" plain="true">暂存</a>
+                                <a class="mini-menubutton" iconcls="icon-add" plain="true" menu="#popupMenu">导入</a>
+                                <a class="mini-button" iconcls="icon-cancel" onclick="revertPlan" plain="true">撤销</a>
+                                <a class="mini-button" name="add" iconcls="icon-add" onclick="addBom">关联设备材料</a>
+                                <a class="mini-button" name="add" iconcls="icon-add" onclick="combinPackage">合并采购包</a>
+                                <a class="mini-button" name="add" iconcls="icon-add" onclick="splitPackage">拆分采购包</a>
+                            }
+                        }
+                    </td>
+                    <td style="white-space: nowrap;">
+                        &nbsp;  &nbsp;  &nbsp;
+                        当前版本：<a href="javascript:void()" onclick="viewVersionList();">@ViewBag.VersionNo</a>
+                        &nbsp;  &nbsp;  &nbsp;
+                        显示：<input name="ShowType" class="mini-combobox" style="width: 110px;" textfield="text" valuefield="value" data="showType" allowinput="false"
+                                  onvaluechanged="onShowTypeChanged" value="New" /> &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="mini-fit">
+            @{
+                var url = "";
+                if (!String.IsNullOrEmpty(ViewBag.PlanID))
+                {
+                    url = "GetPackageList?PlanID=" + ViewBag.PlanID + "&ShowType=New";
+                }
+
+                var allowDrag = "false"; var allowdrop = "false";
+                if (!ViewBag.IsFlowEnd)
+                {
+                    allowDrag = "true";
+                    allowdrop = "true";
+                }
+
+                <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+                     url="@url" ondrawcell="onDrawingCell" multiselect="true" allowcellwrap="true" oncellbeginedit="OnCellBeginEdit" idfield="ID"
+                     showpager="false" allowdrag="@allowDrag" allowdrop="@allowdrop" onnodeselect="onNodeSelect" contextmenu="#gridMenu" borderstyle="border-bottom:0px;"
+                     onbeforedrop="onNodeDrop" ongivefeedback="onGiveFeedback">
+                    <div property="columns">
+                        <div type="indexcolumn"></div>
+                        @{
+                            if (!ViewBag.IsFlowEnd)
+                            {
+                                <div type="checkcolumn">
+                                </div>
+                            }
+                        }
+                        <div name="Name" field="Name" width="200" headeralign="center" allowsort="false">
+                            采购包名称
+                            <input property="editor" class="mini-textbox" style="width:100%;" />
+                        </div>
+                        <div field="Code" width="90" headeralign="center" allowsort="false" align="center">
+                            采购包编号
+                            <input property="editor" class="mini-textbox" style="width:100%;" />
+                        </div>
+                        <div type="comboboxcolumn" autoshowpopup="true" field="RelatePBSID" width="250" headeralign="center" allowsort="false"
+                             align="center">
+                            所属<input property="editor" class="mini-combobox" style="width:100%;" data="pbsEnum" />
+                        </div>
+                        <div name='ChargerUser' field="ChargerUser" displayfield='ChargerUserName' headeralign="center" width="90" allowsort="false" align="center">
+                            负责人
+                            <input name='MainGrid_ChargerUser' property='editor' class='mini-buttonedit' required='true' allowinput='true' style='width:100%;' />
+                        </div>
+                        <div field="ItemCount" headeralign="center" width="90" allowsort="false" align="right">
+                            设备材料条目数
+                        </div>
+                        <div field="PlanInvitationDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false"
+                             align="center" vtype="required">
+                            计划询价日期
+                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                        </div>
+                        <div field="PlanReturnDatDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false"
+                             align="center" vtype="required">
+                            计划返资日期
+                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                        </div>
+                        <div field="PlanContactDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false"
+                             align="center" vtype="required">
+                            计划签约日期
+                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                        </div>
+                        <div field="PlanArriveDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false"
+                             align="center" vtype="required">
+                            计划到货日期
+                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<ul id="gridMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="add" iconcls="icon-add" onclick="addBom">关联设备材料</li>
+    <li name="add" iconcls="icon-add" onclick="addPackage">插入采购包</li>
+    <li name="add" iconcls="icon-add" onclick="combinPackage">合并采购包</li>
+    <li name="add" iconcls="icon-add" onclick="splitPackage">拆分采购包</li>
+    <li name="revert" iconcls="icon-remove" onclick="revertPackage">撤销更改</li>
+</ul>
+<ul id="popupMenu" class="mini-contextmenu">
+    <li name="remove" iconcls="icon-add" onclick="bidImport">从投标设备导入</li>
+    <li name="remove" iconcls="icon-add" onclick="pbomImport">从设备清单导入</li>
+</ul>
+<script type="text/javascript">
+    var planID = "@Html.Raw(ViewBag.PlanID)";
+    var flowEnd = "@Html.Raw(ViewBag.IsFlowEnd)";
+    var pbsEnum =@Html.Raw(ViewBag.PBSRelation);
+</script>
+<style type="text/css">
+    .icon-clear {
+        background-image: none;
+    }
+</style>
+<script type="text/javascript">
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+
+    addSingleUserSelector('MainGrid_ChargerUser', { returnParams: 'value:ID,text:Name' });
+
+    function onBeforeOpen(e) {
+        var dataTree = mini.get("dataTree");
+        var menu = e.sender;
+        var node = dataTree.getSelectedNode();
+        if (flowEnd == "True") {
+            e.cancel = true;
+            //阻止浏览器默认右键菜单
+            e.htmlEvent.preventDefault();
+            return;
+        }
+        var addItem = mini.getbyName("add", menu);
+        //var removeItem = mini.getbyName("remove", menu);
+        var revertItem = mini.getbyName("revert", menu);
+
+        addItem.show();
+        //removeItem.show();
+        revertItem.hide();
+        if (node) {
+            if (node.ModifyState != "Normal" && node.ModifyState != "Add") {
+                revertItem.show();
+            }
+            if (node.ModifyState == "Remove") {
+                removeItem.hide();
+            }
+        }
+        else {
+            removeItem.hide();
+            revertItem.hide();
+        }
+    }
+
+    function addPackage() {
+        var dataTree = mini.get("dataTree");
+        addExecuteParam("PlanID", planID);
+        var node = dataTree.getSelectedNode();
+        if (node) {
+            addExecuteParam("PrePackageID", node.ID);
+        }
+        execute("AddPackage", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                if (data) {
+                    var dataTree = mini.get("dataTree");
+                    dataTree.addNode(data, "after", node);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function removePackage() {
+        var dataTree = mini.get("dataTree");
+        var rows = dataTree.getSelecteds();
+        if (rows.length == 0) { msgUI("请至少选择一条记录"); return; }
+        msgUI("您确定需要删除选中的采购包吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", rows);
+            execute("RemovePackage", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    for (var i = 0; i < rows.length; i++) {
+                        var row = rows[i];
+                        if (row.ModifyState == "Add") {
+                            dataTree.removeNode(row);
+                        }
+                        else {
+                            var showType = mini.getbyName("ShowType");
+                            if (showType && showType.getValue() == "New") {
+                                dataTree.removeNode(row);
+                            }
+                            else {
+                                dataTree.updateNode(nodes[i], { ModifyState: "Remove" });
+                            }
+                        }
+                    }
+                    mini.get("detailGrid").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function viewVersionList() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ProcurementPlan&EngineeringInfoID=" + engineeringInfoID + "&VersionID=" + planID;
+        openWindow(url, {
+            refresh: false, title: "采购计划历史版本", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+
+    function bidImport() {
+        var url="/MvcConfig/UI/List/PageView?TmplCode=MultiBidOfferBomSelector&EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "投标设备材料选择", width: "75%", height: "80%",
+            onDestroy: function (data) {
+                if(!data||data.length==0||data=="close"){
+                    return;
+                }
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                addExecuteParam("PlanID",planID );
+                execute("ImportBidBom", { showLoading: true, refresh: false, onComplete: function (resultData) {
+                    var dataTree = mini.get("dataTree");
+                    dataTree.addNodes(resultData);
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function pbomImport() {
+        var url="/MvcConfig/UI/List/PageView?TmplCode=MultiProcurementItemSelect&EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "施工图设备材料选择", width: "75%", height: "80%",
+            onDestroy: function (data) {
+                if(!data||data.length==0||data=="close"){
+                    return;
+                }
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                addExecuteParam("PlanID",planID );
+                execute("ImportPBom", { showLoading: true, refresh: false, onComplete: function (resultData) {
+                    var dataTree = mini.get("dataTree");
+                    dataTree.addNodes(resultData);
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function revertPackage() {
+        var dataTree = mini.get("dataTree");
+        var rows = dataTree.getSelecteds();
+        if (rows.length == 0) { msgUI("请至少选择一条记录"); return; }
+        msgUI("您确定要撤销选中的修改内容吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", rows);
+            execute("RevertPackage", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    for (var i = 0; i < rows.length; i++) {
+                        var node = rows[i];
+                        if (node.ModifyState == "Add") {
+                            dataTree.removeNode(node);
+                        }
+                        else {
+                            for (var m = 0; m < data.length; m++) {
+                                if (data[m].ID == node.ID) {
+                                    dataTree.updateNode(node, data[m]);
+                                    dataTree.commitEditRow(node);
+                                    dataTree.acceptRecord(node);
+                                }
+                            }
+                        }
+                    }
+                    mini.get("detailGrid").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function combinPackage() {
+        var dataTree = mini.get("dataTree");
+        var rows = dataTree.getSelecteds();
+        if (rows.length <= 1) { msgUI("合并采购包至少要选择2条记录"); return; }
+        var row = rows[0];
+        msgUI("您确定要将选中采购包合并至采购包【"+row.Name+"】吗？",2,function(result){
+            if(result!="ok")return;
+            addExecuteParam("ListData", mini.encode(rows));
+            addExecuteParam("CombineNodeID", row.ID);
+            execute("CombinePackage", { showLoading: true, refresh: false, onComplete: function (data) {
+                for (var i = 0; i < rows.length; i++) {
+                    var node = rows[i];
+                    if (node.ModifyState == "Add") {
+                        dataTree.removeNode(node);
+                    }
+                    else {
+                        for (var m = 0; m < data.length; m++) {
+                            if (data[m].ID == node.ID) {
+                                dataTree.updateNode(node, data[m]);
+                                dataTree.commitEditRow(node);
+                                dataTree.acceptRecord(node);
+                            }
+                        }
+                    }
+                }
+                dataTree.reload();
+            }, validateForm: false
+            });
+        });
+    }
+
+    function splitPackage() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if(!node){
+            msgUI("请选择一个节点");return;
+        }
+        var url="Split?SplitPackageID="+node.ID;
+        openWindow(url, { refresh: false, title: "拆分采购包", width: "80%", height: 600,
+            onDestroy: function (data) {
+                if(data=="close")return;
+                dataTree.reload();
+            }
+        });
+    }
+
+    function savePackage() {
+        var dataTree = mini.get("dataTree");
+        var data = dataTree.getChanges();
+        addExecuteParam("ListData", mini.encode(data));
+        execute("SavePackage", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.reload();
+            }, validateForm: false
+        });
+    }
+
+    function onNodeSelect(e) {
+        var showDiff = mini.getbyName("ShowType").getValue();
+        var url = "GetItemList?PackageID=" + e.node.ID+"&ShowType="+showDiff;
+        var detailGrid = mini.get("detailGrid");
+        detailGrid.setUrl(url);
+        detailGrid.reload();
+    }
+
+    function startFlow() {
+        if (!planID) {
+            msgUI("没有找到指定的版本，无法提交"); return;
+        }
+        var dataTree = mini.get("dataTree");
+        dataTree.validate();
+        if (dataTree.isValid() == false) {
+            msgUI("输入的单元格内容验证未通过");
+            var error = dataTree.getCellErrors()[0];
+            dataTree.beginEditCell(error.record, error.column);
+            return;
+        }
+        var data = dataTree.getChanges();
+        addExecuteParam("ListData", mini.encode(data));
+        execute("SavePackage", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "/EPC/Procurement/PlanSubmit/PageView?FlowCode=PlanSubmit&TmplCode=PlanSubmit&ID=" + planID;
+                openWindow(url, {
+                    refresh: false, title: "采购计划审批", width: "90%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") return;
+                        window.location.reload();
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function revertPlan() {
+        msgUI("您是否确定需要撤销当前计划版本？",2,function(result){
+            if(result!="ok")return;
+            addExecuteParam("PlanID", planID);
+            execute("RevertPlan", { showLoading: true, refresh: false, onComplete: function (data) {
+                window.location.reload();
+            }, validateForm: false
+            });
+        });
+    }
+
+    function startPlan() {
+        msgUI("您确定需要开始编制采购计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            execute("UpgradPlan", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function upgrade() {
+        msgUI("您确定需要变更升版采购计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            execute("UpgradPlan", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.ModifyState == "Add") {
+            if (field == "Name") {
+                e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";
+            }
+            e.cellStyle = "background:#BBFFFF";
+        }
+        else if (record.ModifyState == "Modify") {
+            e.cellStyle = " background: yellow;";
+        }
+        else if (record.ModifyState == "Remove") {
+            e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff";
+        }
+        else if (flowEnd == "True") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        if (field == "function" && flowEnd != "True") {
+            if (record.NodeType == "Package") {
+                e.cellHtml = '<a  href="javascript:addBom(\'' + record.ID + '\')">关联设备</a>';
+            }
+            else if (record.NodeType == "Detail") {
+                e.cellHtml = '<a  href="javascript:newRow()">移除设备</a>';
+            }
+        }
+    }
+
+    function addBom() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=MultiProcurementItemSelect&EngineeringInfoID=" + engineeringInfoID;
+        var dataTree = mini.get("dataTree");
+        var row = dataTree.getSelectedNode();
+        if (!row) {  msgUI("请选择一个节点"); return; }
+        openWindow(url, {
+            refresh: false, title: "设备材料选择", width: "85%", height: "90%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("PackageID", row.ID);
+                execute("AddPackageItem", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        var detailGrid = mini.get("detailGrid");
+                        var showType =mini.get("ShowType");
+                        var url = "GetItemList?PackageID=" + row.ID+"&ShowType="+showType;
+                        detailGrid.setUrl(url);
+                        detailGrid.load();
+                        mini.get("dataTree").reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    //重绘计划收款的操作按钮
+    function onItemActionRender(e) {
+        var dataGrid = e.sender;
+        var row = e.row; var rowIndex = e.rowIndex; var record = e.record;
+        var uid = record._uid;
+        var result = "";
+        if (dataGrid.isEditingRow(row)) {
+            result = '<div style="margin:0px; auto"><span class="icon-save" onclick="javascript:saveItemRow(\'' + uid + '\',\'' + rowIndex + '\')" title="保存" style="cursor:pointer;margin-right:0px;float:center;"></span>';
+            result += '<span class="icon-cancel" onclick="javascript:cancelItemRow(\'' + uid + '\')" title="取消" style="cursor:pointer;float:center"></span></div>'
+        }
+        else {
+            if(row.ModifyState!="Remove")
+            {
+                result = '<div style="margin:0px; padding:0px; auto">'
+                + '<span class="icon-edit" onclick="javascript:editItemRow(\'' + uid + '\')" title="编辑" style="cursor:pointer;margin-right:0px;float:center;"></span>'
+                + '<span class="icon-remove" onclick="javascript:removeItemRow(\'' + uid + '\')" title="移除" style="cursor:pointer;margin-right:0px;float:center;"></span>' ;
+                if(row.ModifyState=="Modify"){
+                    result+='<span class="icon-clear" onclick="javascript:revertItemRow(\'' + uid + '\')" title="撤销" style="cursor:pointer;margin-right:0px;float:center;"></span>';
+                }
+                result+='</div>';
+            }
+            else
+            {
+                result = '<div style="margin:0px; padding:0px; auto">'
+                result+='<span class="icon-clear" onclick="javascript:revertItemRow(\'' + uid + '\')" title="撤销" style="cursor:pointer;margin-right:0px;float:center;"></span>';
+                result+='</div>';
+            }
+        }
+        return result;
+    }
+
+    function saveItemRow(row_uid, rowIndex) {
+        var grid = mini.get("detailGrid");
+        grid.commitEdit();
+        var row = grid.getRowByUID(row_uid);
+        if(row.Quantity<0){
+            msgUI("数量请输入正整数");return;
+        }
+        addExecuteParam("ItemData", mini.encode(row));
+        execute("SaveItemData", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var dataTree = mini.get("dataTree");
+                var node = dataTree.getSelectedNode();
+                if(node){
+                    if(data.Package){
+                        dataTree.updateNode(node,data.Package);
+                        dataTree.commitEditRow(node);
+                        dataTree.acceptRecord(node);
+                    }
+                }
+                grid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function editItemRow(row_uid) {
+        var grid = mini.get("detailGrid");
+        if (grid.isEditing()) {
+            msgUI("请先【保存】或者【取消】正在编辑设备明细");
+            return;
+        }
+        //验证计划收款是否已经开票或者申请开票
+        var row = grid.getRowByUID(row_uid);
+        grid.beginEditRow(row);
+    }
+
+    function cancelItemRow(row_uid) {
+        var grid = mini.get("detailGrid");
+        var row = grid.getRowByUID(row_uid);
+        if (row._state == "added") {
+            grid.reload();
+        }
+        else {
+            grid.cancelEditRow(row);
+        }
+    }
+
+    function removeItemRow(row_uid) {
+        var grid = mini.get("detailGrid");
+        grid.commitEdit();
+        var row = grid.getRowByUID(row_uid);
+        addExecuteParam("ItemData", mini.encode(row));
+        execute("RemoveItemData", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                grid.removeRow(row);
+                mini.get("dataTree").reload();
+            }, validateForm: false
+        });
+    }
+
+    function revertItemRow(row_uid) {
+        var grid = mini.get("detailGrid");
+        var row = grid.getRowByUID(row_uid);
+        addExecuteParam("ItemID", row.RelationID);
+        execute("RevertItem", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var dataTree = mini.get("dataTree");
+                var node = dataTree.getSelectedNode();
+                if(node){
+                    if(data.Package){
+                        dataTree.updateNode(node,data.Package);
+                        dataTree.commitEditRow(node);
+                        dataTree.acceptRecord(node);
+                    }
+                }
+                grid.reload();
+            }, validateForm: false
+        });
+    }
+    function onGiveFeedback(e) {
+
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, { SortIndex: data.SortIndex });
+                tree.acceptRecord(e.dragNode )
+            }, validateForm: false
+        });
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (flowEnd == "True") {
+            e.cancel = true;
+        }
+        else if (record.ModifyState == "Remove") {
+            e.cancel = true;
+        }
+    }
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        var showDiff = mini.getbyName("ShowType").getValue();
+        tree.load({ ShowType: showDiff });
+    }
+
+    function CheckValue()
+    {
+        var quantity = mini.getbyName("quantity").getValue();
+        if(isNaN(quantity))
+        {
+            msgUI("请输入正整数！");
+        }
+        quantity = parseFloat(quantity);
+        if(quantity<0)
+        {
+            msgUI("请输入正整数！");
+        }
+    }
+
+</script>

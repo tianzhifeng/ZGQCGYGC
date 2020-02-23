@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "WBS操作日志列表";
+}
+<div class="mini-toolbar" style="padding: 0px; border: 0">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-remove" onclick="delOption()">
+                            删除</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入操作内容" onenter="quickSearch('OptionContent');"
+                    onbuttonclick="quickSearch('OptionContent');" />
+                <a id="searchBtn" class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find"
+                    plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetLogList"
+        multiselect="true" borderstyle="border-left:0;border-right:0;">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="WBSType" width="80" allowsort="true" align="center">
+                节点类型</div>
+            <div field="OptionType" width="80" allowsort="true" align="center">
+                执行操作</div>
+            <div field="OptionContent" width="*" allowsort="true" align="left">
+                操作内容</div>
+            <div field="CreateUserName" width="80" allowsort="true" align="center">
+                操作人</div>
+            <div field="CreateDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                操作日期</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 390px; height: 155px;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="15%">
+                    操作日期
+                </td>
+                <td>
+                    <input name="$FR$CreateDate" class="mini-datepicker" style="width: 100%" />
+                </td>
+                <td width="15%">
+                    至
+                </td>
+                <td>
+                    <input name="$TO$CreateDate" class="mini-datepicker" style="width: 100%" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    操作人
+                </td>
+                <td>
+                    <input name="$EQ$CreateUserID" textname="CreateUserName" style="width: 100%" class="mini-buttonedit" />
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+      @Html.GetEnum(typeof(Project.Logic.WBSNodeType));
+      var OptionType=[{"value":"insert","text":"新增"},{"value":"update","text":"修改"},{"value":"delete","text":"删除"},{"value":"publish","text":"发布"}];
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    addSingleUserSelector("$EQ$CreateUserID");
+    addGridEnum("dataGrid", "WBSType", "WBSNodeType");
+    addGridEnum("dataGrid", "OptionType", "OptionType");
+    
+    function delOption() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请至少选择一条记录"); return;}
+        msgUI("确定删除选中的操作日志？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("OptionInfo", mini.encode(rows));
+            execute("DelOption", { showLoading: true, refresh: false, onComplete: function (data) {
+                //msgUI("删除成功。");
+                dataGrid.reload();
+            }, validateForm: false
+            });
+        }); 
+    }
+
+</script>

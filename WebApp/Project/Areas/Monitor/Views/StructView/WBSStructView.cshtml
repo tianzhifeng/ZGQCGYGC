@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "项目结构视图";
+}
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="人员详细信息" region="east" width="350" showspliticon="true" style="border-top: 0; border-right: 0;
+        border-bottom: 0;" expanded="false">
+        <div class="mini-fit">
+            <div id="userGrid" url="" showpager="false" class="mini-datagrid" style="width: 100%; height: 100%;"
+                 idfield="ID" multiselect="false" borderstyle="border:0;"
+                 editnextonenterkey="true">
+                <div property="columns">
+                    <div field="RoleName" width="100" headeralign="center" allowsort="true">
+                        角色
+                    </div>
+                    <div field="UserID" displayfield="UserName" width="100" headeralign="center" allowsort="true">
+                        人员<input property="editor" class="mini-textboxlist" valuefield="ID" textfield="Name" style="width: 100%;"
+                                 url="/MvcConfig/Auth/User/SelectUsers" />
+                    </div>
+                    <div field="UserDeptName" width="*" headeralign="center" allowsort="true">
+                        人员部门
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-left: 0; border-bottom: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        WBS视角：<input value="Project" id="viewType" class="mini-combobox" style="width: 70px;" textfield="text"
+                                     valuefield="value" data="transForm" onvaluechanged="onViewChange" />
+                        @Html.ExportButton()
+                    </td>
+                    <td style="white-space: nowrap; color: Red;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-treegrid" style="width: 100%; height: 100%;" url="" showtreeicon="true" autoload="false"
+                 iconfield="WBSType" borderstyle="border-left:0;border-right:0;border-bottom:0;" treecolumn="Name" idfield="ID" parentfield="ParentID"
+                 virtualscroll="@ViewBag.VirtualScroll"  defaultrowheight="25"
+                 resultastree="false" allowresize="false" expandonload="2" multiselect="true" onnodeselect="onNodeSelected">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="WBSType" width="90" headeralign="center" align="center" visible="true">
+                        节点类型
+                    </div>
+                    <div name="Name" field="Name" width="*" headeralign="center" align="left">
+                        任务名称<input property="editor" class="mini-textbox" required="true" style="width: 100%;" />
+                    </div>
+                    <div field="Code" width="100" headeralign="center" align="center">
+                        编号
+                    </div>
+                    <div field="ChargeUserName" width="90" headeralign="center" align="center">
+                        负责人
+                    </div>
+                    <div field="PlanStartDate" dateformat="yyyy-MM-dd" width="100" headeralign="center" align="center">
+                        计划开始时间
+                    </div>
+                    <div field="PlanEndDate" dateformat="yyyy-MM-dd" width="100" headeralign="center" align="center">
+                        计划完成时间
+                    </div>
+                    <div field="FactEndDate" dateformat="yyyy-MM-dd" width="100" headeralign="center" align="center">
+                        实际完成时间
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var transForm = @Html.Raw(ViewBag.TransForm);
+    var defaultViewType ="@Html.Raw(ViewBag.DefaultViewType)";
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+    @Html.GetEnum(typeof(Project.Logic.WBSNodeType));
+</script>
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+
+            .mini-grid-headerCell-outer {
+                position: relative;
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+            }
+        </style>
+    }
+}
+<script type="text/javascript">
+    addGridEnum("dataGrid","WBSType","WBSNodeType");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var url = "GetTree?ProjectInfoID=" + projectInfoID;
+    $("#dataGrid").attr("url", url);
+
+    function pageLoad() {
+        var tree = mini.get("dataGrid");
+        tree.load();
+    }
+
+    function loadingwbs(viewType) {
+        var tree = mini.get("dataGrid");
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        addExecuteParam("ViewType", viewType);
+        var url = tree.getUrl();
+        if(url.indexOf("ViewType")>0)
+            url = url.substring(0,url.indexOf("ViewType")-1);
+        tree.setUrl(url+"&ViewType="+viewType);
+        execute("GetTree", { refresh: false, onComplete: function (data) {
+            if (defaultViewType.indexOf(viewType) >= 0) {
+                tree.loadList(data, "ID", "ParentID");
+            }
+            else {
+                tree.loadList(data, "VirtualID", "ParentID");
+            }
+        }, validateForm: false
+        });
+    }
+
+    function onNodeSelected(e) {
+        var node = e.node;
+        if (node.ID) {
+            var userGrid = mini.get("userGrid");
+            userGrid.setUrl(changeToFullUrl("GetWBSUserInfo").split('?')[0] + "?WBSID=" + node.ID);
+            userGrid.load();
+        }
+    }
+
+    function onViewChange(e) {
+        loadingwbs(e.value);
+    }
+</script>
+<style type="text/css">
+    .mini-layout-proxy {
+        border-top: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+    }
+</style>

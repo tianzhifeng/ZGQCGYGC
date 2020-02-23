@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "MappingFieldConfig";
+}
+
+<div class="mini-toolbar" style="border-left-width: 0px; border-top-width: 0px; border-bottom-width: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addNewRow()">添加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delRow();">移除</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <a class="mini-button" iconcls="icon-save" onclick="thisReturnForm();" plain="true">确定</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <form id="dataForm" method="post" autogetdata="false">
+        <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" allowcelledit="true" showpager="false" allowcellselect="true" multiselect="true">
+            <div property="columns">
+                <div type="checkcolumn">
+                </div>
+                <div field="DocFieldName" name="DocFieldName" width="80" headeralign="center" align="left" allowsort="true">
+                    文档字段名
+                    <input property="editor" class="mini-combobox" style="width: 100%;"  shownullitem="true" data="DocumentProperties" />
+                </div>
+                <div field="RelateFieldName" name="RelateFieldName" width="100" headeralign="center" align="left" allowsort="true">
+                    映射数据字段名
+                    <input property="editor" class="mini-combobox" style="width: 100%;" allowinput="true" data="TableProperties" />
+                </div>
+                <div field="RelateFieldDescrib" name="RelateFieldDescrib" width="100" headeralign="center" align="left" allowsort="true">
+                    字段描述
+                    <input property="editor" class="mini-textbox" style="width: 100%;" emptytext="文档字段不填" allowinput="true" />
+                </div>
+                <div type="checkboxcolumn" field="IsBase" name="IsBase" truevalue="true" falsevalue="false" width="100" align="center" headeralign="center">
+                    是否文档字段
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    var DocumentProperties = @Html.Raw(ViewBag.DocumentProperties);
+    var TableProperties = @Html.Raw(ViewBag.TableProperties);
+</script>
+<script>
+    function setData(data) {
+        if (data) {
+            var rows = mini.decode(data);
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.addRows(rows);
+        }
+    }
+
+    function addNewRow() {
+        var dataGrid = mini.get("dataGrid");
+        var newRow = { DocFieldName: "", RelateFieldName: "", IsBase: 'false' };
+        dataGrid.addRow(newRow);
+    }
+
+    function thisReturnForm()
+    {
+        var dataGrid = mini.get("dataGrid");
+        closeWindow(dataGrid.data);
+    }
+</script>

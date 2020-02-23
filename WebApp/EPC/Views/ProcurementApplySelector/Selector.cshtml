@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="" plain="true">
+                    选择
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="west" region="west" width="700" expanded="true" showspliticon="false" showheader="false">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;"></td>
+                        <td style="white-space: nowrap;">
+                            <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入采购申请单表号' onenter="quickSearch('SerialNumber');" onbuttonclick="quickSearch('SerialNumber');" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" class="mini-treegrid" style="width:100%;height:100%;"
+                     url="" showtreeicon="true" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" multiselect="true"
+                     allowresize="false" fitcolumns="false">
+                    <div property="columns">
+                        <div type="checkcolumn"></div>
+                        <div name="Name" field="Name" width="200" headeralign="center">设备名称</div>                       
+                        <div field="SerialNumber" width="120" align="left" headeralign="center">申请编号</div>
+                        <div field="Model" width="100" headeralign="center">规格型号</div>
+                        <div field="Quantity" width="80" align="right" headeralign="center">申请数量</div>
+                        <div field="CanInvitationQuantity" width="80" align="right" headeralign="center">可招标数量</div>
+                        <div field="CanContractQuantity" width="80" align="right" headeralign="center">可签订数量</div>
+                        <div field="ApplyUserName" width="100" headeralign="center">申请人</div>
+                        <div field="ApplyDate" width="100" dateformat='yyyy-MM-dd' headeralign="center">申请日期</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="east" region="east" showclosebutton="false" showspliticon="false" width="400" showheader="false">
+            <div class="mini-fit">
+                <div id="deviceGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" allowresize="false" 
+                     showpager="false" borderstyle="border:0px;">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" width="*" headeralign="center" allowsort="true">
+                            设备名称
+                        </div>
+                        <div field="Quantity" width="120" headeralign="center" allowsort="true" align="center">
+                            数量
+                        </div>
+                        <div field="SerialNumber" width="120" headeralign="center" allowsort="true"
+                             align="center">
+                            采购申请单编号
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center" style="border-top: 0; border-bottom: 0; padding-top: 50px;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="">增加</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-remove" onclick="">移除</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var applyType = getQueryString("ApplyType");
+    var url = "GetTreeList?EngineeringInfoID=" + engineeringInfoID + "&Type=" + applyType;
+    $("#dataGrid").attr("url", url);
+</script>

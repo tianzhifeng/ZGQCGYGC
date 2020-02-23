@@ -1,0 +1,37 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%k">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-refer" onclick="returnList();">选择</a>
+                <a class='mini-button' iconcls='icon-up' onclick='moveUp();'>上移</a>
+                <a class='mini-button' iconcls='icon-down' onclick='moveDown();'>下移</a>
+            </td>
+            <td class="gw-toolbar-right">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" sortmode="client" style="width: 100%; height: 100%;" showpager="false" url="GetDataSourceList" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="300" allowsort="true" align="left">
+                名称</div>
+            <div field="Description" width="*">
+                描述</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function moveUp() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+    function moveDown() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }  
+</script>

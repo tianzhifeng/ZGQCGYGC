@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "专业设计工作区";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<div>
+</div>
+<div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;"
+     tabposition="left">
+    <div title="设<br>计<br>输<br>入" url="/project/Basic/DesignInput/MajorList?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode&FuncType=View">
+    </div>
+    <div title="设<br>计<br>成<br>果" name="Product" url="DesginMain?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode&TreeViewType=@ViewBag.TreeViewType">
+    </div>
+    <div title="互<br>提<br>资<br>料" url="/Project/Basic/Cooperation/Execute?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode&AuthType=FullControl">
+    </div>
+    <div title="出<br>图<br>记<br>录" url="/MvcConfig/UI/List/PageView?TmplCode=ProjectExecutive_PublishApply&ViewType=DesignWorkSpace&ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+    </div>
+    @{ if (ViewBag.TaskWorkDesingChangeMode!="True")
+       {
+    <div title="变<br>更<br>记<br>录" url="/MvcConfig/UI/List/PageView?TmplCode=PE_DesignChangeNotice&ProjectInfoID=@ViewBag.ProjectInfo.ID&MajorValue=@ViewBag.SpaceCode">
+    </div>
+    }
+        }
+</div>
+<script type="text/javascript">
+    function pageLoad() {
+        var tabs = mini.get("mainTab");
+        var paramKeys = getParamKeys();
+        updateTabsURL(tabs.tabs, paramKeys);
+        tabs.activeTab("Product");
+    }
+    function updateTabsURL(tabs, paramKeys) {
+        for (var i = 0 ; i < tabs.length; i++) {
+            var tab = tabs[i];
+            tab.url = updateUrlSearch(tab.url, paramKeys);
+        }
+    }
+    function getParamKeys() {
+        return window.location.search.replace('?', '').split('&'); 
+    }
+    //将当前地址栏参数加入到url
+    function updateUrlSearch(url, paramKeys) {
+        var newParams = [];
+        if (paramKeys!=null && paramKeys instanceof Array) {
+            for (var i = 0; i < paramKeys.length; i++) {
+                var key = paramKeys[i].split('=')[0];
+                if (key == "" || key == "_t" || key == "_winid")
+                    continue;
+                if (!hasQueryString(key, url))
+                    newParams.push(paramKeys[i]);
+            }
+        }
+        if (url.indexOf('?') >= 0)
+            return url + "&" + newParams.join('&');
+        else
+            return url + "?" + newParams.join('&');
+    }
+
+   
+    function setTab() {
+        var tab = mini.get("subTab");
+        var url = "../CooperationExecute/CooperationPlanInList?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode&WBSValue=@ViewBag.SpaceCode";
+        tab.tabs[0].url = url;
+        tab.reloadTab(tab.tabs[0]);
+    }
+</script>
+<style type="text/css">
+    .mini-tabs-bodys {
+        padding: 0 0 0 0;
+        border-bottom: 0px;
+        border-left: 0px;
+        border-right: 0px;
+    }
+</style>

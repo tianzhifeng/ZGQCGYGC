@@ -1,0 +1,175 @@
+﻿@{
+    ViewBag.Title = "WorkloadAnalysis";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+
+<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="false">
+    <div size="60%" showcollapsebutton="false">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;"></td>
+                    <td style="white-space: nowrap;">
+                        <div id="gridPattern" class="mini-checkbox" style="width: 60px;" checked="false" readonly="false" text="显示卷册"
+                            onvaluechanged="gridPatternChanged">
+                        </div>
+                        <span class="separator"></span>
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入卷册名称或卷册编号" style="width: 200px;" onenter="webSearch();"
+                            onbuttonclick="webSearch();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="mytreegrid" class="mini-treegrid" style="width: 100%; height: 100%;" url="GetTree?ProjectInfoID=@ViewBag.ProjectInfoID&IsShowTaskWork=false" showtreeicon="true"
+                iconfield="WBSType" borderstyle="border-bottom: 0; border-right: 0; border-left: 0;" treecolumn="Name" idfield="ID" parentfield="ParentID"
+                resultastree="false" allowresize="false" expandonload="true" allowcelledit="true" allowcellselect="true"
+                editnextonenterkey="false" multiselect="false" ondrawcell="onDrawingCell" onnodeselect="onNodeSelected">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div name="Name" field="Name" width="*" min-width="300px" headeralign="center">
+                        名称
+                    </div>
+                    <div field="Code" width="100" headeralign="center">
+                        编号
+                    </div>
+                    <div header="定额工时" headeralign="center">
+                        <div property="columns">
+                            <div field="Quantity" width="65" headeralign="center" align="right">
+                                下达
+                            </div>
+                            <div field="SummaryBudgetQuantity" width="65" headeralign="center" align="right">
+                                已分配
+                            </div>
+                            <div field="SummaryCostQuantity" width="65" headeralign="center" align="right">
+                                已结算
+                            </div>
+                            <div field="Rate" width="85" headeralign="center" align="right">
+                                结算比例(%)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-splitter" vertical="true" style="width: 100%; height: 100%;" allowresize="false">
+            <div size="50%" showcollapsebutton="false">
+                <div class="mini-fit">
+                    <div id="pieChartContainer" style="width: 100%; height: 100%; border-right: #ccc 0px solid;">
+                    </div>
+                </div>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-fit">
+                    <div id="xyChartContainer" class="mini-fit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var IsShowTaskWork = false;
+    var url = "GetTree?ProjectInfoID=" + projectInfoID + "&IsShowTaskWork=";
+
+    addExecuteParam("ProjectInfoID", projectInfoID);
+    execute("GetPieChartData", {
+        showLoading: false, refresh: false, onComplete: function (data) {
+            if (data.chartData) {
+                loadingChart("pieChartContainer", data.chartData);
+            }
+        }, validateForm: false
+    });
+
+    addExecuteParam("ProjectInfoID", projectInfoID);
+    execute("GetXYChartData", {
+        showLoading: false, refresh: false, onComplete: function (data) {
+            debugger
+            if (data.chartData) {
+                loadingChart("xyChartContainer", data.chartData);
+            }
+        }, validateForm: false
+    });
+
+    function onDrawingCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field && field != "Name" && field != "Code") {
+            if (e.value <= 0)
+                e.cellStyle = "text-align:right; color:#c4c4c4";
+            else if (field == "SummaryCostQuantity") {
+                e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + record.WBSType + '\'\,\'' + record.Code + '\'\,\'' + record.ParentCode + '\')">' + e.value + '</a>';
+            }
+        }
+
+    }
+
+    function viewDetailInfo(WBSType, Code, ParentCode) {
+        var url = "", width = "80%", height = "80%";
+        if (WBSType == "Root")
+            url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectWorkloadCost&ProjectInfoID=" + projectInfoID;
+        else if (WBSType == "SubProject") {
+            if (Code == "Manage")
+                url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectWorkloadCost&NodeType=CBS&ProjectInfoID=" + projectInfoID;
+            else if (Code == "Product")
+                url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectWorkloadCost&NodeType=Major&ProjectInfoID=" + projectInfoID;
+        }
+        else if (WBSType == "Major")
+            url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectWorkloadCost&NodeType=Major&ProjectInfoID=" + projectInfoID + "&MajorValue=" + Code;
+        else if (WBSType == "Work")
+            url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectWorkloadCost&NodeType=Major&ProjectInfoID=" + projectInfoID + "&MajorValue=" + ParentCode + "&TaskWorkCode=" + Code;
+
+        if (url) {
+            openWindow(url, {
+                refresh: false, title: "明细信息", width: width, height: height,
+                onDestroy: function () { }
+            });
+        }
+    }
+
+    function gridPatternChanged(e) {
+        var tree = mini.get("mytreegrid");
+        if (e.value == "true")
+            IsShowTaskWork = true;
+        else
+            IsShowTaskWork = false;
+
+        tree.load(url + IsShowTaskWork);
+    }
+
+    function onNodeSelected(e) {
+        var node = e.node;
+        if (node.ID) {
+            //addExecuteParam("ProjectInfoID", projectInfoID);
+            //addExecuteParam("ID", node.ID);
+            //if (node.WBSType == "Work") {
+            //    addExecuteParam("Type", node.WBSType);
+            //}
+            //execute("GetPieChartData", {
+            //    showLoading: false, refresh: false, onComplete: function (data) {
+            //        if (data.chartData) {
+            //            loadingChart("pieChartContainer", data.chartData);
+            //        }
+            //    }, validateForm: false
+            //});
+        }
+    }
+
+    function loadingChart(divID, option) {
+        $("#" + divID).highcharts(option);
+    }
+
+    function webSearch() {
+        var tree = mini.get("mytreegrid");
+        var key = mini.get("key");
+        tree.filter(function (node) {
+            if (node.Name.indexOf(key.getValue()) != -1 || node.Code.indexOf(key.getValue()) != -1) return true;
+        });
+    }
+</script>

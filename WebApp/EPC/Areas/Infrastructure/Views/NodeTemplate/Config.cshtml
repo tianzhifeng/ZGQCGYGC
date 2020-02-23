@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "Config";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addNode" plain="true">  增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delNode" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="GetDefineTree" showtreeicon="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowresize="false" fitcolumns="false" iconfield="NodeType"
+         multiselect="true" expandonload="true" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+         oncellbeginedit="OnCellBeginEdit" oncellendedit="onCellEndEdit" ondrawcell="onDrawingCell">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div name="Name" field="Name" width="400" headeralign="center">
+                名称 <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="150" headeralign="center">
+                编码<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="NodeType" autoshowpopup="true" width="90" align="center" headeralign="center" vtype="required;">
+                节点类型
+                <input property="editor" class="mini-combobox" style="width:100%;" valuefield="value" textfield="text" data="NodeType" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("Base.NodeType")
+</script>
+<script type="text/javascript">
+    var nodeTemplateID = getQueryString("NodeTemplateID");
+    $("#dataTree").attr("url", "GetDetailTree?NodeTemplateID=" + nodeTemplateID);
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (record.NodeType == "Root") {
+            e.cancel = true;
+        }
+    }
+
+    function onCellEndEdit(e) {
+        var treeGrid = mini.get("dataTree");
+        var record = e.record, field = e.field;
+        if (record.NodeType == "Root") {
+            return;
+        }
+    }
+
+    function onDrawingCell(e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType == "Root") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+    }
+
+    function addNode() {
+        var treeGrid = mini.get("dataTree");
+        var node = treeGrid.getSelectedNode();
+        if (!node) {
+            msgUI("请选择一个节点"); return;
+        }
+        addExecuteParam("ParentID", node.ID);
+        execute("AddChild", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.addNode(data, "add", node);
+            }, validateForm: false
+        });
+    }
+
+    function save() {
+        var treeGrid = mini.get("dataTree");
+        var nodes = treeGrid.getChanges();
+        if (nodes.length == 0)
+            return;
+        treeGrid.validate();
+        if (treeGrid.isValid() == false) {
+            msgUI("当前输入的信息有误，请重新检查！", 1); return;
+        }
+        addExecuteParam("DetailInfo", mini.encode(nodes));
+        addExecuteParam("NodeTemplateID", nodeTemplateID);
+        execute("SaveDetail", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.accept();
+            }, validateForm: false
+        });
+    }
+
+
+    function delNode() {
+        var treeGrid = mini.get("dataTree");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个节点"); return; }
+        msgUI("将删除下层所有子节点，是否继续？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("DetailInfo", mini.encode(nodes));
+            execute("DeleteDetail", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    treeGrid.removeNodes(nodes);
+                }, validateForm: false
+            });
+        });
+    }
+
+</script>

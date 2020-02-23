@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "WBS版本列表";
+}
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;">
+        <div size="300">
+            <div class="mini-fit">
+                <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetVersionList"
+                    multiselect="false" borderstyle="border-left:0;border-right:0;" onrowclick="onRowClick" showpager="false">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Version" width="60" allowsort="true" align="center">
+                            版本号</div>
+                        <div field="CurrentVersion" width="60" allowsort="true" align="center">
+                            当前版</div>
+                        <div field="CreateUser" width="60" allowsort="true" align="center">
+                            发布人</div>
+                        <div field="CreateDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                            发布日期</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div >
+            <div class="mini-fit">
+                <div id="mytreegrid" class="mini-treegrid" style="width: 100%; height: 100%;" showtreeicon="true"
+                    iconfield="WBSType" borderstyle="border:0;" treecolumn="Name" idfield="ID" parentfield="ParentID"
+                    resultastree="false" allowresize="false" expandonload="1" multiselect="false">
+                    <div property="columns">
+                        
+                        <div name="Name" field="Name" width="*" headeralign="center" vtype="required">
+                            任务名称</div>
+                        <div field="Code" width="150" headeralign="center">
+                            编号</div>
+                        <div field="ChargeUserID" displayfield="ChargeUserName" width="90" headeralign="center"
+                            align="center">
+                            负责人</div>
+                        <div field="PlanStartDate" dateformat="yyyy-MM-dd" width="90" headeralign="center"
+                            align="center">
+                            计划开始时间</div>
+                        <div field="PlanEndDate" dateformat="yyyy-MM-dd" width="90" headeralign="center"
+                            align="center">
+                            计划完成时间</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var IsCurrent = [{ "value": "T", "text": "是" }, { "value": "F", "text": "否"}];
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "CurrentVersion", "IsCurrent");
+    function onRowClick(e) {
+        var row = mini.get("dataGrid").getSelected();
+        if (!row)
+            return;
+
+        var tree = mini.get("mytreegrid");
+        var url = "GetVersionTree?VersionID=" + row.ID;
+        tree.load(url);
+        //tree.reload();
+    }
+</script>

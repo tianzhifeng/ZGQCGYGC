@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "SliderProject";
+}
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.min.js" type="text/javascript"></script>
+<link href="/Project/Scripts/EngineeringSpace/css/bootstrap.min.css" rel="stylesheet"
+      type="text/css" />
+<link href="/Project/Scripts/EngineeringSpace/css/font-awesome.min.css" rel="stylesheet"
+      type="text/css" />
+<script src="/Project/Scripts/EngineeringSpace/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+<link href="/Project/Scripts/EngineeringSpace/css/slider-pro.css" rel="stylesheet"
+      type="text/css" />
+<script>
+    $("body").css("background-color","");
+</script>
+<div id="slider-container">
+    <div class="nav-slider clearfix">
+        <span class="icon-double-angle-left close-slider pull-right"></span>
+        <ul class="nav nav-tabs sideTree">
+            <li role="presentation" class="active" id="project">
+                <a href="javascript:void(0)">
+                    <img src="/project/Scripts/EngineeringSpace/images/pro-control.png" alt="">
+                    <span>@ViewBag.DefaultName</span>
+                </a>
+            </li>
+            @{
+                var spaceList = ViewBag.Entrace as List<Project.Logic.Entrance>;
+                if (spaceList.Count > 1)
+                {
+                    <li role="presentation" id="more">
+                        <a href="javascript:void(0)">
+                            <img src="/project/Scripts/EngineeringSpace/images/chose-spec.png" alt=""><span id="project_more">更多...</span>
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+    <div class="divsplit">
+    </div>
+    <div class="slider-container-content spbg">
+        <div class="tab-content" style="height: 100%">
+            <div class="tab-pane fade in active" style="height: 100%;">
+                <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="false"
+                    textfield="Name" idfield="ID" enablehottrack="false" parentfield="ParentID" resultastree="false"
+                    expandonload="4" onnodeclick="onNodeClick" iconfield="Type" ondrawnode="onDrawNode"></ul>
+            </div>
+            <div class="tab-pane fade in spec-wrap" style="height: 100%;">
+                <ul class="spec">
+                    @{
+
+                        foreach (var item in spaceList)
+                        {
+                            var className = "clearfix";
+                            if (ViewBag.DefaultCode == item.Code)
+                            {
+                                className = " clearfix active";
+                            }
+                            <li id="@item.SpaceDefineID" url="@item.LinkUrl" spacecode="@item.Code">
+                                <div class="@className" id="@item.SpaceDefineID" url="@item.LinkUrl" spacecode="@item.Code">
+                                    <span class="pull-left">@item.Name</span> <span class="pull-right icon-ok icon">
+                                    </span>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfo= @Html.Raw(ViewBag.ProjectJson);
+    var showSpace = "@Html.Raw(ViewBag.ShowSpace)";
+    var defaultCode = "@Html.Raw(ViewBag.DefaultCode)";
+    var defaultSpaceDefineID="@Html.Raw(ViewBag.DefaultSpaceDefineID)";
+    var relationProject = @Html.Raw(ViewBag.RelationProject);
+    var defaultUrl=" @Html.Raw(ViewBag.DefaultUrl)";
+
+</script>
+<script>
+    mini.parse();
+    var currentCode = defaultCode;
+    var setDefaultUrl = getQueryString("SetMainContent");
+    var dataTree = mini.get("dataTree");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var url = "GetSpaceDefine?ProjectInfoID=" + projectInfoID + "&DefineID=" + defaultSpaceDefineID + "&SpaceCode=" + defaultCode;
+
+    $(document).ready(function () {
+        $("#dataTree").niceScroll({ cursorborder: "none" });
+        $(".spec-wrap").niceScroll({ cursorborder: "none" });
+        if(typeof(CurrentLGID) != "undefined" && CurrentLGID == "EN")
+            $("#project_more").html("More");
+    })
+
+    //if(defaultUrl){
+    //    if(setDefaultUrl=="False"){
+    //    }
+    //    else{
+    //        window.parent.setRightUrl(defaultUrl);
+    //    }
+    //}
+    dataTree.load(url);
+
+    function onDrawNode(e) {
+        if (e.node.AuthType != "FullControl") {
+            e.nodeStyle = 'color:gray;';
+        }
+    }
+
+    function onNodeClick(e) {
+        if (e.node.LinkUrl && e.node.LinkUrl != "") {
+            var linkUrl = "";
+            if (e.node.LinkUrl.indexOf("?") >= 0) {
+                if (e.node.AuthType == "View"){
+                    if( e.node.LinkUrl.indexOf("SpaceCode=")>0)
+                        linkUrl = e.node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID + "&FuncType=View&AuthType=" + e.node.AuthType;
+                    else
+                        linkUrl = e.node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID + "&SpaceCode=" + currentCode + "&FuncType=View&AuthType=" + e.node.AuthType;
+
+                }
+                else{
+                    if( e.node.LinkUrl.indexOf("SpaceCode=")>0)
+                        linkUrl = e.node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID +"&AuthType=" + e.node.AuthType;
+                    else
+                        linkUrl = e.node.LinkUrl + "&ProjectInfoID=" + projectInfo.ID +"&SpaceCode=" + currentCode + "&AuthType=" + e.node.AuthType;
+                }
+            }
+            else {
+                if (e.node.AuthType == "View")
+                    linkUrl = e.node.LinkUrl + "?ProjectInfoID=" + projectInfo.ID +"&SpaceCode=" + currentCode + "&FuncType=View&AuthType=" + e.node.AuthType;
+                else
+                    linkUrl = e.node.LinkUrl + "?ProjectInfoID=" + projectInfo.ID +"&SpaceCode=" + currentCode + "&AuthType=" + e.node.AuthType;
+            }
+            linkUrl = linkUrl.replace(/\{[0-9a-zA-Z_]*\}/g, function (e){
+                var key = e.substring(1, e.length - 1);
+                if(projectInfo[key]){
+                    return encodeURI(projectInfo[key]);
+                }
+                else if(key=="SpaceCode")
+                    return currentCode;
+                else
+                    return "";
+            });
+            window.parent.setRightUrl(linkUrl);
+            if (window.parent.setFuncMenuText) {
+                window.parent.setFuncMenuText(e.node.Name);
+            }
+        }
+    }
+
+    $(".nav-tabs li").on("click", function () {
+        if ($(this)[0].innerText.indexOf("项目") < 0 && $(this)[0].className.indexOf("active") >= 0) {
+
+        }
+        $(this).addClass("active").siblings().removeClass("active");
+        $(".tab-content .tab-pane").eq($(this).index()).addClass("active").siblings().removeClass("active");
+    })
+
+    var colors = ["#7acf4d", "#4ccfca", "#ad4ccf", "#cf4c52"];
+
+    $(".spec li div").on("click", function () {
+        $(this).addClass("active");
+        var defineID = $(this).attr("id");
+        currentCode = $(this).attr("spacecode");
+        url = "GetSpaceDefine?ProjectInfoID=" + projectInfoID + "&DefineID=" + defineID + "&SpaceCode=" + currentCode;
+        dataTree.load(url);
+        $(this).parent().siblings().each(function () {
+            $(this).find("div").removeClass("active").css("background-color", "transparent");
+        });
+        $("#project a span").text($(this).find("span").eq(0).text());
+        $("#project").addClass("active").siblings().removeClass("active");
+        $(".tab-content .tab-pane").eq($("#project").index()).addClass("active").siblings().removeClass("active");
+
+        var index = $(this).parent().index();
+        $(this).css("background-color", colors[index % 4]);
+        $(".spec li div").removeClass("actives");
+    }).on("mouseover", function () {
+        if ($(this).hasClass("active")) {
+            return;
+        }
+        else {
+            $(this).addClass("actives");
+            var index = $(this).parent().index();
+            $(this).css("background-color", colors[index % 4]);
+        }
+    }).on("mouseout", function () {
+        if ($(this).hasClass("active")) {
+            return;
+        }
+        else {
+            $(this).removeClass("actives");
+            $(this).css("background-color", "transparent");
+        }
+    });
+
+
+
+    $(".close-slider").on("click", function () {
+        for (var i = 0; i < $("#iframe-container .iframe-item", window.parent.document).length; i++) {
+            if ($("#iframe-container .iframe-item", window.parent.document).eq(i).css("display") == "block") {
+                $("#iframe-container .iframe-item", window.parent.document).eq(i).find(".item-content").animate({
+                    "padding-left": "44px"
+                }, 300);
+                $("#iframe-container .iframe-item", window.parent.document).eq(i).find(".item-slider").animate({
+                    left: "-250px"
+                }, 300, function () {
+                    $(".control-img", window.parent.document).show();
+                    $("#navss .nav-pills li[class='active']", window.parent.document).attr("showTree-id", "F");
+                });
+            }
+        }
+    });
+</script>

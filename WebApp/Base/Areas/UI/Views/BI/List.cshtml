@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({width:'50%',height:'50%'});" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-copy" onclick="copy();" plain="true">复制</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+              
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="*" headeralign="center" allowsort="true">
+                名称
+            </div>
+            <div field="Code" width="200" headeralign="center" allowsort="true">
+                编号
+            </div>
+            <div field="ModifyUserName" headeralign="center" width="90" allowsort="true" align="center">
+                修改人
+            </div>
+            <div field="ModifyDate" width="150" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                最后修改日期
+            </div>
+            <div field="PreView" width="60" align="center">
+                预览
+            </div>
+            <div field="Config" width="90" headeralign="center" allowsort="true">
+                配置
+            </div>
+            <div field="ExportToSQL" headeralign="center" width="100" allowsort="true" align="center">
+                导出SQL
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    addGridLink("dataGrid", "Config", "ConfigLayout?ID={ID}", { linkText: '配置', width: "95%", height: "95%" });
+    addGridLink("dataGrid", "Name", "Edit?ID={ID}", { width: "60%", height: "70%" });
+    addGridButton("dataGrid", "ExportToSQL", {
+        linkText: '导出Sql', onButtonClick: function (row) {
+            var url = "/Base/UI/ExportSql/SqlFile?DefID=" + row["ID"] + "&FileCode=Graph_" + row["Code"] + "&TableName=S_UI_BIConfig";
+            window.location = url;
+        }
+    });
+
+    addGridLink("dataGrid", "PreView", "/MvcConfig/UI/BI/PageView?TmplCode={Code}&IsPreView=True", { title: '预览：{Name}', linkText: '预览' });
+
+
+    function copy() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) {
+            msgUI("请选择一条记录"); return;
+        }
+        addExecuteParam("ID", row.ID);
+        execute("Copy", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+</script>

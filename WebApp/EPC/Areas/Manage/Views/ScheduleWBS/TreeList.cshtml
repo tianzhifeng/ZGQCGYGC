@@ -1,0 +1,1633 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+}
+
+@using Config.Logic;
+<script src="@Url.Content("/EPC/Scripts/Design/Bom/jquery.tmpl.js")" type="text/javascript"></script>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @{
+                    if (!ViewBag.CanStart)
+                    {
+                        <span style="font-weight:bolder;color:red;">@ViewBag.ErrorMsg</span>
+                    }
+                    else
+                    {
+                        <a class="mini-button" iconcls="icon-add" onclick="addNode" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-add" onclick="insertNode" plain="true">插入</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="onRemove" plain="true">删除</a>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="mini-pager-reload" onclick="calcProgress()" plain="true">重新计算进度率</a>
+                        if (ViewBag.ShowImportButton)
+                        {
+                            <a class="mini-menubutton" iconcls="icon-add" plain="true" menu="#popupMenu">导入</a>
+                        }
+                        <a class="mini-button" iconcls="mini-pager-reload" onclick="refresh();" plain="true">刷新</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="publish" plain="true">发布为新版本</a>
+                        if (!ViewBag.FlowEnd)
+                        {
+                            <a class="mini-button" iconcls="icon-flowstart" onclick="flowTrace()" plain="true">流程跟踪</a>
+                        }
+                        @*<a class="mini-button" iconcls="icon-remove" onclick="" plain="true">进度计算</a>*@
+                        if (!String.IsNullOrEmpty(ViewBag.PreVersionID))
+                        {
+                            var text = "显示" + ViewBag.PreScheduleName;
+                            <a class="mini-button" iconcls="icon-search" onclick="showPre();" plain="true">@text</a>
+                        }
+                    }
+                }
+                <a class="mini-button" iconcls="icon-goto" onclick="gotoGantte();" plain="true">转到甘特图</a>
+            </td>
+            <td style="white-space: nowrap;">
+                &nbsp;  &nbsp;  &nbsp;
+                当前版本：<a href="javascript:void();" onclick="viewVersionList();">@ViewBag.VersionNo</a>
+                &nbsp;  &nbsp;  &nbsp;
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="wbsNodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入任务名称或任务编号' onenter="treeSearch()" onbuttonclick="treeSearch();" />
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        @{
+            var define = ViewBag.Define as EPC.Logic.Domain.S_C_ScheduleDefine;
+            var visible = "true";
+            if (!define.ShowTab)
+            {
+                visible = "false";
+            }
+            var tabSubList = new List<Dictionary<string, object>>();
+            if (!String.IsNullOrEmpty(define.TabData))
+            {
+                tabSubList = Formula.Helper.JsonHelper.ToList(define.TabData);
+            }
+
+            var PreTaskVisible = "false"; var PreTaskEdit = "false";
+            var UserResource = "false"; var UserResourceEdit = "false";
+            var BomResource = "false"; var BomResourceEdit = "false";
+            var BOQ = "false"; var BOQEdit = "false";
+            var ContractResource = "false"; var ContractResourceEdit = "false";
+            var Quantity = "false"; var QuantityEdit = "false";
+            var Document = "false"; var DocumentEdit = "false";
+
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "PreTask" && c["Visible"].ToString() == "1"))
+            {
+                PreTaskVisible = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "UserResource" && c["Visible"].ToString() == "1"))
+            {
+                UserResource = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "BomResource" && c["Visible"].ToString() == "1"))
+            {
+                BomResource = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "BOQ" && c["Visible"].ToString() == "1"))
+            {
+                BOQ = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "ContractResource" && c["Visible"].ToString() == "1"))
+            {
+                ContractResource = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "Quantity" && c["Visible"].ToString() == "1"))
+            {
+                Quantity = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "Document" && c["Visible"].ToString() == "1"))
+            {
+                Document = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "PreTask" && c["CanEdit"].ToString() == "1"))
+            {
+                PreTaskEdit = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "UserResource" && c["CanEdit"].ToString() == "1"))
+            {
+                UserResourceEdit = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "BomResource" && c["CanEdit"].ToString() == "1"))
+            {
+                BomResourceEdit = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "BOQ" && c["CanEdit"].ToString() == "1"))
+            {
+                BOQEdit = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "ContractResource" && c["CanEdit"].ToString() == "1"))
+            {
+                ContractResourceEdit = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "Quantity" && c["CanEdit"].ToString() == "1"))
+            {
+                QuantityEdit = "true";
+            }
+            if (tabSubList.Exists(c => c["TabCode"].ToString() == "Document" && c["CanEdit"].ToString() == "1"))
+            {
+                DocumentEdit = "true";
+            }
+        }
+        <div title="相关信息" region="south" showsplit="true" showheader="false" height="220" showspliticon="true" visible="@visible">
+            <div class="mini-fit" style="padding-top: 2px;">
+                <div id="subTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+                    @{
+                        if (PreTaskVisible == "true")
+                        {
+                            var borderstyle = "border:0px;";
+                            <div title="紧前作业">
+                                @{
+                            if (PreTaskEdit == "true")
+                            {
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addPredecessorLink();" plain="true"> 增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delPredecessorLink();" plain="true">删除</a>
+                                                <a class="mini-button" iconcls="icon-save" onclick="savePredecessorLink();" plain="true">保存</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                borderstyle = "";
+                            }
+                            <div class="mini-fit">
+                                <div id="PreTaskGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                     allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+                                     showpager="false" borderstyle="@borderstyle">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="PredecessorTaskName" width="200" headeralign="center" allowsort="true">
+                                            作业名称
+                                        </div>
+                                        <div field="PredecessorTaskCode" width="120" headeralign="center" allowsort="true" align="center">
+                                            作业编号
+                                        </div>
+                                        <div field="Type" width="120" headeralign="center" allowsort="true"
+                                             align="center">
+                                            关系
+                                        </div>
+                                        <div field="Delay" headeralign="center" width="120" allowsort="true" align="center">
+                                            延迟<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                }
+                            </div>
+                        }
+                    }
+
+                    @{
+                        if (UserResource == "true")
+                        {
+                            var borderstyle = "border:0px;";
+                            <div title="人员角色">
+                                @{
+                            if (UserResourceEdit == "true")
+                            {
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addUserRole" plain="true"> 增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delUserRole" plain="true">删除</a>
+                                                <a class="mini-button" iconcls="icon-save" onclick="saveUserRole" plain="true">保存</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                borderstyle = "";
+                            }
+                            <div class="mini-fit">
+                                <div id="UserRoleGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                     allowcellselect="true" editnextonenterkey="true" oncellendedit="onUserRoleGridCellEndEdit"
+                                     editnextrowcell="true" allowcelledit="true"
+                                     showpager="false" borderstyle="@borderstyle">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="ResourceID" displayfield="ResourceName" width="200" headeralign="center" allowsort="true">
+                                            人员姓名
+                                            <input name='UserRole' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                                        </div>
+                                        <div field="RoleCode" displayfield="RoleName" width="120" headeralign="center" allowsort="true" align="center">
+                                            角色
+                                            <input property="editor" class="mini-combobox" style="width:100%;" valuefield="value" textfield="text" data="DesignRoleDefine" />
+                                        </div>
+                                        <div field="Quantity" width="120" headeralign="center" allowsort="true"
+                                             align="center">
+                                            工作量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                }
+                            </div>
+                        }
+                    }
+                    @{
+                        if (BomResource == "true")
+                        {
+                            var borderstyle = "border:0px;";
+                            <div title="关联清单明细">
+                                @{
+                            if (BomResourceEdit == "true")
+                            {
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addBom" plain="true"> 增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delBom" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                borderstyle = "";
+                            }
+                            <div class="mini-fit">
+                                <div id="deviceInfoGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                     allowcellselect="true" editnextonenterkey="true" oncellendedit="onDeviceGridCellEndEdit"
+                                     editnextrowcell="true" allowcelledit="true" showpager="false" borderstyle="@borderstyle">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="Code" width="70" headeralign="center" allowsort="false">
+                                            清单编号
+                                        </div>
+                                        <div field="Name" width="200" headeralign="center" allowsort="false">
+                                            清单名称
+                                        </div>
+                                        <div field="ModuleFullName" width="90" headeralign="center" allowsort="false">
+                                            WBS名称
+                                        </div>
+                                        @*<div field="SubProjectName" width="90" headeralign="center" allowsort="false">
+                                                所属子项
+                                            </div>*@
+                                        <div field="MajorName" width="90" headeralign="center" allowsort="false" align="center">
+                                            所属专业
+                                        </div>
+                                        @*<div field="Quantity" width="70" headeralign="center" allowsort="false" align="right">
+                                                数量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                            </div>*@
+                                        @*<div field="Specifications" width="150" headeralign="center" allowsort="false">
+                                                规格
+                                            </div>
+                                            <div field="Model" width="150" headeralign="center" allowsort="false">
+                                                型号
+                                            </div>
+                                            <div field="Branding" width="120" headeralign="center" allowsort="false">
+                                                品牌
+                                            </div>*@
+
+                                    </div>
+                                </div>
+                            </div>
+                                }
+                            </div>
+                        }
+                    }
+                    @{
+                        if (BOQ == "true")
+                        {
+                            var borderstyle = "border:0px;";
+                            <div title="工程量">
+                                @{
+                            if (BomResourceEdit == "true")
+                            {
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="" plain="true"> 增加工程量</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                borderstyle = "";
+                            }
+                            <div class="mini-fit">
+                                <div id="BOQGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                     showpager="false" borderstyle="@borderstyle">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="Code" width="70" headeralign="center" allowsort="false">
+                                            清单项名称
+                                        </div>
+                                        <div field="Name" width="200" headeralign="center" allowsort="false">
+                                            清单项名称
+                                        </div>
+                                        <div field="Quantity" width="70" headeralign="center" allowsort="false">
+                                            数量
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                }
+                            </div>
+                        }
+
+                    }
+                    @{
+                        if (Quantity == "true")
+                        {
+                            <div title="质量控制">
+                            </div>
+                        }
+
+                    }
+                    @{
+                        if (Document == "true")
+                        {
+                            <div title="文档信息">
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        @{
+            if (!String.IsNullOrEmpty(ViewBag.PreVersionID))
+            {
+                <div title="@ViewBag.PreScheduleName" region="east" showclosebutton="false" expanded="false" showspliticon="true" width="500px">
+                    <div id="predataTree" class="mini-treegrid" style="width:100%;height:100%;"
+                         url="GetVersionTreeList?VersionID=@ViewBag.PreVersionID" expandonload="true" showtreeicon="true" allowcellwrap="true"
+                         multiselect="true" borderstyle="border:0px;" allowheaderwrap="true"
+                         treecolumn="Name" idfield="WBSID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="TaskType"
+                         allowresize="false" fitcolumns="false">
+                        <div property="columns">
+                            <div type="indexcolumn" name="index"></div>
+                            <div name="Name" field="Value" displayfield="Name" width="200" headeralign="center">
+                                任务名称
+                            </div>
+                            <div field="PlanStartDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                                计划开始日期
+                            </div>
+                            <div field="PlanEndDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                                计划完成日期
+                            </div>
+                            <div field="FactStartDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                                实际开始日期
+                            </div>
+                            <div field="FactEndDate" width="80" align="center" headeralign="center" dateformat="yyyy-MM-dd">
+                                实际完成日期
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        <div title="center" region="center">
+            <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true"
+                 editnextrowcell="true" allowcelledit="true" virtualscroll="@ViewBag.VirtualScroll" autoload="false" 
+                 url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" oncellbeginedit="OnCellBeginEdit"
+                 oncellendedit="onCellEndEdit" multiselect="true" borderstyle="border:0px;" onnodeselect="onNodeSelect" allowheaderwrap="true"
+                 treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="TaskType"
+                 allowdrag="true" allowdrop="true" allowleafdropin="true" ongivefeedback="onGiveFeedback" ondrop="onNodeDrop"
+                 allowresize="false" fitcolumns="false">
+                <div property="columns">
+                    <div type="checkcolumn"></div>
+                    <div type="indexcolumn" name="index"></div>
+                    @{
+                        var scheduleDefine = ViewBag.Define as EPC.Logic.Domain.S_C_ScheduleDefine;
+                        if (!String.IsNullOrEmpty(scheduleDefine.ColDefine))
+                        {
+                            var colDefinelist = Formula.Helper.JsonHelper.ToList(scheduleDefine.ColDefine).OrderBy(a => a["sortIndex"].ToString());
+
+                            foreach (var colDefine in colDefinelist)
+                            {
+                                var name = "";
+                                if (colDefine.GetValue("treeCol") == "true")
+                                { name = "Name"; }
+
+                                if (colDefine.GetValue("visible") == "false") { continue; }
+
+                                if (!String.IsNullOrEmpty(colDefine.GetValue("displayField")))
+                                {
+                                    if (colDefine.GetValue("inputType") == "textbox")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" displayfield="@colDefine.GetValue("displayField")" width="@colDefine.GetValue("width")" headeralign="center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "textarea")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" displayfield="@colDefine.GetValue("displayField")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-textarea" style="width:100%;" />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "combobox")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" displayfield="@colDefine.GetValue("displayField")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-combobox" style="width:100%;" data="@colDefine.GetValue("EnumKey")" allowinput="true" />
+                                        </div>
+
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "ButtonEdit")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" displayfield="@colDefine.GetValue("displayField")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input name='@colDefine.GetValue("fieldName")' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "SingleFile")
+                                    {
+                                        <div name="Name" field="@colDefine.GetValue("fieldName")" displayfield="@colDefine.GetValue("displayField")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-fileupload" style="width: 100%;"
+                                                   flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                                                   uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "datepicker")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" displayfield="@colDefine.GetValue("displayField")" width="@colDefine.GetValue("width")" headeralign=" center" dateformat="yyyy-MM-dd" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    if (colDefine.GetValue("inputType") == "textbox")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "textarea")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-textarea" style="width:100%;" />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "combobox")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-combobox" style="width:100%;" data="@colDefine.GetValue("EnumKey")" allowinput="true" />
+                                        </div>
+
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "ButtonEdit")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input name='@colDefine.GetValue("fieldName")' property='editor' class='mini-buttonedit' allowinput='true' style='width:100%;' />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "SingleFile")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" width="@colDefine.GetValue("width")" headeralign=" center" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-fileupload" style="width: 100%;"
+                                                   flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                                                   uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+                                        </div>
+                                    }
+                                    else if (colDefine.GetValue("inputType") == "datepicker")
+                                    {
+                                        <div name="@name" field="@colDefine.GetValue("fieldName")" width="@colDefine.GetValue("width")" headeralign=" center" dateformat="yyyy-MM-dd" align="@colDefine.GetValue("align")">
+                                            @colDefine.GetValue("colName")
+                                            <input property="editor" class="mini-datepicker" style="width:100%;" />
+                                        </div>
+                                    }
+                                }
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display:none;">
+    <input class="mini-textbox" id="textboxEditor" />
+    <input class="mini-datepicker" id="datepickerEditor" />
+    <input class="mini-combobox" id="comboxEditor" />
+</div>
+<ul id="addMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen"></ul>
+<ul id="popupMenu" class="mini-contextmenu">
+    @{
+        if (ViewBag.ImportProject)
+        {
+            //songliangliang 暂时不显示 2018-6-27
+            @*<li name="importProject" iconcls="icon-add" onclick="importProject">从Project导入</li>*@
+        }
+        if (ViewBag.ImportTaskTemplate)
+        {
+            <li name="importTask" iconcls="icon-add" onclick="importTaskTemplate">从标准作业库导入</li>
+        }
+        if (ViewBag.ImportBid)
+        {
+            <li name="importBid" iconcls="icon-add" onclick="importBid">从投标设备导入</li>
+        }
+        if (ViewBag.ImportBOM)
+        {
+            <li name="importProcurementPlan" iconcls="icon-add" onclick="importBOM">从BOM设备导入</li>
+        }
+        if (ViewBag.ImportQBS)
+        {
+            <li name="importConstructionPlan" iconcls="icon-add" onclick="importQBS">从质量结构导入</li>
+        }
+        if (ViewBag.ImportExcel)
+        {
+            <li name="importExcel" iconcls="icon-add" onclick="thisImportExcel">从Excel文件导入</li>
+        }
+    }
+</ul>
+<script type="text/javascript">
+    var versionID = "@Html.Raw(ViewBag.VersionID)";
+    var defineID =  "@Html.Raw(ViewBag.DefineID)";
+    var readOnlyFields =  "@Html.Raw(ViewBag.ReadonlyField)";
+    var scheduleCode = "@Html.Raw(ViewBag.ScheduleCode)";// getQueryString("ScheduleCode");
+    var wbsNodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+    var attrDefines =@Html.Raw(ViewBag.AttrDefine);
+    var extendFieldDefines =@Html.Raw(ViewBag.ExtendFieldDefine);
+    @Html.GetEnum("Base.DesignRoleDefine")
+
+    addSingleUserSelector("UserRole");
+
+    for (var i = 0; i < attrDefines.length; i++) {
+        var attrDefine = attrDefines[i];
+        if(attrDefine.inputType=="ButtonEdit"){
+            var settings = mini.decode( attrDefine.Settings);
+            if(settings.SelectorKey=="SystemUser"){
+                if(settings.AllowMultiSelect=="false"){
+                    addSingleUserSelector(attrDefine.fieldName,{returnParams:settings.returnParams});
+                }
+                else{
+                    addMultiUserSelector(attrDefine.fieldName,{returnParams:settings.returnParams});
+                }
+            }
+            else
+            {
+                addSelector(attrDefine.fieldName,{returnParams:settings.returnParams});
+            }
+        }
+    }
+
+</script>
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div style="text-align:left; font-weight:bolder; color:red;">上一版内容</div>
+    <table class="mini-grid-table" cellspacing="0" cellpadding="0" style="width:700px;table-layout:fixed;">
+        <tr>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center">名称</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center"> 备注</td>
+        </tr>
+        <tr>
+            <td style="text-align: center">${Name}</td>
+            <td style="text-align: center">${Remark}</td>
+        </tr>
+    </table>
+</script>
+
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+
+<script type="text/javascript">
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var logicType = [{text:"FF",value:"0"},{text:"FS",value:"1"},{text:"SF",value:"2"},{text:"SS",value:"3"}];
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+
+    $(window).bind('beforeunload',function(){
+        var dataTree = mini.get("dataTree");
+        var changes =  dataTree.getChanges();
+        if(changes.length>0){
+            return false;
+        }
+    });
+
+    addGridEnum("PreTaskGrid", "Type", "logicType");
+
+
+    if (engineeringInfoID) {
+        var url = "GetTreeList?EngineeringInfoID=" + engineeringInfoID + "&DefineID="+defineID;
+        $("#dataTree").attr("url", url);
+    }
+    normalParamSettings.gridId = "dataTree";
+    windowParamSettings.gridId = "dataTree";
+    var showProjectImport = getQueryString("ProjectImport");
+    var showTaskImport = getQueryString("TaskImport");
+    var showEngineeringPlanImport = getQueryString("EngineeringPlanImport");
+    var showProcurementPlanImport = getQueryString("ProcurementPlanImport");
+
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node || node.NodeType == "Task") {
+            e.cancel = true;
+            return;
+        }
+        addExecuteParam("NodeID", node.ID);
+        execute("GetMenu", { showLoading: false, refresh: false, onComplete: function (data) {
+            menu.load(data);
+        }, validateForm: false, resetFormData:false
+        });
+    }
+
+    var showDiff =false;
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        if(record.NodeType!="Task"){
+            e.cellStyle = "font-weight:bolder;";
+        }
+        else if (field!="Weight") {
+            if (record.NodeType == "Root"){
+                e.cellStyle += "background:#F0F0F0;";
+            }
+
+            if(record.CanEdit!="1"){
+                e.cellStyle += "background:#F0F0F0;";
+            }
+            else if(field=="PlanDuration"&&record.TaskType=="MileStone"){
+                e.cellStyle += "background:#F0F0F0;";
+            }
+
+            if(field=="PlanStartDate"&&record.TaskType=="MileStone"){
+                e.cellStyle += "background:#F0F0F0;";
+            }
+
+            if(field=="FactStartDate"||field=="FactEndDate"){
+                e.cellStyle += "background:#F0F0F0;";
+            }
+
+            if (field == "Progress") {
+                e.cellStyle += "background:#F0F0F0;";
+            }
+
+            if(readOnlyFields.indexOf(field)>=0){
+                e.cellStyle += "background:#F0F0F0;";
+            }
+        }
+    }
+
+    function onNodeSelect(e) {
+        var node = e.selected;
+        var resourceGrid =  mini.get("UserRoleGrid");
+        var preTaskGrid =  mini.get("PreTaskGrid");
+        var deviceGrid =  mini.get("deviceInfoGrid");
+        var boqGrid =  mini.get("BOQGrid");
+        if(node&&node.NodeType=="Task"){
+            if(preTaskGrid){
+                if(node.PredecessorLink){
+                    if(preTaskGrid){
+                        preTaskGrid.setData(mini.decode(node.PredecessorLink));
+                    }
+                }
+                else
+                {
+                    preTaskGrid.clearRows();
+                }
+            }
+            if(resourceGrid){
+                if(node.UserResource){
+                    resourceGrid.setData(mini.decode(node.UserResource));
+                }
+                else{
+                    resourceGrid.clearRows();
+                }
+            }
+            if(deviceGrid){
+                if(node.DeviceInfo){
+                    deviceGrid.setData(mini.decode(node.DeviceInfo));
+                }
+                else{
+                    deviceGrid.clearRows();
+                }
+            }
+            if(boqGrid){
+                if(node.BOQInfo){
+                    boqGrid.setData(mini.decode(node.BOQInfo));
+                }
+                else{
+                    boqGrid.clearRows();
+                }
+            }
+        }
+        else{
+            if(preTaskGrid) preTaskGrid.clearRows();
+            if(resourceGrid){
+                if(node.UserResource){
+                    resourceGrid.setData(mini.decode(node.UserResource));
+                }
+            }
+            if(deviceGrid) deviceGrid.clearRows();
+            if(boqGrid) boqGrid.clearRows();
+        }
+    }
+
+    function viewVersionList() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=WBSVersionList&EngineeringInfoID=" + engineeringInfoID + "&ScheduleCode="+scheduleCode;
+        openWindow(url, {
+            refresh: false, title: "计划版本信息", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+
+    function addNode(e) {
+        var treeGrid = mini.get("dataTree");
+        var node = treeGrid.getSelectedNode(); if (!node) { msgUI("请至少选择一个节点"); return; }
+        addExecuteParam("EngineeringInfoID", engineeringInfoID);
+        addExecuteParam("ParentNodeID", node.ID);
+        addExecuteParam("DefineID", defineID);
+        execute("AddEmptyNode", { showLoading: true, refresh: false, onComplete: function (data) {
+            treeGrid.addNode(data,"add",node);
+        }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function insertNode() {
+        var treeGrid = mini.get("dataTree");
+        var node = treeGrid.getSelectedNode(); if (!node) { msgUI("请至少选择一个节点"); return; }
+        addExecuteParam("EngineeringInfoID", engineeringInfoID);
+        addExecuteParam("DefineID", defineID);
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("NodeType", node.NodeType);
+        execute("InsertEmptyNode", { showLoading: true, refresh: false, onComplete: function (data) {
+            treeGrid.addNode(data,"after",node);
+        }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function importProject() {
+
+    }
+
+    function importTaskTemplate() {
+        var url="TaskTemplateImport?EngineeringInfoID="+engineeringInfoID+"&ScheduleCode="+scheduleCode;
+        openWindow(url, { refresh: false, title: "作业导入", width: "90%", height: "95%",
+            onDestroy: function (data) {
+                if(data.ImportType=="Template"){
+                    addExecuteParam("TemplateID", data.Data.ID);
+                    addExecuteParam("EnginneeringInfoID", engineeringInfoID);
+                    addExecuteParam("DefineID", defineID);
+                    execute("ImportTemplate", { showLoading: true, refresh: false, onComplete: function (data) {
+                        msgUI("导入成功");
+                        mini.get("dataTree").reload();
+                    }, validateForm: false, resetFormData:false
+                    });
+                }
+                else if(data.ImportType=="Detail"){
+                    addExecuteParam("ListData", mini.encode(data.Data));
+                    addExecuteParam("EnginneeringInfoID", engineeringInfoID);
+                    addExecuteParam("DefineID", defineID);
+                    execute("ImportTaskTemplateDetail", { showLoading: true, refresh: false, onComplete: function (data) {
+                        msgUI("导入成功");
+                        mini.get("dataTree").reload();
+                    }, validateForm: false, resetFormData:false
+                    });
+                }
+            }
+        });
+    }
+
+    function importQBS() {
+        var treeGrid = mini.get("dataTree");
+        var node = treeGrid.getSelectedNode();
+        if (!node)
+        {
+            msgUI("请选择一个WBS节点"); return;
+        }
+        var url="/EPC/Quality/QBS/TreeListSelector?EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "质量结构导入", width: "85%", height: "95%",
+            onDestroy: function (data) {
+                if(data != 'close'){
+                    addExecuteParam("QBSData", mini.encode(data));
+                    addExecuteParam("NodeID", node.ID);
+                    addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                    addExecuteParam("DefineID", defineID);
+                    execute("ImportFromQBS", { showLoading: true, refresh: false, onComplete: function (data) {
+                        msgUI("导入成功");
+                        mini.get("dataTree").reload();
+                    }, validateForm: false, resetFormData:false
+                    });
+                }
+            }
+        });
+    }
+
+    var weightBeforeEdit;
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if(field=="Weight"){
+            weightBeforeEdit = record.Weight;
+            e.cancel = false;return;
+        }
+
+        if (record.NodeType == "Root"){
+            e.cancel = true;return;
+        }
+
+        else if(record.CanEdit != "1"){
+            e.cancel = true;return;
+        }
+
+        if(readOnlyFields.indexOf(field)>=0){
+            e.cancel = true;return;
+        }
+
+        if(field=="PlanDuration"&&record.TaskType=="MileStone"){
+            e.cancel = true;return;
+        }
+        if(field=="PlanStartDate"&&record.TaskType=="MileStone"){
+            e.cancel = true;return;
+        }
+        if(e.field=="TaskType"){
+            var editor = e.editor;
+            editor =
+            editor.setUrl("GetNodeType?ParentID="+record.ParentID+"&VersionID="+versionID);
+        }
+        if(e.field=="FactStartDate"||e.field=="FactEndDate"){
+            e.cancel = true;return;
+        }
+        if(e.field=="Progress"){
+            e.cancel = true;return;
+        }
+        if(e.field=="Value"){
+            if(e.record.IsEnum=="1"){
+                var comboEditor = mini.get("comboxEditor");
+                e.editor = comboEditor;
+                e.column.editor=comboEditor;
+                e.editor.set({valueFromSelect:true,allowInput:false});
+                e.editor.load("GetNodesInfo?ID="+record.ID);
+            }
+            else{
+                var textBoxEditor = mini.get("textboxEditor");
+                e.editor = textBoxEditor;
+                e.column.editor=textBoxEditor;
+            }
+        }
+    }
+
+
+    function validateDateSpan(tree,node,field,dataValue,taskType,header,maxDateField,minDateField) {
+        var ancestors = tree.getAncestors(node);
+        var miniDate; var maxDate;
+        for (var i = 0; i < ancestors.length; i++) {
+            var ancestor = ancestors[i];
+            if(ancestor.IsLocked=="1"){
+                if(minDateField){
+                    if(!miniDate||(ancestor[minDateField]&&miniDate<ancestor[minDateField])){
+                        miniDate = ancestor[minDateField];
+                    }
+                }
+                if(maxDateField){
+                    if(!maxDate||(ancestor[maxDateField]&&maxDate>ancestor[maxDateField])){
+                        maxDate =ancestor[maxDateField];
+                    }
+                }
+            }
+        }
+        if(!(maxDate instanceof Date)&&miniDate){
+            maxDate = new Date(Date.parse(maxDate.replace(/-/g, "/")))
+        }
+        if(!(miniDate instanceof Date)&&miniDate){
+            miniDate = new Date(Date.parse(miniDate.replace(/-/g, "/")))
+        }
+
+        if(taskType=="MileStone"){
+            if(field=="PlanStartDate"&&dataValue){
+                if(miniDate&&miniDate>dataValue){
+                    msgUI("【"+node.Name+"】起始时间不能小于"+mini.formatDate(miniDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanStartDate:null,PlanEndDate:null});      return false;
+                }
+                if(maxDate&&maxDate<dataValue){
+                    msgUI("【"+node.Name+"】起始时间不能大于"+mini.formatDate(maxDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanStartDate:null,PlanEndDate:null});      return false;
+                }
+            }
+            if(field=="PlanEndDate"&&dataValue){
+                if(maxDate&&maxDate<dataValue){
+                    msgUI("【"+node.Name+"】完成时间不能大于"+mini.formatDate(maxDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanEndDate:null,PlanStartDate:null});
+                    return false;
+                }
+                if(miniDate&&miniDate>dataValue){
+                    msgUI("【"+node.Name+"】完成时间不能小于"+mini.formatDate(miniDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanEndDate:null,PlanStartDate:null});
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            if(field=="PlanStartDate"&&dataValue){
+                if(node.PlanEndDate&& dataValue>node.PlanEndDate){
+                    msgUI("【"+node.Name+"】起始时间不能大于"+mini.formatDate(node.PlanEndDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanStartDate:null});      return false;
+                }
+                if(miniDate&&miniDate>dataValue){
+                    msgUI("【"+node.Name+"】起始时间不能小于"+mini.formatDate(miniDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanStartDate:null});      return false;
+                }
+                if(maxDate&&maxDate<dataValue){
+                    msgUI("【"+node.Name+"】起始时间不能大于"+mini.formatDate(maxDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanStartDate:null});      return false;
+                }
+            }
+            if(field=="PlanEndDate"&&dataValue){
+                if(node.PlanStartDate&& dataValue<node.PlanStartDate){
+                    msgUI("【"+node.Name+"】起始时间不能小于"+mini.formatDate(node.PlanStartDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanEndDate:null});      return false;
+                }
+                if(maxDate&&maxDate<dataValue){
+                    msgUI("【"+node.Name+"】完成时间不能大于"+mini.formatDate(maxDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanEndDate:null});
+                    return false;
+                }
+                if(miniDate&&miniDate>dataValue){
+                    msgUI("【"+node.Name+"】完成时间不能小于"+mini.formatDate(miniDate, "yyyy-MM-dd" ));
+                    tree.updateNode(node,{PlanEndDate:null});
+                    return false;
+                }
+            }
+            if(dataValue&&header){
+                if(miniDate&&miniDate>dataValue){
+                    msgUI("【"+node.Name+"】"+header+"不能小于"+mini.formatDate(miniDate, "yyyy-MM-dd" ));
+                    node[field]=null;
+                    tree.updateNode(node,node);   return false;
+                }
+                if(maxDate&&maxDate<dataValue){
+                    msgUI("【"+node.Name+"】"+header+"不能大于"+mini.formatDate(maxDate, "yyyy-MM-dd" ));
+                    node[field]=null;
+                    tree.updateNode(node,node);      return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function validateWeight(tree,node)
+    {
+        var children = tree.getChildNodes(getNodeByID(node.ParentID));
+        var totalWeight = 0;
+        $.each(children,function(index,item){
+            var tmp = parseFloat(item.Weight);
+            if(!isNaN(tmp))
+            {
+                totalWeight += tmp;
+            }
+        })
+
+        if(totalWeight > 100)
+        {
+            msgUI("同级节点的权重总和已超出100%,请重新输入！");
+            tree.updateNode(node,{Weight:weightBeforeEdit});
+            return false;
+        }
+
+        return true;
+    }
+
+    function onCellEndEdit(e) {
+        var sender = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if(record.TaskType=="MileStone"){
+            if(field=="PlanStartDate"||field=="PlanEndDate"){
+                if(!validateDateSpan(sender,record,field,e.value,record.TaskType,e.column.header.trim(),"PlanEndDate","PlanStartDate")){
+                    return;
+                }
+                if(e.value){
+                    sender.updateNode(record,{PlanStartDate:e.value,PlanEndDate:e.value,PlanDuration:0});
+                }
+                else
+                {
+                    sender.updateNode(record,{PlanStartDate:e.value,PlanEndDate:e.value});
+                }
+                _syncParentTask(sender,record);
+            }
+            else if(e.editor.type=="datepicker"){
+                if(!validateDateSpan(sender,record,"PlanEndDate",e.value,record.TaskType,e.column.header.trim())){
+                    return;
+                }
+                if(!validateExtendFieldValue(sender,record,field,e.value,e.column.header.trim())){
+                    return;
+                }
+            }
+        }
+        else if(record.TaskType=="FreeTask"){
+            if(e.editor.type=="datepicker"){
+                if(!validateDateSpan(sender,record,field,e.value,record.TaskType,e.column.header.trim(),field,"PlanStartDate")){
+                    return;
+                }
+                if(!validateExtendFieldValue(sender,record,field,e.value,e.column.header.trim())){
+                    return;
+                }
+            }
+        }
+        else{
+            if(field=="PlanStartDate"||field=="PlanEndDate"){
+                if(!validateDateSpan(sender,record,field,e.value,record.TaskType,e.column.header.trim(),"PlanEndDate","PlanStartDate")){
+                    return;
+                }
+                var duration=0;
+                var start=null; var finish =null;
+                if(field=="PlanStartDate"){
+                    start = e.value;
+                    finish = record.PlanEndDate;
+                }
+                else if(field=="PlanEndDate"){
+                    finish = e.value;
+                    start = record.PlanStartDate;
+                }
+                if(start&&finish){
+                    var days = parseInt((finish - start) / (3600 * 24 * 1000));
+                    duration = days + 1;
+                }
+                sender.updateNode(record,{PlanDuration:duration});
+                _syncParentTask(sender,record);
+            }
+            else if(e.editor.type=="datepicker"){
+                if(!validateDateSpan(sender,record,field,e.value,record.TaskType,e.column.header.trim(),field,"PlanStartDate")){
+                    return;
+                }
+                if(!validateExtendFieldValue(sender,record,field,e.value,e.column.header.trim())){
+                    return;
+                }
+            }
+        }
+
+        //设置实际完成率
+        if(field == "Weight")
+        {
+            if(!validateWeight(sender,record)){
+                return;
+            }
+        }
+        if(e.field=="Value"){
+            if (e.editor.getText) {
+                sender.updateNode(record,{Name:e.editor.getText()});
+            } else {
+                sender.updateNode(record,{Name:e.value});
+            }
+        }
+    }
+
+    function validateExtendFieldValue(tree,record,field,fieldValue,header) {
+        var extendField =null;
+        var minValue=null; var maxValue=null;
+        for (var i = 0; i < extendFieldDefines.length; i++) {
+            if(extendFieldDefines[i].RelateType.indexOf("date")<0){continue;}
+            if(extendFieldDefines[i].AttrField==field){
+                extendField = extendFieldDefines[i]
+                break;
+            }
+        }
+        if(extendField){
+            var sortIndex = extendField.SortIndex;
+            if(isNaN(sortIndex)){
+                sortIndex=0;
+            }
+            for (var i = 0; i < extendFieldDefines.length; i++) {
+                if(extendFieldDefines[i].RelateType.indexOf("date")<0){continue;}
+                if(extendFieldDefines[i].AttrField==field){continue;}
+                var extendSort = parseFloat( extendFieldDefines[i].SortIndex);
+                if(isNaN(extendSort))extendSort=0;
+                if(extendSort<sortIndex){
+                    if(minValue){
+                        var dateValue = record[extendFieldDefines[i].AttrField];
+                        if(!(dateValue instanceof Date)&&dateValue){
+                            dateValue = new Date(Date.parse(dateValue.replace(/-/g, "/")))
+                            if(minValue<dateValue)
+                                minValue=dateValue;
+                        }
+                    }
+                    else{
+                        minValue=record[extendFieldDefines[i].AttrField];
+                        if(!(minValue instanceof Date)&&minValue){
+                            minValue = new Date(Date.parse(minValue.replace(/-/g, "/")))
+                        }
+                    }
+                }
+                else if(extendSort>sortIndex){
+                    if(maxValue){
+                        var dateValue = record[extendFieldDefines[i].AttrField];
+                        if(!(dateValue instanceof Date)&&dateValue){
+                            dateValue = new Date(Date.parse(dateValue.replace(/-/g, "/")))
+                            if(maxValue>dateValue)
+                                maxValue=dateValue;
+                        }
+                    }
+                    else{
+                        maxValue=record[extendFieldDefines[i].AttrField];
+                        if(!(maxValue instanceof Date)&&maxValue){
+                            maxValue = new Date(Date.parse(maxValue.replace(/-/g, "/")))
+                        }
+                    }
+                }
+            }
+            if(minValue){
+                if( fieldValue<minValue){
+                    msgUI("时间不能小于【"+ mini.formatDate(minValue, "yyyy-MM-dd" ) +"】");
+                    record[field]=null;
+                    tree.updateNode(record,record);
+                    return false;
+                }
+            }
+            if(maxValue){
+                if(  fieldValue>maxValue){
+                    msgUI("时间不能大于【"+ mini.formatDate(maxValue, "yyyy-MM-dd" ) +"】");
+                    record[field]=null;
+                    tree.updateNode(record,record);
+                    return false;
+                }
+            }
+        }
+    }
+
+
+    function getNodeByID(id)
+    {
+        var dataTree = mini.get('dataTree');
+        var nodes = dataTree.findNodes(function (node) {
+            if (node.ID == id) return true;
+        });
+
+        if (nodes.length == 0)
+            return;
+
+        return nodes[0];
+    }
+
+    function create() {
+        msgUI("您确定要开始编制进度计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            addExecuteParam("ScheduleCode", scheduleCode);
+            execute("UpgradSchedule", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false, resetFormData:false
+            });
+        });
+    }
+
+    function upgrad() {
+        msgUI("您确定要升版进度计划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            addExecuteParam("ScheduleCode", scheduleCode);
+            execute("UpgradSchedule", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false, resetFormData:false
+            });
+        });
+    }
+
+    function publish() {
+        if (!engineeringInfoID) {
+            msgUI("没有指定项目ID，无法提交"); return;
+        }
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("EnginneeringInfoID", engineeringInfoID);
+        addExecuteParam("DefineID", defineID);
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                addExecuteParam("EnginneeringInfoID", engineeringInfoID);
+                addExecuteParam("DefineID", defineID);
+                execute("PublishSchedule", { showLoading: true, refresh: false, onComplete: function (responseData) {
+                    if(!responseData||!responseData.FormID)return;
+                    var url = "/EPC/Manage/ScheduleVersion/PageView?FlowCode=WBSVersion&TmplCode=WBSVersion&ID=" + responseData.FormID;
+                    openWindow(url, {
+                        refresh: false, title: "进度计划审批", width: "80%", height: "90%",
+                        onDestroy: function (data) {
+                            if (data == "close") return;
+                            window.location.reload();
+                        }
+                    });
+                }, validateForm: false, resetFormData:false
+                });
+            }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function refresh() {
+        var tree = mini.get("dataTree");
+        tree.reload();
+    }
+
+    function saveData() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("DefineID", defineID);
+        addExecuteParam("EngineeringInfoID", engineeringInfoID);
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    for (var m = 0; m < nodes.length; m++) {
+                        var node = nodes[m];
+                        if(node.ID==item.ID){
+                            tree.updateNode(node,{NodeType:item.NodeType,StructInfoID:item.StructInfoID});
+                        }
+                    }
+                }
+                tree.commitEdit();
+                tree.accept();
+            }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function gotoGantte() {
+        var url="Gantte?EngineeringInfoID="+engineeringInfoID+"&ScheduleCode="+scheduleCode;
+        window.location=url;
+    }
+
+
+    function onRemove() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+        msgUI("您确定要删除选中的内容吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", mini.encode(nodes));
+            addExecuteParam("DefineID",defineID);
+            execute("DeleteNodes", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    for (var i = 0; i < nodes.length; i++) {
+                        dataTree.removeNode(nodes[i]);
+                    }
+                }, validateForm: false, resetFormData:false
+            });
+        });
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function flowTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "80%", height: "85%",
+            onDestroy: function () { }
+        });
+    }
+
+    function _syncParentTask(tree,node) {
+        var ancestors = tree.getAncestors(node);
+        var list =  ancestors.reverse();
+        for (var i = 0; i < list.length; i++) {
+            var ancestor = list[i];
+            var start =null; var finish = null;
+            tree.eachChild(ancestor,function(child){
+                if(!start||(child.PlanStartDate && start>child.PlanStartDate)){
+                    start=child.PlanStartDate;
+                }
+                if( !finish|| ( finish<child.PlanEndDate&&child.PlanEndDate)){
+                    finish = child.PlanEndDate;
+                }
+            });
+            var duration=0;
+            if(start){
+                if(ancestor.IsLocked!="1"){
+                    tree.updateNode(ancestor,{PlanStartDate: start});
+                }
+            }
+            if(finish){
+                if(ancestor.IsLocked!="1"){
+                    tree.updateNode(ancestor,{PlanEndDate: finish});
+                }
+            }
+            if(ancestor.PlanStartDate&&ancestor.PlanEndDate){
+                var duration =0;
+                var days = parseInt((ancestor.PlanEndDate - ancestor.PlanStartDate) / (3600 * 24 * 1000));
+                duration = days + 1;
+                if(ancestor.IsLocked!="1"){
+                    tree.updateNode(ancestor,{PlanDuration:duration});
+                }
+            }
+        }
+    }
+
+    function addPredecessorLink() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if(!node||node.NodeType!="Task"){
+            msgUI("请选择一个作业");return;
+        }
+        var url="TaskSelector?VersionID="+versionID+"&ID="+node.ID+"&EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "紧前作业选择", width: 700, height: 600,
+            onDestroy: function (returnData) {
+                if(!returnData||returnData.length==0||returnData=="close"){return;}
+                addExecuteParam("NodeID", node.ID);
+                addExecuteParam("Operation", "Add");
+                addExecuteParam("ListData", mini.encode(returnData));
+                execute("SetNodePredecessorLink", { showLoading: true, refresh: false, onComplete: function (data) {
+                    dataTree.updateNode(node,{PredecessorLink:data});
+                    var preTaskGrid =  mini.get("PreTaskGrid");
+                    preTaskGrid.setData(mini.decode(node.PredecessorLink));
+                }, validateForm: false, resetFormData:false
+                });
+            }
+        });
+    }
+
+    function delPredecessorLink() {
+        var preTaskGrid =  mini.get("PreTaskGrid");
+        var rows = preTaskGrid.getSelecteds();
+        preTaskGrid.removeRows(rows);
+    }
+
+    function savePredecessorLink() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if(!node||node.NodeType!="Task"){
+            msgUI("请选择一个作业");return;
+        }
+        var preTaskGrid =  mini.get("PreTaskGrid");
+        preTaskGrid.commitEdit();
+        preTaskGrid.accept();
+        var listData =  preTaskGrid.getData();
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("Operation", "Save");
+        addExecuteParam("ListData", mini.encode(listData));
+        execute("SetNodePredecessorLink", { showLoading: true, refresh: false, onComplete: function (data) {
+            dataTree.updateNode(node,{PredecessorLink:data});
+            var preTaskGrid =  mini.get("PreTaskGrid");
+            preTaskGrid.setData(mini.decode(node.PredecessorLink));
+        }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function addUserRole() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if(!node||node.NodeType!="Task"){
+            msgUI("请选择一个作业");return;
+        }
+        var dataGrid = mini.get("UserRoleGrid");
+        if(dataGrid){
+            var row = {WBSID:node.ParentID,TaskID:node.ID,EngineeringInfoID:engineeringInfoID,ResourceType:"UserRole"};
+            dataGrid.addRow(row);
+        }
+    }
+
+    function delUserRole() {
+        var dataGrid =  mini.get("UserRoleGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.removeRows(rows);
+    }
+
+    function saveUserRole() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if(!node||node.NodeType!="Task"){
+            msgUI("请选择一个作业");return;
+        }
+        var dataGrid =  mini.get("UserRoleGrid");
+        dataGrid.commitEdit();
+        dataGrid.accept();
+        var listData =  dataGrid.getData();
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("Operation", "Save");
+        addExecuteParam("ListData", mini.encode(listData));
+        execute("SaveUserRole", { showLoading: true, refresh: false, onComplete: function (data) {
+            dataTree.updateNode(node,{UserResource:data});
+            var preTaskGrid =  mini.get("UserRoleGrid");
+            preTaskGrid.setData(mini.decode(node.UserResource));
+        }, validateForm: false, resetFormData:false
+        });
+    }
+
+    function showPre() {
+        var layout = mini.get("mainlayout");
+        var region = layout.getRegion("east");
+        if(region){
+            if(region.expanded){
+                layout.updateRegion("east", { expanded: false });
+            }
+            else{
+                layout.updateRegion("east", { expanded: true });
+            }
+        }
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+                var text1 = node.Code ? node.Code.toLowerCase() : "";
+                if (text1.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        addExecuteParam("nodeType", e.dragNode.NodeType);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false, resetFormData:false
+        });
+    }
+
+
+    function onDeviceGridCellEndEdit(e) {
+        setDeviceInfo();
+    }
+
+    function addBom() {
+        var dataGrid = mini.get("dataTree");
+        var children = dataGrid.getAllChildNodes(dataGrid.getRootNode());
+        var bomIDExist = [];
+        $.each(children,function(index,item){
+            if(item.DeviceInfo)
+            {
+                var deviceObjList = mini.decode(item.DeviceInfo);
+                if(deviceObjList)
+                {
+                    $.each(deviceObjList, function(index,item){
+                        bomIDExist.push(item.ID);
+                    })
+                }
+            }
+        })
+
+        var url="/MvcConfig/UI/List/PageView?TmplCode=MultiProcurementItemSelectForWBSPlan&EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "清单选择", width: "75%", height: "80%",
+            onDestroy: function (data) {
+                if(!data||data.length==0||data=="close"){
+                    return;
+                }
+                var deviceInfoGrid = mini.get("deviceInfoGrid");
+                if(deviceInfoGrid){
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i];
+                        //整个version下的唯一性
+                        var existBomID = $.grep(bomIDExist,function(bb,index){
+                            return item.ID == bb;
+                        });
+
+                        if(existBomID.length == 0){
+                            deviceInfoGrid.addRow(item,0);
+                        }
+
+                        //task下的唯一性
+                        //var bom = deviceInfoGrid.findRow(function(row){
+                        //    if(row.ID ==item.ID) return true;
+                        //    else return false;
+                        //});
+
+                        //if(!bom){
+                        //    deviceInfoGrid.addRow(item,0);
+                        //}
+                    }
+                    setDeviceInfo();
+                }
+            }
+        });
+    }
+
+    function delBom(){
+        var deviceInfoGrid = mini.get("deviceInfoGrid");
+        if(deviceInfoGrid){
+            var rows =deviceInfoGrid.getSelecteds();
+            if(rows.length==0){
+                msgUI("请选择一个清单");return;
+            }
+            deviceInfoGrid.removeRows(rows);
+        }
+        setDeviceInfo();
+    }
+
+    function setDeviceInfo() {
+        var deviceInfoGrid = mini.get("deviceInfoGrid");
+        if(deviceInfoGrid){
+            var deviceInfoData = deviceInfoGrid.getData();
+            var dataGrid = mini.get("dataTree");
+            var row = dataGrid.getSelected();
+            if (row) {
+                dataGrid.updateRow(row, {DeviceInfo:deviceInfoData});
+            }
+        }
+    }
+
+    function importBid() {
+        var url="/MvcConfig/UI/List/PageView?TmplCode=MultiBidOfferBomSelector&EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "投标清单选择", width: "75%", height: "80%",
+            onDestroy: function (data) {
+                if(!data||data.length==0||data=="close"){
+                    return;
+                }
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                addExecuteParam("VersionID", versionID);
+                execute("ImportBidBom", { showLoading: true, refresh: false, onComplete: function (resultData) {
+                    msgUI("导入成功");
+                    mini.get("dataTree").reload();
+                }, validateForm: false, resetFormData:false
+                });
+            }
+        });
+    }
+
+    function importBOM() {
+        var url="/MvcConfig/UI/List/PageView?TmplCode=MultiProcurementItemSelect&EngineeringInfoID="+engineeringInfoID;
+        openWindow(url, { refresh: false, title: "清单选择", width: "75%", height: "80%",
+            onDestroy: function (data) {
+                if(!data||data.length==0||data=="close"){
+                    return;
+                }
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                addExecuteParam("DefineID", defineID);
+                execute("ImportPBom", { showLoading: true, refresh: false, onComplete: function (resultData) {
+                    msgUI("导入成功");
+                    mini.get("dataTree").reload();
+                }, validateForm: false, resetFormData:false
+                });
+            }
+        });
+
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+
+        if (effect == "add") {
+            e.effect = "no";
+        }
+        else if (targetNode.NodeType != node.NodeType||targetNode.ParentID!=node.ParentID) {
+            e.effect = "no";
+        }
+    }
+
+    function calcProgress()
+    {
+        addExecuteParam("EngineeringInfoID", engineeringInfoID);
+        addExecuteParam("DefineID", defineID);
+        execute("CalcProgress", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                window.location.reload();
+            }, validateForm: false, resetFormData:false
+        });
+    }
+</script>

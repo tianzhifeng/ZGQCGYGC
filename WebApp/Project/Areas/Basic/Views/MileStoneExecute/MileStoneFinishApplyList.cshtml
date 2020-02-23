@@ -1,0 +1,181 @@
+﻿@{
+    ViewBag.Title = "里程碑完成申报";
+}
+<div class="mini-toolbar " style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+    <table>
+        <tr>
+            <td style="width: 100%">
+                <a class="mini-button" iconcls="icon-add" onclick="finishApply" plain="true">填报申请</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="quickSearch('Code,Name');"
+                       onbuttonclick="quickSearch('Name');" />
+                <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetList?MileStoneLevel=Project" style="width: 100%; height: 100%;"
+         multiselect="true" borderstyle="border:0;" allowcelledit="false" allowcellselect="true" onshowrowdetail="onShowRowDetail"
+         oncellvalidation="cellvalidation" ondrawcell="onDrawCell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div type="expandcolumn">
+            </div>
+            <div field="Name" width="200" allowsort="true">
+                里程碑名称
+            </div>
+            <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="100" allowsort="true" align="center">
+                计划完成时间
+            </div>
+            <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="100" allowsort="true" align="center">
+                原计划完成时间
+            </div>
+            <div field="FactFinishDate" width="120" headeralign="center" align="center" allowsort="true" dateformat="yyyy-MM-dd">
+                实际完成时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+            </div>
+            <div field="Weight" width="60" allowsort="true" align="right">
+                权重(%)
+            </div>
+            <div field="ApplyState" width="80" allowsort="true" align="center">
+                申请状态
+            </div>
+            <div field="ApplyUserName" width="80" allowsort="true" align="center">
+                申请人
+            </div>
+            <div field="ApplyDate" dateformat="yyyy-MM-dd" width="100" allowsort="true" align="center">
+                申请时间
+            </div>
+            <div field="ApplyFiles" width="60" allowsort="true" align="center">
+                申请附件
+            </div>
+        </div>
+    </div>
+</div>
+<div id="detailGrid_Form" style="display: none; width: 100%;">
+    <div id="changeGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 200px;" showfooter="false">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="ChangeReason" width="*" allowsort="true">
+                变更原因
+            </div>
+            <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                变更前计划完成时间
+            </div>
+            <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                计划完成时间
+            </div>
+            <div field="ChangeTime" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                变更时间
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 150px;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="15%" align="center">
+                        名称
+                    </td>
+                    <td width="35%">
+                        <input name="$LK$Name" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td width="10%" align="center"></td>
+                    <td width="35%"></td>
+                    <td width="5%" />
+                </tr>
+                <tr>
+                    <td align="center">
+                        计划完成日期
+                    </td>
+                    <td align="left">
+                        <input name="$FR$FactFinishDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                    <td align="center">
+                        至
+                    </td>
+                    <td align="left">
+                        <input name="$TO$FactFinishDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    addGridLink('dataGrid', 'Name', 'MileStoneFinishApplyEdit?FuncType=View&IDs={ID}', { width: '650px', height: '380', title: '查看申请' });
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "MileStoneLevel", "MileStoneLevel");
+
+    function cellvalidation(e) {
+        if (e.field == "FactFinishDate" && e.record.State == "@ViewBag.FinishState"
+        && (e.value == undefined || e.value == "")) {
+            e.isValid = false;
+        }
+    }
+
+    //批量上报
+    function finishApply() {
+        var grid = mini.get("dataGrid");
+        var data = grid.getSelecteds();
+        if (data.length == 0) {
+            msgUI("请选择一条里程碑");
+            return;
+        }
+
+        var ids = "";
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].ApplyState == "已完成" || data[i].ApplyState == "已申请") {
+                msgUI("【" + data[i].Name + "】已经提交过申请，请选择未提交申请的里程碑！");
+                return;
+            }
+            ids += data[i].ID + ",";
+        }
+        ids = ids.substring(0, ids.length - 1);
+
+        var url = "MileStoneFinishApplyEdit";
+        url = addUrlSearch(url);
+        url = addSearch(url, "IDs", ids);
+
+        openWindow(url, {
+            width: 650, height: 400,
+            title: "里程碑完成申请",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    var detailGrid_Form = document.getElementById("detailGrid_Form");
+    function onShowRowDetail(e) {
+
+        var grid = e.sender;
+        var row = e.record;
+        var td = grid.getRowDetailCellEl(row);
+
+        detailGrid_Form.style.display = "block";
+        td.appendChild(detailGrid_Form);
+
+        var changeGrid = mini.get("changeGrid");
+        changeGrid.setUrl("GetChangeList?MileStoneID=" + row.ID);
+        changeGrid.load();
+
+    }
+    function onDrawCell(e) {
+        if (e.field == "ApplyFiles" && e.value != "" && e.value != null) {
+            e.cellHtml = '<a href="#" onclick="DownloadFile(\'' + e.value + '\');">附件</a>';
+        }
+    }
+</script>

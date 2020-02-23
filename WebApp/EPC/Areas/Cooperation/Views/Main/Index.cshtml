@@ -1,0 +1,654 @@
+﻿<script src="/CommonWebResource/CoreLib/bootstrap/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+<script src="~/Scripts/Main/js/partial.js" type="text/javascript"></script>
+<link href="~/Scripts/Main/css/partial.css" rel="stylesheet" type="text/css" />
+@using Config.Logic;
+@using EPC.Logic;
+
+
+@{
+    int i = 0;
+    var status = string.Empty;
+}
+
+<div class="mini-fit">
+    <div class='rowBox'>
+        <div class='rowBox-left'>
+            <div class='topBar'>
+                <img class='miniLogo' src="~/Scripts/Main/img/icon-main01.png">
+                <span class='content'>工作联系单</span>
+            </div>
+            <div class='botBar'>
+                <div class='rowBox3Items content'>
+                    <div class="item">
+                        <div class='topTitle'>已发起</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onShowContacts('')">@ViewBag.ContactTotal</a></div>
+                        <div class='botTitle'>份工作联系单</div>
+                    </div>
+                    <div class="split"></div>
+                    <div class="item">
+                        <div class='topTitle'>其中待接收</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onShowContacts('Add')">@ViewBag.ContactAdd</a></div>
+                        <div class='botTitle'>份工作联系单</div>
+                    </div>
+                    <div class="split"></div>
+                    <div class="item">
+                        <div class='topTitle'>其中待解决</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onShowContacts('Received')">@ViewBag.ContactReceived</a></div>
+                        <div class='botTitle'>份工作联系单</div>
+                    </div>
+                </div>
+                <div class="plainBtn">
+                    <a href="javascript:void(0);" onclick="onAddContact()">
+                        <img src="~/Scripts/Main/img/icon-mainbt01.png">
+                        <div>发起工作<br>工作联系单</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class='rowBox-right ulTable'>
+            <div class="rightTab">
+                <div class="tab tabActive">待接收</div><div class="tab">我创建的</div>
+            </div>
+            <div class="rightTabContent">
+                <ul>
+                    @{
+                        i = 0;
+                        status = string.Empty;
+                        var add = "plainBtnOn";
+                        var receive = "plainBtnOn";
+                        var resolve = "plainBtnOn";
+                    }
+                    @foreach (var dic in ViewBag.ContactAddList as List<Dictionary<string, object>>)
+                    {
+                        i++;
+                        <li>
+                            <div class='leftTitle'>
+                                <div class='numSpot'>@i</div>
+                                <div class='title'><a href="javascript:void(0);" onclick="onViewContact('@dic["ID"]')">@dic["Name"]</a></div>
+                            </div>
+                            <div class='rightBtn'>
+                                @{
+                                    add = "plainBtnOn";
+                                    receive = "plainBtnOn";
+                                    resolve = "plainBtnOn";
+                                    status = dic.GetValue("Status");
+                                    switch (status)
+                                    {
+                                        case "Add"://新增
+                                            add = "plainBtn";
+                                            receive = "plainBtnOn";
+                                            resolve = "plainBtnOn";
+                                            break;
+
+                                        case "Receive"://已接收
+                                            add = "plainBtn";
+                                            receive = "plainBtn";
+                                            resolve = "plainBtnOn";
+                                            break;
+
+                                        case "Resolve"://已解决
+                                            add = "plainBtn";
+                                            receive = "plainBtn";
+                                            resolve = "plainBtn";
+                                            break;
+                                    }
+                                    dic.SetValue("CreateDate", string.IsNullOrWhiteSpace(dic.GetValue("CreateDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("CreateDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("ReceiveDate", string.IsNullOrWhiteSpace(dic.GetValue("ReceiveDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("ReceiveDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("ResolveDate", string.IsNullOrWhiteSpace(dic.GetValue("ResolveDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("ResolveDate")).ToString("yyyy-MM-dd"));
+                                }
+
+                                <a class='@add' title="@dic.GetValue("CreateDate")">新增</a><i>—</i>
+                                <a class='@receive' title="@dic.GetValue("ReceiveDate")">已接收</a><i>—</i>
+                                <a class='@resolve' title="@dic.GetValue("ResolveDate")">已解决</a>
+                            </div>
+                        </li>
+                                    }
+
+                </ul>
+
+                <ul style="display:none">
+                    @{
+                        i = 0;
+                        status = string.Empty;
+                        add = "plainBtnOn";
+                        receive = "plainBtnOn";
+                        resolve = "plainBtnOn";
+                    }
+                    @foreach (var dic in ViewBag.ContactCreate as List<Dictionary<string, object>>)
+                    {
+                        i++;
+                        <li>
+                            <div class='leftTitle'>
+                                <div class='numSpot'>@i</div>
+                                <div class='title'><a href="javascript:void(0);" onclick="onViewContact('@dic["ID"]')">@dic["Name"]</a></div>
+                            </div>
+                            <div class='rightBtn'>
+                                @{
+                                    add = "plainBtnOn";
+                                    receive = "plainBtnOn";
+                                    resolve = "plainBtnOn";
+                                    status = dic.GetValue("Status");
+                                    switch (status)
+                                    {
+                                        case "Add"://新增
+                                            add = "plainBtn";
+                                            receive = "plainBtnOn";
+                                            resolve = "plainBtnOn";
+                                            break;
+
+                                        case "Receive"://已接收
+                                            add = "plainBtn";
+                                            receive = "plainBtn";
+                                            resolve = "plainBtnOn";
+                                            break;
+
+                                        case "Resolve"://已解决
+                                            add = "plainBtn";
+                                            receive = "plainBtn";
+                                            resolve = "plainBtn";
+                                            break;
+                                    }
+                                    dic.SetValue("CreateDate", string.IsNullOrWhiteSpace(dic.GetValue("CreateDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("CreateDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("ReceiveDate", string.IsNullOrWhiteSpace(dic.GetValue("ReceiveDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("ReceiveDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("ResolveDate", string.IsNullOrWhiteSpace(dic.GetValue("ResolveDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("ResolveDate")).ToString("yyyy-MM-dd"));
+                                }
+
+                                <a class='@add' title="@dic.GetValue("CreateDate")">新增</a><i>—</i>
+                                <a class='@receive' title="@dic.GetValue("ReceiveDate")">已接收</a><i>—</i>
+                                <a class='@resolve' title="@dic.GetValue("ResolveDate")">已解决</a>
+                            </div>
+                        </li>
+                                    }
+
+                </ul>
+
+            </div>
+        </div>
+        <a class='rowMore' style="z-index:100" href="javascript:void(0);" onclick="onShowAllContacts('')"><img src="~/Scripts/Main/img/icon-mainmore.png"></a>
+
+    </div>
+
+    <div class='rowBox'>
+        <div class='rowBox-left'>
+            <div class='topBar'>
+                <img class='miniLogo' src="~/Scripts/Main/img/icon-main01.png">
+                <span class='content'>项目文档</span>
+            </div>
+            <div class='botBar'>
+                <div class='rowBox2Items content'>
+                    <div class="item">
+                        <div class='topTitle'>已上传</div>
+                        <div class='centerNumber'>
+                            <a href="javascript:void(0);" onclick="onViewMonthDocumentByState('')">@ViewBag.MonthDocumentCount</a>
+                        </div>
+                        <div class='botTitle'>份文档</div>
+                    </div>
+                    <div class="split"></div>
+                    <div class="item">
+                        <div class='topTitle'>待审核</div>
+                        <div class='centerNumber'>
+                            <a href="javascript:void(0);" onclick="onViewReviewDocument()">@ViewBag.MonthDocumentReviewCount</a>
+                        </div>
+                        <div class='botTitle'>份文档</div>
+                    </div>
+                </div>
+                <div class="plainBtn">
+                    <a href="javascript:void(0);" onclick="onAddDocument()">
+                        <img src="~/Scripts/Main/img/icon-mainbt01.png">
+                        <div>上传<br>项目文档</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class='rowBox-right'>
+            <div class="rightTab">
+                <div class="tab tabActive">待审核</div><div class="tab">我发起的</div>
+            </div>
+            <div class="rightTabContent">
+                <table>
+                    @{ int docNum = 0; }
+                    @foreach (var doc in ViewBag.ReviewDocumentList as List<Dictionary<string, object>>)
+                    {
+                        docNum++;
+                        doc["CreateDate"] = doc["CreateDate"] == null ? "" : Convert.ToDateTime(doc["CreateDate"]).ToString("yyyy-MM-dd") + "&emsp; 创建";
+                        doc["UpLoadDate"] = doc["UpLoadDate"] == null ? "" : Convert.ToDateTime(doc["UpLoadDate"]).ToString("yyyy-MM-dd") + "&emsp; 提交";
+                        doc["PassDate"] = doc["PassDate"] == null ? "" : Convert.ToDateTime(doc["PassDate"]).ToString("yyyy-MM-dd") + "&emsp; 通过";
+
+                        <tr>
+                            <td class="numTd"><div class='numSpot'>@docNum</div></td>
+                            <td style="width:100px;text-align:left"><a onclick="onViewDocument('@doc["ID"]')">@doc["Name"]</a></td>
+                            <td>@Html.Raw(doc["CreateDate"]) </td>
+                            <td>@Html.Raw(doc["UpLoadDate"]) </td>
+                            <td>@Html.Raw(doc["PassDate"]) </td>
+                        </tr>
+                    }
+                </table>
+
+                <table style="display:none">
+                    @{ int docNum1 = 0; }
+                    @foreach (var doc in ViewBag.MyDocumentList as List<Dictionary<string, object>>)
+                    {
+                        docNum1++;
+                        doc["CreateDate"] = doc["CreateDate"] == null ? "" : Convert.ToDateTime(doc["CreateDate"]).ToString("yyyy-MM-dd") + "&emsp; 创建";
+                        doc["UpLoadDate"] = doc["UpLoadDate"] == null ? "" : Convert.ToDateTime(doc["UpLoadDate"]).ToString("yyyy-MM-dd") + "&emsp; 提交";
+                        doc["PassDate"] = doc["PassDate"] == null ? "" : Convert.ToDateTime(doc["PassDate"]).ToString("yyyy-MM-dd") + "&emsp; 通过";
+
+                        <tr>
+                            <td class="numTd"><div class='numSpot'>@docNum1</div></td>
+                            <td style="width:100px;text-align:left"><a onclick="onViewDocument('@doc["ID"]')">@doc["Name"]</a></td>
+                            <td>@Html.Raw(doc["CreateDate"]) </td>
+                            <td>@Html.Raw(doc["UpLoadDate"]) </td>
+                            <td>@Html.Raw(doc["PassDate"]) </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+
+        <a class='rowMore' style="z-index:100" href="javascript:void(0);" onclick="onViewAllDocument()"><img src="~/Scripts/Main/img/icon-mainmore.png"></a>
+    </div>
+
+    <div class='rowBox'>
+        <div class='rowBox-left'>
+            <div class='topBar'>
+                <img class='miniLogo' src="~/Scripts/Main/img/icon-main01.png">
+                <span class='content'>问题整改</span>
+            </div>
+            <div class='botBar'>
+                <div class='rowBox3Items content'>
+                    <div class="item">
+                        <div class='topTitle'>已发起</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onShowProblems('')">@ViewBag.ProblemTotal</a></div>
+                        <div class='botTitle'>个整改问题</div>
+                    </div>
+                    <div class="split"></div>
+                    <div class="item">
+                        <div class='topTitle'>未整改</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onShowProblems('Register')">@ViewBag.ProblemRegister</a></div>
+                        <div class='botTitle'>个问题</div>
+                    </div>
+                    <div class="split"></div>
+                    <div class="item">
+                        <div class='topTitle'>已关闭</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onShowProblems('Closed')">@ViewBag.Closed</a></div>
+                        <div class='botTitle'>个问题</div>
+                    </div>
+                </div>
+                <div class="plainBtn">
+                    <a href="javascript:void(0);" onclick="onAddProblem()">
+                        <img src="~/Scripts/Main/img/icon-mainbt01.png">
+                        <div>发起问题<br>整改单</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class='rowBox-right ulTable'>
+            <div class="rightTab">
+                <div class="tab tabActive">待关闭</div><div class="tab">我发起的</div>
+            </div>
+            <div class="rightTabContent">
+                <ul>
+                    @{
+                        i = 0;
+                        status = string.Empty;
+                        var register = "plainBtnOn";
+                        var rectify = "plainBtnOn";
+                        var closed = "plainBtnOn";
+
+                    }
+                    @foreach (var dic in ViewBag.ProblemUnclosed as List<Dictionary<string, object>>)
+                    {
+                        i++;
+                        <li>
+                            <div class='leftTitle'>
+                                <div class='numSpot'>@i</div>
+                                <div class='title'><a href="javascript:void(0);" onclick="onViewProblem('@dic["ID"]')">@dic["Name"]</a></div>
+                            </div>
+                            <div class='rightBtn'>
+                                @{
+                                    register = "plainBtnOn";
+                                    rectify = "plainBtnOn";
+                                    closed = "plainBtnOn";
+                                    status = dic.GetValue("RectifyState");
+                                    switch (status)
+                                    {
+                                        case "Register"://待整改
+                                            register = "plainBtn";
+                                            rectify = "plainBtnOn";
+                                            closed = "plainBtnOn";
+                                            break;
+
+                                        case "Rectify"://已整改
+                                            register = "plainBtn";
+                                            rectify = "plainBtn";
+                                            closed = "plainBtnOn";
+                                            break;
+
+                                        case "Closed"://已关闭
+                                            register = "plainBtn";
+                                            rectify = "plainBtn";
+                                            closed = "plainBtn";
+                                            break;
+                                    }
+                                    dic.SetValue("CheckDate", string.IsNullOrWhiteSpace(dic.GetValue("CheckDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("CheckDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("RectifyDate", string.IsNullOrWhiteSpace(dic.GetValue("RectifyDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("RectifyDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("CloseDate", string.IsNullOrWhiteSpace(dic.GetValue("CloseDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("CloseDate")).ToString("yyyy-MM-dd"));
+                                }
+
+                                <a class='@register' title="@dic.GetValue("CheckDate")">待整改</a><i>—</i>
+                                <a class='@rectify' title="@dic.GetValue("RectifyDate")">已整改</a><i>—</i>
+                                <a class='@closed' title="@dic.GetValue("CloseDate")">已关闭</a>
+
+                            </div>
+                        </li>
+                                    }
+                </ul>
+
+                <ul style="display:none">
+                    @{
+                        i = 0;
+                        status = string.Empty;
+                        register = "plainBtnOn";
+                        rectify = "plainBtnOn";
+                        closed = "plainBtnOn";
+
+                    }
+                    @foreach (var dic in ViewBag.ProblemCreate as List<Dictionary<string, object>>)
+                    {
+                        i++;
+                        <li>
+                            <div class='leftTitle'>
+                                <div class='numSpot'>@i</div>
+                                <div class='title'><a href="javascript:void(0);" onclick="onViewProblem('@dic["ID"]')">@dic["Name"]</a></div>
+                            </div>
+                            <div class='rightBtn'>
+                                @{
+                                    register = "plainBtnOn";
+                                    rectify = "plainBtnOn";
+                                    closed = "plainBtnOn";
+                                    status = dic.GetValue("RectifyState");
+                                    switch (status)
+                                    {
+                                        case "Register"://待整改
+                                            register = "plainBtn";
+                                            rectify = "plainBtnOn";
+                                            closed = "plainBtnOn";
+                                            break;
+
+                                        case "Rectify"://已整改
+                                            register = "plainBtn";
+                                            rectify = "plainBtn";
+                                            closed = "plainBtnOn";
+                                            break;
+
+                                        case "Closed"://已关闭
+                                            register = "plainBtn";
+                                            rectify = "plainBtn";
+                                            closed = "plainBtn";
+                                            break;
+                                    }
+                                    dic.SetValue("CheckDate", string.IsNullOrWhiteSpace(dic.GetValue("CheckDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("CheckDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("RectifyDate", string.IsNullOrWhiteSpace(dic.GetValue("RectifyDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("RectifyDate")).ToString("yyyy-MM-dd"));
+                                    dic.SetValue("CloseDate", string.IsNullOrWhiteSpace(dic.GetValue("CloseDate")) ? string.Empty : Convert.ToDateTime(dic.GetValue("CloseDate")).ToString("yyyy-MM-dd"));
+                                }
+
+                                <a class='@register' title="@dic.GetValue("CheckDate")">待整改</a><i>—</i>
+                                <a class='@rectify' title="@dic.GetValue("RectifyDate")">已整改</a><i>—</i>
+                                <a class='@closed' title="@dic.GetValue("CloseDate")">已关闭</a>
+
+                            </div>
+                        </li>
+                                    }
+                </ul>
+
+
+            </div>
+        </div>
+        <a class='rowMore' style="z-index:100" href="javascript:void(0);" onclick="onShowProblems('')"><img src="~/Scripts/Main/img/icon-mainmore.png"></a>
+    </div>
+
+    <div class='rowBox'>
+        <div class='rowBox-left'>
+            <div class='topBar'>
+                <img class='miniLogo' src="~/Scripts/Main/img/icon-main03.png">
+                <span class='content'>上传现场照片</span>
+            </div>
+            <div class='botBar'>
+                <div class='rowBox2Items content'>
+                    <div class="item">
+                        <div class='topTitle'>本月已上传</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onViewMonthVideo()">@ViewBag.MonthVideoCount</a></div>
+                        <div class='botTitle'>份现场照片</div>
+                    </div>
+                    <div class="split"></div>
+                    <div class="item">
+                        <div class='topTitle'>其中待发布</div>
+                        <div class='centerNumber'><a href="javascript:void(0);" onclick="onViewMonthVideoForPublish()">@ViewBag.MonthVideoForPublishCount</a></div>
+                        <div class='botTitle'>份现场照片</div>
+                    </div>
+                </div>
+                <div class="plainBtn">
+                    <a href="javascript:void(0);" onclick="onAddVideo()">
+                        <img src="~/Scripts/Main/img/icon-mainbt03.png">
+                        <div>上传<br>现场照片</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class='rowBox-right'>
+            <div class="rightTab">
+                <div class="tab tabActive">待发布</div><div class="tab">我上传的</div>
+            </div>
+            <div class="rightTabContent ulPicGroup">
+                <ul>
+                    @foreach (var fileDic in ViewBag.VideoFileForPublish as List<Dictionary<string, object>>)
+                    {
+                        <li>
+                            <a href="javascript:void(0);" onclick="$onViewImages('@fileDic["FileID"]')"><img title="@fileDic["Title"]" src="/EPC/Cooperation/Video/GetPic?fileId=@fileDic["FileID"]&width=158&height=160"></a>
+                        </li>
+                    }
+                </ul>
+                <ul style="display:none">
+                    @foreach (var fileDic in ViewBag.MyVideoFile as List<Dictionary<string, object>>)
+                    {
+                        <li>
+                            <a href="javascript:void(0);" onclick="$onViewImages('@fileDic["FileID"]')"><img title="@fileDic["Title"]" src="/EPC/Cooperation/Video/GetPic?fileId=@fileDic["FileID"]&width=158&height=160"></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <a class='rowMore' style="z-index:100" href="javascript:void(0);" onclick="onViewAllVideo()"><img src="~/Scripts/Main/img/icon-mainmore.png"></a>
+    </div>
+</div>
+
+<script>
+    var EngineeringInfoID = '@ViewBag.EngineeringInfo';
+
+    //所有“工作联系单”明细
+    function onShowAllContacts(status) {
+        var url = "/EPC/Cooperation/WorkingContact/AllList?EngineeringInfo=" + EngineeringInfoID;
+        if (status)
+            url += "&Status=" + status;
+        openWindow(url, {
+            refresh: true, title: "联系单明细", width: "80%", height: "70%", addQueryString: false
+
+        });
+    }
+
+    //“工作联系单”明细
+    function onShowContacts(status) {
+        var url = "/EPC/Cooperation/WorkingContact/List?EngineeringInfo=" + EngineeringInfoID;
+        if (status)
+            url += "&Status=" + status;
+        openWindow(url, {
+            refresh: true, title: "联系单明细", width: "80%", height: "70%", addQueryString: false
+
+        });
+    }
+
+    //查看“工作联系单”
+    function onViewContact(ID) {
+        var url = "/EPC/Cooperation/WorkingContact/Edit?ID=" + ID + "&FuncType=View";
+        openWindow(url, {
+            refresh: true, title: "联系单", width: "60%", height: "70%", addQueryString: false
+
+        });
+    }
+
+    //发起“工作联系单”
+    function onAddContact() {
+        var url = "/EPC/Cooperation/WorkingContact/Edit?TmplCode=TCMWorkingContact&EngineeringInfo=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: true, title: "新增联系单", width: "60%", height: "70%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                window.location.reload();
+            }
+        });
+    }
+
+    //“问题整改单”明细
+    function onShowProblems(status) {
+        var url = "/EPC/Cooperation/Problem/ListView?EngineeringInfo=" + EngineeringInfoID;
+        if (status)
+            url += "&Status=" + status;
+
+        openWindow(url, {
+            refresh: true, title: "问题整改单明细", width: "80%", height: "70%", addQueryString: false
+
+        });
+    }
+
+    //查看问题整改单
+    function onViewProblem(ID) {
+        var url = "/EPC/Cooperation/Problem/Detail?ID=" + ID;
+        openWindow(url, {
+            refresh: true, title: "问题整改单", width: "80%", height: "90%", addQueryString: false
+        });
+    }
+
+    //发起“问题整改单”
+    function onAddProblem() {
+        var url = "/EPC/Cooperation/Problem/Edit?TmplCode=TCMRectifyProblems&EngineeringInfo=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "发起问题整改单", width: "60%", height: "70%", addQueryString: false,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                window.location.reload();
+            }
+        });
+
+    }
+
+    function onViewAllDocument() {
+        var url = "/EPC/Cooperation/Document/ViewList?EngineeringInfoID=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: true, title: "文档列表", width: "80%", height: "80%", addQueryString: false
+        });
+    }
+
+    function onViewMonthDocumentByState(state) {
+        var url = "/EPC/Cooperation/Document/ViewList?EngineeringInfoID=" + EngineeringInfoID + "&State=" + state + "&JustMonth=true";
+        openWindow(url, {
+            refresh: true, title: "本月文档列表", width: "80%", height: "80%", addQueryString: false
+        });
+    }
+
+    function onViewReviewDocument() {
+        var url = "/EPC/Cooperation/Document/ReviewList?EngineeringInfoID=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: true, title: "待审核文档", width: "80%", height: "80%", addQueryString: false
+        });
+    }
+
+    function onViewDocument(ID)
+    {
+        var url = "/EPC/Cooperation/Document/PageView?ID=" + ID + "&FuncType=View";
+        openWindow(url, {
+            refresh: true, title: "文档", width: "80%", height: "80%", addQueryString: false
+        });
+    }
+
+    function onAddDocument() {
+        var url = "/EPC/Cooperation/Document/List?EngineeringInfoID=" + EngineeringInfoID + '&level=1';
+        openWindow(url, {
+            refresh: false, title: "上传项目文档", width: "80%", height: "80%", addQueryString: false, onDestroy: function (data) {
+                if (data != "close") {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function onAddVideo()
+    {
+        var url = "/EPC/Cooperation/Video/PageView?TmplCode=SCProjectVideo&EngineeringInfoID=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "添加现场照片", width: "80%", height: "80%", addQueryString: false, onDestroy: function (data) {
+                if (data != "close") {
+
+                }
+            }
+        });
+    }
+
+    function onViewAllVideo() {
+        var url = "/EPC/Cooperation/Video/List?EngineeringInfoID=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "现场照片", width: "80%", height: "80%", addQueryString: false, onDestroy: function (data) {
+                if (data != "close") {
+
+                }
+            }
+        });
+    }
+
+    function onViewMonthVideo() {
+        var url = "/EPC/Cooperation/Video/List?MonthVideo=true&EngineeringInfoID=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "现场照片", width: "80%", height: "80%", addQueryString: false, onDestroy: function (data) {
+                if (data != "close") {
+
+                }
+            }
+        });
+    }
+
+    function onViewMonthVideoForPublish() {
+        var url = "/EPC/Cooperation/Video/List?MonthVideo=true&IsPublish=0&EngineeringInfoID=" + EngineeringInfoID;
+        openWindow(url, {
+            refresh: false, title: "现场照片", width: "80%", height: "80%", addQueryString: false, onDestroy: function (data) {
+                if (data != "close") {
+
+                }
+            }
+        });
+    }
+
+    $(function () {
+        //tab也切换
+        $(".rightTab .tab").live("click", function () {
+            if ($(this).hasClass("tabActive")) {
+                return;
+            }
+            else {
+                $.each($(this).parent().children(), function (index, item) {
+                    $(item).removeClass('tabActive');
+                })
+
+                $(this).addClass('tabActive');
+            }
+
+            var index = $($(this).parent().children()).index(this);
+            var rightTabContent = $(this).parent().parent().children()[1];
+
+            $.each($(rightTabContent).children(), function (index, item) {
+                $(item).css('display', 'none');
+            })
+            $($(rightTabContent).children()[index]).css('display', '');
+        });
+
+        $(".rightTabContent").niceScroll();
+    })
+</script>

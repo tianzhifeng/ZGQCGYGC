@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "ProjectList";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px; border-top: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入项目名称或项目编号" onenter="quickSearch('ProjectInfoName,ProjectInfoCode');"
+                    onbuttonclick="quickSearch('ProjectInfoName,ProjectInfoCode');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+        idfield="ProjectInfoName" multiselect="false" sortfield="ProjectInfoCode,ProjectInfoName"
+        sortorder="ASC,ASC" ondrawcell="onDrawingCell" onshowrowdetail="onShowRowDetail">
+        <div property="columns">
+           @* <div type="expandcolumn">
+            </div>*@
+            <div type="indexcolumn" headeralign="center">
+                序号
+            </div>
+            <div field="ProjectInfoName" name="ProjectInfoName" width="*" headeralign="center"
+                allowsort="true">
+                项目名称</div>
+            <div field="ProjectInfoCode" name="ProjectInfoCode" width="120" headeralign="center"
+                allowsort="true" align="center">
+                项目编号</div>
+            <div field="MajorName" width="90" headeralign="center" allowsort="true" align="center">
+                所在专业</div>
+            <div field="RoleName" headeralign="center" width="200" allowsort="true" align="left">
+                担任角色</div>
+            <div field="PersionView" width="80" headeralign="center" align="center">
+                任务</div>
+            <div field="TaskNotice" width="80" headeralign="center" align="center">
+                任务单</div>
+        </div>
+    </div>
+    <div id="detailGrid_Form" style="display: none; width: 100%;">
+        <div id="childGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 200px;"
+            showfooter="false">
+            <div property="columns">
+                <div field="DisplayName" width="*" headeralign="center" allowsort="true" align="left">
+                    名称</div>
+                <div field="ActivityKey" width="120" headeralign="center" allowsort="true" align="center">
+                    任务类型</div>
+                <div field="CreateDate" width="100" headeralign="center" dateformat="yyyy-MM-dd"
+                    allowsort="true" align="center">
+                    创建时间</div>
+                <div field="FinishDate" width="100" headeralign="center" dateformat="yyyy-MM-dd"
+                    allowsort="true" align="center">
+                    完成时间</div>
+                <div field="State" width="80" headeralign="center" allowsort="true" align="center">
+                    状态</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+   @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState)); 
+   @Html.GetEnum(typeof(Project.Logic.AuditType));
+   @Html.GetEnum("Project.Major")
+   addGridEnum("childGrid", "ActivityKey", "AuditType");
+   addGridEnum("childGrid", "State", "ProjectCommoneState");
+   addGridLink("dataGrid", "TaskNotice", "/Project/AutoUI/TaskNotice/PageView?TmplCode={TaskNoticeTmplCode}&ProjectInfoID={ID}&RelateField=ProjectInfoID&FuncType=view&FlowCode={TaskNoticeTmplCode}",
+    { 
+        linkText: '任务单',
+        title: '任务单',
+        width: '90%',
+        height: '80%'
+    });
+    addGridLink("dataGrid", "PersionView", "MainTab?ProjectInfoID={ID}&UserID=" + getQueryString("UserID"),
+    {
+        linkText: '工作详情',
+        title: '工作详情',
+        width: '80%',
+        height: '80%'
+    });
+</script>
+<script type="text/javascript">
+    var userID = getQueryString("UserID");
+    var state = getQueryString("State");
+    var url = "GetProjectList?UserID=" + userID + "&State=" + state;
+    $("#dataGrid").attr("url", url);
+    addGridEnum("dataGrid", "MajorName", "Major");
+
+    function onDrawingCell(e) {
+        var record = e.record, column = e.column, field = e.field, value = e.value;
+        if (field == "TaskNotice" && (record.TaskNoticeID == null || record.TaskNoticeID == ""))
+        { e.cellHtml = ''; }
+    }
+
+    var detailGrid_Form = document.getElementById("detailGrid_Form");
+    function onShowRowDetail(e) {
+        var grid = e.sender;
+        var row = e.record;
+        var td = grid.getRowDetailCellEl(row);
+        td.appendChild(detailGrid_Form);
+        detailGrid_Form.style.display = "block";
+        var childGrid = mini.get("childGrid");
+        childGrid.setUrl("GetActivity?ProjectInfoID=" + row.ID + "&UserID=" + userID);
+        childGrid.load();
+    } 
+    
+</script>

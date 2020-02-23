@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "OBSUserSelect";
+}
+<div class="mini-toolbar" style="padding: 0px; border: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" onclick="returnValue" plain="true">确定</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow('close')" plain="true">
+                    关闭
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+        <div title="east" showheader="false" region="east" showspliticon="false" width="350">
+            <div class="mini-fit">
+                <div id="userGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                     multiselect="true" borderstyle="border:0px;" showpager="false" ondrawcell="onDrawCell">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Remove" width="40" headeralign="center" align="center">
+                            删除
+                        </div>
+                        <div field="UserName" width="*" headeralign="center" align="center">
+                            姓名
+                        </div>
+                        <div field="RoleName" width="80" headeralign="center" align="center">
+                            角色
+                        </div>
+                        <div field="MajorName" width="80" headeralign="center" align="center">
+                            专业
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center">
+            <div id="subLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+                <div title="east" showheader="false" region="east" showspliticon="false" width="110"
+                     style="border-top: 0; border-bottom: 0; padding-top: 50px;">
+                    <table>
+                        @{
+                            for (int i = 0; i < ViewBag.RoleDefines.Count; i++)
+                            {
+                                var roleDefine = ViewBag.RoleDefines[i];
+                                <tr>
+                                    <td>
+                                        <a class="mini-button" iconcls="icon-downgrade" onclick="selectUser('@roleDefine.RoleCode','@roleDefine.RoleName')">@roleDefine.RoleName</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+                <div title="center" region="center" style="border-top: 0; border-left: 0; border-bottom: 0;">
+                    <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 100%;"></td>
+                                <td style="white-space: nowrap;">
+                                    <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入角色名称" onenter="quickSearch('RoleName');"
+                                           onbuttonclick="quickSearch('RoleName');" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                             idfield="ID" multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px;" showpager="false">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="UserName" width="60" headeralign="center" align="center">
+                                    人员姓名
+                                </div>
+                                <div field="RoleName" width="*" headeralign="center">
+                                    角色
+                                </div>
+                                <div field="MajorName" width="80" headeralign="center" align="center">
+                                    专业
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function onDrawCell(e) {
+        if (e.field == "Remove") {
+            e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/remove.gif' onclick='removeUserRow(\"" + e.record._id + "\")'  />";
+        }
+    }
+
+    function removeUserRow(_id) {
+        var grid = mini.get("userGrid");
+        var row = grid.findRow(function (row) {
+            if (row._id == _id) return true;
+        });
+        grid.removeRow(row);
+    }
+
+    function selectUser(roleCode, roleName) {
+        var grid = mini.get("dataGrid");
+        var users = grid.getSelecteds();
+        var userGrid = mini.get("userGrid");
+        for (var i = 0; i < users.length; i++) {
+            var user = users[i];
+            var data = userGrid.findRow(function (row) {
+                if (row.UserID == user.UserID && row.MajorValue == user.MajorValue && row.RoleCode == roleCode)
+                    return true;
+            });
+            if (data) continue;
+            var newRow = {
+                UserID: user.UserID, UserName: user.UserName, RoleCode: roleCode,
+                RoleName: roleName, MajorValue: user.MajorValue, MajorName: user.MajorName
+            };
+            userGrid.addRow(newRow);
+        }
+        grid.clearSelect();
+    }
+
+    function returnValue() {
+        var userGrid = mini.get("userGrid");
+        var data = userGrid.getData();
+        closeWindow(data);
+    }
+
+</script>

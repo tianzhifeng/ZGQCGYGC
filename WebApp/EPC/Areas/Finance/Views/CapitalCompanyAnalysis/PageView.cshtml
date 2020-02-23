@@ -1,0 +1,439 @@
+﻿@{
+    ViewBag.Title = "公司资金计划";
+}
+<div class="mini-toolbar">
+    <table style="width:100%">
+        <tr style="width:100%">
+            <td style="width:50%">
+                <a class="mini-button" iconcls="icon-edit" onclick="autoCalc">读取实际数据</a>
+                <a class="mini-button" iconcls="icon-save" onclick="savelist();" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-excel" onclick="exportToExcel" plain="true">导出Excel</a>
+            </td>
+            <td style="text-align:right;width:50%">
+                年：<input name="planYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                         value="0" data="@ViewBag.Years" onvaluechanged="yearValueChanged()" />
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div class="mini-fit">
+    <div id="Detail" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+         url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" oncellbeginedit="onCellBeginEdit"
+         oncellendedit="onCellEndEdit" multiselect="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="CapitalPlanType"
+         allowresize="false" fitcolumns="false" allowleafdropin="true">
+
+        <div property='columns'>
+
+        </div>
+    </div>
+</div>
+
+<div class="mini-fileupload" style="display:none"></div>
+<!--导出Excel——模拟异步ajax提交表单 -->
+<form id='excelFormPlan' style='display:none;' action='ExportExcel' method='post' target='excelIFramePlan'>
+    <input type='hidden' name='templateCode' />
+    <input type='hidden' name='monthColArr' />
+    <input type='hidden' name='title' />
+    <input type='hidden' name='jsonColumns' />
+</form>
+
+<script>
+    var yearAndMonthCol = [];
+    var yearAndMonthColPre = '@Html.Raw(ViewBag.YearAndMonthColPre)';
+    var yearAndMonthColValueSuf = '@Html.Raw(ViewBag.YearAndMonthColValueSuf)';
+    var yearAndMonthColRealDeltaSuf = '@Html.Raw(ViewBag.YearAndMonthColRealDeltaSuf)';
+    var templateCode = getQueryString("templateCode");
+
+    function pageLoad() {
+        yearValueChanged();
+    }
+
+    function yearValueChanged() {
+        var year = '';
+        if (mini.getbyName("planYear")) {
+            year = mini.getbyName("planYear").text;
+            yearAndMonthCol = getYearAndMonth(year + '-1', year + '-12');
+            setColumn();
+            loadDetail()
+        }
+    }
+
+    function savelist() {
+        var dataTree = mini.get('Detail');
+        var year = mini.getbyName("planYear").text;
+        addExecuteParam("year", year);
+        addExecuteParam("listData", dataTree.data);
+        execute("SaveList?templateCode=" + templateCode, {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.accept();
+            }, validateForm: false
+        });
+    }
+
+    function exportToExcel() {
+        downloadExcelData(yearAndMonthCol);
+    }
+
+    // 响应自定义列的弹出层的导出事件
+    function downloadExcelData(monthColArr) {
+        var grid = mini.get("Detail");
+        var dataurl = changeToFullUrl(grid.getUrl());
+        var includeColumns = "";
+        var columns = grid.getBottomColumns();
+        function getColumns(columns) {
+            columns = columns.clone();
+            for (var i = columns.length - 1; i >= 0; i--) {
+                var column = columns[i];
+                if (!column.field || !column.header || column.header.trim() == '' || column.visible == false) {
+                    columns.removeAt(i);
+                } else {
+                    if (includeColumns.length == 0 || includeColumns.indexOf(column.field.toLowerCase() + ',') >= 0) {
+                        var c = { ChineseName: column.header.trim(), FieldName: column.field, TableName: 'Detail' };
+                        // 判断是否为时间字段，设置格式化字符串
+                        if (column.dateFormat) {
+                            c.DateFormat = column.dateFormat;
+                        }
+                        //导出excel使用显示字段
+                        if (column.displayField) {
+                            c.FieldName = column.displayField;
+                        }
+                        if (column.dataType) {
+                            c.DataType = column.dataType;
+                        }
+
+                        columns[i] = c;
+                    }
+                }
+            }
+            return columns;
+        }
+
+        var columns = getColumns(columns);
+        // 提交下载表单（利用iframe模拟Ajax）
+        var $excelForm = $("#excelFormPlan");
+        if ($excelForm.length == 0) {
+            alert('请确保ID为excelForm的表单存在！');
+        }
+
+        var year = mini.getbyName("planYear").text;
+        var title = year + '年' + document.title;
+        var formData = {
+            templateCode: templateCode,
+            title: title,
+            monthColArr: mini.encode(monthColArr),
+            jsonColumns: mini.encode(columns)
+        };
+        for (var p in formData) {
+            $excelForm.find("input[name='" + p + "']").val(formData[p]);
+        }
+        $excelForm.submit();
+    }
+
+    function onDrawingCell(e) {
+        var dataGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        if (field && field != 'Name') {
+            {
+                var tmps = $.grep(yearAndMonthCol, function (n, i) {
+                    return n.colName + yearAndMonthColValueSuf == field;
+                });
+
+                if (tmps.length > 0 && record.HaveLink) {
+                    if (record.SourceLink.indexOf("{year}") == -1) {
+                        msgUI('\'' + record.Name + '\'的\'' + field + '对应计划数据窗体url链接中未包含参数{year}');
+
+                    }
+                    else if (record.SourceLink.indexOf("{month}") == -1) {
+                        msgUI('\'' + record.Name + '\'的\'' + field + '\'对应计划数据窗体url链接中未包含参数{month}');
+                    }
+                    else {
+                        var link = record.SourceLink.replace('{year}', tmps[0].year).replace('{month}', tmps[0].month);
+                        e.cellHtml = '<a style="cursor:pointer;color:blue;text-decoration:underline" onclick="thisOpenWindow(\'' + link + '\')">' + e.cellHtml + '</a>';
+                    }
+                }
+            };
+
+            {
+                var tmps = $.grep(yearAndMonthCol, function (n, i) {
+                    return n.colName == field;
+                });
+
+                if (tmps.length > 0 && record.HaveRealLink) {
+                    if (record.RealSourceLink.indexOf("{year}") == -1) {
+                        msgUI('\'' + record.Name + '\'的\'' + field + '对应实际数据窗体url链接中未包含参数{year}');
+
+                    }
+                    else if (record.RealSourceLink.indexOf("{month}") == -1) {
+                        msgUI('\'' + record.Name + '\'的\'' + field + '\'对应实际数据窗体url链接中未包含参数{month}');
+                    }
+                    else {
+                        var link = record.RealSourceLink.replace('{year}', tmps[0].year).replace('{month}', tmps[0].month);
+                        e.cellHtml = '<a style="cursor:pointer;color:blue;text-decoration:underline" onclick="thisOpenWindow(\'' + link + '\')">' + e.cellHtml + '</a>';
+                    }
+                }
+
+                //if (tmps.length > 0 && record.HaveRealLink) {
+                //    var link = record.RealSourceLink + "?" + "year=" + tmps[0].year + "&month=" + tmps[0].month;
+                //    e.cellHtml = '<a style="cursor:pointer;color:blue;text-decoration:underline" onclick="thisOpenWindow(\'' + link + '\')">' + e.cellHtml + '</a>';
+                //};
+            }
+        }
+
+        if (record.ParentID == '') {
+            if (record.CapitalPlanType == "Total") {
+                //e.cellStyle = "background:yellow;font-weight:bold;"
+                if (field && field != 'Name') {
+                    if (record[field] > 0) {
+                        e.cellStyle += "color:green";
+                    }
+                    else {
+                        e.cellStyle += "color:red";
+                    }
+                }
+            }
+            else if (record.CapitalPlanType == "Initial") {
+                //e.cellStyle = "background:#BBFFFF;";
+            }
+            else if (record.CapitalPlanType == "In") {
+                //e.cellStyle = "background:green;color:white";
+            }
+            else if (record.CapitalPlanType == "Out") {
+                //e.cellStyle = "background:red;color:white";
+            }
+        }
+    }
+    //为了打开窗体的click
+    var clickForOpenWindow = false;
+    function thisOpenWindow(url) {
+        openWindow(url, { width: '70%', height: '60%' });
+        clickForOpenWindow = true;
+    }
+    function onCellBeginEdit(e) {
+        if (clickForOpenWindow) {
+            e.cancel = true;
+            clickForOpenWindow = false;
+        }
+        if (e.row.IsReadOnly) {
+            e.cancel = true;
+        }
+
+    }
+
+    function onCellEndEdit(e) {
+        var field = e.field;
+        var parentId = e.row.ParentID;
+        //算delta
+        var planVal = parseFloat(e.row[field + yearAndMonthColValueSuf]);
+        var realVal = parseFloat(e.row[field]);
+        var delta = realVal - planVal;
+        if (!isNaN(delta))
+            eval("mini.get('Detail').updateNode(e.row, { " + field + yearAndMonthColRealDeltaSuf + ": delta });");
+
+        reCalcParent(parentId, field);
+        reCalcTotal(field);
+    }
+
+    function setColumn() {
+        var columns = [
+            { type: "indexcolumn", width: 40 },
+            { field: "Name", name: "Name", width: 180, headerAlign: "center", align: "left", allowSort: false, header: "名称\\日期" }
+        ];
+
+        for (i = 0; i < yearAndMonthCol.length; i++) {
+            var tmp = yearAndMonthCol[i];
+            columns.push(
+                {
+                    headerAlign: "center",
+                    header: tmp.year + '年' + tmp.month + '月',
+                    columns:
+                        [
+                        { field: tmp.colName + yearAndMonthColValueSuf, width: 100, headerAlign: "center", align: "right", numberFormat: '0.00', vtype: 'required;float', allowSort: false, header: '计划(元)' },
+                        { field: tmp.colName, width: 100, headerAlign: "center", align: "right", numberFormat: '0.00', vtype: 'required;float', allowSort: false, header: '实际(元)', editor: { type: "textbox" } },
+                        { field: tmp.colName + yearAndMonthColRealDeltaSuf, width: 100, headerAlign: "center", align: "right", numberFormat: '0.00', vtype: 'required;float', allowSort: false, header: '实际-计划' }
+                        ]
+                }
+                );
+        }
+        var dataTree = mini.get('Detail');
+        dataTree.set({ columns: columns });
+        dataTree.frozenColumns(0, 1);
+    }
+
+    function loadDetail() {
+        if (!templateCode) {
+            msgUI('未指定模板(url参数中没有模板参数templateCode)');
+            return;
+        }
+
+        var dataTree = mini.get('Detail');
+        addExecuteParam("monthColArr", yearAndMonthCol);
+        execute('GetDetailList?templateCode=' + templateCode, {
+            showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                if (data) {
+                    dataTree.loadList(data, "ID", "ParentID");
+                }
+            }
+        });
+    }
+
+    function getNode(ID) {
+        var dataTree = mini.get('Detail');
+        var nodes = dataTree.findNodes(function (node) {
+            if (node.ID == ID) return true;
+        });
+
+        if (nodes.length == 0)
+            return;
+
+        return nodes[0];
+    }
+
+    function getTopNode(parentID) {
+        var dataTree = mini.get('Detail');
+        var tops = dataTree.findNodes(function (node) {
+            if (node.ID == parentID) return true;
+        });
+
+        if (tops.length == 0)
+            return;
+
+        return tops[0];
+    }
+
+    function getTotalNode() {
+        var dataTree = mini.get('Detail');
+        var total = dataTree.findNodes(function (node) {
+            if (node.CapitalPlanType == 'Total') return true;
+        });
+
+        return total[0];
+    }
+
+    function reCalcParent(id, field) {
+        var currentNode = getNode(id);
+        if (!currentNode)
+            return;
+
+        var dataTree = mini.get('Detail');
+        var children = dataTree.findNodes(function (node) {
+            if (node.ParentID == id) return true;
+        });
+
+        var res = 0;
+        for (i = 0; i < children.length; i++) {
+            var tmp = parseFloat(children[i][field]);
+            res += isNaN(tmp) ? 0 : tmp;
+        }
+
+        eval("mini.get('Detail').updateNode(currentNode, { " + field + ": res });");
+
+        //算delta
+        var planVal = parseFloat(currentNode[field + yearAndMonthColValueSuf]);
+        var realVal = parseFloat(currentNode[field]);
+        var delta = realVal - planVal;
+        if (!isNaN(delta))
+            eval("mini.get('Detail').updateNode(currentNode, { " + field + yearAndMonthColRealDeltaSuf + ": delta });");
+
+        reCalcParent(currentNode.ParentID, field);
+    }
+
+    function reCalcTotal(field) {
+        var totalNode = getTotalNode();
+        if (!totalNode)
+            return;
+
+        var dataTree = mini.get('Detail');
+        var parents = dataTree.findNodes(function (node) {
+            if (node.ParentID == '' && node.CapitalPlanType != 'Total') return true;
+        });
+
+        var res = 0;
+        for (i = 0; i < parents.length; i++) {
+            var tmp = parseFloat(parents[i][field]);
+            var addOrSub = parseFloat(parents[i].AddOrSub);
+            res += isNaN(tmp) ? 0 : addOrSub * tmp;
+        }
+
+        eval("mini.get('Detail').updateNode(totalNode, { " + field + ": res });");
+
+        //算delta
+        var planVal = parseFloat(totalNode[field + yearAndMonthColValueSuf]);
+        var realVal = parseFloat(totalNode[field]);
+        var delta = realVal - planVal;
+        if (!isNaN(delta))
+            eval("mini.get('Detail').updateNode(totalNode, { " + field + yearAndMonthColRealDeltaSuf + ": delta });");
+    }
+
+    function autoCalc() {
+        var allChildren = mini.get('Detail').getAllChildNodes();
+        for (i = 0; i < yearAndMonthCol.length; i++) {
+            var nodesHaveSource = [];
+            for (j = 0; j < allChildren.length; j++) {
+
+                if (allChildren[j].HaveSource) {
+                    nodesHaveSource.push(allChildren[j]);
+                }
+            }
+
+            if (nodesHaveSource.length > 0) {
+                addExecuteParam("nodesHaveSource", nodesHaveSource);
+                addExecuteParam("yearAndMonth", yearAndMonthCol[i]);
+                execute("GetSourceResult", {
+                    showLoading: true, refresh: false, validateForm: false, onComplete: function (data) {
+                        if (data) {
+                            for (k = 0; k < data.length; k++) {
+                                var curNode = getNode(data[k].ID);
+                                eval("mini.get('Detail').updateNode(curNode, { " + data[k].colName + ": " + data[k].SourceVal + " });");
+
+                                //算delta
+                                var planVal = parseFloat(curNode[data[k].colName + yearAndMonthColValueSuf]);
+                                var realVal = parseFloat(curNode[data[k].colName]);
+                                var delta = realVal - planVal;
+                                if (!isNaN(delta))
+                                    eval("mini.get('Detail').updateNode(curNode, { " + data[k].colName + yearAndMonthColRealDeltaSuf + ": delta });");
+
+                                reCalcParent(data[k].ParentID, data[k].colName);
+                                reCalcTotal(data[k].colName);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    function getYearAndMonth(start, end) {
+        var result = [];
+        var starts = start.split('-');
+        var ends = end.split('-');
+        var staYear = parseInt(starts[0]);
+        var staMon = parseInt(starts[1]);
+        var endYear = parseInt(ends[0]);
+        var endMon = parseInt(ends[1]);
+        result.push({ colName: yearAndMonthColPre + staMon, year: staYear, month: staMon });
+        while (staYear <= endYear) {
+            if (staYear === endYear) {
+                while (staMon < endMon) {
+                    staMon++;
+                    result.push({ colName: yearAndMonthColPre + staMon, year: staYear, month: staMon });
+                }
+                staYear++;
+            } else {
+                staMon++;
+                if (staMon > 12) {
+                    staMon = 1;
+                    staYear++;
+                }
+                result.push({ colName: yearAndMonthColPre + staMon, year: staYear, month: staMon });
+            }
+        }
+
+        return result;
+    }
+</script>
+

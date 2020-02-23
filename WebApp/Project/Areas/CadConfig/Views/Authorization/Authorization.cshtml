@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "Authorize";
+}
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" style="width: 150px;" emptytext="请输入编号或名称" onenter="quickSearch('RoleCode,RoleName');"
+                            onbuttonclick="quickSearch('RoleCode,RoleName');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" showpager="false" class="mini-datagrid" style="width: 100%; height: 100%;"
+                idfield="ID" multiselect="false" allowcelledit="true" allowcellselect="true" oncellendedit="oncellendedit">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="RoleName" width="*" headeralign="center" allowsort="true">
+                        角色名称
+                    </div>
+                    <div field="RoleCode" width="120" headeralign="center" allowsort="true" align="center">
+                        编号
+                    </div>
+                    <div header="节点数据权限" headeralign="center">
+                        <div property="columns">
+                            <div type="checkboxcolumn" field="User" truevalue="True" falsevalue="False" width="100" headeralign="center">
+                                个人
+                            </div>
+                            <div type="checkboxcolumn" field="Major" truevalue="True" falsevalue="False" width="100" headeralign="center">
+                                专业
+                            </div>
+                            <div type="checkboxcolumn" field="Project" truevalue="True" falsevalue="False" width="100" headeralign="center">
+                                项目
+                            </div>
+                        </div>
+                    </div>
+                    <div header="成果操作权限" headeralign="center">
+                        <div property="columns">
+                            <div type="checkboxcolumn" field="HasCRUDAuth" truevalue="True" falsevalue="False" width="100" headeralign="center">
+                                增删改
+                            </div>
+                            <div type="checkboxcolumn" field="HasPrintAuth" truevalue="True" falsevalue="False" width="100" headeralign="center">
+                                打印
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<script type="text/javascript">
+    var roleType = [{ text: "项目角色", value: "ProjectRoleType" }, { text: "系统角色", value: "SysRoleType" }, { text: "组织角色", value: "OrgRoleType" }];
+    addGridEnum("mygrid", "AuthArea", "CADArea");
+
+    function oncellendedit(e) {
+        var field = e.field, value = e.value, rec = e.record;
+        var ary = ["User", "Major", "Project", "HasCRUDAuth", "HasPrintAuth"];
+        if ($.inArray(field, ary) > -1 && value != undefined) {
+            if ($.inArray(field, ary) < 3) {
+                for (var i = 0; i < 3; i++) {
+                    if (ary[i] == field)
+                        rec[field] = value;
+                    else
+                        rec[ary[i]] = "False";
+                }
+            }
+            addExecuteParam("Data", mini.encode(rec));
+            execute("SetAuth", {
+                showLoading: true, onComplete: function (data) {
+                    e.sender.reload();
+                }
+            });
+        }
+    }
+</script>

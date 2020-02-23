@@ -1,0 +1,216 @@
+﻿@{
+    ViewBag.Title = "WBSTemplate";
+}
+<div id="Name" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="WBS模板" region="west" showheader="false" width="550" expanded="true" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="add({height:'300px'});" plain="true">
+                            增加</a> <a class="mini-button" iconcls="icon-edit" onclick="edit({height:'300px'});"
+                                plain="true">编辑</a> <a class="mini-button" iconcls="icon-remove" onclick="del()"
+                                    plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称或应用模式" style="width: 200px;"
+                            onenter="quickSearch('Name','ModeNames');" onbuttonclick="quickSearch('Name', 'ModeNames');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                idfield="ID" multiselect="true" borderstyle="border-right: 0;border-bottom: 0;"
+                onselectionchanged="onSelectionChanged">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="200" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="Code" width="150" headeralign="center" allowsort="true">
+                        编号
+                    </div>
+                    <div field="ModeNames" width="200" headeralign="center" allowsort="true">
+                        应用模式
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 5px; border-right: 0; border-left: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveWBS();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-node" onclick="importPackage();" plain="true">导入标准工作包</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delWBS()" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="treeGrid" class="mini-treegrid" style="width: 100%; height: 100%; border-right: 0;
+                border-left: 0;" url="GetTree" showtreeicon="true" treecolumn="Name" idfield="ID"
+                parentfield="ParentID" resultastree="false" allowresize="false" iconfield="WBSType"
+                fitcolumns="false" contextmenu="#treeMenu" multiselect="true" oncellbeginedit="OnCellBeginEdit"
+                ondrawcell="onDrawingCell" expandonload="1" allowcelledit="true" allowcellselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div name="Name" field="Name" width="350">
+                        名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="Code" width="300">
+                        编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="WorkLoad" width="120" align="right" vtype="float">
+                        定额工<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+</ul>
+<script type="text/javascript">
+    var lockedWBSType = "@Html.Raw(ViewBag.lockedWBSType)";
+
+</script>
+<script type="text/javascript">
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        if (!node || node.WBSType == "Work") {
+            e.cancel = true;
+            return;
+        }
+
+        var url = changeToFullUrl("GetMenu").split('?')[0] + "?ID=" + node.ID;
+        execute(url, {
+            async: false, showLoading: false, refresh: false, onComplete: function (data) {
+                menu.load(data);
+            }, validateForm: false
+        });
+    }
+
+    function onSelectionChanged(e) {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        var treeGrid = mini.get("treeGrid");
+        if (row) {
+            treeGrid.load({ TemplateID: row.ID });
+        }
+        else
+            treeGrid.load({ TemplateID: "" });
+    }
+
+    function addNode(e) {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个WBS节点"); return; }
+        var wbsType = e.sender.name;
+        var Ids = "";
+        for (var i = 0; i < nodes.length; i++) {
+            if (i == nodes.length - 1)
+                Ids += nodes[i].ID;
+            else
+                Ids += nodes[i].ID + ",";
+        }
+        var url = "WBSTemplateAdd"; var width = 750; var height = 450;
+        if (e.sender.attrDefine == "true") {
+            url = "WBSTemplateAddWithAttrDefine"; width = 550; height = 350;
+        }
+
+        url += "?ParentIDs=" + Ids + "&Type=" + wbsType;
+        openWindow(url, {
+            refresh: false, title: "新增节点", width: width, height: height,
+            onDestroy: function (data) {
+                treeGrid.reload();
+            }
+        });
+    }
+
+    function delWBS() {
+        var treeGrid = mini.get("treeGrid");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个WBS节点"); return; }
+        msgUI("删除WBS将删除下层所有子节点，是否继续？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("WBSInfo", mini.encode(nodes));
+            execute("DeleteWBS", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    treeGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onDrawingCell(e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        var locked = false;
+        if (record.IsEnumNode.toString() == "true")
+            locked = true;
+        if (record.WBSType == "Project") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if ((field == "Name") && locked) {
+            e.cellStyle = "background:#F0F0F0";
+        }
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        var locked = false;
+        if (record.IsEnumNode.toString() == "true")
+            locked = true;
+        if (record.WBSType == "Project") {
+            e.cancel = true;
+        }
+        else if ((field == "Name") && locked) {
+            e.cancel = true;
+        }
+    }
+
+
+    function importPackage(e) {
+        var url = "/Project/Basic/TaskPackage/TaskPackageImport";
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一个标准WBS模板"); return; }
+        openWindow(url, {
+            refresh: false, title: "工作包导入", width: 950, height: 500,
+            onDestroy: function (data) {
+                if (data == "close" || !data || data.length == 0) return;
+                addExecuteParam("DataSource", mini.encode(data));
+                addExecuteParam("TemplateID", row.ID);
+                execute("ImportPackage", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        mini.get("treeGrid").reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+
+    function saveWBS() {
+        var treeGrid = mini.get("treeGrid");
+        var data = treeGrid.getChanges();
+        addExecuteParam("WBSInfo", mini.encode(data));
+        execute("SaveWBS", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.reload();
+            }, validateForm: false
+        });
+
+    }
+
+</script>

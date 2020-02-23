@@ -1,0 +1,154 @@
+﻿<div id="{|ID|}" class="box box-primary" style="height:{|Height|}">
+    <div class="box-header">
+        <h3 class="box-title">
+            {|Title|}</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="ellipsis" onclick="moreDesignTask();">
+                <i class="fa fa-ellipsis-v"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" v-show="isLock()" data-widget="remove" onclick="$('#{|ID|}').data('hidden', 'true');dashboardChanged('{|ID|}');">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <ul class="list-group" id="designTaskList">
+            <li class="list-item list-item-task" v-for="item in list">
+                <div class="item-head" v-if="{|IsOldPortal|} || {|IsList|}" style="cursor: pointer;" title="{{item.DisplayName}}" v-on:click="openWindow(item);">
+                    <div class="taskno" >{{item.Index}}</div>
+                    <div class="tasktitle nowrap">
+                        <img v-if="isNew(item.CreateDate)" src="/PortalLTE/Images/new.png" />{{item.DisplayName}}  
+                    </div>
+                    <div class="date">
+                        {{item.CreateDate | date }}
+                    </div>
+                </div>
+                <div v-else class="item-head" style="cursor: pointer;" title="{{item.DisplayName}}" v-on:click="openWindow(item);">
+                    <div class="taskuser_ico">
+                            <img class="img-circle" style="height:40px;width:40px;" :src="item.UserIcoUrl" alt="头像">
+                    </div>
+                    <div class="new_task_right">
+                        <div class="new_title nowrap">
+                            <img v-if="isNew(item.CreateDate)" src="/PortalLTE/Images/new.png" />{{item.DisplayName}} 
+                        </div>
+                        <div class="user_time">
+                            创建人:{{item.CreateUser}}  创建时间:{{item.CreateDate | filterDate }}
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    function moreDesignTask() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=MyDesignTaskList&BlockType=Portal";
+        var opts = {
+            url: url,
+            title: "设计任务",
+            width: "80%",
+            height: "80%",
+            showMaxButton: true,
+            ondestroy: function (action) {
+
+            }
+        };
+        if (NoPopupLayer && NoPopupLayer != "true")
+            mini.open(opts);
+        else
+            window.open(url);
+    }
+</script>
+<script type="text/javascript">
+    var designTaskList = new Vue({
+        el: '#{|ID|}',
+        data: {
+            list: []
+        },
+        methods: {
+            openWindow: function (task) {
+                if (!task.FormWidth) task.FormWidth = "880";
+                if (!task.FormHeight) task.FormHeight = "550";
+                url = task.LinkUrl;
+                if (url.indexOf("?")>=0)
+                    url += "&ActivityID=" + task.ID;
+                else
+                    url += "?ActivityID=" + task.ID;
+                url += "&WBSID=" + task.WBSID;
+                url += "&TaskWorkID=" + task.BusniessID;
+                url += "&ProjectInfoID=" + task.ProjectInfoID;               
+
+                var opts = {
+                    url: url,
+                    title: "设计任务",
+                    width: task.FormWidth,
+                    height: task.FormHeight,
+                    showMaxButton: true,
+                    ondestroy: function (action) {
+                        GetDesignTask();
+                    }
+                };
+                if (NoPopupLayer && NoPopupLayer != "true")
+                    mini.open(opts);
+                else
+                    window.open(url);
+            },
+            isNew: function (input) {
+                var date = new Date(input);
+                var h = (new Date().getTime() - date.getTime()) / 1000 / 60 / 60;
+                if (h < PortalNewsTime)
+                    return true;
+                return false;
+            },
+            isLock: function (item) {
+                return getCache('isLockPortal') == 'false' || window.location.href.indexOf('/Base/UI/Portal/Portal') > 0;
+            }
+        },
+        filters: {
+            filterDate: function (input) {
+                var date = new Date(input);
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+                month = month < 10 ? "0" + month : month;
+                day = day < 10 ? "0" + day : day;
+                var hour = date.getHours();
+                hour = hour < 10 ? "0" + hour : hour;
+                var minute = date.getMinutes();
+                minute = minute < 10 ? "0" + minute : minute;
+                return year + "-" + month + "-" + day + " " + hour + ":" + minute;
+            }
+        }
+    });
+
+    function GetDesignTask() {
+        $.ajax({
+            url: "/PortalLTE/Main/GetDesignTask",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var list = $.parseJSON(data);
+                for (var i = 0; i < list.length; i++) {
+                    for (var key in list[i]) {
+                        if (key == 'CreateUserID')
+                            list[i]["UserIcoUrl"] = "/PortalLTE/Main/DeptUserImage?UserID=" + list[i][key].split(',')[0];
+                    }
+                }
+                designTaskList._data.list = list
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+    GetDesignTask();
+</script>

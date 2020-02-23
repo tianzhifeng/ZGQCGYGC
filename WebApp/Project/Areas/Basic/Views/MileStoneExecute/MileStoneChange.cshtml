@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "里程碑变更";
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save({action:'SaveChange'});">
+                    保存
+                </a> <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                    取消
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <form id="dataForm" method="post" url="GetChangeModel">
+        <input name="ID" class="mini-hidden" />
+        <input name="MileStoneID" class="mini-hidden" />
+        <input name="ProjectInfoID" class="mini-hidden" />
+        <input name="WBSID" class="mini-hidden" />
+        <input name="PreviosPlanFinishDate" class="mini-hidden" />
+        <input name="MileStoneType" class="mini-hidden" />
+        <input name="Code" class="mini-hidden" />
+        <div class="formDiv">
+            <fieldset>
+                <legend>变更信息</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%"></td>
+                            <td width="35%"></td>
+                            <td width="15%"></td>
+                            <td width="35%"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                里程碑名称
+                            </td>
+                            <td colspan="3">
+                                <input name="Name" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                原计划完成时间
+                            </td>
+                            <td>
+                                <input name="OrlPlanFinishDate" class="mini-datepicker" style="width: 100%" readonly="true" />
+                            </td>
+                            <td>
+                                计划完成时间
+                            </td>
+                            <td>
+                                <input name="PlanFinishDate" class="mini-datepicker" style="width: 100%" required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                权重(%)
+                            </td>
+                            <td>
+                                <input name="Weight" class="mini-textbox" style="width: 100%" vtype="int" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                变更原因
+                            </td>
+                            <td colspan="3">
+                                <input name="ChangeReason" class="mini-textarea" style="width: 100%; height: 100px;"
+                                       vtype="maxLength:100" required="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+</div>
+<script>
+    @Html.GetEnum(typeof(Project.Logic.MileStoneType));
+
+    function onFormSetData(data) {
+        setFormItemDisabled("Name");
+        setFormItemDisabled("OrlPlanFinishDate");
+    }
+
+</script>

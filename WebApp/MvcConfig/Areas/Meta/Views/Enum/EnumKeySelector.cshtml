@@ -1,0 +1,33 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-refer" onclick="returnEnumKey();">选择</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="enumKey" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name',{queryBoxId:'enumKey',gridId:'enumGrid'});" onbuttonclick="quickSearch('Code,Name',{queryBoxId:'enumKey',gridId:'enumGrid'});" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="enumGrid" class="mini-datagrid" style="width: 100%;" url="GetEnumList" showpager="false" multiSelect="true">
+    <div property="columns">
+        <div field="Code" width="150" allowsort="true">编号</div>
+        <div field="Name" width="*" allowsort="true">名称</div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function returnEnumKey() {
+        var grid = mini.get("enumGrid");
+        var rows = grid.getSelecteds();
+        for (var i = 0; i < rows.length; i++) {
+            rows[i]["ID"] = rows[i]["Code"];
+        }
+            
+        closeWindow(rows);
+    }
+</script>
+
+

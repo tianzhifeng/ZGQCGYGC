@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "DetailList";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addRow();" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveList()" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-excel" onclick="" plain="true">Excel导入</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" allowcelledit="true" allowcellselect="true" multiselect="true"
+         editnextonenterkey="true" editnextrowcell="true" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="200" headeralign="center" allowsort="false" vtype="required;">
+                名称<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="Code" width="100" headeralign="center" allowsort="false">
+                编号<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div type="comboboxcolumn" autoshowpopup="true" field="TaskType" headeralign="center" width="90" vtype="required;"
+                 allowsort="true" align="center">
+                作业类型<input property="editor" class="mini-combobox" style="width:100%;" data="TaskType" />
+            </div>
+            <div field="PhaseName" headeralign="center" width="60" allowsort="false" align="center">
+                阶段<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>          
+            <div field="SubProjectName" width="200" headeralign="center" allowsort="false">
+                系统/子项<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="DesignName" headeralign="center" width="100" allowsort="false" align="center">
+                设计阶段<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="MajorCode" displayfield="MajorName" autoshowpopup="true" headeralign="center" width="70" allowsort="false" align="center">
+                专业<input property="editor" class="mini-combobox" style="width:100%;" data="Major" />
+            </div>           
+            <div field="CategoryName" headeralign="center" width="250" allowsort="false" align="center">
+                案卷<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="MoudleName" headeralign="center" width="120" allowsort="false" align="center">
+                单元/单体<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>         
+            <div field="SortIndex" headeralign="center" width="50" allowsort="false" align="right" vtype="required;float;">
+                序号<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.TaskType))
+    @Html.GetEnum("Base.Major")
+    @Html.GetEnum("Base.Phase")
+</script>
+<script type="text/javascript">
+    var templateID = getQueryString("TemplateID");
+    $("#dataGrid").attr("url", "GetTaskDetailList?TemplateID=" + templateID);
+    function addRow() {
+        var row = { TemplateID: templateID };
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.addRow(row);
+        dataGrid.validateRow(row);
+    }
+
+    function del() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) return;
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("DeleteDetails", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.removeRows(rows);
+            }, validateForm: false
+        });
+
+    }
+
+</script>

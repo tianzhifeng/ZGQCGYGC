@@ -1,0 +1,157 @@
+﻿
+<style type="text/css">
+    .mini-grid .mini-grid-rightCell {
+        border-right-width: 0px;
+    }
+</style>
+<div class="mini-toolbar" id="btnDiv">
+    <a class="mini-button" iconcls="icon-refer" plain="true" onclick="returnValue">选择(当前已选： <b><span id="CurrentCount">0</span></b>人)</a>
+    <span class="separator"></span><a class="mini-button" iconcls="icon-remove" plain="true" onclick="closeWindow();">取消</a>
+</div>
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px;border-width:0px" allowresize="false" handlersize="0">
+        <div showcollapsebutton="false" size="48%" style="border-bottom: 0px; border-right: 0px;">
+            <div class="mini-toolbar gw-grid-toolbar" style="border-left: 0px; border-right: 0px;padding:0px">
+                <table style="border-spacing:0px;padding:0px">
+                    <tr>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit searchbox" id="key" emptytext="请输入工号或姓名" style="width: 100%" onenter="quickSearch('WorkNo,Name',{gridId:'dataGrid'});" onbuttonclick="quickSearch('WorkNo,Name',{gridId:'dataGrid'});" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" class="mini-datagrid" borderstyle="border-right:0px" style="width: 100%; height: 100%;" url="GetScopeUserList"
+                     multiselect="true">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="WorkNo" width="60" allowsort="true">
+                            工号
+                        </div>
+                        <div field="Name" width="60" allowsort="true">
+                            姓名
+                        </div>
+                        <div field="DeptName" width="*">
+                            当前部门
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="false" size="52%" style="border-bottom: 0px; border-left: 1px;">
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-left-width:1px; border-top:0px" allowresize="false" handlersize="0">
+                <div showcollapsebutton="false" size="5%" style="border:0px; padding-top: 180px; background-color: #F9F9F9">
+                    <div class="mini-fit" style="width: 100%">
+                        <a class="mini-button" iconcls="icon-right" onclick="addSelected"></a>
+                        <br><br>
+                        <br><br>
+                        <a class="mini-button" iconcls="icon-left" onclick="removeSelecteds"></a>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" size="95%" style="">
+                    <div class="mini-toolbar" style="border-top: 0px; border-bottom: 0px">
+                        已选择的人员：
+                    </div>
+                    <div class="mini-fit">
+                        <div id="selectedList" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-bottom:0px" showcheckbox="true" multiselect="true" showfooter="false" showpager="false">
+                            <div property="columns">
+                                @*<div type="checkcolumn"></div>*@
+                                <div field="Remove" width="60" align="center" headeralign="center">
+                                    移除
+                                </div>
+                                <div field="WorkNo" width="60" align="center" headeralign="center">
+                                    工号
+                                </div>
+                                <div field="Name" align="center" headeralign="center" width="*">
+                                    姓名
+                                </div>
+                                <div field="DeptName" headeralign="center" width="80">
+                                    部门
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    addGridButton('dataGrid', 'Name', {
+        onButtonClick: addSelected
+    });
+
+    addGridButton("selectedList", "Remove", {
+        linkText: "移除",
+        onButtonClick: function (row) {
+            var selectedList = mini.get("selectedList");
+            selectedList.removeRow(row);
+            $("#CurrentCount").text(mini.get("selectedList").getData().length);
+        }
+    });
+
+
+
+
+    function addSelected() {
+        var selectedList = mini.get("selectedList");
+        var selecteds = selectedList.getData();
+        var idMaps = {}; for (var i = 0, l = selecteds.length; i < l; i++) {
+            var o = selecteds[i];
+            var id = o["ID"];
+            idMaps[id] = o;
+        }
+
+        var grid = mini.get("dataGrid");
+        var items = grid.getSelecteds();
+
+        for (var i = items.length - 1; i >= 0; i--) {
+            var o = items[i];
+            var id = o["ID"];
+            if (idMaps[id] == null)
+                selectedList.addRow({ ID: id, Name: o["Name"], WorkNo: o["WorkNo"], DeptName: o["DeptName"], DeptID: o["DeptID"] });
+        }
+        $("#CurrentCount").text(mini.get("selectedList").getData().length);
+    }
+    function removeSelecteds() {
+        var selectedList = mini.get("selectedList");
+        var items = selectedList.getSelecteds();
+        selectedList.removeRows(items);
+        $("#CurrentCount").text(mini.get("selectedList").getData().length);
+    }
+
+    function returnValue() {
+        var selectedList = mini.get("selectedList");
+        closeWindow(selectedList.getData());
+    }
+
+    function onBeforeOpen(e) {
+        e.cancel = true;
+        //阻止浏览器默认右键菜单
+        e.htmlEvent.preventDefault();
+        return;
+    }
+
+    function setData(data) {
+        var selectedList = mini.get("selectedList");
+        var userIds = getValues(data, "ID");
+        addExecuteParam("ids", userIds);
+        execute("GetUsers", {
+            onComplete: function (users) {
+                var items = [];
+                $.each(userIds.split(','), function (i, userId) {
+                    $.each(users, function (i, user) {
+                        if (user.ID == userId) {
+                            items.push(user);
+                        }
+                    });
+                });
+                selectedList.addRows(items);
+                $("#CurrentCount").text(users.length);
+            }
+        });
+
+    }
+</script>

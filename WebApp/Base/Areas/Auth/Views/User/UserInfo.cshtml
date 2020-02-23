@@ -1,0 +1,104 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="height: 30px;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div title="center" region="center" style="border: 0;">
+    <form id="dataForm" method="post" url="GetUserInfo">
+    <input id="ID" name="ID" class="mini-hidden" />
+    <div class="formDiv" style="padding-top: 15px;">
+        <fieldset id="test">
+            <legend>个人信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="25%">
+                        </td>
+                        <td width="75%">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            工号
+                        </td>
+                        <td>
+                            <input name="WorkNo" class="mini-textbox asLabel" style="width: 100%" readonly="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            姓名
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox asLabel" style="width: 100%" readonly="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            联系电话
+                        </td>
+                        <td>
+                            <input name="Phone" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            手机
+                        </td>
+                        <td>
+                            <input name="MobilePhone" class="mini-textbox" style="width: 100%" vtype="float" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            邮箱
+                        </td>
+                        <td>
+                            <input name="Email" class="mini-textbox" style="width: 100%" vtype="email;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            联系地址
+                        </td>
+                        <td>
+                            <input name="Address" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function save() {
+        var form = new mini.Form("#dataForm");
+        var data = form.getData();      //获取表单多个控件的数据
+        var json = '[' + mini.encode(data) + ']';   //序列化成JSON
+        form.validate();
+        if (form.isValid() == false) return;
+        $.ajax({
+            url: "/Base/Auth/User/SaveUserInfo",
+            type: "post",
+            data: { data: json },
+            success: function (text) {
+                //增加新版报错分支
+                if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+
+                msgUI("修改成功!", 4, function (action) {
+                    closeWindow();
+                });
+            }
+        });
+    }
+</script>

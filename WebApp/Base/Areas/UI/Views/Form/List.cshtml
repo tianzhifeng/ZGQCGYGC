@@ -1,0 +1,309 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+    <div size="250" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="/Base/Meta/Category/GetTree?RootFullID=0" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+                onnodeclick="onNodeSelect" expandonload="1" contextmenu="#treeMenu" iconfield="IconClass"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="add({url:'Edit?CategoryID={ID}&ConnName={Code}&CategoryCode={CategoryCode}',paramFrom:'dataTree'});">增加</a>
+                        <a class="mini-button" iconcls="icon-copy" onclick="execute('Clone?FormID={ID}',{mustConfirm:true,mustSelectOneRow:true,actionTitle:'克隆'});">克隆</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                        <a class="mini-button" iconcls="icon-download" onclick="createWordTmpl();">生成Word导出</a>
+                        <a class="mini-button" iconcls="icon-download" onclick="exportSQL();">导出SQL</a>
+                        <a class="mini-button" iconcls="icon-copy" onclick="CreateVersion">创建版本</a>
+                        @if (System.Configuration.ConfigurationManager.AppSettings["CorpAuthEnabled"].ToLower() == "true" && Request["listType"]!= "subCompany")
+                        {
+                            <a class="mini-button" iconcls="icon-ok" onclick="SetCompanyAuth">授权到子公司</a>
+                        }
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');" onbuttonclick="quickSearch('Code,Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px" collapsegrouponload="false" url="GetFormList" frozenstartcolumn="0" frozenendcolumn="2" oncellclick="oncellclick" ondrawcell="ondrawcell">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Code" width="120" allowsort="true" align="center">
+                        表单编号
+                    </div>
+                    <div field="Name" width="150" allowsort="true">
+                        表单名称
+                    </div>
+                    <div headeralign="center" header="相关业务数据">
+                        <div property="columns">
+                            <div field="ConnName" width="80" allowsort="true" align="center">
+                                库名
+                            </div>
+                            <div field="TableName" width="100" allowsort="true" align="center">
+                                表名
+                            </div>
+                        </div>
+                    </div>
+                    <div field="ModifyTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm" width="120" allowsort="true">
+                        最后修订时间
+                    </div>
+                    <div field="VersionCount" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm" width="70" allowsort="true">
+                        版本信息
+                    </div>
+                    <div headeralign="center" header="修订">
+                        <div property="columns">
+                            <div field="Base" width="60" align="center">
+                                基本信息
+                            </div>
+                            <div field="Item" width="60" align="center">
+                                控件信息
+                            </div>
+                            <div field="CalItem" width="60" align="center">
+                                计算公式
+                            </div>
+                            <div field="MobileItems" width="80" align="center">
+                                移动端配置
+                            </div>
+                            <div field="Layout" width="60" align="center">
+                                布局信息
+                            </div>
+                            @if (System.Configuration.ConfigurationManager.AppSettings["IsUseMultilingual"] == "True")
+                            {
+                                <div field="LayoutEN" width="60" align="center">
+                                    英文布局
+                                </div>
+                            }
+                            <div field="LayoutPrint" width="60" align="center">
+                                打印布局
+                            </div>
+                            <div field="DefaultValue" width="60" align="center">
+                                数据源
+                            </div>
+                            <div field="SerialNumber" width="60" align="center">
+                                流水号
+                            </div>
+                            <div field="FlowLogic" width="60" align="center">
+                                流程逻辑
+                            </div>
+                        </div>
+                    </div>
+                    <div field="PreView" width="60" align="center">
+                        预览
+                    </div>
+                    <div field="Release" width="60" align="center">
+                        生成表
+                    </div>
+                    <div field="Export" width="80" align="center">
+                        导出HTML
+                    </div>
+                    <div field="ExportSql" width="80" align="center">
+                        导出Sql
+                    </div>
+                    @if (System.Configuration.ConfigurationManager.AppSettings["CorpAuthEnabled"].ToLower() == "true")
+                    {
+                        <div field="CompanyName" width="200">
+                            子公司权限
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="menuAddModule" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/ModuleEdit'});">增加模块</li>
+    <li name="menuEditModule" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/ModuleEdit'});">编辑模块</li>
+    <li name="menuDelModule" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除模块</li>
+    <li name="menuAddCategory" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/CategoryEdit?Code={Code}'});">增加分类</li>
+    <li name="menuEditCategory" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/CategoryEdit'});">编辑分类</li>
+    <li name="menuDelCategory" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">删除分类</li>
+</ul>
+<script type="text/javascript">
+    addGridLink("dataGrid", "PreView", "/MvcConfig/UI/Form/PageView?TmplCode={Code}&IsPreView=True", { title: '预览表单：{Name}', linkText: '预览' });
+    addGridLink("dataGrid", "Base", "Edit?ID={ID}", { linkText: '基本信息', width: 1000 });
+    //addGridLink("dataGrid", "Layout", "LayoutEdit?ID={ID}&TmplCode={Code}", { linkText: '布局信息', width: 1000 });
+    //addGridLink("dataGrid", "LayoutEN", "LayoutEnEdit?ID={ID}&TmplCode={Code}", { linkText: '英文布局', width: 1000 });
+    addGridLink("dataGrid", "LayoutPrint", "LayoutPrintEdit?ID={ID}&TmplCode={Code}", { linkText: '打印布局', width: 1000 });
+
+    addGridLink("dataGrid", "Item", "ItemList?FormID={ID}", { linkText: '控件信息', width: "95%", height: "95%" });
+    addGridLink("dataGrid", "CalItem", "CalItemList?FormID={ID}", { linkText: '计算公式', width: "95%", height: "95%" });
+    addGridLink("dataGrid", "MobileItems", "MobileItemsList?FormID={ID}", { linkText: '移动端配置', width: 1000 });
+
+    addGridLink("dataGrid", "MobileListSql", "MobileListSql?ID={ID}", { linkText: '移动端SQL', width: 1000, height: 400 });
+
+    addGridLink("dataGrid", "DefaultValue", "DefaultValueEdit?FormID={ID}", { linkText: '数据源', width: 1000 });
+    addGridLink("dataGrid", "SerialNumber", "SerialNumberEdit?FormID={ID}", { linkText: '流水号', width: 1000 });
+    addGridLink("dataGrid", "FlowLogic", "FlowLogicList?FormID={ID}", { linkText: '流程逻辑', width: 1000 });
+    addGridButton("dataGrid", "Release", { action: "ReleaseForm", actionTitle: "生成表" });
+    addGridLink("dataGrid", "VersionCount", "VersionList?Code={Code}", { title: '版本信息', width: 1000 });
+    addGridButton("dataGrid", "Export", {
+        linkText: '导出HTML', onButtonClick: function (row) {
+            var url = "/MvcConfig/UI/Form/ExportHtml?TmplCode=" + row["Code"];
+            window.open(url);
+        }
+    });
+    addGridButton("dataGrid", "ExportSql", {
+        linkText: '导出Sql', onButtonClick: function (row) {
+            var url = "/Base/UI/ExportSql/SqlFile?DefID=" + row["ID"] + "&FileCode=Form_" + row["Code"] + "&TableName=S_UI_Form";
+            window.location = url;
+        }
+    });
+
+    function ondrawcell(e) {
+        if (e.column.field == "Layout") {
+            e.cellHtml = '<a href="javascript:void(0)">布局</a>';
+        }
+        else if (e.column.field == "LayoutEN") {
+            e.cellHtml = '<a href="javascript:void(0)">英文布局</a>';
+        }
+    }
+
+    function oncellclick(e) {
+        if (e.column.field == "Layout") {
+            var url = "LayoutEdit";
+            if (e.record["IsUEditor"] == "T")
+                url = "LayoutEditUEditor";
+            url = url + "?ID=" + e.record["ID"] + "&TmplCode=" + e.record["Code"];
+            openWindow(url, { width: 1000, title: "布局", height: 686 });
+        }
+        else if (e.column.field == "LayoutEN") {
+            var url = "LayoutEnEdit";
+            if (e.record["IsUEditor"] == "T")
+                url = "LayoutENUEditor";
+            url = url + "?ID=" + e.record["ID"] + "&TmplCode=" + e.record["Code"];
+            openWindow(url, { width: 1000, title: "英文布局", height: 686 });
+        }
+    }
+
+    jQuery(".gw-grid-toolbar .mini-button").hide();
+</script>
+<script type="text/javascript">
+    //树节点点击事件
+    var url = "GetFormList";
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            jQuery(".gw-grid-toolbar .mini-button").show();
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID + "&NodeFullID=" + e.node.FullID + "&listType=" + getQueryString("listType"));
+            dataGrid.load();
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url + "?listType=" + getQueryString("listType"));
+            dataGrid.load();
+            jQuery(".gw-grid-toolbar .mini-button").hide();
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var menuAddModule = mini.getbyName("menuAddModule", menu);
+        var menuEditModule = mini.getbyName("menuEditModule", menu);
+        var menuDelModule = mini.getbyName("menuDelModule", menu);
+        var menuAddCategory = mini.getbyName("menuAddCategory", menu);
+        var menuEditCategory = mini.getbyName("menuEditCategory", menu);
+        var menuDelCategory = mini.getbyName("menuDelCategory", menu);
+
+        if (node.ParentID == null || node.ParentID == "") {
+            menuAddModule.show();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else if (node.ParentID == "0") {
+            menuAddModule.hide();
+            menuEditModule.show();
+            menuDelModule.show();
+            menuAddCategory.show();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else {
+            menuAddModule.hide();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.show();
+            menuDelCategory.show();
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    function exportSQL() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择记录！");
+            return;
+        }
+        var url = "/Base/UI/ExportSql/SqlFile?DefID=" + getValues(rows, "ID") + "&FileCode=FormSql&TableName=S_UI_Form";
+        window.location = url;
+    }
+</script>
+<script type="text/javascript">
+    function createWordTmpl() {
+        var grid = mini.get("dataGrid");
+        var Codes = getValues(grid.getSelecteds(), "Code");
+        var url = "/Base/UI/Word/CreateWordTmpl?TmplCode=" + Codes;
+        execute(url, {
+            onComplete: function (text) {
+                msgUI("创建成功！");
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function CreateVersion() {
+        //msgUI("确认创建新版本吗？", 2, function (act) {
+        //    if (act == "ok") {
+        //        execute('NewVersion?FormID={ID}', { mustSelectOneRow: true, actionTitle: '创建版本' });
+        //    }
+        //});
+        openWindow("VersionEdit?FormID={ID}", { mustSelectOneRow: true });
+    };
+
+    function SetCompanyAuth() {
+        openWindow("/MvcConfig/Auth/Org/Selector?SelectMode=Multi", {
+            title: '选择授权', width: '20%', height: '80%',
+            mustSelectRow: true,
+            onDestroy: function (data) {
+                if (data != "close") {
+                    var selectRowIds = getValues(mini.get("dataGrid").getSelecteds(), "ID");
+                    var orgIds = getValues(data, "ID");
+                    var orgNams = getValues(data, "Name");
+
+                    addExecuteParam("objIds", selectRowIds);
+                    addExecuteParam("orgIds", orgIds);
+                    addExecuteParam("orgNames", orgNams);
+                    execute("SetCompanyAuth", {
+                        showLoading: true, refresh: true, onComplete: function (result) {
+                            if (result.Result == "Y") {
+                                msgUI("授权成功！");
+                                mini.get("dataGrid").reload();
+                            }
+                            else {
+                                msgUI("授权失败！");
+                            }
+                        }, validateForm: false
+                    });
+                }
+            }
+        });
+    }
+
+</script>

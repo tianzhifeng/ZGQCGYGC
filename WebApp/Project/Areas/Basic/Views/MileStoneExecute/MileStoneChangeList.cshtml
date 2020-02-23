@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "里程碑变更";
+}
+<div class="mini-fit">
+    <div class="mini-toolbar " style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+        <table>
+            <tr>
+                <td style="width: 100%">
+                    <a class="mini-button" iconcls="icon-save" onclick="saveChange" plain="true">确定</a>
+                    <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow('close')" plain="true">
+                        关闭</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="mini-fit">
+        <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true"
+            borderstyle="border:0;" allowcelledit="true" allowcellselect="true" showpager="false"
+            url="GetListForChange">
+            <div property="columns">
+                <div type="checkcolumn">
+                </div>
+                <div field="Name" width="200" allowsort="true">
+                    里程碑名称
+                </div>
+                <div field="ChangeReason" width="*" allowsort="true">
+                    变更原因<input property="editor" class="mini-textbox" style="width: 100%;">
+                </div>
+                <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true"
+                    align="center">
+                    原计划完成时间
+                </div>
+                <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true"
+                    align="center">
+                    计划完成时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+                </div>
+                <div field="Weight" width="50" allowsort="true" align="center">
+                    权重(%)
+                </div>
+                <div field="State" width="50" allowsort="true" align="center">
+                    状态
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+    addGridEnum("dataGrid", "State", "ProjectCommoneState");
+
+    function saveChange()
+    {
+         var grid = mini.get("dataGrid");
+        grid.validate();
+        if (!grid.isValid()) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);
+            return;
+        }
+        var data = grid.getChanges();
+        addExecuteParam("ProjectInfoID", getQueryString("ProjectInfoID"));
+        addExecuteParam("ChangeMileStoneData", mini.encode(data));
+
+        execute("ChangeMileStone", {
+            refresh: false, showLoading: true,
+            onComplete: function (result) {
+                closeWindow(result);
+            }
+        });
+    }
+
+
+
+</script>

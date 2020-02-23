@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "成果编辑";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+         splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <input name="ProjectInfoID" class="mini-hidden" />
+            <input name="WBSID" class="mini-hidden" />
+            <input name="AuditID" class="mini-hidden" />
+            <input name="ChangeAuditID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            名称
+                        </td>
+                        <td style="padding-right: 40px;" colspan="3">
+                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            编号
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="Code" style="width: 100%" class="mini-textbox" required="true" />
+                        </td>
+                        <td>
+                            阶段
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="PhaseValue" class="mini-combobox" style="width: 100%;" textfield="text"
+                                   valuefield="value" required=" true" data="Phase" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            类型
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="FileType" class="mini-combobox" style="width: 100%;" textfield="text"
+                                   valuefield="value" data="ProductFileType" />
+                        </td>
+                        <td>
+                            单体
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="MonomerInfo" class="mini-combobox" style="width: 100%;" textfield="text"
+                                   valuefield="value" data="Monomer" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            折合A1
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="ToA1" style="width: 100%" class="mini-textbox" vtype="float" />
+                        </td>
+                        <td>
+                            图幅
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="FileSize" class="mini-combobox" style="width: 100%" textfield="text"
+                                   valuefield="value" data="BorderSize" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            版次
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="Edition" style="width: 100%" class="mini-textbox" />
+                        </td>
+                        <td>
+                        </td>
+                        <td style="padding-right: 40px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            成果附件
+                        </td>
+                        <td style="padding-right: 40px;" colspan="3">
+                            <input name="MainFile" class="mini-singlefile" style="width: 100%;" vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                    @{
+                        var ArchiveType = ViewBag.ArchiveType.Split(',');
+                        for (int i = 0; i < ArchiveType.Length; i++)
+                        {
+                            var file = ArchiveType[i];
+                            var name = "其他文件";
+                            if (file == "PdfFile") { name = "PDF文件"; }
+                            else if (file == "PlotFile") { name = "Plot文件"; }
+                            else if (file == "XrefFile") { name = "引用文件"; }
+                            else if (file == "DwfFile") { name = "Dwf文件"; }
+                            else if (file == "TiffFile") { name = "Tiff文件"; }
+                            else if (file == "SignPdfFile") { name = "盖章PDF文件"; }
+                            <tr>
+                                <td>
+                                    @name
+                                </td>
+                                <td style="padding-right: 40px;" colspan="3">
+                                    <input name="@file" class="mini-singlefile" style="width: 100%;" vtype="maxLength:100" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td>
+                            备注
+                        </td>
+                        <td style="padding-right: 40px;" colspan="3">
+                            <input name="Description" class="mini-textarea" style="width: 100%; height: 100px;"
+                                   vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.ProductFileType")
+    @Html.GetEnum("Project.BorderSize")
+    var Monomer = @Html.Raw(ViewBag.Monomer);
+    var Phase = @Html.Raw(ViewBag.Phase);
+</script>
+<script type="text/javascript">
+
+    function onFormSetData(data) {
+        //setFormItemDisabled("PhaseValue");
+    }
+
+</script>

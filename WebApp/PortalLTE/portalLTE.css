@@ -1,0 +1,1425 @@
+﻿
+/* 供portalLTE内嵌的网页使用  */
+body, td, th
+{
+    font-family: "微软雅黑",Arial,sans-serif;
+    font-size: 13px;
+    color: #666;
+}
+
+td
+{
+    line-height: 18px;
+}
+
+h1
+{
+    font-size: 24px;
+    color: #000;
+}
+
+.mini-textbox-border
+{
+    background: white;
+    border: solid 1px #cccccc;
+    border-radius: 5px;
+    padding: 0px: 5px;
+    width: auto;
+    height: 29px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+.mini-textbox-input
+{
+    height: 29px;
+    line-height: 20px;
+}
+
+.mini-textarea .mini-textbox-border
+{
+}
+
+.mini-textbox
+{
+    height: 31px;
+    margin: 0px 0;
+}
+
+body .mini-textarea
+{
+    height: 100%;
+    min-height: 100px;
+}
+
+.mini-buttonedit-border
+{
+    background: white;
+    border: solid 1px #cccccc;
+    width: auto;
+    border-radius: 5px;
+    padding: 5px;
+    height: 19px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    padding-right: 22px;
+    padding-left: 1px;
+}
+
+.mini-buttonedit
+{
+    height: 31px;
+    margin: 0px 0;
+}
+
+.mini-buttonedit-buttons
+{
+    top: 4px;
+}
+
+fieldset
+{
+    border-bottom: 0px #cdcdcd solid;
+    border-left: 0px #cdcdcd solid;
+    border-right: 0px #cdcdcd solid;
+    border-top: 1px #cdcdcd solid;
+}
+
+.mini-toolbar
+{
+    border: solid 1px #ccc;
+    border-bottom: 0px;
+    padding: 6px;
+    background-image: none;
+    background-color: #f9f9f9;
+    font-family: "微软雅黑",Arial,sans-serif;
+    min-height: 37px;
+}
+.mini-toolbar>table
+{
+    min-height: 37px;
+}
+.mini-layout-region .mini-toolbar,.mini-layout-region .mini-toolbar>table {
+    min-height:initial;
+}
+
+.mini-layout
+{
+    width: 500px;
+    height: 250px;
+    overflow: hidden;
+    font-size: 14px;
+    font-family: "微软雅黑",Arial,sans-serif;
+}
+
+.bootstrap-toolbar
+{
+    border-top: solid 1px #ccc !important;
+    border-right: solid 1px #ccc !important;
+    height: 37px !important;
+}
+
+.mini-button
+{
+    font-size: 12px;
+    font-family: "微软雅黑",Arial,sans-serif;
+}
+
+.mini-listbox-header
+{
+    background-image: none;
+    background-color: #f9f9f9;
+    border: #ccc 1px solid;
+    border-bottom: #ccc 1px solid;
+}
+
+.mini-listbox-showColumns .mini-listbox-header td
+{
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+
+.mini-listbox-showColumns .mini-listbox-view td
+{
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+
+.mini-listbox .mini-listbox-checkbox
+{
+    width: 28px;
+}
+
+.mini-grid-headerCell
+{
+    background-image: none;
+    background-color: #f9f9f9;
+    border-right: #ccc 1px solid;
+    border-bottom: #ccc 1px solid;
+}
+
+.mini-grid-topRightCell {
+    background-image: none;
+    background-color: #f9f9f9;
+    border-right: #ccc 0px solid;
+    border-bottom: #ccc 1px solid;
+}
+
+.mini-panel-border
+{
+    border: 0px solid #666;
+}
+
+.mini-grid-border
+{
+    border: 1px solid #ccc;
+}
+
+.mini-grid-cell-inner, .mini-grid-headerCell-inner
+{
+    font-size: 12px;
+    font-family: "微软雅黑",Arial,sans-serif;
+}
+
+.mini-grid-headerCell-outer
+{
+    position: relative;
+    padding-left: 4px;
+    padding-right: 2px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+
+.mini-grid-cell
+{
+    padding-left: 4px;
+    padding-right: 2px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+
+.mini-grid-newRow
+{
+    background: #FFF;
+}
+
+.mini-splitter-border
+{
+    border: solid 1px #ccc;
+}
+
+.mini-splitter-pane2
+{
+    border-left: solid 1px #ccc;
+}
+
+.mini-radiobuttonlist table label
+{
+    font-size: 14px;
+    font-family: "微软雅黑",Arial,sans-serif;
+    line-height: 29px;
+}
+
+.mini-checkbox
+{
+    font-size: 12px;
+    font-family: "微软雅黑",Arial,sans-serif;
+}
+
+.mini-auditsign div
+{
+    border: 1px solid #ccc !important;
+    border-radius: 5px;
+}
+
+.mini-auditsign table
+{
+    border: 0px solid #ccc;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+input, textarea, keygen, select, button
+{
+    font-size: 12px;
+    font-family: "微软雅黑",Arial,sans-serif !important;
+}
+/*.mini-menu-horizontal .mini-menu-inner
+{
+    padding: 6px;
+    _padding-bottom: 7px;
+    background-image: none;
+    background-color: #cfd6da;
+}*/
+.mini-menu-border
+{
+    border-bottom: 1px solid #ccc;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+.mini-menu
+{
+    font-size: 12px;
+    font-family: "微软雅黑",Arial,sans-serif;
+}
+/*.mini-menuitem
+{
+    line-height: 20px;
+    height: auto;
+    width: auto;
+    position: relative;
+    border: 1px solid #cdcdcd;
+    border-radius: 4px;
+    padding: 8px;
+    margin-right: 10px;
+}*/
+.mini-menuitem-hover
+{
+    border: solid 1px #cfd6da;
+    background-color: #cfd6da;
+    background-image: none;
+    color: #cfd6da;
+}
+
+    .mini-menuitem-hover .mini-menuitem-text
+    {
+        color: #FFF;
+    }
+
+.mini-menuitem-icon, .mini-menuitem-allow
+{
+    width: 0px;
+}
+
+.mini-panel-header
+{
+    background-color: rgb(60, 141, 188);
+    background-image: none;
+}
+
+.mini-window .mini-panel-header
+{
+    background-image: none;
+    background-color: #3c8dbc;
+}
+
+.mini-panel .mini-panel-title
+{
+    font-family: "微软雅黑",Arial,sans-serif;
+    color: #FFF;
+    font-size: 14px;
+}
+
+.gw-grid-toolbar
+{
+    height: 37px;
+}
+
+#btnDiv
+{
+    border-bottom: solid 1px #ccc;
+}
+
+.mini-panel-header-inner
+{
+    padding-top: 10px;
+    padding-left: 16px;
+    padding-right: 30px;
+    display: inline-block;
+}
+
+.mini-panel .mini-tools
+{
+    top: 10px;
+    right: 8px;
+}
+
+.mini-tools span
+{
+    margin-right: 5px;
+}
+
+.mini-panel-header
+{
+    min-height: 35px;
+    height: auto;
+}
+
+.mini-textbox-input, .mini-buttonedit-input
+{
+    text-indent: 10px;
+}
+
+.mini-button.mini-button-plain:hover,.mini-button.mini-button-plain.hover
+{
+    background-image: none;
+    background-color: #06C;
+    border: 1px solid #fff;
+}
+
+.mini-grid-editwrap .mini-textbox
+{
+    margin-top: -4px;
+}
+
+.mini-grid-editwrap .mini-buttonedit
+{
+    margin-top: -4px;
+}
+
+.mini-tab
+{
+    font: 12px "微软雅黑",Arial,sans-serif;
+    background-image: none;
+}
+
+.mini-htmlfile .mini-buttonedit-button
+{
+    font: 12px "微软雅黑",Arial,sans-serif;
+    background-image: none;
+    border: 0px;
+}
+
+.mini-grid-pager
+{
+    background-image: none;
+    background-color: #f9f9f9;
+}
+
+.main-header .logo
+{
+    background: url(../PortalLTE/Images/jhlogo.png) center no-repeat;
+}
+
+    .main-header .logo .logo-lg
+    {
+        display: none;
+    }
+
+.mini-modal
+{
+    opacity: .4;
+    background: #000;
+}
+
+.mini-buttonedit-button
+{
+    padding-right: 3px;
+}
+
+.mini-buttonedit-button-hover
+{
+    color: #FFF;
+}
+
+.mini-pager-left .mini-buttonedit-border
+{
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.mini-pager-left .mini-buttonedit-buttons
+{
+    top: 0px;
+}
+
+.mini-pager-left .mini-buttonedit
+{
+    height: 21px;
+}
+
+.mini-pager .mini-button-iconOnly
+{
+    padding-top: 4px;
+}
+
+.mini-pager-num
+{
+    border-radius: 5px;
+    height: 17px;
+}
+
+.sidebar-menu .treeview-menu > li > a
+{
+    padding: 5px 5px 5px 25px;
+    display: block;
+    font-size: 13px;
+}
+
+.mini-tree .mini-tree-icon
+{
+    line-height: 20px;
+    font-family: FontAwesome;
+}
+
+/* 图标*/
+.mini-button .mini-button-icon
+{
+    padding-left: 5px;
+    padding-top: 4px;
+}
+
+.mini-tools-max, .mini-tools-close, .mini-tools-restore
+{
+    color: #FFF;
+    background-image: none;
+    font: normal normal normal 14px/1 FontAwesome;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+    .mini-tools-max:before
+    {
+        content: "\f065";
+    }
+
+    .mini-tools-close:before
+    {
+        content: "\f00d";
+    }
+
+    .mini-tools-restore:before
+    {
+        content: "\f068";
+    }
+
+.icon-help, .icon-user, .icon-major, .gw-searchbox .mini-buttonedit-icon
+{
+    color: #333;
+    background-image: none;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-excel-up, .icon-copy., icon-userremove, .icon-help
+{
+    color: #333;
+    background-image: none;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-noimage, .icon-project, .icon-undo, .icon-unlock
+{
+    color: #333;
+    background-image: none;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-remove, .icon-edit, .icon-add, .icon-save, .icon-refer
+{
+    color: #333;
+    background-image: none;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-cancel, .mini-pager-reload, .mini-pager-prev, .mini-pager-first
+{
+    color: #333;
+    background-image: none;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.mini-pager-last, .mini-pager-next, .mini-button-icon
+{
+    color: #333;
+    background-image: none;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.send, .collect, .receive, .delete, .mini-datepicker .mini-buttonedit-icon
+{
+    color: #333;
+    background-image: none !important;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-extend-upload, .icon-extend-filedelete, .icon-extend-trash, .icon-extend-download
+{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 12px!important;
+    text-align: center;
+    color: #333;
+    background-image: none !important;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.mini-tree-leaf, .mini-tree-expand .mini-tree-folder, .mini-tree-folder
+{
+    color: #333;
+    background-image: none !important;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-switch, .icon-find, .icon-undo, .icon-reject
+{
+    color: #333;
+    background-image: none !important;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-auditing_pass, .end
+{
+    color: #333;
+    background-image: none !important;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-extensions:before
+{
+    content: "\f152";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-zoomin:before
+{
+    content: "\f00e";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-print:before
+{
+    content: "\f02f";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-sort:before
+{
+    content: "\f0dc";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-paste:before
+{
+    content: "\f0ea";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.end:before
+{
+    content: "\f04d";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-auditing_pass:before
+{
+    content: "\f0e8";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-flowstart:before
+{
+    content: "\f126";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-word:before
+{
+    content: "\f1c2";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-reject:before
+{
+    content: "\f165";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-redo:before
+{
+    content: "\f122";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-upload:before
+{
+    content: "\f093";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-excel-import:before
+{
+    content: "\f1c3";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-node:before
+{
+    content: "\f1e0";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-close:before
+{
+    content: "\f00d";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-switch:before
+{
+    content: "\f079";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-tree-leaf:before
+{
+    content: "\f0f6";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-tree-expand .mini-tree-folder:before
+{
+    content: "\f07c";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-tree-folder:before
+{
+    content: "\f07b";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-extend-upload:before
+{
+    content: "\f0ee";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-extend-filedelete:before
+{
+    content: "\f00d";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-extend-trash:before
+{
+    content: "\f1f8";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-extend-download:before
+{
+    content: "\f019";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-datepicker .mini-buttonedit-icon:before
+{
+    content: "\f073";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.delete:before
+{
+    content: "\f1f8";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.receive:before
+{
+    content: "\f0e0";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.send:before
+{
+    content: "\f1d9";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.collect:before
+{
+    content: "\f005";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-pager-first:before
+{
+    content: "\f049";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-pager-prev:before
+{
+    content: "\f048";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-pager-next:before
+{
+    content: "\f051";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-pager-last:before
+{
+    content: "\f050";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-dept:before
+{
+    content: "\f0c0";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-cancel:before
+{
+    content: "\f00d";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.mini-pager-reload:before
+{
+    content: "\f021";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.gw-searchbox .mini-buttonedit-icon:before
+{
+    content: "\f002";
+}
+
+.icon-help:before
+{
+    content: "\f059";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-user:before
+{
+    content: "\f007";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-major:before
+{
+    content: "\f08b";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-excel-up:before
+{
+    content: "\f1c3";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-copy:before
+{
+    content: "\f0c5";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-usermove:before
+{
+    content: "\f0c0";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-excel:before
+{
+    content: "\f1c3";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-userremove:before
+{
+    content: "\f235";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-noimage:before
+{
+    content: "\f1c5";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-project:before
+{
+    content: "\f013";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-undo:before
+{
+    content: "\f0e2";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-unlock:before
+{
+    content: "\f09c";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-remove:before
+{
+    content: "\f057";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-edit:before
+{
+    content: "\f044";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-add:before
+{
+    content: "\f0fe";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-save:before
+{
+    content: "\f0c7";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-refer:before
+{
+    content: "\f0c7";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-org:before
+{
+    content: "\f013";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-download:before
+{
+    content: "\f019";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-setting:before
+{
+    content: "\f013";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-setting2:before
+{
+    content: "\f019";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-addnew:before
+{
+    content: "\f055";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-find:before
+{
+    content: "\f1e5";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-clear:before
+{
+    content: "\f12d";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-up:before
+{
+    content: "\f062";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-down:before
+{
+    content: "\f063";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-extend-preview:before
+{
+    content: "\f06e";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-ok:before
+{
+    content: "\f00c";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-goto:before
+{
+    content: "\f277";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-downgrade:before
+{
+    content: "\f0ab";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-search:before
+{
+    content: "\f002";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-split:before
+{
+    content: "\f002";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-lock:before
+{
+    content: "\f002";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-pause:before
+{
+    content: "\f04c";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+.icon-stop:before
+{
+    content: "\f04d";
+    padding-right: 5px;
+    font-size: 14px;
+}
+
+
+
+.mini-textbox-input, .mini-buttonedit-input
+{
+    text-indent: 10px;
+}
+
+.mini-button.mini-button-plain:hover,.mini-button.mini-button-plain.hover
+{
+    background-image: none;
+    background-color: #3c8dbc;
+    border: 1px solid #3c8dbc;
+}
+
+.mini-button-text.mini-button-icon:hover
+{
+    color: #FFF !important;
+}
+
+.mini-buttonedit-button-hover
+{
+    color: #FFF !important;
+    background-image: none;
+    background-color: #3c8dbc;
+    border: 1px solid #3c8dbc;
+}
+
+#tdUpload a
+{
+    height: 20px;
+    color: #333;
+    background-image: none !important;
+    font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#tdUpload object
+{
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+#tdUpload a:before
+{
+    content: "\f0ee";
+    padding-right: 61px;
+    font-size: 14px;
+}
+
+.formDiv
+{
+    padding-left: 35px;
+    padding-bottom: 20px;
+    padding-right: 35px;
+    padding-top: 35px;
+}
+
+.formTable h3
+{
+    font-size: 24px;
+}
+
+.file_search_bg
+{
+    height: 37px!important;
+}
+
+.mini-tree-selectedNode .mini-tree-nodeshow
+{
+    background-image: none;
+}
+
+.file_search_bg .mini-list-inner
+{
+    margin-top: 6px;
+}
+
+.left_filter_left
+{
+    padding-left: 2px!important;
+    padding-top: 0px!important;
+}
+
+    .left_filter_left .mini-checkbox .mini-checkbox-check
+    {
+        margin: 7px 0 0 7px!important;
+    }
+
+.class1 textarea
+{
+    height: 66px!important;
+    min-height: 66px!important;
+}
+
+.skin-green-light .main-header .navbar
+{
+    background-color: #9a9a9a;
+}
+
+.skin-green-light .main-header .logo
+{
+    background-color: #a9a9a9;
+}
+
+.bg-gray-active
+{
+    background-color: #a9a9a9;
+}
+
+.bg-gray
+{
+    background-color: #9a9a9a;
+}
+
+.mini-singlefile-border
+{
+    display: inline-block;
+    height: 21px;
+    overflow: hidden;
+    vertical-align: middle;
+    background: white;
+    border: solid 1px #cccccc;
+    width: auto;
+    border-radius: 5px;
+    padding: 5px;
+    position: relative;
+    padding-right: 22px;
+    padding-left: 1px;
+    display: block;
+}
+
+.mini-singlefile
+{
+    height: auto;
+}
+
+.mini-singlefile-button
+{
+    margin-top: 7px;
+}
+
+.mini-singlefile-remove
+{
+    margin-top: 8px;
+}
+
+.searchbox
+{
+    padding-top: 4px!important;
+}
+
+    .searchbox .mini-buttonedit-border
+    {
+        padding: 3px;
+    }
+
+.gw-searchbox
+{
+    padding-top: 4px!important;
+}
+
+    .gw-searchbox .mini-buttonedit-border
+    {
+        padding: 3px;
+    }
+/* 渐变蓝样式 */
+/*.skin-yellow-light {background: url(../PortalLTE/Images/skinyellowbg.jpg) top repeat-x!important;}*/
+.skin-yellow-light .main-header li.user-header
+{
+    background-color: #3378A1;
+}
+
+.skin-yellow-light .main-sidebar
+{
+    background-color: #f4f5f9;
+    box-shadow: -0px -0px 6px #888888;
+}
+
+.skin-yellow-light .main-header
+{
+    background: url(../PortalLTE/Images/skinyellowbg02.jpg) center repeat-x!important;
+}
+
+    .skin-yellow-light .main-header .logo
+    {
+        background-color: rgba(255,255,255,.0)!important;
+    }
+
+        .skin-yellow-light .main-header .logo:hover
+        {
+            background-color: rgba(255,255,255,.1)!important;
+        }
+
+    .skin-yellow-light .main-header .navbar
+    {
+        background-color: rgba(255,255,255,0)!important;
+    }
+
+        .skin-yellow-light .main-header .navbar .sidebar-toggle
+        {
+            padding: 16px 15px!important;
+        }
+
+            .skin-yellow-light .main-header .navbar .sidebar-toggle:hover
+            {
+                background: rgba(0,0,0,0.1);
+                -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+                -webkit-box-shadow: -0px -0px 2px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+                box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+            }
+
+        .skin-yellow-light .main-header .navbar #one-menu li
+        {
+            margin-top: 0px !important;
+            height: 50px!important;
+            line-height: 50px!important;
+        }
+
+            .skin-yellow-light .main-header .navbar #one-menu li.active
+            {
+                background: rgba(40,99,136,1)!important;
+                -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+                -webkit-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+                box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+            }
+
+            .skin-yellow-light .main-header .navbar #one-menu li:hover
+            {
+                background: rgba(255,255,255,0.1)!important;
+                -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+                -webkit-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+                box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+            }
+
+.skin-yellow-light .sidebar-menu > li.active > a
+{
+    background: rgba(0,0,0,0.1)!important;
+    -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+    -webkit-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+    box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+    border-left: 0px;
+}
+
+/* 渐变蓝灰样式 */
+/*.skin-red-light {background: url(../PortalLTE/Images/skinyellowbg.jpg) top repeat-x!important;}*/
+.skin-red-light .main-header li.user-header
+{
+    background-color: #d5d5d5;
+}
+
+.skin-red-light .main-sidebar
+{
+    background-color: #f4f5f9;
+    box-shadow: -0px -0px 6px #888888;
+}
+
+.skin-red-light .main-header .logo
+{
+    background: url(../PortalLTE/Images/skinyellowbglogo.jpg) center repeat-x!important;
+}
+
+.skin-red-light .main-header
+{
+    background: url(../PortalLTE/Images/skinyellowbg01.jpg) center repeat-x!important;
+}
+
+    .skin-red-light .main-header .logo
+    {
+        background-color: rgba(255,255,255,.0)!important;
+    }
+
+        .skin-red-light .main-header .logo:hover
+        {
+            background-color: rgba(255,255,255,.1)!important;
+        }
+
+    .skin-red-light .main-header .navbar
+    {
+        background-color: rgba(255,255,255,0)!important;
+    }
+
+        .skin-red-light .main-header .navbar .sidebar-toggle
+        {
+            padding: 16px 15px!important;
+            color: #666;
+        }
+
+        .skin-red-light .main-header .navbar .nav > li > a
+        {
+            color: #666;
+        }
+
+        .skin-red-light .main-header .navbar .sidebar-toggle:hover
+        {
+            background: rgba(0,0,0,0.1);
+            -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+            -webkit-box-shadow: -0px -0px 2px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+            box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+        }
+
+        .skin-red-light .main-header .navbar #one-menu li
+        {
+            margin-top: 0px !important;
+            height: 50px!important;
+            line-height: 50px!important;
+            color: #666666;
+        }
+
+            .skin-red-light .main-header .navbar #one-menu li.active
+            {
+                background: rgba(0,0,0,0.1)!important;
+                -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+                -webkit-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+                box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+            }
+
+            .skin-red-light .main-header .navbar #one-menu li:hover
+            {
+                background: rgba(255,255,255,0.1)!important;
+                -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+                -webkit-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+                box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+            }
+
+.skin-red-light .sidebar-menu > li.active > a
+{
+    background: rgba(0,0,0,0.1)!important;
+    -moz-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Firefox3.6+ */
+    -webkit-box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Chrome5+, Safari5+ */
+    box-shadow: -0px -0px 5px rgba(0,0,0,0.2) inset; /* For Latest Opera */
+    border-left: 0px;
+}

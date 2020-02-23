@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "ExtendFieldConfig";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-save" onclick="saveConfig();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetExtendFieldDefineInfo" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+         allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+         multiselect="true" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="AttrField" width="*" headeralign="center" allowsort="true">
+                字段
+            </div>
+            <div field="AttrName" width="120" headeralign="center" allowsort="true">
+                字段名
+            </div>
+            <div field="RelateType" width="120" headeralign="center" allowsort="true">
+                关联数据
+            </div>
+            <div field="BindingNode" displayfield="BindingNodeName" headeralign="center" width="250" allowsort="true" align='left'
+                 autoshowpopup='true'>
+                绑定节点
+                <input property="editor" class="mini-treeselect" url="GetPreScheduleTree?NodeID=@ViewBag.ID" multiselect="false"
+                       textfield="Name" valuefield="StructInfoID" parentfield="ParentID" allowinput="false" expandonload="true">
+            </div>
+            <div type="comboboxcolumn" autoshowpopup="true" field="BindingNodeType" headeralign="center" width="120" allowsort="true" align="center">
+                节点类型<input property="editor" class="mini-combobox" style="width:100%;" data="BindingNodeType" />
+            </div>
+            <div field="BindingField" headeralign="center" width="120" allowsort="true" align="center">
+                绑定字段<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+         
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //addGridEnum("dataGrid", "FieldName", "EnumKey");
+    //addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    //addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+    var BindingNodeType = [{ value: "Task", text: "作业" }, { value: "WBS", text: "WBS" }];
+    var nodeID = getQueryString("ID");
+    function saveConfig() {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.commitEdit();
+        dataGrid.accept();
+        var list = dataGrid.getData();
+        addExecuteParam("NodeID", nodeID);
+        addExecuteParam("ListData", mini.encode(list));
+        execute("SaveExtendFieldConfig", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+</script>

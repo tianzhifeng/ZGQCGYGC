@@ -1,0 +1,309 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="true">
+    <div size="250" showcollapsebutton="true">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%"
+                url="/Base/Meta/Category/GetTree?RootFullID=0" textfield="Name" idfield="ID"
+                parentfield="ParentID" resultastree="false" onnodeclick="onNodeSelect" expandonload="1"
+                contextmenu="#treeMenu" iconfield="IconClass"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+            <table>
+                <tr>
+                    <td>
+                        <a id="btnImport" class="mini-button" iconcls="icon-search" onclick="showDbConfig();">选择</a>
+                        <a id="btnUpdate" class="mini-button" iconcls="icon-down" onclick="doUpdate();">导入</a>
+                        <a id="btnDelete" class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');"
+                               onbuttonclick="quickSearch('Code,Name');" />
+                        <a class='mini-button' id="btnSearch" onclick="showWindow('queryWindow');" iconcls='icon-find'>
+                            详细查询
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList"
+                 multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="SyncTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm"
+                         width="120" allowsort="true">
+                        导入时间
+                    </div>
+                    <div field="Type" width="120" allowsort="true" align="center">
+                        类型
+                    </div>
+                    <div field="Code" width="120" allowsort="true" align="center">
+                        编号
+                    </div>
+                    <div field="Name" width="*" allowsort="true">
+                        名称
+                    </div>
+                    <div field="CreateTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm"
+                         width="120" allowsort="true">
+                        选择时间
+                    </div>
+                    <div field="DbName" width="80" allowsort="true" align="center">
+                        源数据库前缀
+                    </div>
+                    <div field="DbServerAddr" width="120" allowsort="true" align="center">
+                        源数据库地址
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="menuAddModule" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/ModuleEdit'});">
+        增加模块
+    </li>
+    <li name="menuEditModule" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/ModuleEdit'});">
+        编辑模块
+    </li>
+    <li name="menuDelModule" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">
+        删除模块
+    </li>
+    <li name="menuAddCategory" iconcls="icon-add" onclick="nodeAdding({url:'/Base/Meta/Category/CategoryEdit?Code={Code}'});">
+        增加分类
+    </li>
+    <li name="menuEditCategory" iconcls="icon-edit" onclick="nodeEditing({url:'/Base/Meta/Category/CategoryEdit'});">
+        编辑分类
+    </li>
+    <li name="menuDelCategory" iconcls="icon-remove" onclick="nodeDeleting({action:'/Base/Meta/Category/DeleteNode'});">
+        删除分类
+    </li>
+</ul>
+<div id="win" class="mini-window" title="源数据库信息" style="width: 400px; height: 270px; display: none;">
+    <div class="queryDiv">
+        <form id="dataForm">
+            <table>
+                <tr>
+                    <td>
+                        源数据库地址
+                    </td>
+                    <td>
+                        <input name="DbServerAddr" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        源数据库前缀
+                    </td>
+                    <td>
+                        <input name="DbName" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        用户名
+                    </td>
+                    <td>
+                        <input name="DbLoginName" class="mini-textbox" value="sa" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        密码
+                    </td>
+                    <td>
+                        <input name="DbPassword" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div name="HasSurfix" class="mini-checkbox" style="width: 100%">
+                            编号增加前缀
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="showImportWin();" iconcls="icon-ok" style="margin-right: 20px;">
+                确定
+            </a>
+            <a class="mini-button" onclick="hideWindow('win')" iconcls="icon-cancel">取消</a>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 240px;
+    display: none;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="13%">
+                        类型
+                    </td>
+                    <td width="35%">
+                        <input name="$IL$Type" class="mini-combobox" multiselect="true" style="width: 100%;"
+                               data='uiType' />
+                    </td>
+                    <td width="13%">
+                        编号
+                    </td>
+                    <td width="35%">
+                        <input name="$LK$Code" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td width="4%" />
+                </tr>
+                <tr>
+                    <td width="13%">
+                        名称
+                    </td>
+                    <td width="35%">
+                        <input name="$LK$Name" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td>
+                        源数据库前缀
+                    </td>
+                    <td>
+                        <input name="$LK$DbName" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        源数据库地址
+                    </td>
+                    <td colspan="3">
+                        <input name="$FR$DbServerAddr" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td />
+                </tr>
+                <tr>
+                    <td>
+                        导入时间
+                    </td>
+                    <td>
+                        <input name="$FR$SyncTime" class="mini-datepicker" style='width: 45%' />到<input name="$TO$SyncTime"
+                                                                                                        class="mini-datepicker" style='width: 45%' />
+                    </td>
+                    <td>
+                        选择时间
+                    </td>
+                    <td>
+                        <input name="$FR$CreateTime" class="mini-datepicker" style='width: 45%' />到<input name="$TO$CreateTime" class="mini-datepicker" style='width: 45%' />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询
+            </a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery("#btnUpdate").hide();
+    jQuery("#btnDelete").hide();
+    jQuery("#btnImport").hide();
+</script>
+<script type="text/javascript">
+    //树节点点击事件
+    var url = "GetList";
+    function onNodeSelect(e) {
+        var arr = e.node.FullID.split('.');
+        var dataGrid = mini.get("dataGrid");
+        if (arr.length > 1) {
+            jQuery("#btnUpdate").show();
+            jQuery("#btnDelete").show();
+            jQuery("#btnImport").show();
+            dataGrid.setUrl(url + "?CategoryID=" + e.node.ID + "&NodeFullID=" + e.node.FullID);
+            dataGrid.load();
+        }
+        else {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load();
+            jQuery("#btnUpdate").hide();
+            jQuery("#btnDelete").hide();
+            jQuery("#btnImport").hide();
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        var menuAddModule = mini.getbyName("menuAddModule", menu);
+        var menuEditModule = mini.getbyName("menuEditModule", menu);
+        var menuDelModule = mini.getbyName("menuDelModule", menu);
+        var menuAddCategory = mini.getbyName("menuAddCategory", menu);
+        var menuEditCategory = mini.getbyName("menuEditCategory", menu);
+        var menuDelCategory = mini.getbyName("menuDelCategory", menu);
+
+        if (node.ParentID == null || node.ParentID == "") {
+            menuAddModule.show();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else if (node.ParentID == "0") {
+            menuAddModule.hide();
+            menuEditModule.show();
+            menuDelModule.show();
+            menuAddCategory.show();
+            menuEditCategory.hide();
+            menuDelCategory.hide();
+        }
+        else {
+            menuAddModule.hide();
+            menuEditModule.hide();
+            menuDelModule.hide();
+            menuAddCategory.hide();
+            menuEditCategory.show();
+            menuDelCategory.show();
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    function showImportWin() {
+        hideWindow('win');
+        openWindow('Import', {
+            title: '选择', onDestroy: function (text) {
+                if (text == "close") return;
+                addExecuteParam("listData", text);
+                var node = mini.get("dataTree").getSelected();
+                addExecuteParam("CategoryID", node.ID);
+                addExecuteParam("ConnName", node.Code);
+                execute("ImportData", { actionTitle: '选择' });
+            }
+        });
+    }
+    function doUpdate() {
+        addExecuteParam("listData", mini.get("dataGrid").getSelecteds());
+        execute("DoUpdate", { actionTitle: '导入', mustSelectRow: true, showLoading: true });
+    }
+
+    function showDbConfig() {
+        execute("GetImportConfig", {
+            onComplete: function (data) {
+                var form = new mini.Form("#dataForm");
+                form.setData(data);
+                showWindow('win');
+            }
+        });
+
+    }
+</script>
+<script type="text/javascript">
+    var uiType = [{ value: 'Form', text: 'Form' }, { value: 'List', text: 'List' }, { value: 'Selector', text: 'Selector' }, { value: 'Word', text: 'Word' }, { value: 'Report', text: 'Report' }, { value: 'Enum', text: 'Enum' }, { value: 'Workflow', text: 'Workflow' }];
+</script>

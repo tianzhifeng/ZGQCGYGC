@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "发送传真";
+    Layout = "~/Views/Shared/_LayoutFlow.cshtml";
+}
+<form id='dataForm' method='post'>
+<input name='ID' class='mini-hidden' />
+<input name='FlowPhase' class='mini-hidden' />
+<input name="PlanStartDate" class='mini-datepicker' visible="false" />
+<input name="PlanEndDate" class='mini-datepicker' visible="false" />
+<input name="ProjectType" class='mini-hidden' />
+<div class='formDiv' align="center">
+    <h1 align="center">
+        发送传真
+    </h1>
+    <fieldset class="formDiv">
+        <legend>基本信息</legend>
+        <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+            <tbody>
+                <tr style="display: none">
+                    <td style="width: 15%;">
+                    </td>
+                    <td style="width: 35%;">
+                    </td>
+                    <td style="width: 15%;">
+                    </td>
+                    <td style="width: 35%;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 15%;">
+                        收件单位
+                    </td>
+                    <td style="width: 35%;">
+                        <input name='ReceiveDept' class='mini-textbox' style='width: 100%' required='true' />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        发件单位
+                    </td>
+                    <td style="width: 35%;">
+                        <input name='SendDeptID' textname="SendDept" class='mini-buttonedit' required='true'
+                            style='width: 100%' />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        收件人
+                    </td>
+                    <td>
+                        <input name='ReceiveUserName' class='mini-textbox' style='width: 100%' />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        发件人
+                    </td>
+                    <td>
+                        <input name="SendUserID" textname="SendUserName" style="width: 100%;" required='true'
+                            class="mini-buttonedit" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        抄 送
+                    </td>
+                    <td>
+                        <input name='OtherSendUserNames' class='mini-textbox' style='width: 100%' />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        签 发
+                    </td>
+                    <td>
+                        <input name="SignedUserIDs" textname="SignedUserNames" style="width: 100%;" class="mini-buttonedit" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        收件方电话
+                    </td>
+                    <td>
+                        <input name='Telephone' class='mini-textbox' style='width: 100%' required='true' />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        发件方电话
+                    </td>
+                    <td>
+                        <input name='Telephone2' class='mini-textbox' style='width: 100%' />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        传真
+                    </td>
+                    <td>
+                        <input name='FaxNumber' class='mini-textbox' style='width: 100%' required='true' />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        发件方传真
+                    </td>
+                    <td>
+                        <input name='FaxNumber2' class='mini-textbox' style='width: 100%' />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        传真主题
+                    </td>
+                    <td colspan="3" align="left">
+                        <div name="FaxTheme" class="mini-radiobuttonlist" repeatitems="5" repeatlayout="table"
+                            textfield="text" valuefield="value" data="FaxTheme">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        相关附件
+                    </td>
+                    <td colspan="3" align="left">
+                        <input name='Attachment' class='mini-word' revise="true" desc="相关附件" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        核稿
+                    </td>
+                    <td colspan="3">
+                        <input name='CheckorComment' class='mini-auditsign' style='width: 100%' />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        部门领导
+                    </td>
+                    <td colspan="3">
+                        <input name='DeptLeaderComment' class='mini-auditsign' style='width: 100%' />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        分管领导
+                    </td>
+                    <td colspan="3">
+                        <input name='DepartLeaderComment' class='mini-auditsign' style='width: 100%' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
+</form>
+<script type='text/javascript'>
+    @Html.GetEnum(typeof(OfficeAuto.Logic.FaxTheme))
+    addSingleUserSelector("SendUserID",{ returnParams: "value:ID,text:Name,SendDeptID:DeptID,SendDeptID:DeptName"});
+    addSingleUserSelector("SignedUserIDs");
+    addSingleOrgSelector("SendDeptID");
+
+</script>

@@ -1,0 +1,101 @@
+﻿
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <a id="btnSelect" class="mini-button" plain="true" iconcls="icon-save" onclick="sel()">
+        选择
+    </a>
+</div>
+<div class="mini-fit" style="padding-top: 5px;">
+
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="false" editnextrowcell="false" allowcelledit="false"
+            url="" expandonload="true" showtreeicon="true" ondrawcell="" allowcellwrap="true" oncellbeginedit=""
+            oncellendedit="" multiselect="false"
+            treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType"
+            allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div name="Name" field="Name" width="300" headeralign="center">
+                名称
+            </div>
+            <div field="Code" width="120" align="left" headeralign="center">
+                编号
+            </div>
+            <div field="ChargerUser" displayfield="ChargerUserName" width="90" align="center" headeralign="center">
+                负责人
+            </div>
+            <div field="Standard" width="300" align="left" headeralign="center">
+                质量验收标准
+            </div>
+            <div field="Remark" width="300" align="left" headeralign="center">
+                备注
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+    $("table").css("border-collapse", "collapse");
+
+
+
+</script>
+
+
+<script type="text/javascript">
+
+    $("table").css("border-collapse", "collapse");
+
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    $("#dataTree").attr("url", "GetTreeList?EngineeringInfoID=" + engineeringInfoID);
+
+    function sel() {
+        var dataTree = mini.get("dataTree");
+        var data = dataTree.getSelected();
+        closeWindow(data);
+    }
+
+
+    //function onDrawingCell(e) {
+    //    var treeGrid = e.sender;
+    //    var record = e.record;
+    //    var column = e.column;
+    //    var field = e.field;
+    //    if (record.NodeType == "Root") {
+    //        e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+    //    }
+    //    else {
+    //        if (record.ModifyState == "Add") {
+    //            if (field == "Name") {
+    //                e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+    //            }
+    //            e.cellStyle = "background:#BBFFFF;";
+    //        }
+    //        else if (record.ModifyState == "Modify") {
+    //            if (field == "Name") {
+    //                e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+    //            }
+    //            e.cellStyle = " background: yellow;";
+    //        }
+    //        else if (record.ModifyState == "Remove") {
+    //            e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff;";
+    //        }
+    //        if (record.NodeType != "Detail") {
+    //            e.cellStyle += "font-weight:bolder; ";
+    //        }
+    //    }
+    //}
+
+    
+
+</script>
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    .showCellTooltip {
+        background: yellow;
+    }
+</style>

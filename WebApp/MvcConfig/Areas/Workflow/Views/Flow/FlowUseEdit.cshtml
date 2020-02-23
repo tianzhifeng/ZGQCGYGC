@@ -1,0 +1,1042 @@
+﻿@section scripts{
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/kindeditor-min.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/lang/zh_CN.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/Base/Scripts/KindEditor/themes/default/default.css")" rel="stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript">
+        var editor;
+        KindEditor.ready(function (K) {
+            editor = K.create('textarea.KindEditor', { filterMode: false, items: ['']
+            });
+        });
+    </script>
+
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/mode/javascript/javascript.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.css")" rel="stylesheet" type="text/css" />
+}
+<div class="mini-toolbar" id="btnDiv" style="position: fixed; top: 0px; z-index: 100; width: 100%;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="save" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <div style="padding-left: 35px; padding-right: 35px; padding-top: 47px;">
+        <fieldset style="border: solid 1px #ccc; position: relative;">
+            <legend style="font-weight: bold">应用类型</legend>
+            <div class="useType">
+                <ul>
+                    <li>
+                        <img id="List" src="~/FlowFile/Layout/Images/list.png" />列表</li>
+                    <li>
+                        <img id="Tabs" src="~/FlowFile/Layout/Images/tabs.png" />Tab</li>
+                    <li>
+                        <img id="ListTabs" src="~/FlowFile/Layout/Images/listTabs.png" />导航Tab</li>
+                    <li>
+                        <img id="Lists" src="~/FlowFile/Layout/Images/lists.png" />导航列表</li>
+                    <li>
+                        <img id="TreeCustom" src="~/FlowFile/Layout/Images/tree_custom.png" />树导航自定义</li>
+                    <li>
+                        <img id="TreeGridCustom" src="~/FlowFile/Layout/Images/treegrid_custom.png" />树列表导航自定义</li>
+                </ul>
+            </div>
+        </fieldset>
+    </div>
+    <div class="formDiv">
+        <fieldset style="border: solid 1px #ccc; margin-top: 8px; position: relative;">
+            <legend>基本信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+
+                    <tr id="relevanceForm">
+                        <td>是否关联表单</td>
+                        <td>
+                            <input name="RelevanceForm" class="mini-combobox" style="width: 100%" required="true" data="TrueOrFalse"
+                                onvaluechanged="onRelevanceFormChanged" />
+                        </td>
+                        <td id="relevanceFormTitle">关联表单
+                        </td>
+                        <td id="relevanceFormList">
+                            <input name="FormCode" class="mini-combobox" style="width: 100%;" required="true" data="UseFormList" valuefield="Code" textfield="Name" shownullitem="false" shownullitem="true" allowinput="false" onvaluechanged="onCodeChanged" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>应用编号
+                        </td>
+                        <td>
+                            <input name="Code" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                        <td>应用名称
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td>所属模块
+                        </td>
+                        <td>
+                            <input name="ConnName" class="mini-combobox" style="width: 100%" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                        </td>
+                        <td>所属分类
+                        </td>
+                        <td>
+                            <input name="CategoryID" class="mini-combobox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr id="ShowQuery">
+                        <td>默认显示查询框</td>
+                        <td>
+                            <input name="ShowQueryForm" class="mini-combobox" style="width: 100%" required="true" data="TrueOrFalse"
+                                onvaluechanged="onShowQueryFormChanged" />
+                        </td>
+                        <td id="queryFormNumberTitle">查询栏列数</td>
+                        <td id="queryFormNumber">
+                            <input name="QueryFormColmuns" style="width: 100%" class="mini-textbox" vtype="int;maxLength:5" /></td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td>类型
+                        </td>
+                        <td>
+                            <input name="UseType" id="UseType" class="mini-combobox" style="width: 100%;" required="true" value="List" data="UseType" onvaluechanged="onUseTypeChanged" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="ModeTitle">模式
+                        </td>
+                        <td id="ModeText">
+                             <input class="mini-radiobuttonlist" name="Mode" textfield="text" valuefield="value" value="HighLow" data="UseMode" onvaluechanged="onModeValueChanged" />
+                        </td>
+                        <td id="FlowCheckBoxTitle">其它</td>
+                        <td colspan="3" id="FlowCheckBoxText">
+                            <input name="DenyDeleteFlow" class="mini-checkbox" checked="true" />禁删流程&nbsp;&nbsp;<input name="HasRowNumber" class="mini-checkbox" />
+                            有序号&nbsp;&nbsp;<input name="HasCheckboxColumn" class="mini-checkbox" />
+                            选择列
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+        <div id="NavDataSource">
+            <fieldset style="border: solid 1px #ccc; margin-top: 8px; position: relative;">
+                <legend>导航数据源配置</legend>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <tr>
+                            <td>涉及到的表
+                            </td>
+                            <td>
+                                <input name="CTableNames" class="mini-combobox" allowinput="true" data="DataSource" valuefield="TableName" textfield="Name" required="true" style="width: 100%;" onvaluechanged="onTableNameChanged" onitemclick="onFieldItemClick" />
+                            </td>
+                            <td id="_navHeight">导航高度</td>
+                            <td>
+                                <input name="Height" class="mini-textbox" style="width: 100%;" value="60%" />
+                            </td>
+                        </tr>
+                    <tr id="treeField">
+                        <td>值字段
+                        </td>
+                        <td>
+                            <input name="IDField" class="mini-combobox" valuefield="ID" textfield="Text" style="width: 100%;"  required="true" />
+                        </td>
+                        <td>文本字段
+                        </td>
+                        <td>
+                            <input name="TextField" valuefield="ID" textfield="Text" class="mini-combobox" style="width: 100%;"  required="true" />
+                        </td>
+                    </tr>
+                    <tr id="treeParentField">
+                        <td>父节点字段
+                        </td>
+                        <td>
+                            <input name="ParentField" class="mini-combobox" valuefield="ID" textfield="Text"   style="width: 100%;" />
+                        </td>
+                        <td>是否折叠
+                        </td>
+                        <td>
+                            <input name="IsExpand" class="mini-combobox" data="TrueOrFalse" value="F" allowinput="false" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>SQL
+                        </td>
+                        <td colspan="3" id="childNode">
+                            <input name="CSQL" class="mini-textarea" required="true" style="width: 100%; height: 100px;" />
+                        </td>
+                    </tr>
+                    <tr style="display: none;">
+                        <input name="CConnName" class="mini-textbox" style="width: 100%; display: none;" />
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+
+        <div id="ListDataSource">
+            <fieldset style="border: solid 1px #ccc; margin-top: 8px; position: relative;">
+                <legend>列表数据源配置</legend>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+
+                    <tr>
+                        <td>涉及到的表
+                        </td>
+                        <td>
+                            <input name="TableNames" class="mini-textbox" style="width: 100%;" required="true" onvaluechanged="onTableChanged" />
+                        </td>
+                        <td>排序
+                        </td>
+                        <td>
+                            <input name="OrderBy" class="mini-textbox" style="width: 100%;" />
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>SQL
+                        </td>
+                        <td colspan="3">
+                            <input name="SQL" class="mini-textarea" required="true" style="width: 100%; height: 100px;" />
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+
+        <div id="tabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%; margin-top: 8px;" plain="false"
+            buttons="#tabsButtons" buttonsalign="left">
+        </div>
+
+        <div id="divScript">
+            <table>
+                <tr class="hideRow">
+                    <td width="15%"></td>
+                    <td width="35%"></td>
+                    <td width="15%"></td>
+                    <td width="35%"></td>
+                </tr>
+                <tr>
+                    <td>Script<img onclick="openWindow('HelpWindow')" style="height: 16px; width: 16px; margin-top: 1px; float: left; cursor: pointer;" src="/CommonWebResource/Theme/Default/MiniUI/icons/help.png" />
+                    </td>
+                    <td colspan="3">
+                        <textarea id="Script" name="editor" style="height: 300px;"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+    <div id="tabsButtons">
+        <a id="btnTabAdd" class="mini-button" iconcls="icon-add" onclick="openWindow('addTabWindow', true)">添加</a>
+        <a id="btnTabEdit" class="mini-button" iconcls="icon-edit" onclick="editTabs()">编辑</a>
+        <a id="btnTabRemove" class="mini-button" iconcls="icon-remove" onclick="removeTabs()">删除</a>
+    </div>
+</form>
+
+<div id="addTabWindow" class="mini-window" title="请输入" style="width: 370px; min-height: 130px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="addTabForm" method="post">
+
+            <div style="padding-left: 15px; padding-bottom: 5px; padding-right: 15px; padding-top: 5px;">
+                <div>
+                    <table style="width: 100%; text-align: left;">
+                        <tr class="hideRow">
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">应用
+                            </td>
+                            <td colspan="3">
+                                <input name="TmplCode" class="mini-combobox" textfield="title" valuefield="ID" style="width: 100%;" shownullitem="false" shownullitem="true" allowinput="false" required="true" onitemclick="onTmplCodeChanged" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">名称
+                            </td>
+                            <td colspan="3">
+                                <input name='Title' emptytext='请输入名称' required="true" class='mini-textbox' style='width: 100%;' />
+                            </td>
+                        </tr>
+                        <tr id="ShowFK">
+                            <td style="padding-right: 6px;">是否联动
+                            </td>
+                            <td colspan="3">
+                                <input name="IsFK" class="mini-combobox" data="TrueOrFalse" style="width: 100%;" shownullitem="false" shownullitem="true" value="T" allowinput="false" required="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mini-toolbar" style="padding-left: 40px;">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveTabs();">保存</a>
+                            <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="close('addTabWindow')">取消</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="editTabWindow" class="mini-window" title="编辑" style="width: 330px; min-height: 130px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="editTabForm" method="post">
+
+            <div style="padding-left: 15px; padding-bottom: 5px; padding-right: 15px; padding-top: 5px;">
+                <div>
+                    <table style="width: 100%; text-align: left;">
+                        <tr class="hideRow">
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">名称
+                            </td>
+                            <td colspan="3">
+                                <input name='TabTitle' emptytext='请输入名称' required="true" class='mini-textbox' style='width: 100%;' />
+                            </td>
+                        </tr>
+                        <tr id="EditShowFK">
+                            <td style="padding-right: 6px;">是否联动
+                            </td>
+                            <td colspan="3">
+                                <input name="TabIsFK" class="mini-combobox" data="TrueOrFalse" style="width: 100%;" shownullitem="false" shownullitem="true" value="T" allowinput="false" required="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mini-toolbar" style="padding-left: 40px;">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-save" onclick="editSaveTabs();">保存</a>
+                            <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="close('editTabWindow')">取消</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="HelpWindow" class="mini-window" title="帮助说明" style="width: 780px; max-height: 400px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <ul class="window_ul">
+        <li style="line-height: 18px; height: 18px; font-weight: bold;"><a href="#" onclick="exportWord();">点击导出说明文档</a></li>
+        <li class="window_ul_li">
+            <div class="flowNumber">1</div>
+            <div style="margin-bottom: 2px;">字段或列表的事件方法请填写方法名</div>
+            <img src="~/FlowFile/Help/Images/list_filedway.png" />
+        </li>
+        <li class="window_ul_li">
+            <div class="flowNumber">2</div>
+            <div style="margin-bottom: 2px;">把实现的方法内容写到Script中</div>
+            <img src="~/FlowFile/Help/Images/list_js.png" />
+        </li>
+        <li style="margin-bottom: 25px;">
+            <div class="flowNumber">3</div>
+            <div style="margin-bottom: 2px;">
+                <span class="window_ul_li">系统内置的常用方法有:</span><br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 1.addGridLink<br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 2.addGridButton<br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 3.openWindow等,如需参考更多方法请下载上面连接的文档<br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 例子:         
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp addGridLink('dataGrid', 'Title', 
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp '/OfficeAuto/AutoForm/MConferenceApply/Edit?FlowCode=MConferenceApply&amp;ID={ID}', 
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp { 
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp width: 880, height: '90%' 
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp });        
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp addGridButton("dataGrid", "FlowPhase",     {       
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp onButtonClick: function (row) {     
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp flowTraceByID({ ID: row.ID });      
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp }     
+                <br />
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp }); 
+                <br />
+                <br />
+                <span class="window_ul_li">方法使用例子请参考:</span><a href="#" onclick="window.open('http://miniui.com/docs/api/index.html')">请点击打开</a>
+            </div>
+        </li>
+
+    </ul>
+</div>
+<style type="text/css">
+    .useType {
+        height: 90px;
+    }
+
+        .useType ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding-left: 15px;
+        }
+
+        .useType li {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            float: left;
+            margin-right: 20px;
+            width: 130px;
+            text-align: center;
+            font-family: "微软雅黑",Arial,sans-serif;
+            font-size: 12px;
+            color: #000;
+            height: 102px;
+        }
+            .useType li img{
+                border: 1px solid #bababa;
+            }
+
+            .useType li img:hover {
+                cursor: pointer;
+                border: 2px solid #9dc1d6;
+                box-shadow:0px 0px 8px #9dc1d6;
+            }
+
+    .current {
+        border: 3px solid #7b9caf!important;
+        box-shadow:0px 0px 10px #7b9caf;
+    }
+
+    #childNode .mini-textbox-border {
+        height: 98px !important;
+    }
+
+    .flowNumber {
+        border-radius: 7px;
+        width: 14px;
+        height: 14px;
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+        line-height: 14px;
+        float: left;
+        margin-right: 3px;
+        background-color: #308ac0;
+        margin-top: 3px;
+    }
+
+    .list_fieldset {
+        width: 50%;
+        float: left;
+    }
+
+    .window_ul {
+        overflow: auto;
+        height: 345px;
+        list-style: none;
+        font-size: 14px;
+        font-family: 'Microsoft YaHei';
+    }
+
+    .window_ul_li {
+        margin-top: 8px;
+        font-weight: bold;
+        color: #000;
+    }
+
+    .window_ul::-webkit-scrollbar {
+        width: 1px;
+        height: 12px;
+        background-color: #f5f5f5;
+    }
+
+    .window_ul::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        border-radius: 10px;
+        background-color: #f5f5f5;
+    }
+
+    .window_ul::-webkit-scrollbar-thumb {
+        height: 20px;
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #555;
+    }
+
+    .mini-tabs-header {
+        width: 100%;
+        border-collapse: collapse;
+        border-collapse: separate;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        height: 28px;
+    }
+
+    .mini-tabs-table {
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+        border-collapse: collapse;
+        border-collapse: separate;
+        position: relative;
+        width: 100%;
+    }
+
+    .mini-tabs-bodys {
+        position: relative;
+        border: solid 1px #ccc;
+        border-top: 0;
+        background: white;
+        padding: 5px;
+        text-align: left;
+        overflow: hidden;
+        height: 200px;
+    }
+
+    .mini-tabs-scrollCt {
+        position: relative;
+        border-bottom: solid 1px #ccc;
+        border: solid 1px #ccc;
+        background: #f0f0f0 repeat-x 0 0;
+        zoom: 1;
+    }
+
+    .mini-tabs-space {
+        width: 3px;
+        border-bottom: solid 1px #ccc;
+    }
+
+    #btnTabAdd,#save {
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+
+        #btnTabAdd .icon-add {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #save .icon-save {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    .formDiv {
+        padding-left: 35px;
+        padding-bottom: 20px;
+        padding-right: 35px;
+        padding-top: 15px;
+    }
+
+    .mini-tabs-buttons {
+        position: absolute;
+        padding-right: 3px;
+        top: 0px;
+        z-index: 1000;
+        right: 0;
+        line-height: 28px;
+    }
+</style>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory);
+    var UseFormList = @Html.Raw(ViewBag.UseFormList);
+    var UseList = @Html.Raw(ViewBag.UseList);
+    var DataSource = @Html.Raw(ViewBag.DataSource);
+</script>
+<script type="text/javascript">
+    var TrueOrFalse=[{text:"是",value:"T"},{text:"否",value:"F"}];
+    var UseType = [
+        {text:"列表",value:"List"},
+        {text:"导航列表",value:"Lists"},
+        {text:"导航Tab",value:"ListTabs"},
+        {text:"Tab",value:"Tabs"},
+        {text:"树导航自定义",value:"TreeCustom"},
+        {text:"树列表导航自定义",value:"TreeGridCustom"}
+    ];
+    var UseMode = [{text:"上下模式",value:"HighLow"},{text:"左右模式",value:"LeftRight"}];
+    var script=null, curID = '';
+    var tmplCode = getCache("_CacheTmplCode");
+    var categoryCode = getCache("_CacheCategoryCode");
+
+    function isHideAndShowMode(type){
+        if(type == UseType[0].value){
+            $("#ModeTitle").hide();
+            $("#ModeText").hide();
+            $("#FlowCheckBoxTitle").show();
+            $("#FlowCheckBoxText").show(); 
+            $("#ListDataSource").attr('colspan', 4);
+            $("#ListDataSource").show();
+            $("#NavDataSource").hide();
+            $("#ShowQuery").show();
+            $("#tabs").hide();
+            $("#divScript").show();
+            $("#relevanceForm").show();
+            $("#treeParentField").hide();
+            $("#treeField").hide();
+        }else if(type == UseType[1].value) {
+            $("#ModeTitle").hide();
+            $("#ModeText").hide();
+            $("#FlowCheckBoxTitle").show();
+            $("#FlowCheckBoxText").show(); 
+            $("#ListDataSource").attr('colspan', 2);
+            $("#ListDataSource").show();
+            $("#NavDataSource").attr('colspan', 2);
+            $("#NavDataSource").show();
+            $("#ShowQuery").show();
+            $("#tabs").hide();
+            $("#divScript").show();
+            $("#relevanceForm").show();
+            $("#treeParentField").hide();
+            $("#treeField").hide();
+        }else if(type == UseType[2].value) {
+            $("#ModeTitle").show();
+            $("#ModeText").show();
+            $("#FlowCheckBoxTitle").hide();
+            $("#FlowCheckBoxText").hide(); 
+            $("#ListDataSource").hide();
+            $("#NavDataSource").attr('colspan', 2);
+            $("#NavDataSource").show();
+            $("#ShowQuery").hide();
+            $("#tabs").show();
+            $("#relevanceForm").hide();
+            $("#ShowFK,#EditShowFK").show();  
+            $("#treeParentField").hide();
+            $("#treeField").hide();
+        }else if(type == UseType[3].value) {
+            $("#ModeTitle").hide();
+            $("#ModeText").hide();
+            $("#FlowCheckBoxTitle").hide();
+            $("#FlowCheckBoxText").hide(); 
+            $("#ListDataSource").hide();
+            $("#NavDataSource").attr('colspan', 2);
+            $("#NavDataSource").hide();
+            $("#ShowQuery").hide();
+            $("#tabs").show();
+            $("#relevanceForm").hide();
+            $("#ShowFK,#EditShowFK").hide();  
+            $("#treeParentField").hide();
+            $("#treeField").hide();
+        }else {
+            if(type == UseType[4].value){
+                $("#ModeTitle").hide();
+                $("#ModeText").hide();
+            }else{
+                $("#ModeTitle").show();
+                $("#ModeText").show();
+            }
+            $("#FlowCheckBoxTitle").hide();
+            $("#FlowCheckBoxText").hide(); 
+            $("#ListDataSource").hide();
+            $("#NavDataSource").attr('colspan', 2);
+            $("#NavDataSource").show();
+            $("#ShowQuery").hide();
+            $("#tabs").show();
+            $("#relevanceForm").hide();
+            $("#ShowFK,#EditShowFK").show();  
+            $("#treeParentField").show();
+            $("#treeField").show();
+            if(type == UseType[4].value)
+                mini.getbyName("Height").setValue('20%');
+            else
+                mini.getbyName("Height").setValue('50%');
+        }
+    }
+
+    isHideAndShowMode(UseType[0].value);
+
+    function useTypeChanged(value){
+        if(mini.getbyName("Mode"))
+            mini.getbyName("Mode").setValue(UseMode[0].value);
+        isHideAndShowMode(value);
+    }
+
+    function onUseTypeChanged(e){
+        var value = e.value != undefined ? e.value : e;
+        useTypeChanged(value);
+    }
+
+    $(".useType li img").click(function (e) {
+        var ID = getQueryString("ID");
+        var targetId = e.target.id;
+        if(!ID){
+            $(".useType li img").each(function (index, envet) {
+                $("#" + envet.id).removeClass('current');
+                if (targetId == envet.id) {
+                    $("#" + envet.id).addClass('current');
+                }      
+            });
+            if(mini.getbyName("UseType"))
+                mini.getbyName("UseType").setValue(targetId); 
+            useTypeChanged(targetId);
+        }
+    });
+    function save(){
+        var form = new mini.Form("#dataForm");
+        var tabs = mini.get("tabs");
+        var data = form.getData(true, false);
+        if (checkSpecialchar(data.Code) || checkSpecialchar(data.Name))
+            return;
+        if(data.UseType == UseType[2].value && tabs.getTabs().length == 0){
+            msgUI("请添加Tab!");
+            return;
+        }
+        addExecuteParam("FormData", mini.encode(data));
+        addExecuteParam("TabData", mini.encode(tabs.getTabs()));
+        addExecuteParam("Script", script.getValue());
+        execute('Save', {
+            onComplete: function (result) {
+                if (result != null) {
+                    closeWindow(result);
+                }
+            }
+        });
+    }
+
+    function onTableNameChanged(e) {
+        var sql = "", connName = "";
+        var TableNames = mini.getbyName("CTableNames").getValue();
+        if (TableNames != ""){
+            sql = "select * from " + TableNames;
+            connName = mini.getbyName("ConnName").getValue();
+        }
+        if(e.selecteds.length > 0){
+            sql = e.selected.SQL;
+            connName = e.selected.ConnName;
+        }
+        mini.getbyName("CSQL").setValue(sql);
+        mini.getbyName("CConnName").setValue(connName);
+    }
+
+    function onFormSetData(data) { 
+        var tabs = mini.get("tabs");
+        var connName = getQueryString("ConnName");
+        var categoryID = getQueryString("CategoryID");
+        if(data.UseType != null && data.UseType != ''){          
+            isHideAndShowMode(data.UseType);
+            mini.getbyName("UseType").setValue(data.UseType); 
+
+            if(data.UseType != UseType[0].value && data.UseType != UseType[1].value){
+                mini.getbyName("CSQL").setValue(data.SQL);
+                mini.getbyName("CTableNames").setValue(data.TableNames);
+                var layout = mini.decode(data.LayoutTab);
+                for(var i=0;i<layout.length;i++){
+                    var tab = { title: layout[i].title, IsFK: layout[i].IsFK, name:layout[i].name, url: layout[i].url, showCloseButton: false };
+                    tab.ondestroy = function (e) {
+                        var tabs = e.sender;
+                        var iframe = tabs.getTabIFrameEl(e.tab);
+
+                        //获取子页面返回数据
+                        var pageReturnData = iframe.contentWindow.getData ? iframe.contentWindow.getData() : "";
+                    }
+                    tabs.addTab(tab);
+                    tabs.activeTab(tab);
+                }
+            }
+        }
+        else
+            mini.getbyName("UseType").setValue(UseType[0].value);
+
+
+        var ID = getQueryString("ID");
+        if(ID != ""){
+            var form = new mini.Form("#dataForm");
+            var fields = form.getFields();
+            for (var i = 0, l = fields.length; i < l; i++) {
+                var c = fields[i];
+                if (c.name == "UseType" || c.name == "RelevanceForm" || c.name == "FormCode") {
+                    if (c.setReadOnly) c.setReadOnly(true);
+                    if (c.setIsValid) c.setIsValid(true);      //去除错误提示
+                    if (c.addCls) c.addCls("asLabel");     
+                }
+            }
+        }
+        $("#" + mini.getbyName("UseType").getValue()).addClass('current');
+        mini.getbyName("FormCode").setValue(data.Code); 
+      
+        if(data.Mode != null && data.Mode != '')
+            mini.getbyName("Mode").setValue(data.Mode);
+        
+        if (connName) {
+            mini.getbyName("ConnName").setValue(connName);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(data.ConnName, data.CategoryID);
+        }
+
+        if(data.ShowQueryForm=="T"){
+            $("#queryFormNumberTitle").show();
+            $("#queryFormNumber").show();
+        }
+        else
+        {
+            $("#queryFormNumberTitle").hide();
+            $("#queryFormNumber").hide();
+        }
+
+        mini.getbyName("ShowQueryForm").setValue(!data.ShowQueryForm ? 'F' : data.ShowQueryForm); 
+        mini.getbyName("RelevanceForm").setValue(!data.RelevanceForm ? 'T' : data.RelevanceForm); 
+        mini.getbyName("IsExpand").setValue(!data.IsExpand ? 'F' : data.IsExpand);
+        mini.getbyName("Height").setValue(!data.Height ? '50%' : data.Height);
+
+        mini.getbyName("CConnName").setValue(data.CConnName);
+        var myTextarea = document.getElementById('Script');
+        var CodeMirrorEditor = CodeMirror.fromTextArea(myTextarea, {
+            mode: "text/javascript",
+            lineNumbers: true
+        });
+        script=CodeMirrorEditor;
+        script.setSize('840px','240px');
+        script.setValue(data.Script);
+        onFieldItemClick();
+    }
+   
+    function onFieldItemClick(e){
+        for(var i = 0;i < DataSource.length; i++){
+            var tableName = mini.getbyName("CTableNames").getValue(); 
+            var ds = DataSource[i];
+            if(tableName == ds.Code){
+                var fields = mini.decode(ds.Fields);
+                for(var field in fields){
+                    var code = fields[field].ID;
+                    if(code && code.toUpperCase() == 'ID')
+                        mini.getbyName("IDField").setValue('ID');
+                    else if(code && code.toUpperCase() == 'TEXT')
+                        mini.getbyName("TextField").setValue('Text'); 
+                    else if(code && code.toUpperCase() == 'PARENTID')
+                        mini.getbyName("ParentField").setValue('ParentID')
+                }
+                mini.getbyName("IDField").setData(fields);
+                mini.getbyName("TextField").setData(fields);
+                mini.getbyName("ParentField").setData(fields);
+            }
+        }
+    }
+
+    function onShowQueryFormChanged(e) {
+        if(e.value=="T"){
+            $("#queryFormNumberTitle").show();
+            $("#queryFormNumber").show();
+        }
+        else
+        {
+            $("#queryFormNumberTitle").hide();
+            $("#queryFormNumber").hide();
+        }
+    }
+
+    function onRelevanceFormChanged(e) {
+        if(e.value=="T"){
+            $("#relevanceFormTitle").show();
+            $("#relevanceFormList").show();
+        }
+        else
+        {
+            $("#relevanceFormTitle").hide();
+            $("#relevanceFormList").hide();
+            mini.getbyName("FormCode").setValue('');
+            mini.getbyName("Code").setValue('');
+            mini.getbyName("Name").setValue('');
+        }
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+        mini.getbyName("CategoryID").setData(CateEnum);
+        mini.getbyName("CategoryID").setValue(categoryID);
+    }
+
+</script>
+<script type="text/javascript">
+    function onCodeChanged(e) {
+        var code = mini.getbyName("FormCode").getSelected();
+        if (code) {
+            mini.getbyName("Name").setValue(code.Name);
+            mini.getbyName("Code").setValue(code.Code);
+            mini.getbyName("TableNames").setValue(code.TableName);
+            mini.getbyName("SQL").setValue("select * from " + code.TableName);
+        }
+    }
+
+    function onTmplCodeChanged(e){
+        if (e) {
+            mini.getbyName("TmplCode").setValue(e.item.ID)
+            curID = e.item.ID;
+            var title = e.item.title;
+            if(e.item.title.indexOf('(') >= 0 && e.item.title.indexOf(')') >= 0)
+                title = e.item.title.substring(0,e.item.title.indexOf('('))
+            mini.getbyName("Title").setValue(title);
+        }
+    }
+
+    function onTableChanged(e){
+        var TableNames = mini.getbyName("TableNames").getValue();
+        if (TableNames != "") {
+            mini.getbyName("SQL").setValue("select * from "+TableNames);
+        }  
+    }
+
+
+    function saveTabs() {
+        var tabs = mini.get("tabs");
+        var tmplCode = mini.getbyName("TmplCode").getValue();
+        var title = mini.getbyName("Title").getValue();
+        var isFK = mini.getbyName("IsFK").getValue();
+        for(var i = 0; i < UseList.length; i++){
+            if(UseList[i].ID == tmplCode){
+                var tab = { title: title, IsFK: isFK, name:UseList[i].code, url: UseList[i].url, showCloseButton: false };
+                tab.ondestroy = function (e) {
+                    var tabs = e.sender;
+                    var iframe = tabs.getTabIFrameEl(e.tab);
+
+                    //获取子页面返回数据
+                    var pageReturnData = iframe.contentWindow.getData ? iframe.contentWindow.getData() : "";
+                }
+                tabs.addTab(tab);
+                tabs.activeTab(tab);
+                close('addTabWindow');
+            }
+        }
+    }
+
+    function editTabs(){
+        var tabs = mini.get("tabs")
+        var active = tabs.getActiveTab();
+        if(active){
+            openWindow('editTabWindow');
+            mini.getbyName("TabTitle").setValue(active.title);
+            mini.getbyName("TabIsFK").setValue(active.IsFK);
+        }
+    }
+
+    function editSaveTabs(){
+        var tabs = mini.get("tabs")
+        var active = tabs.getActiveTab();
+        var tabTitle = mini.getbyName("TabTitle").getValue();
+        var isFK = mini.getbyName("TabIsFK").getValue();
+        tabs.updateTab(active, {title:tabTitle,IsFK:isFK});
+        msgUI("保存成功", 1, function (act) {
+            if (act == "ok") {
+                close('editTabWindow');
+            }
+        });
+    }
+
+    function removeTabs(){
+        var tabs = mini.get("tabs")
+        var active = tabs.getActiveTab();
+        if(active)
+            msgUI("确认要删除(" + active.title + ")吗?", 2, function (act) {
+                if (act == "ok") {
+                    tabs.removeTab(active.name);
+                }
+            });     
+    }
+
+    function SaveData()
+    {
+        var v=script.getValue();
+        addExecuteParam("Script",v);
+        save();
+    }
+    function openWindow(windowID, isClean) {
+        if(isClean){
+            mini.getbyName("TmplCode").setValue('');
+            mini.getbyName("Title").setValue('');
+            mini.getbyName("IsFK").setValue('T');
+        }
+        var useType = mini.getbyName("UseType").getValue();
+        if(useType == UseType[2].value || useType == UseType[3].value){
+            var array = new Array();
+            for(var i = 0;i < UseList.length; i++){
+                if(UseList[i].type == UseType[0].value || UseList[i].type == 'Form')
+                    array.push(UseList[i]);
+            }
+            mini.getbyName("TmplCode").setData(array);
+        }else if(useType == UseType[4].value || useType == UseType[5].value){
+            var array = new Array();
+            for(var i = 0;i < UseList.length; i++){
+                if(UseList[i].type == UseType[0].value || UseList[i].type == 'Form'  
+                    || UseList[i].type == UseType[1].value || UseList[i].type == UseType[2].value)
+                    array.push(UseList[i]);
+            }
+            mini.getbyName("TmplCode").setData(array);
+        }
+        var window = mini.get(windowID);
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.onscroll = scroll;
+        window.queryWindowId = window.id;
+        window.show();
+    }
+
+    function close(windowID) {
+        var window = mini.get(windowID);
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.queryWindowId = window.id;
+        window.hide();
+    }
+
+    function exportWord() {
+        window.open('ExportWord?FileName=脚本说明.docx');
+    }
+
+    function onModeValueChanged(e){
+        if(e && e.value == UseMode[1].value)
+            $("#_navHeight").html('导航宽度');
+        else
+            $("#_navHeight").html('导航高度');
+    }
+</script>

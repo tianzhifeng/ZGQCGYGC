@@ -1,0 +1,262 @@
+﻿@{
+    ViewBag.Title = "PBomTrace";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-save" onclick="saveList();" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-excel" onclick="exportToExcel" plain="true">导出Excel</a>
+            </td>
+            <td style="white-space: nowrap;">
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;&nbsp;
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="treeSearch"
+                       onbuttonclick="treeSearch" />
+                &nbsp;&nbsp;
+                <div id="showAll" name="showAll" checked="false" class="mini-checkbox" text="仅显示延期" onvaluechanged="onCheckBoxValueChanged"></div>
+                &nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="treeArea">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true" multiselect="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowcellwrap="true" iconfield="NodeType"
+         allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true" oncellbeginedit="OnCellBeginEdit"
+         expandonload="true" onload="onload" ondrawcell="onDrawingCell" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="false"
+         allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="250" headeralign="center" allowsort="false">名称</div>
+            <div field="Code" width="80" headeralign="center" allowsort="false" align="center">编号</div>
+            <div field="MajorName" width="70" headeralign="center" allowsort="false" align="center">专业分类</div>
+            <div field="Unit" width="50" headeralign="center" allowsort="false" align="center">单位</div>
+            <div header="数量" headeralign="center">
+                <div property="columns">
+                    <div field="Quantity" width="50" align="right" headeralign="center" allowsort="false">设计量</div>
+                    <div field="ApplyQuantity" width="50" align="right" headeralign="center" allowsort="false">申请量</div>
+                    <div field="ContractQuantity" width="50" align="right" headeralign="center" allowsort="false">合同量</div>
+                    <div field="ArriveQuantity" width="50" align="right" headeralign="center" allowsort="false">到货量</div>
+                </div>
+            </div>
+            <div header="设计状态" headeralign="center">
+                <div property="columns">
+                    <div field="PlanFetchDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">计划提资</div>
+                    <div field="FactFetchDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">
+                        实际提资
+                        <input property="editor" class="mini-datepicker" style="width:100%;" />
+                    </div>
+                    <div field="PlanReturnDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">计划返资</div>
+                    <div field="FactReturnDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">
+                        实际返资
+                        <input property="editor" class="mini-datepicker" style="width:100%;" />
+                    </div>
+                </div>
+            </div>
+
+            <div header="合同状态" headeralign="center">
+                <div property="columns">
+                    <div field="PlanInvitationDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">计划招标</div>
+                    <div field="FactInvitationDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">
+                        实际招标
+                        <input property="editor" class="mini-datepicker" style="width:100%;" />
+                    </div>
+                    <div field="PlanContractDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">计划签订</div>
+                    <div field="FactContractDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">
+                        实际签订
+                        <input property="editor" class="mini-datepicker" style="width:100%;" />
+                    </div>
+                </div>
+            </div>
+            <div header="到货" headeralign="center">
+                <div property="columns">
+                    <div field="PlanArrivedDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">计划</div>
+                    <div field="FactArrivedDate" dateformat="yy-MM-dd" width="70" headeralign="center" allowsort="false" align="center">
+                        实际
+                        <input property="editor" class="mini-datepicker" style="width:100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id='excelFormBom' style='display:none;' action='ExportExcel' method='post' target='excelIFrameBom'>
+    <input type='hidden' name='EngineeringInfoID' />
+    <input type='hidden' name='MajorCode' />
+    <input type='hidden' name='jsonColumns' />
+</form>
+<iframe id='excelIFrameBom' name='excelIFrameBom' style='display:none;'></iframe>
+<style type="text/css">
+    .DivTab {
+        border-top: 0px !important;
+    }
+
+    .ShowStatus {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+    }
+
+    .Finish {
+        background: url(/EPC/Scripts/Images/green.gif) no-repeat;
+    }
+
+    .UnFinish {
+        background: url(/EPC/Scripts/Images/red.gif) no-repeat;
+    }
+</style>
+
+<script type="text/javascript">
+    @Html.GetEnum("Base.PBSType")
+    var NodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var url = "GetTraceList?EngineeringInfoID=" + engineeringInfoID+"&ShowAll=true";
+    $("#dataTree").attr("url", url);
+    normalParamSettings.gridId = "dataTree";
+
+    function exportToExcel() {
+        downloadExcelData("Bom", engineeringInfoID);
+    }
+
+    // 响应自定义列的弹出层的导出事件
+    function downloadExcelData(key, versionID) {
+        var grid = mini.get("dataTree");
+        var dataurl = changeToFullUrl(grid.getUrl());
+        var includeColumns = "";
+        var columns = grid.getBottomColumns();
+        function getColumns(columns) {
+            columns = columns.clone();
+            for (var i = columns.length - 1; i >= 0; i--) {
+                var column = columns[i];
+                if (!column.field || !column.header || column.header.trim() == '' || column.visible == false) {
+                    columns.removeAt(i);
+                } else {
+                    if (includeColumns.length == 0 || includeColumns.indexOf(column.field.toLowerCase() + ',') >= 0) {
+                        var c = { ChineseName: column.header.trim(), FieldName: column.field, TableName: key };
+                        // 判断是否为时间字段，设置格式化字符串
+                        if (column.dateFormat) {
+                            c.DateFormat = column.dateFormat;
+                        }
+                        //导出excel使用显示字段
+                        if (column.displayField) {
+                            c.FieldName = column.displayField;
+                        }
+                        if (column.dataType) {
+                            c.DataType = column.dataType;
+                        }
+                        columns[i] = c;
+                    }
+                }
+            }
+            return columns;
+        }
+        var columns = getColumns(columns);
+        // 提交下载表单（利用iframe模拟Ajax）
+        var $excelForm = $("#excelForm" + $.trim(key));
+        if ($excelForm.length == 0) {
+            alert('请确保ID为excelForm的表单存在！');
+        }
+        var title = document.title;
+        var formData = {
+            referUrl: window.location.href,
+            dataUrl: dataurl,
+            EngineeringInfoID: engineeringInfoID,
+            excelKey: key,
+            title: title,
+            jsonColumns: mini.encode(columns)
+        };
+        for (var p in formData) {
+            $excelForm.find("input[name='" + p + "']").val(formData[p]);
+        }
+        $excelForm.submit();
+    }
+
+    function onload() {
+        collapseLevel();
+    }
+
+    function saveList() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveBom", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                tree.commitEdit();
+                tree.accept();
+            }, validateForm: false
+        });
+
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType != "Detail") {
+            e.cellStyle = "font-weight:bolder;";
+        }
+        if (record.DelayFields) {
+            if (record.DelayFields && record.DelayFields.indexOf(field) >= 0) {
+                e.cellStyle = "background: #fee2f0;";
+            }
+        }
+
+    }
+
+    var funcType = getQueryString("FuncType");
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (record.NodeType != "Detail") {
+            e.cancel = true; return;
+        }
+        if (funcType.toLowerCase() == "view") {
+            e.cancel = true; return;
+        }
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var url = "GetTraceList?EngineeringInfoID=" + engineeringInfoID + "&ShowAll=true";
+        if (e.value=="true") {
+            var url = "GetTraceList?EngineeringInfoID=" + engineeringInfoID + "&ShowAll=false";
+        }
+        var tree = mini.get("dataTree");
+        tree.load(url);
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        var isDelay = mini.get("showAll").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        }
+        else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+</script>

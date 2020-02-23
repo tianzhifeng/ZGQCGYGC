@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "问题整改单";
+}
+
+
+<div class="mini-toolbar" id="btnDiv" style="width:100%;position: fixed">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<form id="dataForm" method="post" style="top:30px;position:relative">
+    <input name="ID" class="mini-hidden" />
+    <input name="EngineeringInfo" class="mini-hidden" />
+    <input name="EngineeringInfoName" class="mini-hidden" />
+    <input name='SerialNumber' class="mini-hidden" />
+    <input name='Subcontractor' class="mini-hidden" />
+    <input name='SubcontractorName' class="mini-hidden" />
+
+    <div class="formDiv">
+        <h1 align="center">问题整改单</h1>
+
+        <fieldset class="formDiv">
+            <legend>基本信息</legend>
+            <table class="ke-zeroborder" style="width:100%;" cellpadding="2" border="0">
+                <tbody>
+                    <tr>
+                        <td style="width:15%;">
+                            <br />
+                        </td>
+                        <td style="width:35%;">
+                            <br />
+                        </td>
+                        <td style="width:15%;">
+                            <br />
+                        </td>
+                        <td>
+                            <br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            问题名称
+                        </td>
+                        <td>
+                            <input name='Name' class='mini-textbox' required='true' allowinput='true' style='width:100%;' maxLength='200' />
+                        </td>
+                        <td style="padding-left:20px;">
+                            标段
+                        </td>
+                        <td>
+                            <input name='Section' class='mini-combobox' required='true' allowinput='false' multiselect='false' shownullitem='true' valuefromselect='true' style='width:100%;' onvaluechanged="onSectionChange(e)" data='SectionData'  />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            工作内容
+                        </td>
+                        <td colspan="3">
+                            <input name='JobContent' class='mini-textbox' required='true' enabled="true" style='width:100%;' maxLength='200' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            问题级别
+                        </td>
+                        <td>
+                            <input name='ProNature' class='mini-combobox' required='true' allowinput='false' multiselect='false' shownullitem='true' valuefromselect='true' style='width:100%;' data='ProblemNature' />
+                        </td>
+                        <td style="padding-left:20px;">
+                            问题类型
+                        </td>
+                        <td>
+                            <input name='ProType' class='mini-combobox' required='true' allowinput='false' multiselect='false' shownullitem='true' valuefromselect='true' style='width:100%;' data='ProblemType' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            检查日期
+                        </td>
+                        <td>
+                            <input name='CheckDate' class='mini-datepicker' required='true' enabled="false" allowinput='false' style='width:100%;' />
+                        </td>
+                        <td style="padding-left:20px;">
+                            检查人员
+                        </td>
+                        <td>
+                            <input name='CheckerName' class='mini-textbox' required='true' enabled="false" allowinput='true' style='width:100%;' maxLength='50' />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            整改期限
+                        </td>
+                        <td>
+                            <input name='RecPeriod' class='mini-datepicker' required='true' allowinput='false' format='yyyy-MM-dd' style='width:100%;' />
+                        </td>
+                        <td style="padding-left:20px;">
+                            整改人
+                        </td>
+                        <td>
+                            <input name='LiablePerson' class='mini-textbox' required='false' style='width:100%;' maxLength='200' />
+                        </td>
+                    </tr>
+                    @*<tr>
+                            <td>
+                                整改日期
+                            </td>
+                            <td>
+                                <input name='RectifyDate' class='mini-datepicker' allowinput='false' style='width:100%' />
+                            </td>
+                            <td style="padding-left:20px;">
+                                关闭时间
+                            </td>
+                            <td>
+                                <input name='CloseDate' class='mini-datepicker' allowinput='false' style='width:100%' />
+                            </td>
+                        </tr>*@
+                    <tr>
+                        <td>
+                            问题内容
+                        </td>
+                        <td colspan="3">
+                            <input name='Problems' class='mini-textarea' allowinput='true' style='width:100%;height:50px;' maxLength='500' />
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </fieldset>
+
+        <fieldset class="formDiv">
+            <legend>其他</legend>
+            <table class="ke-zeroborder" style="width:100%;" cellpadding="2" border="0">
+                <tbody>
+                    <tr>
+                        <td style="width:15%;"></td>
+                        <td style="width:35%;"></td>
+                        <td style="width:15%;"></td>
+                        <td></td>
+                    </tr>
+
+                    <tr>
+                        <td height="200px">
+                            整改前照片
+                        </td>
+                        <td colspan="3">
+                            <input name='BeforeImprovePictrue' class='mini-multifile' style='width:100%' filetype='.jpg,.png,.gif,.bmp' />
+                        </td>
+                    </tr>
+                    @*<tr>
+                            <td height="200px">
+                                整改后照片
+                            </td>
+                            <td colspan="3">
+                                <input name='AfterImprovePictrue' class='mini-multifile' style='width:100%' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                整改措施
+                            </td>
+                            <td colspan="3">
+                                <input name='RectifyMeasures' class='mini-textarea' allowinput='true' style='width:100%;height:50px;' maxLength='2000' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                整改后验证
+                            </td>
+                            <td colspan="3">
+                                <input name='VerificationAfterRec' class='mini-textarea' style='width:100%' maxLength='2000' />
+                            </td>
+                        </tr>*@
+                    <tr>
+                        <td>
+                            备注
+                        </td>
+                        <td colspan="3">
+                            <input name='Remark' class='mini-textarea' style='width:100%' maxLength='2000' />
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </fieldset>
+
+    </div>
+
+</form>
+
+<script type="text/javascript">
+    @Html.GetEnum("EPC.ProblemType", "ProblemType")
+    @Html.GetEnum("EPC.ProblemNature", "ProblemNature")
+    @Html.GetEnum("System.TrueOrFalse", "TrueOrFalse")
+    @Html.GetEnum("EPC.ProRectifiState", "ProRectifiState")
+    var SectionData = @Html.Raw(ViewBag.SectionData);
+
+    function onSectionChange(e) {
+        mini.getbyName("Subcontractor").setValue(e.selected.Subcontractor);
+        mini.getbyName("SubcontractorName").setValue(e.selected.SubcontractorName);
+    }
+
+
+</script>

@@ -1,0 +1,233 @@
+﻿@{
+    ViewBag.Title = "MileStoneTrackList";
+}
+<link href="~/Scripts/Flag/Style.css" rel="stylesheet" type="text/css" />
+<style>
+    .fontnumber {
+        color: Red;
+    }
+</style>
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%" style="white-space: nowrap;">
+                <img width="16" height="16" align="absmiddle" border="0" alt="正常完成" src="~/Scripts/Flag/images/NormalFinish.png">
+                正常完成<font class="fontnumber" id="NormalFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="进行中" src="~/Scripts/Flag/images/NormalUndone.png">
+                正常进行中<font class="fontnumber" id="NormalUndone">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期完成" src="~/Scripts/Flag/images/DelayFinish.png">
+                延期完成<font class="fontnumber" id="DelayFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期未完成" src="~/Scripts/Flag/images/DelayUndone.png">
+                延期未完成<font class="fontnumber" id="DelayUndone">(0)</font> <span class="separator">
+                </span>阶段：
+                <input class="mini-combobox" id="phaseType" style="width: 220px;" valuefield="value" multiselect="@ViewBag.PhaseMultiSelect"
+                       textfield="text" data="Phase" value="@ViewBag.PhaseValue" onvaluechanged="onPhaseChanged()" />
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入项目名称" onenter="loadGrid();"
+                       onbuttonclick="loadGrid();" />
+                <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;"
+         url="GetList?ProjectModeCode=@ViewBag.ProjectMode.ModeCode&PhaseValue=@ViewBag.PhaseValue" idfield="ID"
+         frozenstartcolumn="0" frozenendcolumn="2"
+         ondrawcell="onDrawCellOfMls" onload="setNumber">
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 700px;" showmodal="true"
+     allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center">
+                        名称
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$Name" class="mini-textbox" style="width: 100%" />
+                    </td>
+                    <td width="10%" align="center">
+                        编号
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$Code" class="mini-textbox" style="width: 100%" />
+                    </td>
+                    <td width="10%" align="left">
+                        项目经理
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$LK$ChargeUserName" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="10%" align="center">
+                        计划日期
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$FR$PlanFinishDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                    <td width="10%" align="center">
+                        至
+                    </td>
+                    <td width="23%" align="left">
+                        <input name="$TO$PlanFinishDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="loadGrid()" iconcls="icon-find" style="margin-right: 20px;">
+                查询
+            </a><a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                清空
+            </a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" language="javascript">
+    @Html.GetEnum("Project.Phase")
+    var PhaseList = @Html.Raw(ViewBag.PhaseList);
+    var MileStoneList = @Html.Raw(ViewBag.MileStoneList);
+
+</script>
+<script type="text/javascript" language="javascript">
+    normalParamSettings.searchFields = "Name";
+    function pageLoad() {
+        initGrid();
+        loadGrid();
+    }
+
+    function onPhaseChanged(e) {
+        initGrid();
+        loadGrid();
+    }
+
+    function loadGrid() {
+        var phaseValues = mini.get("phaseType").getValue();
+        var settings = $.extend(true, {}, normalParamSettings);
+        var form;
+        if ($("#" + settings.queryWindowId).find("form").length > 0) {
+
+            var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+            form = new mini.Form("#" + _formId);
+        }
+        else {
+            form = new mini.Form("#queryForm");
+        }
+        var grid = mini.get("#" + settings.gridId);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var data = {};
+        form.validate();
+        if (form.isValid() == false) return;
+        data = form.getData();
+        if (phaseValues)
+            data["$IL$PhaseValues"] = phaseValues;
+        if (grid != undefined)
+            grid.load({ queryFormData: mini.encode(data), quickQueryFormData: mini.encode(quickSearchData) });
+
+        if ($("#" + settings.queryWindowId).find("form").length > 0)
+            hideWindow(settings.queryWindowId);
+    }
+
+    function initGrid() {
+        var phaseValues = mini.get("phaseType").getValue();
+        var dataGrid = mini.get("dataGrid");
+        var phaseArray = phaseValues.split(',');
+        var columDefines = [
+                { type: "indexcolumn" },
+                { field: "Code", width: 120, headerAlign: "center", allowSort: false, align: "center", header: "项目编号" },
+                { field: "Name", width: 240, headerAlign: "center", allowSort: false, header: "项目名称" },
+                { field: "ChargeUserName", width: 70, headerAlign: "center", align: "center", allowSort: false, header: "项目负责人" }
+        ];
+        for (var i = 0; i < PhaseList.length; i++) {
+            if (phaseArray.indexOf(PhaseList[i]["Code"]) < 0) continue;
+            var column = {
+                header: PhaseList[i]["Name"], headerAlign: "center", columns: []
+            };
+            for (var j = 0; j < MileStoneList.length; j++) {
+                if (MileStoneList[j]["PhaseValue"].indexOf(PhaseList[i]["Code"])>=0) {
+                    var milestoneColumn = { field: MileStoneList[j].ID + "ShowStatus", headerAlign: "center", header: MileStoneList[j].MileStoneName, width: MileStoneList[j].MileStoneName.length * 13 + 20, editor: { type: "textbox"} };
+                    column.columns.add(milestoneColumn);
+                }
+            }
+            columDefines.push(column);
+        }
+        dataGrid.set({
+            columns: columDefines
+        });
+    }
+
+    function onDrawCellOfMls(e) {
+        var record = e.record,
+        column = e.column,
+        field = e.field,
+        value = e.value;
+        if (field && field.indexOf("ShowStatus") >= 0) {
+            var html = "<div class='mileStone'>";
+            var defineField = "Template" + field.replace("ShowStatus", "");
+            var mileStoneList = record[defineField];
+            if (mileStoneList && mileStoneList.length > 0) {
+                for (var i = 0; i < mileStoneList.length; i++) {
+                    var mileStone = mileStoneList[i];
+                    var title = mileStone.WBSType + ":" + mileStone.WBSName + " \n 计划日期：" + mini.formatDate(mileStone.PlanFinishDate, "yyyy-MM-dd");
+                    if (mileStone.FactFinishDate) {
+                        title += " \n 实际完成：" + mini.formatDate(mileStone.FactFinishDate, "yyyy-MM-dd");
+                    }
+                    var className = "ShowStatus " + mileStone.ShowStatus;
+                    html += '<span title="' + title + '" class="' + className + '" onclick="onMileStoneClick(\'' + mileStone.MileStoneID + '\',\'' + mileStone.State + '\')" style="float:left;"></span>';
+                }
+            }
+            html += "</div>"
+            e.cellHtml = html;
+        }
+    }
+
+    function onMileStoneClick(ID, state) {
+        var url = "/Project/Basic/MileStoneExecute/MileStoneFinish?ID=" + ID + "&FuncType=View";
+        if (state && state == "Finish") {
+            openWindow(url, {
+                refresh: false, title: "里程碑完成情况", width: 700, height: 600,
+                onDestroy: function () { }
+            });
+        }
+        else {
+
+        }
+    }
+
+    function setNumber(e) {
+        var data = e.result.ShowStatusCount;
+        for (var p in data) {
+            $("#" + p).text("(" + data[p] + ")");
+        }
+        //mini.get("dataGrid").frozenColumns(0, 3);
+    }
+
+</script>
+<style type="text/css">
+    .mileStone {
+        text-align: center;
+        padding-left: 10px;
+    }
+
+        .mileStone span {
+            cursor: pointer;
+            padding-left: 3px;
+        }
+
+    body, td, th {
+        font-size: 12px;
+    }
+</style>

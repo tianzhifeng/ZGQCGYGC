@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "管理模式维护";
+}
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        @*<div title="空间配置" url="../Space/List">
+        </div>
+        <div title="空间授权" url="../Authorization/Authorize">
+        </div>*@
+        <div title="WBS结构配置" url="../WBSStructure/List">
+        </div>
+        <div title="项目资料结构" url="../DBSConfig/TreeList">
+        </div>
+        <div title="里程碑定义" url="../MileStone/List">
+        </div>
+        <div title="质量控制模板" url="../QBSDefine/List">
+        </div>
+        <div title="ISO表单定义" url="../ISO/List">
+        </div>
+        <div title="流程跟踪定义" url="../FlowTrace/List">
+        </div>
+        <div title="设校审模式定义" url="../AuditMode/List">
+        </div>
+        @*<div title="代办事项定义" url="../ToDoListDefine/TreeConfig">
+        </div>*@
+    </div>
+</div>
+<script type="text/javascript">
+    $(".mini-tabs").find("div").each(function () {
+        $(this).attr("url", $(this).attr("url") + "?ModeID=" + getQueryString("ID"))
+    });
+</script>

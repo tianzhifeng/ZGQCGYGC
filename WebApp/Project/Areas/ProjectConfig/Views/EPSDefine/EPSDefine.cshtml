@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="InitStruct" plain="true">
+                    初始化结构
+                </a>
+                <a class="mini-button" iconcls="icon-add" onclick="ReloadEPS" plain="true">
+                    更新EPS结构
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="treeGrid" class="mini-treegrid" style="width:100%;height:100%;" url="GetTree" showtreeicon="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" contextmenu="#treeMenu" expandonload="true"
+         allowresize="false" fitcolumns="True" borderstyle="border-right:0px;" onnodeselect="onNodeSelected">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="160" headeralign="center">名称</div>
+            <div field="GroupField" width="120" headeralign="center">分组字段</div>
+        </div>
+    </div>
+</div>
+
+<ul id="treeMenu" class="mini-contextmenu">
+    <li iconcls="icon-up" onclick="UpGrade">升级</li>
+    <li name="add" iconcls="icon-add" onclick="AddNode">新增节点</li>
+    <li name="edit" iconcls="icon-edit" onclick="ModifyNode">编辑节点</li>
+    <li name="remove" iconcls="icon-remove" onclick="DeleteNode">删除节点</li>
+</ul>
+
+<script type="text/javascript">
+
+    function onNodeSelected(e) {
+        var url = "GetFeatures?NodeID=" + e.node.ID;
+        var treeGrid = mini.get("featureGrid");
+        treeGrid.load(url);
+    }
+
+    function InitStruct() {
+        execute("InitStruct", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                mini.get("treeGrid").reload();
+            }, validateForm: false
+        });
+    }
+
+    function UpGrade() {
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        addExecuteParam("ID", node.ID);
+        execute("UpGrade", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                mini.get("treeGrid").reload();
+            }, validateForm: false
+        });
+
+    }
+
+    function AddNode() {
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        var url = "Edit?ParentID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "增加节点", width: "50%", height: "50%",
+            onDestroy: function () {
+                mini.get("treeGrid").reload();
+            }
+        });
+    }
+
+    function ModifyNode() {
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        var url = "Edit?ID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "编辑节点", width: "50%", height: "50%",
+            onDestroy: function () {
+                mini.get("treeGrid").reload();
+            }
+        });
+    }
+
+    function DeleteNode() {
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        addExecuteParam("ID", node.ID);
+        execute("DeleteNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                mini.get("treeGrid").reload();
+            }, validateForm: false
+        });
+    }
+
+    function addFeature() {
+        var parentID = "";
+        var featureTree = mini.get("featureGrid");
+        var tree = mini.get("treeGrid");
+        var node = tree.getSelectedNode();
+        var featureNode = featureTree.getSelectedNode();
+        if (featureNode) parentID = featureNode.ID;
+        if (!node) { msgUI("请选择一个EPS节点"); return; }
+        var url = "FeatureEdit?EngineeringSpaceDefID=" + node.ID + "&ParentID=" + parentID;
+        openWindow(url, {
+            refresh: false, title: "增加功能", width: "50%", height: "50%",
+            onDestroy: function () {
+                mini.get("featureGrid").reload();
+            }
+        });
+    }
+
+    function editFeature() {
+        var featureTree = mini.get("featureGrid");
+        var node = featureTree.getSelectedNode();
+        if (!node) { msgUI("请选择一个功能节点"); return; }
+        var url = "FeatureEdit?ID=" + node.ID;
+        openWindow(url, {
+            refresh: false, title: "编辑", width: "50%", height: "50%",
+            onDestroy: function () {
+                mini.get("featureGrid").reload();
+            }
+        });
+    }
+
+    function delFeature() {
+        var featureTree = mini.get("featureGrid");
+        var node = featureTree.getSelectedNode();
+        if (!node) { msgUI("请选择一个功能节点"); return; }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") {
+                return;
+            }
+            addExecuteParam("ID", node.ID);
+            execute("DeleteFeature", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("featureGrid").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function ReloadEPS() {
+        execute("ReloadEPS", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                msgUI("更新成功");
+            }, validateForm: false
+        });
+
+    }
+
+</script>

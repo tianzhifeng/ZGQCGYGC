@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "移动通用户手机绑定";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false"
+        splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveMac();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div class="formDiv">
+            <div id="dataForm">
+                <input name="ID" class="mini-hidden" />
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <div style="padding-left: 20px;">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                            <tr>
+                                <td width="15%"></td>
+                                <td width="35%;"></td>
+                                <td width="15%"></td>
+                                <td width="35%;"></td>
+                            </tr>
+                            <tr>
+                                <td>用户
+                                </td>
+                                <td>
+                                    <input name="UserID" textname="UserName" enabled='false' allowinput='false' class="mini-buttonedit" style="width: 100%" />
+                                </td>
+                                <td style="padding-left: 20px;">版本
+                                </td>
+                                <td>
+                                    <input name="AppID" enabled='false' allowinput='false' class="mini-textbox" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>原Mac地址
+                                </td>
+                                <td>
+                                    <input name="OldClientID" enabled='false' allowinput='false' class="mini-textbox" style="width: 100%" />
+                                </td>
+                                <td style="padding-left: 20px;">Mac地址
+                                </td>
+                                <td>
+                                    <input name="ClientID" allowinput='true' class="mini-textbox" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>操作系统
+                                </td>
+                                <td>
+                                    <input name="DeviceOS" enabled='false' allowinput='false' class="mini-textbox" style="width: 100%" />
+                                </td>
+                                <td style="padding-left: 20px;">激活日期
+                                </td>
+                                <td>
+                                    <input name="RegistDate" enabled='false' class="mini-datepicker" style="width: 100%" />
+                                </td>
+                            </tr>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function saveMac() {
+        var id = getQueryString("ID");
+        var macAddress = mini.getbyName("ClientID").getValue();
+        addExecuteParam("ID", id);
+        addExecuteParam("macAddress", macAddress);
+        execute("SaveMac", {
+            showLoading: true, onComplete: function (data) {
+                msgUI("保存成功。", 0, function (data) {
+                    closeWindow();
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,269 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <form id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <input name="ModeID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td>名称</td>
+                            <td colspan="3" style="padding-right: 40px;"><input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" /></td>
+                        </tr>
+                        <tr>
+                            <td>编号</td>
+                            <td colspan="3" style="padding-right: 40px;"><input name="Code" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" /></td>
+                        </tr>
+                        <tr>
+                            <td>依赖计划</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="PreScheduleCode" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="PreScheduleCode" allowinput="false" shownullitem="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>排序</td>
+                            <td colspan="3" style="padding-right: 40px;">
+                                <input name="SortIndex" style="width: 100%" class="mini-textbox" required="true" vtype="int" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ImportProject" class="mini-checkbox" readonly="false" text="允许从Project导入">
+                                </div>
+                            </td>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ImportTaskTemplate" class="mini-checkbox" readonly="false" text="允许从标准作业库导入">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ImportBOM" class="mini-checkbox" readonly="false" text="允许从BOM导入设备">
+                                </div>
+                            </td>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ImportBid" class="mini-checkbox" readonly="false" text="允许从投标导入设备">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ImportQBS" class="mini-checkbox" readonly="false" text="允许从质量策划导入">
+                                </div>
+                            </td>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ImportExcel" class="mini-checkbox" readonly="false" text="允许从Excel文件导入">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>Tab信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding-right: 40px;">
+                                <div name="ShowTab" class="mini-checkbox" readonly="false" text="显示子TAB">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding-right: 40px;">
+                                <div id="TabData" class="mini-datagrid" style="width: 100%; height: 270px;" idfield="ID" multiselect="true" showpager="false"
+                                     allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true">
+                                    <div property="columns">
+                                        <div type="indexcolumn">
+                                        </div>
+                                        <div field="TabName" width="*" headeralign="center" allowsort="true">
+                                            Tab名称
+                                        </div>
+                                        <div field="TabCode" width="120" headeralign="center" allowsort="true" align="center">
+                                            Tab编号
+                                        </div>
+                                        <div field="Visible" type="checkboxcolumn" truevalue="1" falsevalue="0" width="70" headeralign="center" align="center">显示</div>
+                                        <div field="CanEdit" type="checkboxcolumn" truevalue="1" falsevalue="0" width="70" headeralign="center" align="center">可编辑</div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>扩展属性</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding-right: 40px;">
+                                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addAttr" plain="true">增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="removeAttr" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="AttrDefine" class="mini-datagrid" style="width: 100%; height: 200px;" idfield="ID" multiselect="true" showpager="false"
+                                     allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="AttrName" width="*" headeralign="center" allowsort="true">
+                                            属性名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                        </div>
+                                        <div type="comboboxcolumn" field="AttrField" width="120" headeralign="center" allowsort="true" align="center">
+                                            属性字段
+                                            <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="cusAttr" />
+                                        </div>
+                                        @*<div type="comboboxcolumn" field="ItemType" width="120" headeralign="center" allowsort="true" align="center">
+                                            编辑控件
+                                            <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="ItemType" onvaluechanged="itemTypeChanged" />
+                                        </div>
+                                        <div field="settings" width="80">
+                                            详细设置
+                                        </div>*@
+                                        <div type="comboboxcolumn" field="RelateType" width="80" align="center">
+                                            关联数据<input property="editor" class="mini-combobox" shownullitem="false" style="width: 100%;" data="relateType" />
+                                        </div>
+                                        <div field="RelateData" headeralign="center" width="120" allowsort="true" align="center">
+                                            关联内容<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                        </div>
+                                        <div field="SortIndex" headeralign="center" width="120" allowsort="true" align="right">
+                                            排序<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var PreScheduleCode = @Html.Raw(ViewBag.ScheduleList);
+    var defaultTabData=[
+        {TabName:"紧前作业",TabCode:"PreTask",Visible:"1",CanEdit:"1"},
+        {TabName:"人员角色",TabCode:"UserResource",Visible:"1",CanEdit:"1"},
+        {TabName:"设备材料",TabCode:"BomResource",Visible:"1",CanEdit:"1"},
+        {TabName:"工程量",TabCode:"BOQ",Visible:"1",CanEdit:"1"},
+        {TabName:"分包合同",TabCode:"ContractResource",Visible:"1",CanEdit:"1"},
+        {TabName:"质量控制",TabCode:"Quantity",Visible:"1",CanEdit:"1"},
+        {TabName:"文档信息",TabCode:"Document",Visible:"1",CanEdit:"1"}
+    ];
+
+    var cusAttr = [
+    { value: 'ExtraField', text: '扩展1' },
+    { value: 'Extra1Field', text: '扩展2' },
+    { value: 'Extra2Field', text: '扩展3' },
+    { value: 'Extra3Field', text: '扩展4' },
+    { value: 'Extra4Field', text: '扩展5' },
+    { value: 'Extra5Field', text: '扩展6' },
+    { value: 'Extra6Field', text: '扩展7' },
+    { value: 'Extra7Field', text: '扩展8' },
+    { value: 'Extra8Field', text: '扩展9' },
+    { value: 'Extra9Field', text: '扩展10' },
+    { value: 'Extra10Field', text: '扩展11' }
+    ];
+
+    var ItemType = [
+        { value: 'textbox', text: '单行文本框' },
+        { value: 'textarea', text: '多行文本框' },
+        { value: 'ButtonEdit', text: '弹出选择框' },
+        { value: 'SingleFile', text: '单附件上传' },
+        { value: 'datepicker', text: '日期选择框' },
+        { value: 'combobox', text: '组合下拉框' }
+    ];
+
+    var relateType = [
+        { value: 'normal', text: '无' },
+        { value: 'role', text: '项目角色' },
+        { value: 'devicedate', text: '设备日期' },
+        { value: 'procdate', text: '工序日期' },
+    ];
+
+    addGridButton("AttrDefine", "settings", { linkText: '详细', onButtonClick: function (row) {
+        var type = row["ItemType"];
+        if (!type) { msgUI('请先选择控件类型!'); return; }
+        var url = "/Base/UI/Form/Settings" + type;
+        var width = 350;
+        openWindow(url, { width: width, title: "详细设置", data: row["Settings"], onDestroy: function (data) {
+            if (data != "close")
+                row["Settings"] = mini.encode(data);
+        }
+        });
+    }
+    });
+
+
+    function itemTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["Settings"] = "";
+        grid.updateRow(row);
+    }
+
+
+
+
+    function onFormSetData(data) {
+        if(!data.TabData||data.TabData.length==0){
+            mini.get("TabData").setData(defaultTabData);
+        }
+    }
+
+    function addAttr() {
+        var row ={};
+        var attrGrid = mini.get("AttrDefine");
+        attrGrid.addRow(row);
+    }
+
+    function removeAttr() {
+        var attrGrid = mini.get("AttrDefine");
+        var rows = attrGrid.getSelecteds();
+        attrGrid.removeRows(rows);
+    }
+
+</script>
+

@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "AuditList";
+}
+<div class="mini-toolbar" style="padding: 0px; border: 0">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入校审编号" onenter="quickSearch('SerialNumber');"
+                    onbuttonclick="quickSearch('SerialNumber');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="GetAuditList" class="mini-datagrid" style="width: 100%; height: 100%;"
+        idfield="ID" multiselect="true" borderstyle="border-left:0;border-right:0;">
+        <div property="columns">
+            <div type="indexcolumn" headeralign="center">
+                序号
+            </div>
+            <div field="StepName" width="80" headeralign="center" allowsort="true" align="center">
+                当前环节
+            </div>
+            <div field="SerialNumber" width="350" headeralign="center" align="center" allowsort="true">
+                校审单编号
+            </div>
+            <div field="CreateUser" headeralign="center" width="80" allowsort="true" align="center">
+                提交人
+            </div>
+            <div field="CreateDate" width="150" headeralign="center" dateformat="yyyy-MM-dd"
+                allowsort="true" align="center">
+                提交日期
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    addGridButton("dataGrid", "SerialNumber", {
+        onButtonClick: function (row) {
+            var url = "/Project/AutoUI/AuditView/PageView?TmplCode=ProjectExecutive_Auditor&FlowCode=ProjectExecutive_Auditor&ID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "校审单信息", width: "70%", height: "70%",
+                onDestroy: function () { }
+            });
+        }
+    });
+
+    addGridButton("dataGrid", "StepName", {
+        onButtonClick: function (row) {
+            var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + row.ID + "&FuncType=FlowTrace";
+            openWindow(url, {
+                refresh: false, title: "流程跟踪", width: "70%", height: "70%",
+                onDestroy: function () { }
+            });
+        }
+    });
+</script>

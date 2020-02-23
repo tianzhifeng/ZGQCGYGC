@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "TaskSelector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnData()" plain="true">
+                    选择
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="WBSID" parentfield="ParentID"
+        enablehottrack="false" resultastree="false" iconfield="NodeType" expandonload="true" url="GetSelectorTaskTree"
+        ondrawnode="onDrawNode" showcheckbox="true"></ul>
+</div>
+
+<script type="text/javascript">
+
+    function onDrawNode(e) {
+        var tree = e.sender;
+        var node = e.node;
+        if (node.NodeType != "Task") {
+            e.nodeStyle = 'font-weight:bold;';
+            e.showCheckBox = false;
+        }
+        else {
+         
+        }
+    }
+
+    function returnData() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getCheckedNodes();
+        closeWindow(nodes);
+    }
+</script>

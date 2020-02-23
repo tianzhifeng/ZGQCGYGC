@@ -1,0 +1,41 @@
+﻿
+@section scripts{
+    <style type="text/css">
+        body {
+            margin: 0px;
+        }
+
+        .gw_user_wrapper {
+            margin: 0 0 0 10px;
+            width: 96%;
+            padding-top: 2px;
+        }
+
+        .gw_user_text {
+            font-size: 12px;
+            color: #666;
+            width: 100%;
+        }
+    </style>
+}
+<div class="gw_user_wrapper" id="editForm">
+    <div class="gw_user_text">
+        <div style="float: left; width: 113px;margin-top:15px;">
+            <input id="excelFile" name="excelFile" type="file" style="float:left;" /></div>
+        <div style="float:left;float: left;height: 25px;line-height: 25px;margin-top:15px;">说明：只支持.xls与.xlsx两种格式,多次上传，以最后一次为准。</div>
+    </div>
+</div>
+<script type="text/javascript">
+    addH5Upload({
+        ID: "excelFile",
+        title: "选择Excel文件上传",
+        buttonClass: "uploadify-button-link",
+        fileType: "xls,xlsx",
+        closeWindow: true,
+        url: "/Base/UI/ExcelPrint/UploadExcel?TmplCode=" + getQueryString("TmplCode")
+    });
+
+    $(document).ready(function () {
+        $("#divFloat").hide();
+    });
+</script>

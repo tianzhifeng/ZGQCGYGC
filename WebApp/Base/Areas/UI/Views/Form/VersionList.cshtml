@@ -1,0 +1,124 @@
+﻿<div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-remove" onclick="execute('DeleteVersion?Code={Code}', {});">删除最高版</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');" onbuttonclick="quickSearch('Code,Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px" collapsegrouponload="false" url="GetFormVersionList" frozenstartcolumn="0" frozenendcolumn="1" sortOrder="asc">
+        <div property="columns">
+            @*<div type="checkcolumn">
+            </div>*@
+            <div field="Code" width="120" allowsort="true" align="center">
+                表单编号
+            </div>
+            <div field="Name" width="150" allowsort="true">
+                表单名称
+            </div>
+            <div headeralign="center" header="相关业务数据">
+                <div property="columns">
+                    <div field="ConnName" width="80" allowsort="true" align="center">
+                        库名
+                    </div>
+                    <div field="TableName" width="100" allowsort="true" align="center">
+                        表名
+                    </div>
+                </div>
+            </div>
+            <div field="ModifyTime" align="center" datatype="date" dateformat="yyyy-MM-dd HH:mm" width="120" allowsort="true">
+                最后修订时间
+            </div>
+            <div field="VersionNum" align="center" width="80" allowsort="true">
+                版本号
+            </div>
+            <div field="VersionStartDate" align="center" datatype="date" dateformat="yyyy-MM-dd" width="120" allowsort="true">
+                版本开始时间
+            </div>
+            <div field="VersionEndDate" align="center" datatype="date" dateformat="yyyy-MM-dd" width="120" allowsort="true">
+                版本结束时间
+            </div>
+            <div headeralign="center" header="修订">
+                <div property="columns">
+                    <div field="Base" width="60" align="center">
+                        基本信息
+                    </div>
+                    <div field="Item" width="60" align="center">
+                        控件信息
+                    </div>
+                    <div field="MobileItems" width="80" align="center">
+                        移动端配置
+                    </div>
+                    <div field="Layout" width="60" align="center">
+                        布局信息
+                    </div>
+                    @if (Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                    {
+                        <div field="LayoutEN" width="60" align="center">
+                            英文布局
+                        </div>
+                    }
+                    <div field="DefaultValue" width="60" align="center">
+                        数据源
+                    </div>
+                    <div field="FlowLogic" width="60" align="center">
+                        流程逻辑
+                    </div>
+                </div>
+            </div>
+            @*<div field="PreView" width="60" align="center">
+                预览
+            </div>*@
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    addGridLink("dataGrid", "PreView", "/MvcConfig/UI/Form/PageView?TmplCode={Code}&IsPreView=True", { title: '预览表单：{Name}', linkText: '预览' });
+    addGridLink("dataGrid", "Base", "VersionEdit?FormID={ID}&FuncType=View", { linkText: '查看', width: 1000 });
+    addGridLink("dataGrid", "Layout", "LayoutEdit?ID={ID}&TmplCode={Code}&FuncType=View", { linkText: '查看', width: 1000 });
+    addGridLink("dataGrid", "LayoutEN", "LayoutEnEdit?ID={ID}&TmplCode={Code}&FuncType=View", { linkText: '查看', width: 1000 });
+    addGridLink("dataGrid", "Item", "ItemList?FormID={ID}&FuncType=View", { linkText: '查看', width: 1000 });
+    addGridLink("dataGrid", "MobileItems", "MobileItemsList?FormID={ID}&FuncType=View", { linkText: '查看', width: 1000 });
+
+    addGridLink("dataGrid", "MobileListSql", "MobileListSql?ID={ID}&FuncType=View", { linkText: '查看', width: 1000, height: 400 });
+
+    addGridLink("dataGrid", "DefaultValue", "DefaultValueEdit?FormID={ID}&FuncType=View", { linkText: '查看', width: 1000 });
+    addGridLink("dataGrid", "FlowLogic", "FlowLogicList?FormID={ID}&FuncType=View", { linkText: '查看', width: 1000 });
+
+
+
+    //jQuery(".gw-grid-toolbar .mini-button").hide();
+</script>
+
+<script type="text/javascript">
+    function exportSQL() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择记录！");
+            return;
+        }
+        var url = "/Base/UI/ExportSql/SqlFile?DefID=" + getValues(rows, "ID") + "&FileCode=FormSql&TableName=S_UI_Form";
+        window.open(url);
+    }
+</script>
+<script type="text/javascript">
+    function createWordTmpl() {
+        var grid = mini.get("dataGrid");
+        var codes = getValues(grid.getSelecteds(), "Code");
+        var url = "/Base/UI/Word/CreateWordTmpl?TmplCode=" + codes;
+        execute(url, {
+            onComplete: function (text) {
+                msgUI("创建成功！");
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+</script>

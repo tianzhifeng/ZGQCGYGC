@@ -1,0 +1,526 @@
+﻿@{
+    ViewBag.Title = "专业级策划";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="专业级策划" region="center" showspliticon="true" style="border: 0px;" >
+        <div class="mini-toolbar gw-grid-toolbar" style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveUser" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-user" onclick="ImportUser" plain="true">从OBS选择人员</a>
+                    </td>
+                    <td style="white-space: nowrap; color: Red;">&nbsp;&nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="mytreegrid" class="mini-treegrid" style="width: 100%; height: 100%;" url="GetTree?ProjectInfoID=@ViewBag.ProjectInfoID&SpaceCode=@ViewBag.SpaceCode&ShowOwnNode=@ViewBag.ShowOwnNode" showtreeicon="true"
+                 iconfield="WBSType" borderstyle="border-bottom: 0; border-right: 0; border-left: 0;" treecolumn="Name" idfield="VirtualID" parentfield="ParentID"
+                 resultastree="false" allowresize="false" expandonload="true" allowcelledit="true" allowcellselect="true"
+                 editnextonenterkey="false" multiselect="false" oncellbeginedit="OnCellBeginEdit" ondrawcell="onDrawingCell"
+                 onnodeselect="onNodeSelected">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div name="Name" field="Name" width="*" headeralign="center">
+                        名称
+                    </div>
+                    <div field="Code" width="100" headeralign="center">
+                        编号
+                    </div>
+                    @{
+                        var structRoles = ViewBag.structRoles;
+                        foreach (var item in structRoles)
+                        {
+                            var filedID = item.RoleCode + "UserID";
+                            var displayField = item.RoleCode + "UserName";
+                            var editorName = "MajorList_" + filedID;
+                        <div field="@filedID" displayfield="@displayField" width="90" headeralign="center" align="center">
+                            @item.RoleName
+                            <input name="@editorName" property="editor" class="mini-buttonedit" style="width:100%;" />
+                        </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="southReg" title="套图信息" region="south" expanded="true" style="border-left: 0px; border-bottom: 0px; border-right: 0px;">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-menubutton" plain="true" iconcls="icon-import" menu="#popupMenu">导入</a>
+                        <a class="mini-button" iconcls="icon-add" tooltip="增加" onclick="addRow" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" tooltip="删除" onclick="deleteRow" plain="true">删除</a>
+                        <a class="mini-button" iconcls="icon-copy" tooltip="复制增加" onclick="copyAdd" plain="true">复制增加</a>
+                        <span class="separator"></span>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveWork" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-addnew" onclick="publish" plain="true">下达</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称或编号" onenter="quickSearch('Name,Code');"
+                            onbuttonclick="quickSearch('Name,Code');" />
+                        <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');" style="display:none">详细查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                idfield="ID" multiselect="true" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;" allowcelledit="true" allowcellselect="true"
+                editnextonenterkey="true" onselectionchanged="OnDataGridSelectionChanged" oncellbeginedit="onWorkGridCellBeginEdit">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="Name" width="*" headeralign="center" vtype="required" allowsort="true">
+                        套图名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="Code" width="120" headeralign="center" allowsort="true">
+                        编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="PlanEndDate" width="100" headeralign="center" dateformat="yyyy-MM-dd"
+                        allowsort="true" align="center">
+                        计划完成日期<input property="editor" class="mini-datepicker" style="width: 100%;" />
+                    </div>
+                    <div field="FactEndDate" width="100" headeralign="center" dateformat="yyyy-MM-dd"
+                        allowsort="true" align="center">
+                        实际完成日期
+                    </div>
+                    <div field="DesignerUserID" displayfield="DesignerUserName" width="90" headeralign="center"
+                        align="center">
+                        设计人
+                        <input name="WorkList_DesignerUserID" property="editor" class="mini-buttonedit" style="width: 100%;" />
+                    </div>
+                    <div field="CollactorUserID" displayfield="CollactorUserName" width="90" headeralign="center"
+                        align="center">
+                        校核人
+                        <input name="WorkList_CollactorUserID" property="editor" class="mini-buttonedit" style="width: 100%;" />
+                    </div>
+                    <div field="AuditorUserID" displayfield="AuditorUserName" width="90" headeralign="center"
+                        align="center">
+                        审核人
+                        <input name="WorkList_AuditorUserID" property="editor" class="mini-buttonedit" style="width: 100%;" />
+                    </div>
+                    <div field="ApproverUserID" displayfield="ApproverUserName" width="90" headeralign="center"
+                        align="center">
+                        审定人
+                        <input name="WorkList_ApproverUserID" property="editor" class="mini-buttonedit" style="width: 100%;" />
+                    </div>
+                    <div field="MapperUserID" displayfield="MapperUserName" width="90" headeralign="center"
+                        align="center">
+                        制图人
+                        <input name="WorkList_MapperUserID" property="editor" class="mini-buttonedit" style="width: 100%;" />
+                    </div>
+                    <div field="State" headeralign="center" width="80" allowsort="true" align="center">
+                        状态
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 145px;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="15%" align="center">名称
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$Name" style="width: 75%;" class="mini-textbox" />
+                    </td>
+                    <td width="15%" align="center">编号
+                    </td>
+                    <td width="35%" align="left">
+                        <input name="$LK$Code" style="width: 75%;" class="mini-textbox" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">计划完成日期
+                    </td>
+                    <td align="left">
+                        <input name="$FR$PlanEndDate" class="mini-datepicker" style="width: 75%" />
+                    </td>
+                    <td align="center">至
+                    </td>
+                    <td align="left">
+                        <input name="$TO$PlanEndDate" class="mini-datepicker" style="width: 75%" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询
+            </a><a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空
+            </a>
+        </div>
+    </div>
+</div>
+<ul id="popupMenu" class="mini-menu" style="display: none;">
+    <li iconcls="icon-package" onclick="importPackage">从工作包词典导入</li>
+    @* <li iconcls="icon-set" onclick="importWBSNode">从项目导入</li>*@
+</ul>
+<script type="text/javascript">
+    var inhertField = "@ViewBag.SychField";
+    var projectInfo = @Html.Raw(ViewBag.ProjectInfo);
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState));
+</script>
+<script type="text/javascript">
+    var hideTaskWork = getQueryString("HideTaskWork").toLowerCase()=="true"?true:false;
+    if(hideTaskWork)
+    {
+        $("#dataGrid").attr("url","");
+        $("#southReg").attr("visible","false");
+    }
+    
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "State", "ProjectCommoneState");
+    addSingleUserSelector("ChargeUserID");
+    addMultiUserSelector("DesignerUserID");
+    addMultiUserSelector("CollactorUserID");
+    addMultiUserSelector("ApproverUserID");
+    addMultiUserSelector("MapperUserID");
+
+
+    addMultiUserSelector('MajorList_DesignerUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('MajorList_CollactorUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('MajorList_AuditorUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('MajorList_ApproverUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('MajorList_MapperUserID', { returnParams: 'value:ID,text:Name' });
+
+    addMultiUserSelector('WorkList_DesignerUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('WorkList_CollactorUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('WorkList_AuditorUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('WorkList_ApproverUserID', { returnParams: 'value:ID,text:Name' });
+    addMultiUserSelector('WorkList_MapperUserID', { returnParams: 'value:ID,text:Name' });
+
+
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var code = getQueryString("SpaceCode");
+
+    function pageLoad() {
+        var lo = mini.get("mainLayout");
+        var sh = lo.el.offsetHeight*0.7;
+        lo.updateRegion("south",{height:sh});//70%高度
+        $(".mini-button").hide();
+    }
+
+    function onDrawingCell(e) {
+        var field = e.field;
+        var record = e.record
+        if (record.WBSType == "Project") { e.cellStyle = "background:#F0F0F0"; }
+        else if (field == "Name" || field == "Code") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        else if (!record.ID) {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        var auth = record.HasAuth;
+        if (auth != "True") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (!record.ID) {
+            e.cancel = true;
+        }
+        var auth = record.HasAuth;
+        if (auth != "True") {
+            e.cancel = true;
+        }
+        if (record.WBSType == "Project") { e.cancel = true; }
+        else if (field == "Name" || field == "Code"||field=="MajorEngineerUserID") {
+            e.cancel = true;
+        }
+        else if (field == "DesignerUserID" || field == "CollactorUserID" || field == "AuditorUserID" || field == "ApproverUserID") {
+            if(!getQueryString("IsNotAAptitude")){
+                SetSelectorURL("MajorList_" + field, urlConstant.multiScopeUser, {
+                    Aptitude: {
+                        Major: record.WBSValue, ProjectClass: projectInfo.ProjectClass,
+                        Position: field.replace("UserID", ""), AptitudeLevel: projectInfo.ProjectLevel,
+                        ProjectInfoID: projectInfoID
+                    }
+                });
+            }
+        }
+    }
+
+    function onWorkGridCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (field == "DesignerUserID" || field == "CollactorUserID" || field == "AuditorUserID" || field == "ApproverUserID"||field=="MapperUserID") {
+            if(!getQueryString("IsNotAAptitude")){
+                SetSelectorURL("WorkList_" + field, urlConstant.multiScopeUser, {
+                    Aptitude: {
+                        Major: getQueryString("SpaceCode").toString(), ProjectClass: projectInfo.ProjectClass,
+                        Position: field.replace("UserID", ""), AptitudeLevel: projectInfo.ProjectLevel, 
+                        ProjectInfoID: projectInfoID
+                    }
+                });
+            }
+        }
+    }
+
+
+    function onNodeSelected(e) {
+        $(".mini-button").hide();
+        var node = e.node;
+        if (node.ID&&!hideTaskWork) {
+            var dataGrid = mini.get("dataGrid");
+            var url = changeToFullUrl("GetList").split('?')[0] + "?ParentID=" + node.VirtualID;
+            dataGrid.setUrl(url);
+            dataGrid.load();
+        }
+        var auth = node.HasAuth;
+        if (auth == "True") {
+            $(".mini-button").show();
+        }
+    }
+
+    function saveUser() {
+        var treeGrid = mini.get("mytreegrid");
+        var nodes = treeGrid.getChanges();
+        if(nodes.length==0) return;
+        addExecuteParam("WBSInfo", mini.encode(nodes));
+        execute("SaveWBSUserInfo", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.accept();
+            }, validateForm: false
+        });
+    }
+
+    function OldimportPackage() {
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        if (!node.ID) { msgUI("请选择最下层节点"); return; }
+        var url = "/Project/Basic/TaskPackage/TaskPackageImport?MajorCode=" + node.WBSValue;
+        openWindow(url, {
+            refresh: false, title: "工作包导入", width: 950, height: 500,
+            onDestroy: function (data) {
+                if (data == "close" || !data || data.length == 0) return;
+                var dataSource = mini.encode(data); //在回调函数里没有mini上下文，先转格式为string
+                msgUI("是否需要默认设校审人员？", 2, function (result) {
+                    var withUser = "False";
+                    if (result == "ok") withUser = "True";
+                    addExecuteParam("TargetID", node.ID);
+                    addExecuteParam("WithUser", withUser);
+                    addExecuteParam("DataSource", dataSource);
+                    execute("ImportPackage", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            mini.get("dataGrid").reload();
+                        }, validateForm: false
+                    });
+                });
+            }
+        });
+    }
+    
+    function importPackage() {
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        if (!node.ID) { msgUI("请选择最下层节点"); return; }
+        var  phase = node.PhaseCode||projectInfo.PhaseValue;
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=PackageDicSelector&Majors="+code+"&ProjectClassValue=" + projectInfo.ProjectClass + "&PhaseCodeValue=" +phase +"&MajorCodeValue="+code;
+        openWindow(url, {
+            refresh: false, title: "工作包导入", width: 950, height: 500,
+            onDestroy: function (data) {
+                if (data == "close" || !data || data.length == 0) return;
+                var dataSource = mini.encode(data); //在回调函数里没有mini上下文，先转格式为string
+                msgUI("是否需要默认设校审人员？", 2, function (result) {
+                    var withUser = "False";
+                    if (result == "ok") withUser = "True";
+                    addExecuteParam("TargetID", node.ID);
+                    addExecuteParam("WithUser", withUser);
+                    addExecuteParam("DataSource", dataSource);
+                    execute("ImportPackage", {
+                        showLoading: true, refresh: false, onComplete: function (data) {
+                            mini.get("dataGrid").reload();
+                        }, validateForm: false
+                    });
+                });
+            }
+        });
+    }
+
+    function importWBSNode() {
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        if (!node.ID) { msgUI("请选择最下层节点"); return; }
+        var url = "/Project/Basic/TaskPackage/ProjectPackageImport";
+        openWindow(url, {
+            refresh: false, title: "工作包导入", width: $(window).width(), height: $(window).height(),
+            onDestroy: function (data) {
+                if (data == "close" || !data || data.length == 0) return;
+                addExecuteParam("TargetInfo", mini.encode(node));
+                addExecuteParam("DataSource", mini.encode(data));
+            }
+        });
+    }
+
+    function addRow() {
+        var dataGrid = mini.get("dataGrid");
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        if (!node.ID) { msgUI("请选择最下层节点进行工作任务策划"); return; }
+        var row = { ParentID: node.ID };
+        for (var key in node) {
+            if (inhertField.indexOf(key) >= 0 && key != "ID" && key != "Name") {
+                row[key] = node[key].split(',')[0];
+            }
+        }
+        dataGrid.addRow(row);
+    }
+
+    function copyAdd() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一行记录进行复制增加操作"); return; }
+        var newRow = mini.clone(row);
+        delete newRow.ID;
+        dataGrid.addRow(newRow);
+    }
+
+    function saveWork() {
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        if (!node.ID) { msgUI("请选择最下层节点进行工作任务策划"); return; }
+
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getChanges();
+        addExecuteParam("TaskInfo", mini.encode(rows));
+        addExecuteParam("ParentWBSID", node.VirtualID);
+        execute("SaveWork", {
+            showLoading: true, validateForm: false, refresh: false, onComplete: function (data) {
+                msgUI("保存成功。");
+                dataGrid.reload();
+            }
+        });
+    }
+
+    function publish() {
+        var treeGrid = mini.get("mytreegrid");
+        var node = treeGrid.getSelectedNode();
+        if (!node) { msgUI("请选择一个节点"); return; }
+        if (!node.ID) { msgUI("请选择最下层节点进行工作任务策划"); return; }
+
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            rows = dataGrid.getData();
+        }
+        addExecuteParam("TaskInfo", mini.encode(rows));
+        addExecuteParam("ParentWBSID", node.ID);
+        execute("Publish", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                msgUI("下达成功。");
+                dataGrid.reload();
+            }
+        });
+    }
+
+    function deleteRow() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length <= 0) {
+            msgUI("请选择记录。");
+            return;
+        }
+        var listIDs = "";
+        for (var i = 0; i < rows.length; i++) {
+            listIDs += rows[i].ID + ",";
+        }
+        msgUI("你确认删除选中的记录吗？", 2, function (result) {
+            if (result != "ok")
+                return;
+            addExecuteParam("ListIDs", listIDs);
+            execute("Delete", {
+                validateForm: false, showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.removeRows(rows); dataGrid.commitEdit(); dataGrid.accept();
+                }
+            });
+        });
+    }
+
+    function ImportUser() {
+        var wbsType = "Major";
+        var treeGrid = mini.get("mytreegrid");
+        var url = "/Project/Selector/OBSUserSelect/OBSUserSelect?ProjectInfoID=" + projectInfoID + "&WBSType=" + wbsType + "&MajorValue=" + code + "&ShowMajorPrincple=False";
+        openWindow(url, {
+            refresh: false, title: "OBS人员导入", width: 800, height: 500,
+            onDestroy: function (data) {
+                if (!data || data == "close") return;
+                var nodes = treeGrid.getSelecteds();
+                var wbslist = "";
+                if (nodes.length > 0) {
+                    addExecuteParam("WBSList", mini.encode(nodes));
+                }
+                else {
+                    addExecuteParam("WBSList", mini.encode(treeGrid.getList()));
+                }
+                addExecuteParam("UserList", mini.encode(data));
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                execute("ImportUserFormOBS", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        treeGrid.load(treeGrid.url);
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function OnDataGridSelectionChanged(e) {
+        var sender = e.sender;
+        var rows = e.records;
+    }
+
+    function saveTaskWork() {
+        var form = new mini.Form("#dataForm");
+        form.validate();
+        if (form.isValid() == false)
+            return msgUI("表单数据有误，必填字段为空或者字段类型有误，请修改。");
+        var data = form.getData();
+        //设计人工日信息
+        var VolumeUserGrid = mini.get("VolumeUserGrid");
+        VolumeUserGrid.validate();
+        if (VolumeUserGrid.isValid() == false)
+            return msgUI("设计人工日数据有误，设计工日字段类型有误，请修改。");
+        var VolumeUserGridData = VolumeUserGrid.getData();
+
+        var parentID = mini.getbyName("MajorWBSID").getValue();
+        addExecuteParam("TaskWork", mini.encode(data));
+        addExecuteParam("ParentWBSID", parentID);
+        addExecuteParam("VolumeUserGridData", mini.encode(VolumeUserGridData));
+        execute("SaveSingleTaskWork", {
+            showLoading: true, validateForm: false, actionTitle: "保存", onComplete: function (data) {
+                var dataGrid = mini.get("dataGrid");
+                var url = changeToFullUrl("GetList").split('?')[0] + "?ParentID=" + parentID;
+                dataGrid.setUrl(url);
+                dataGrid.load();
+            }
+        });
+    }
+</script>
+<style type="text/css">
+    .mini-layout-proxy
+    {
+        border-top: 0px;
+        border-right: 0px;
+    }
+</style>

@@ -1,0 +1,272 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+
+<style type="text/css">
+    body, td, th {
+        font-size: 12px;
+        font-family: Microsoft YaHei;
+    }
+
+    .Item {
+        width: 230px;
+        padding: 5px;
+        border-bottom: 1px #eee solid;
+        float: left;
+        position: relative;
+    }
+
+    .item-box {
+        margin: 10px;
+    }
+
+    .pic {
+        border: 1px #ccc solid;
+        padding: 5px;
+        position: relative;
+    }
+
+        .pic img {
+            cursor: pointer;
+            width: 100%;
+        }
+
+    .summary {
+        font-size: 14px;
+        padding-top: 5px;
+        height: 38px;
+        color: #333;
+        height: 48px;
+        overflow: hidden;
+    }
+
+    .row {
+        font-size: 12px;
+        padding-top: 5px;
+        height: 40px;
+        color: #999;
+    }
+
+    .col {
+        text-align: right;
+    }
+
+    .button {
+        text-align: center;
+        line-height: 18px;
+        padding: 0px;
+        text-decoration: none;
+        vertical-align: middle;
+        border: #a9acb5 1px solid;
+        display: inline-block;
+        cursor: pointer;
+        zoom: 1;
+        outline-style: none;
+        background-color: #eff1f3;
+        color: #369;
+    }
+</style>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @if(Formula.FormulaHelper.GetCurrentLGID() == "EN")
+                {
+                    <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">
+                        Submit
+                    </a>
+                    <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow();" plain="true">
+                        Cancel
+                    </a>
+                }
+                else
+                {
+                    <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">
+                        选择
+                    </a>
+                    <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow();" plain="true">
+                        取消
+                    </a> 
+                }
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="content">
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/FileGrid.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="FileGrid" name="FileGrid" onclick="" value="FileGrid" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">文件式列表</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/ComplexTextBlock.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="ComplexTextBlock" name="ComplexTextBlock" onclick="" value="ComplexTextBlock" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">四方文字块</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/Navigation.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="Navigation" name="Navigation" onclick="" value="Navigation" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">分组导航</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/TargetColumn.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="TargetColumn" name="TargetColumn" onclick="" value="TargetColumn" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">目标完成条形图</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/TargetPie.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="TargetPie" name="TargetPie" onclick="" value="TargetPie" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">目标完成环形图</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/NoticeGrid.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="NoticeGrid" name="NoticeGrid" onclick="" value="NoticeGrid" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">公告板</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/StandardColumn.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="StandardColumn" name="StandardColumn" onclick="" value="StandardColumn" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">柱状图</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/StandardPie.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="StandardPie" name="StandardPie" onclick="" value="StandardPie" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">饼图</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/Tab.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="Tab" name="Tab" onclick="" value="Tab" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">Tab</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/Grid.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="Grid" name="Grid" onclick="" value="Grid" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">列表</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/ColumnGrid.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="ColumnGrid" name="ColumnGrid" onclick="" value="ColumnGrid" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">柱状列表组合图</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/SimpleTitleGrid.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="SimpleTitleGrid" name="SimpleTitleGrid" onclick="" value="SimpleTitleGrid" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">摘要标题列表</label>
+                </div>
+            </div>
+        </div>
+        <div class="Item">
+            <div class="item-box">
+                <div class="pic">
+                    <img onclick="onPicClick(this)" alt="" src="~/Scripts/BI/img/TitleBlock.png" />
+                </div>
+                <div class="row">
+                    <input style="vertical-align:middle;" type="checkbox" id="TitleBlock" name="TitleBlock" onclick="" value="TitleBlock" />
+                    <label onclick="onCheckBoxLableClick(this);" style="display: inline-block; line-height: 16px; font-weight:bolder;">标题</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function onPicClick(e) {
+        if ($(e.parentNode.parentNode).find(".row").find("input[type='checkbox']").length > 0) {
+            $(e.parentNode.parentNode).find(".row").find("input[type='checkbox']").trigger("click");
+        }
+    }
+
+    function onCheckBoxLableClick(e) {
+        if ($(e.parentNode).find("input[type='checkbox']").length > 0) {
+            $(e.parentNode).find("input[type='checkbox']").trigger("click");
+        }
+    }
+
+    function returnValue() {
+        var data = [];
+        $("input:checkbox:checked").each(function (index, e) {
+            var Name = "";
+            if ($(e.parentNode).find("label").length > 0) {
+                Name = $(e.parentNode).find("label").text();
+            }
+            var item = { Name: Name, Code: e.value };
+            data.push(item);
+        });
+        closeWindow(data);
+    }
+</script>
+

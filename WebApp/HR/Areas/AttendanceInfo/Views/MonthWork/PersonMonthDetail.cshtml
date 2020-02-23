@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = "PersonMonthDetail";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class='mini-button'  enabled='true' visible='true' id='btnCreateReport' iconcls='icon-add' text='生成报表数据'   onclick='CreateReport'></a>
+                <a class='mini-button'  enabled='true' visible='true' id='btnMultiEdit' iconcls='icon-edit' text='批量修改'   onclick='MultiEdit'></a>
+                        @Html.ExportButton()
+                <span class="separator"></span>
+                <span id="LegendsSpan" style="vertical-align: middle;display:inline-block"></span>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入员工姓名或所属部门" onenter="quickSearch('Name,DeptName');"
+                    onbuttonclick="quickSearch('Name,DeptName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitDiv" class="mini-fit">
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%;height: 100%;'
+        url='GetPersonMonthDetail' multiselect='true' allowalternating='false' onload="onLoad"
+        frozenstartcolumn="0" frozenendcolumn="9" showpagebar="true" fitcolumns="true"
+        ondrawcell="onDrawCell">
+        <div property="columns">
+            @*<div field="indexcolumn" type="indexcolumn">序号</div>*@
+            <div field="DeptName" name="DeptName" headeralign="center" width="80" align="center">所属部门</div>
+            <div field="Name" name="Name" headeralign="center" width="80" align="center">员工姓名</div>
+            <div field="DateType" headeralign="center" width="50" align="center">时段</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("HR.AttendanceLegends")
+</script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $(".mini-toolbar #LegendsSpan").html("说明：" + CreatLegends());
+    });
+
+    function onLoad(e) {
+        var daysInMonth = mini.decode(e.text).daysInMonth;
+        var year = mini.decode(e.text).year;
+        var month = mini.decode(e.text).month;
+        if (month < 10)
+            month = "0" + month;
+        var columns = $.grep(e.sender.getColumns(), function (item, index) {
+            return item.CusType == undefined;
+        });
+        for (var i = 1; i <= daysInMonth; i++) {
+            var day = i.toString();
+            if (i < 10)
+                day = "0" + day;
+            var date = year + "-" + month + "-" + day;
+            gridEnums["dataGrid." + date] = "AttendanceLegends";//设置图例枚举，适应导出excel
+            var dayColumns = { field: date, name: date, header: day, headerAlign: "center", width: "30", align: "center", CusType: "D", renderer: "onEnumRender" };
+            columns.push(dayColumns);
+        }
+        e.sender.setColumns(columns);
+        e.sender.mergeColumns(["Name"]);
+    }
+
+    function onDrawCell(e) {
+        if (e.field.indexOf("-") >= 0) {
+            e.cellHtml = "<a href='javascript:void(0)' style='text-decoration:none;' onclick='linkToEdit(\"" + e.row[e.field + "_ID"] + "\")'>" + e.cellHtml + "</a>";
+        }
+    }
+
+    function linkToEdit(ID) {
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=AttendanceMonthReport&ID=" + ID;
+        var funcType = getQueryString("FuncType");
+        var title = "编辑";
+        if (funcType.toLowerCase() == "view") {
+            url += "&FuncType=" + funcType;
+            title = "查看";
+        }
+        openWindow(url, { width: '60%', height: '60%', title: title });
+    }
+
+    function MultiEdit() {
+        var url = "/HR/AutoForm/AttendanceMonthReportMultiEdit/PageView?TmplCode=AttendanceMonthReportMultiEdit";
+        var funcType = getQueryString("FuncType");
+        var title = "批量修改";
+        openWindow(url, { width: '60%', height: '60%', title: title });
+    }
+
+    //生成图例文字
+    function CreatLegends() {
+        var legends = '';
+        $.each(AttendanceLegends, function (index, item) {
+            legends += item.text + item.Description + "&nbsp;&nbsp;&nbsp;";
+        });
+        return legends;
+    }
+
+    function CreateReport() {
+        //验证是否选择年月
+        var year = getQueryString("Year"), month = getQueryString("Month");
+        if (!year || !month) {
+            msgUI("请先选择一个年份和月份");
+            return;
+        }
+
+        //判断是否可生成或覆盖
+        addExecuteParam("year", year);
+        addExecuteParam("month", month);
+        execute("/HR/AttendanceInfo/AttendanceInfo/CheckReport", {
+            showLoading: true,
+            onComplete: function (data) {
+                if (data.HasData) {
+                    msgUI(year + "年" + month + "月已有数据，是否覆盖已有数据？", 2, function (action) {
+                        if (action == "ok") {
+                            //生成汇总
+                            createCollect(year, month);
+                        }
+                    });
+                } else {
+                    msgUI("确认要生成" + year + "年" + month + "月的数据吗？", 2, function (action) {
+                        if (action == "ok") {
+                            //生成汇总
+                            createCollect(year, month);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    //生成汇总
+    function createCollect(year, month) {
+        addExecuteParam("year", year);
+        addExecuteParam("month", month);
+        execute("/HR/AttendanceInfo/AttendanceInfo/SaveReport", {
+            actionTitle: '生成', showLoading: true
+        });
+    }
+</script>

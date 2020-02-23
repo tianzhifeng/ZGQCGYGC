@@ -1,0 +1,26 @@
+﻿<script id="Tab" type="text/x-jquery-tmpl">
+    <div id="${ID}datadiv">
+        <div style='min-width:800px'>
+            <div class="BIinfo-block ${Style}">
+                <div class="bar">
+                    <span class="f-left active-prev" onclick="prevClick">
+                        <i class="glyphicon glyphicon-menu-left"></i>
+                    </span>
+                    <ul>
+                        {{each Tag}}
+                        <li class="${$value.className}" onclick="onTabClick(this)">
+                            <div data-url="${$value.LinkUrl}" iframeheight="${$value.height}" class="${$value.divClassName}">${$value.Title}</div>
+                        </li>
+                        {{/each}}
+                    </ul>
+                    <span class="f-right active-next" onclick="nextClick">
+                        <i class="glyphicon glyphicon-menu-right"></i>
+                    </span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="${DefaultUrl}" style="height:${DefaultHeight};" id="win"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

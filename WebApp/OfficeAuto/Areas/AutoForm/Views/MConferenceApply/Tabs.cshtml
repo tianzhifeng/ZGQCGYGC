@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "会议室预定";
+}
+<div id="CountTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+</div>
+
+<script type="text/javascript">
+    var CustomerID = "";
+    var funcType = "";
+    CustomerID = getQueryString("ID");
+    funcType = getQueryString("FuncType");
+    initTab();
+    function initTab() {
+        mini.parse();
+
+        var tabs = mini.get("CountTabs");
+        var ConferenceUrl = "/OfficeAuto/AutoForm/MConferenceApply/Index";
+        var ConferenceTab = { title: "会议室申请", url: ConferenceUrl, showCloseButton: false };
+        tabs.addTab(ConferenceTab);
+        tabs.activeTab(ConferenceTab);
+
+        var ContactLogUrl = "/MvcConfig/UI/List/PageView?TmplCode=ConferenceApply&FuncType=" + funcType;
+        var ContactLogTab = { title: "会议室申请信息", url: ContactLogUrl, showCloseButton: false };
+        tabs.addTab(ContactLogTab);
+
+    }
+</script>

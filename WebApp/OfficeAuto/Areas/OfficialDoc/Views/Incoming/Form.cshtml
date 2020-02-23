@@ -1,0 +1,323 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutFlow.cshtml";
+}
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<input name="Applicant" class="mini-hidden" />
+<input name="ApplicantID" class="mini-hidden" />
+<input name="Propose" class="mini-hidden" />
+<input name="ProposeID" class="mini-hidden" />
+<input name="Approve" class="mini-hidden" />
+<input name="ApproveID" class="mini-hidden" />
+<input name="Undertake" class="mini-hidden" />
+<input name="UndertakeID" class="mini-hidden" />
+<input name="Status" class="mini-hidden" />
+<div class='formDiv' align="center">
+    <h1 align="center">
+        外来文件办理单
+    </h1>
+    <fieldset class="formDiv">
+        <legend>基本信息</legend>
+        <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+            <tbody>
+                <tr>
+                    <td width="15%" style="border-width: 0px">
+                    </td>
+                    <td width="35%" style="border-width: 0px">
+                    </td>
+                    <td width="15%" style="border-width: 0px">
+                    </td>
+                    <td width="35%" style="border-width: 0px">
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        文件名称
+                    </td>
+                    <td colspan="3">
+                        <input name="Title" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        文件
+                    </td>
+                    <td colspan="3">
+                        <input name="ZhengWen" class="mini-multifile" style="width: 100%;" required="true"
+                            filter="Word|*.doc;*.docx|Excel|*.xls;*.xlsx|Photo|*.jpg;*.bmp;*.gif;" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        来文机关
+                    </td>
+                    <td colspan="3">
+                        <input name="JiGuan" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        来文字号
+                    </td>
+                    <td>
+                        <input name="ZiHao" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        收文类别
+                    </td>
+                    <td>
+                        <input name="Type" class="mini-combobox" allowinput="false" style="width: 100%;"
+                            valuefield="value" textfield="text" data="IncomingType" onvaluechanged="onTypeValueChanged" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        收文编号
+                    </td>
+                    <td>
+                        <input name="Code" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        序号
+                    </td>
+                    <td>
+                        <input name="Number" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        收文日期
+                    </td>
+                    <td>
+                        <input name="ShouWenDate" class="mini-datepicker" style="width: 100%;" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        密级
+                    </td>
+                    <td>
+                        <input name="MiJi" class="mini-combobox" style="width: 100%;" textfield="text" data="IncomingMiJi" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        收文年份
+                    </td>
+                    <td>
+                        <input name="IncomingYears" class="mini-combobox" style="width: 100%;" valuefield="value"
+                            url="GetYears" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        紧急程度
+                    </td>
+                    <td>
+                        <input name="HuanJi" class="mini-combobox" style="width: 100%;" valuefield="value"
+                            textfield="text" data="IncomingHuanJi" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        附件（个）
+                    </td>
+                    <td>
+                        <input name="FileCount" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        需报材料
+                    </td>
+                    <td>
+                        <input name="Materials" class="mini-combobox" style="width: 100%;" valuefield="value"
+                            textfield="text" data="IncomingMaterials" />
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        办文截至时间
+                    </td>
+                    <td>
+                        <input name="UndertakeDeadline" class="mini-datepicker" style="width: 100%;" />
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr status="Register">
+                    <td>
+                        主题词
+                    </td>
+                    <td colspan="3">
+                        <textarea name="ZhuTiCi" class="mini-textarea" style="width: 100%;"></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <fieldset class="formDiv">
+        <legend>签字信息</legend>
+        <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+            <tbody>
+                <tr status="Propose">
+                    <td width="15%">
+                        部门主任拟办意见
+                    </td>
+                    <td width="85%">
+                        <div name="ProposeOpnion" class="mini-auditsign">
+                        </div>
+                    </td>
+                </tr>
+                <tr status="Approve">
+                    <td>
+                        领导批示意见
+                    </td>
+                    <td>
+                        <div name="ApproveOpnion" class="mini-auditsign">
+                        </div>
+                    </td>
+                </tr>
+                <tr status="Undertake">
+                    <td>
+                        处理结果
+                    </td>
+                    <td>
+                        <div name="UndertakeOpnion" class="mini-auditsign">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    @Html.GetEnum("OA.IncomingType")
+    @Html.GetEnum("OA.IncomingMaterials")
+    @Html.GetEnum(typeof(OfficeAuto.Logic.IncomingMiJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.IncomingHuanJi))
+    @Html.GetEnum("OA.IncomingJiGuan")
+    @Html.GetBasicInfo(true, false, false, false)
+
+</script>
+<script type="text/javascript">
+
+    function onFormSetData(data) {
+        var status = data["Status"];
+        var funcType = getQueryString("FuncType");
+
+        //可见控制
+        $.each($.trim(data["ExecutedSteps"]).split(','), function (i, step) {
+            if (step != "") {
+                $("#dataForm [status='" + step + "']").show();
+            }
+        });
+        $("#dataForm [status='" + status + "']").show();
+        if (typeof mini.getbyName(status + "ID") != "undefined") {
+            var id = mini.getbyName(status + "ID").getValue();
+            if (id == "") {
+                mini.getbyName(status + "ID").setValue(user.UserID);
+                if (typeof mini.getbyName(status) != "undefined")
+                    mini.getbyName(status).setValue(user.UserName);
+            }
+            else {
+                if (id.indexOf(user.UserID) == -1) {
+                    mini.getbyName(status + "ID").setValue(id + "," + user.UserID);
+                    if (typeof mini.getbyName(status) != "undefined")
+                        mini.getbyName(status).setValue(mini.getbyName(status).getValue() + "," + user.UserName);
+                }
+            }
+        }
+
+        //可编辑控制
+        if (funcType.toLowerCase() != "view") {
+            $.each($.trim(data["ExecutedSteps"]).split(','), function (i, step) {
+                $.each($("#dataForm [status='" + step + "'] [uid]"), function (i, dom) {
+                    mini.getbyUID($(dom).attr("uid")).setReadOnly(true);
+                    mini.getbyUID($(dom).attr("uid")).addCls("asLabel");
+                });
+            });
+            $.each($("#dataForm [status='" + status + "'] [uid]"), function (i, dom) {
+                mini.getbyUID($(dom).attr("uid")).setReadOnly(false);
+                mini.getbyUID($(dom).attr("uid")).removeCls("asLabel");
+            });
+        }
+
+    }
+
+    function onTypeValueChanged(e) {
+        if ("文件,便函,传真".indexOf(e.value) == -1) {
+            e.sender.setAllowInput(true)
+        }
+        else {
+            e.sender.setAllowInput(false)
+        }
+    }
+
+    function onFormSaving() {
+        var rtn;
+        addExecuteParam("ID", mini.getbyName("ID").getValue());
+        addExecuteParam("Code", mini.getbyName("Code").getValue());
+        execute("ValidateCode", {
+            validateForm: false,
+            async: false,
+            onFail: function (msg) {
+                rtn = false;
+            },
+            onComplete: function (data) {
+                rtn = true;
+            }
+        });
+        return rtn;
+    }
+
+    $(function () {
+        initComments();
+    });
+
+    function initComments() {
+        var miniAdvice = mini.getbyName("Advice");
+        if (miniAdvice) {
+            addExecuteParam("UserID", user.UserID);
+            execute("GetUserComments", {
+                validateForm: false,
+                onComplete: function (data) {
+                    var cb = new mini.ComboBox();
+                    cb.set({
+                        id: "cbAdviceComment",
+                        width: "98%",
+                        borderStyle: "padding-bottom:1px",
+                        data: data,
+                        showNullItem: true,
+                        textField: "Comment",
+                        valueField: "Comment",
+                        onvaluechanged: function (e) {
+                            miniAdvice.setValue(e.sender.getValue());
+                        }
+                    });
+                    $(miniAdvice.getEl()).before(cb.getEl());
+                }
+            });
+
+            var miniConfirm = mini.getbyName("btnConfirm");
+            if (miniConfirm != null) {
+                miniConfirm.on("click", function (e) {
+                    addExecuteParam("Comment", miniAdvice.getValue());
+                    addExecuteParam("UserID", user.UserID);
+                    addExecuteParam("UserName", user.UserName);
+                    execute("AddComment", {
+                        onComplete: function (data) {
+                            if (data) {
+                                var cb = mini.get("cbAdviceComment");
+                                var cbData = cb.getData();
+                                cbData.splice(1, 0, {
+                                    Comment: miniAdvice.getValue()
+                                });
+                                cb.setData(cbData);
+                            }
+                        }
+                    });
+                });
+            }
+        }
+    }
+
+
+</script>

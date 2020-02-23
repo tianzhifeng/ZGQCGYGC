@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "QBSTree";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="startFinish();" plain="true">工程验收
+                </a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称或编号' onenter="treeSearch();" onbuttonclick="treeSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width: 100%; height: 100%;" url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true"
+        multiselect="true" borderstyle="border-left:0px;"
+        treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType"
+        allowresize="false" fitcolumns="false"
+        ondrop="onNodeDrop">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn"></div>
+            <div field="State" width="50" align="center" headeralign="center" allowsort="false">已验收</div>
+            <div name="Name" field="Name" width="260" headeralign="center">
+                名称
+            </div>
+            <div field="Code" width="100" align="left" headeralign="center">
+                编号
+            </div>
+            <div field="ChargerUser" displayfield="ChargerUserName" width="70" align="center" headeralign="center">
+                负责人
+            </div>
+            <div field="Standard" width="200" align="left" headeralign="center">
+                质量验收标准
+            </div>
+            <div field="Result" width="70" align="center" headeralign="center">
+                验收结果
+            </div>
+            <div field="CheckFinishDate" dateformat="yyyy-MM-dd" width="90" align="center" headeralign="center">
+                验收日期
+            </div>
+            <div field="CheckFinishUserName" width="70" align="center" headeralign="center">
+                验收人
+            </div>
+            <div name="Certificate" field="Certificate"
+                displayfield="CertificateName" width="120" headeralign="center" allowsort="false"
+                align="left" visible="true" renderer='onFileRender'>
+                凭证
+                <input property="editor" class="mini-fileupload" style="width: 100%;"
+                    flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                    uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+            </div>
+            <div field="Remark" width="300" align="left" headeralign="center">
+                备注
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .DivTab
+    {
+        border-top: 0px !important;
+    }
+
+    .ShowStatus
+    {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        text-align: center;
+        display: block;
+    }
+
+    .Finish
+    {
+        background: url(/EPC/Scripts/Images/green.gif) no-repeat;
+    }
+
+    .Create
+    {
+        background: url(/EPC/Scripts/Images/red.gif) no-repeat;
+    }
+</style>
+<script type="text/javascript">
+    @Html.GetEnum("Base.QualityScore")
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var showAll = getQueryString("ShowAll");
+    if (!showAll) showAll = "false";
+    var url = "GetQBSList?EngineeringInfoID=" + engineeringInfoID + "&ShowAll=" + showAll;
+    $("#dataTree").attr("url", url);
+
+    addGridEnum("dataTree", "Result", "QualityScore");
+    addGridLink('dataTree', 'Result', '/MvcConfig/UI/List/PageView?TmplCode=QBSFlowList&QBSID={ID}');
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType == "Root") {
+            e.cellStyle = "font-weight:bolder;";
+        }
+        else {
+            if (field == "State") {
+                var toolTip = "未通过";
+                if (e.value == "Finish") {
+                    toolTip = "已通过";
+                }
+                e.cellHtml = "<span title='" + toolTip + "' class='ShowStatus " + e.value + "' style='float:center;'></span>";
+            }
+        }
+    }
+
+    function startFinish() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            msgUI("请选择质量节点");
+            return;
+        }
+        var nodeType = "";
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (i == 0) {
+                nodeType = node.NodeType;
+                continue;
+            }
+            if (node.NodeType != nodeType) {
+                msgUI("只能选择相同层级的质量节点进行验收操作"); return;
+            }
+        }
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("ValidateQBS", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "/EPC/Quality/QBSAcceptance/PageView?TmplCode=QBSAcceptance&FlowCode=QBSAcceptance&EngineeringInfoID=" + engineeringInfoID;
+                openWindow(url, {
+                    refresh: false, title: "质量节点验收", width: "75%", height: "90%",
+                    data: nodes,
+                    onDestroy: function (data) {
+                        if (data != "close") {
+                            dataTree.reload();
+                        }
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                var code = node.Code ? node.Code.toLowerCase() : "";
+                if (text.indexOf(key) != -1 || code.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+</script>

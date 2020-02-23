@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "MajorMileStoneList";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<link href="~/Scripts/Menu/Style.css" rel="stylesheet" type="text/css" />
+<div class="mini-fit">
+    <div class="menu_tab_a_bg">
+        <ul id="TabPlan" class="menu_tab_a">
+            @for (int i = 0; i < ViewBag.Majors.Count; i++)
+            {
+                var item = ViewBag.Majors[i];
+                var name = item["Name"];
+                var code = item["Value"];
+                <li>
+                    @{
+                if (i == 0)
+                {
+                        <a  style=" cursor:hand;" key="@code" class="current">@name</a>
+                }
+                else
+                {    
+                        <a style=" cursor:hand;" key="@code" >@name</a>
+                }
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="mini-fit">
+        <div class="mini-toolbar " style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+            <table>
+                <tr>
+                    <td style="width: 100%">
+                        <a class="mini-button" iconcls="icon-import" onclick="ImportMileStone" plain="true">导入</a>
+                        <a class="mini-button" iconcls="icon-add" onclick="addMileStone" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delMileStone" plain="true">删除</a>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveMileStone" plain="true">保存</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入里程碑名称" onenter="quickSearch('Code,Name');"
+                            onbuttonclick="quickSearch('Code,Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetMajorMileStoneList?ProjectInfoID=@ViewBag.ProjectInfoID&MajorCode=@ViewBag.DefaultMajorCode" multiselect="true"
+                borderstyle="border:0;" allowcelledit="true" allowcellselect="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" vtype="required" width="*" allowsort="true">
+                        里程碑名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                        计划完成时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+                    </div>
+                    <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                        原计划完成时间
+                    </div>
+                    <div field="Weight" width="50" allowsort="true" align="center" vtype="int">
+                        权重%<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="Description" width="200" allowsort="true">
+                        备注<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var currentMajorCode = "@Html.Raw(ViewBag.DefaultMajorCode)";
+    var rootNode = @Html.Raw(ViewBag.RootNode);
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "State", "ProjectCommoneState");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var mileStoneLevel = getQueryString("MileStoneLevel");
+
+    $("#TabPlan a").bind("click", function (e) {
+        $("#TabPlan a").removeClass("current");
+        var key = $(e.target).attr("key");
+        currentMajorCode = key;
+        var grid = mini.get("dataGrid");
+        grid.setUrl("GetMajorMileStoneList?ProjectInfoID=" + projectInfoID + "&MajorCode=" + currentMajorCode);
+        grid.load();
+        $(e.target).addClass("current");
+    });
+
+    function delMileStone() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length < 1) {
+            msgUI("请选择一条记录！");
+            return;
+        }
+        msgUI("您确定需要删除吗？", 2, function (data) {
+            if (data != "ok") return;
+            addExecuteParam("MileStoneData", mini.encode(rows));
+            execute("DeleteMileStone", {
+                refresh: false, showLoading: true, validateForm: false,
+                onComplete: function (data) {
+                    grid.removeRows(rows);
+                }
+            });
+        });
+    }
+
+    function addMileStone() {
+        var grid = mini.get("dataGrid");
+        var newRow = { WBSID: rootNode.ID, ProjectInfoID: rootNode.ProjectInfoID, MileStoneLevel: "Major", MajorValue: currentMajorCode };
+        grid.addRow(newRow);
+    }
+
+    function ImportMileStone() {
+        var wbsType = "Project";
+        openWindow("MileStoneImport?MileStoneLevel=" + mileStoneLevel + "&BelongMajors=" + currentMajorCode, { refresh: false, title: "里程碑模板导入", width: 750, height: 500,
+            onDestroy: function (rows) {
+                if (rows == "close" || !rows || rows.length == 0) return;
+                addExecuteParam("MileStoneData", mini.encode(rows));
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                addExecuteParam("MajorValue", currentMajorCode);
+                execute("ImportMileStoneData", { showLoading: true, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }
+                });
+            }
+        });
+    }
+
+    function saveMileStone() {
+        var grid = mini.get("dataGrid");
+        grid.validate();
+        var data = grid.getChanges();
+        if (data.length == 0)
+            return;
+        if (!grid.isValid()) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);
+            return;
+        }
+        addExecuteParam("MileStoneData", mini.encode(data));
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("MileStoneSave", {
+            refresh: false, showLoading: true,
+            onComplete: function (data) {
+                msgUI("保存成功");
+                grid.reload();
+            }
+        });
+    }
+
+</script>

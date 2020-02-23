@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "WBS策划";
+}
+
+<div id="WBSIndexLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+
+    <div id="DivHeader" region="north" height="30" showheader="false" showcollapsebutton="false"
+         allowresize="false" style="background-color:#f9f9f9;">
+        <a class="mini-button" iconcls="icon-add" onclick="importFromOtherProject" plain="true">从其他项目导入</a>
+        @*<a class="mini-button" iconcls="icon-add" onclick="addNode" plain="true">添加阶段</a>*@
+    </div>
+    <div title="WBS策划" region="west" width="250" expanded="true" showspliticon="false">
+        <div class="mini-fit">
+            <div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+                <table>
+                    <tr> 
+                        <td></td>
+                        <td class='gw-toolbar-right'>
+                            <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入节点名称' onenter="onTreeKeyEnter" onbuttonclick="onTreeKeyEnter" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <ul id="dataTree" style="height:90%;" class="mini-tree" url="GetWBSTree" showTreeIcon="true" showtreeicon="false" textfield="Name"
+                idfield="ID" expandOnLoad="1" parentfield="ParentID" resultastree="false" selectonload="false" onnodeselect="onTreeNodeSelected"></ul> @*contextmenu="#treeMenu"*@ 
+        </div>
+    </div>
+    <div id="DivTabs" title="center" region="center">
+        <div class="mini-fit">
+            <div id="mainTab" class="mini-tabs" style="width: 100%; height: 100%;">
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li  onclick="onMoveNode">进入子项空间</li>
+</ul>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var wbsID = getQueryString("WBSID");
+</script>
+<script type="text/javascript">
+
+    function addNode(e) {
+        var dataTree = mini.get("dataTree");
+        var rootNode = dataTree.getRootNode();
+        var ID = rootNode.children[0].ID;
+        var title = "选择阶段";
+        wbsType = "Phase";
+        var url = "WBSAddWithAttrDefine"; width = "50%"; height = "40%";
+        url += "?ParentIDs=" + ID + "&Type=" + wbsType;
+        openWindow(url, {
+            refresh: false, title: title, width: width, height: height,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                dataTree.load();
+            }
+        });
+    }
+
+    function dataTreeReLoad() {
+        var dataTree = mini.get("dataTree");
+        dataTree.load();
+    }
+
+    function onTreeNodeSelected(e) {
+        var node = e.node;
+        var wbsType = node.WBSType;
+        var id = node.ID;
+        var parentID = node.ID;
+        var tabs = mini.get("mainTab");
+        tabs.removeAll();
+        if (wbsType == "Project") {
+            var tab = { title: "项目属性卡", url: "/MvcConfig/UI/Form/PageView?TmplCode=Scheme_ProjectAttributeCard", refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "项目资料Tab", url: "/Project/Basic/DBS/DBSMain?ProjectInfoID=" + projectInfoID, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "项目状态变更", url: "/MvcConfig/UI/List/PageView?TmplCode=Scheme_ProjectStateChange&ProjectInfoID=" + projectInfoID, refreshOnClick: true };
+            tabs.addTab(tab);
+            tabs.activeTab(0);
+        }
+        else if (wbsType == "Phase") {
+            var url = "WBSAdd?ProjectInfoID=" + projectInfoID + "&ParentID=" + parentID + "&Type=SubProject";;
+            var width = "70%";
+            var height = "80%";
+
+            var tab = { title: "子项策划", url: url, refreshOnClick: true };
+            tabs.addTab(tab);
+            tabs.activeTab(0);
+        }
+        else if (wbsType == "SubProject") {
+            var tab = { title: "子项属性卡", url: "/MvcConfig/UI/Form/PageView?TmplCode=Execute_SubProjectAttributeCard&ProjectInfoID=" + projectInfoID + "&ID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "设计要则", url: "/MvcConfig/UI/List/PageView?TmplCode=Execute_SubProjectDesignPrinciples&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + wbsID, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "进度计划表", url: "/MvcConfig/UI/Form/PageView?TmplCode=DesignPlan&FlowCode=DesignPlan&RelateField=SubProjectWBSID&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "设计更改任务", url: "/MvcConfig/UI/List/PageView?TmplCode=DesignChangeApply&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "状态变更", url: "/MvcConfig/UI/List/PageView?TmplCode=Scheme_SubProjectStateChange&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "互提资料查询", url: "/MvcConfig/UI/List/PageView?TmplCode=CooperationExecuteInPlanList&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "子项进度跟踪", url: "/MvcConfig/UI/List/PageView?TmplCode=CooperationExecuteInPlanList&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            var tab = { title: "子项协作计划跟踪", url: "/MvcConfig/UI/List/PageView?TmplCode=CooperationExecuteInPlanList&EngineeringInfoID=" + engineeringInfoID + "&ProjectInfoID=" + projectInfoID + "&WBSID=" + id + "&SubProjectWBSID=" + id, refreshOnClick: true };
+            tabs.addTab(tab);
+            tabs.activeTab(0);
+        }
+    }
+
+    function onTreeKeyEnter(e) {
+        var dataTree = mini.get("dataTree");
+        var key = mini.get("treeFilterKey").getValue();
+        if (key == "") {
+            dataTree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            dataTree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var dataTree = mini.get("dataTree");
+
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        if (node && node.WBSType != "SubProject") {
+            e.cancel = true;
+            //阻止浏览器默认右键菜单
+            e.htmlEvent.preventDefault();
+            return;
+        }
+    }
+</script>

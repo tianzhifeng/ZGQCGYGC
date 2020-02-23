@@ -1,0 +1,76 @@
+﻿<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="editPrice();" plain="true">单价维护</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="category" width="80" headeralign="center" allowsort="true" align="center">
+
+            </div>
+            <div field="Size35Quantity" width="50" headeralign="center" allowsort="true" align="right">
+                35
+            </div>
+            <div field="Size36Quantity" width="50" headeralign="center" allowsort="true" align="right">
+                36
+            </div>
+            <div field="Size37Quantity" width="50" headeralign="center" allowsort="true" align="right">
+                37
+            </div>
+            <div field="Size38Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                38
+            </div>
+            <div field="Size39Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                39
+            </div>
+            <div field="Size40Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                40
+            </div>
+            <div field="Size41Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                41
+            </div>
+            <div field="Size42Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                42
+            </div>
+            <div field="Size43Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                43
+            </div>
+            <div field="Size44Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                44
+
+            </div>
+            <div field="Size45Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                45
+
+            </div>
+            <div field="Size46Quantity" headeralign="center" width="50" allowsort="true" align="right">
+                46
+            </div>
+            <div field="TotalQuantity" headeralign="center" width="120" allowsort="true" align="right">
+                合计库存数量
+            </div>
+            <div field="UnitPrice" headeralign="center" width="120" allowsort="true" align="right">
+                单价
+            </div>
+            <div field="TotalPrice" headeralign="center" width="120" allowsort="true" align="right">
+                库存总价值
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function editPrice() {
+
+        openWindow("/MvcConfig/UI/Form/PageView?TmplCode=ProtectionArticle_Ledger&ID={id}",{mustSelectOneRow:true});
+
+    }
+</script>

@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "里程碑导入";
+}
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="returnValue();" plain="true">导入</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('MileStoneCode,MileStoneName');"
+                    onbuttonclick="quickSearch('MileStoneCode,MileStoneName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="GetMileStoneTemplateList" class="mini-datagrid" style="width: 100%; height: 100%;"
+        idfield="ID" multiselect="true" borderstyle="border:0;" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="MileStoneName" width="*" headeralign="center" allowsort="true">
+                里程碑名称</div>
+            <div field="MileStoneCode" width="100" headeralign="center" allowsort="true">
+                里程碑编号</div>
+            <div field="Weight" width="100" headeralign="center" allowsort="true">
+                权重</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function returnValue() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        closeWindow(rows);
+    }
+</script>

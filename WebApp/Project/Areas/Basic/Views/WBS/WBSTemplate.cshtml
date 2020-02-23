@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "WBSTemplate";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="returnValue();" plain="true">导入</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+        <div title="模板信息" region="west" showheader="false" width="600" expanded="true" showspliticon="false">
+            <div class="mini-toolbar" style="padding: 0px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;"></td>
+                        <td style="white-space: nowrap;">
+                            <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');"
+                                   onbuttonclick="quickSearch('Code,Name');" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" url="GetTemplateList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                     multiselect="false" onselectionchanged="onRowSelectChange">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" width="*" headeralign="center" allowsort="true">
+                            模板名称
+                        </div>
+                        <div field="Code" width="100" headeralign="center" allowsort="true">
+                            模板编号
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center">
+            <ul id="mytree" iconfield="WBSType" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true"
+                textfield="Name" idfield="ID" enablehottrack="false" parentfield="ParentID" resultastree="false"
+                expandonload="0" showcheckbox="true" checkrecursive="true"></ul>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var url = $("#dataGrid").attr("url") + "?ProjectInfoID=" + projectInfoID;
+    $("#dataGrid").attr("url", url);
+    function onRowSelectChange(e) {
+        var record = e.selected;
+        var tree = mini.get("mytree");
+        if (record) {
+            var url = "GetTemplateTree?TemplateID=" + record.ID;
+            tree.load(url);
+        }
+        else {
+            tree.load("");
+        }
+    }
+
+    function returnValue() {
+        var tree = mini.get("mytree");
+        var nodes = tree.getCheckedNodes();
+        closeWindow(nodes);
+    }
+</script>
+
+
+

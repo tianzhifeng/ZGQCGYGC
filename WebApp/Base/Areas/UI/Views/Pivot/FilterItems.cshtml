@@ -1,0 +1,125 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <div class='mini-toolbar' style='height: 25px; border-bottom: 0px;'>
+        <table>
+            <tr>
+                <td style='text-align: left;'>
+                    <a class='mini-button' iconcls='icon-add' onclick='AddRow("FilterItems");' visible='true'>添加</a>
+                    <a class='mini-button' iconcls='icon-remove' onclick='delRow({gridId:"FilterItems"});' visible='true'>移除</a>
+                    <a class='mini-button' iconcls='icon-up' onclick='moveUp("FilterItems");' visible='true'>上移</a>
+                    <a class='mini-button' iconcls='icon-down' onclick='moveDown("FilterItems");' visible='true'>下移</a>
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id='FilterItems' multiselect='true' allowalternating='false' showsummaryrow='true' showindexcolumn='false' pagesize='50' style='width: 100%; height: 400px;'
+        class='mini-datagrid' allowcellvalid='true' multiselect='true' allowcelledit='true' allowcellselect='true' showpager='false' allowunselect='false'>
+        <div property='columns'>
+            <div type='checkcolumn'>
+            </div>
+            <div field="Visible" width="80px" align="center" header="显示" autoshowpopup="true">
+                <input property='editor' class='mini-combobox' style='width: 100%' data="yesNo" onitemclick="commitGridEdit" />
+            </div>
+            <div field='FieldName' width='150' header='字段编号' vtype="required;">
+                <input property='editor' class='mini-textbox' style='width: 100%' />
+            </div>
+            <div field='Caption' width='150' header='字段标题' vtype="required;">
+                <input property='editor' class='mini-textbox' style='width: 100%' />
+            </div>
+            <div field='CtrlType' header='控件类型' width="100" align="center" autoshowpopup="true" vtype="required">
+                <input property='editor' class='mini-combobox' style='width: 100%' multiselect="false" valuefield="value" textfield="text" data="ctrlType" onitemclick="commitGridEdit" onvaluechanged="itemCtrlTypeChanged"/>
+            </div>
+            <div field='QueryType' header='筛选方式' width="100" align="center" autoshowpopup="true" vtype="required">
+                <input property='editor' class='mini-combobox' style='width: 100%' multiselect="false" valuefield="value" textfield="text" data="queryType" onitemclick="commitGridEdit" />
+            </div>
+            <div field='FieldValue' header='筛选值' width="*">
+                <input property='editor' class='mini-textbox' style='width: 100%' />
+            </div>
+            <div field='Enum' displayfield='Enum' header='枚举' width="150px">
+                <input property='editor' name='data' textname='data' class="mini-buttonedit" style="width: 100%" onbuttonclick="onDataClick" />
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+<script type="text/javascript">
+    var yesNo = [{ value: "1", text: "是" }, { value: "0", text: "否"}];
+    var queryType = [{ value: "in", text: "包含" }, { value: "like", text: "类似于" }, { value: ">", text: "大于" }, { value: "<", text: "小于" }, { value: ">=", text: "大于等于" }, { value: "<=", text: "小于等于" }, { value: "between", text: "介于"}];
+    var ctrlType = [{ value: "text", text: "文本框" }, { value: "date", text: "日期框" }, { value: "dropdown", text: "下拉框"}];
+    addGridEnum("FilterItems", "Visible", "yesNo");
+    addGridEnum("FilterItems", "QueryType", "queryType");
+    addGridEnum("FilterItems", "CtrlType", "ctrlType");
+</script>
+<script type="text/javascript">
+    var gridId = "FilterItems";
+    function commitGridEdit() {
+        var grid = mini.get(gridId);
+        grid.commitEdit();
+    }
+    function moveUp() {
+        var dataGrid = mini.get(gridId);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+    function moveDown() {
+        var dataGrid = mini.get(gridId);
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+    function onDataClick() {
+        var btn = mini.getbyName("data");
+        var data = btn.getValue();
+        openWindow('/MvcConfig/Meta/Enum/EnumEdit', { width: 350, height: 300, data: data, onDestroy: function (s) {
+            if (s != "close") {
+                var d = s;
+                if (typeof (s) == "object" || typeof (s) == "array" || s.constructor == Array || s.constructor == Object)
+                    var d = mini.encode(s);
+                btn.setValue(d);
+                btn.setText(d);
+            }
+        }
+        });
+    }
+
+    function itemCtrlTypeChanged(e) {
+        var grid = mini.get("FilterItems");
+        var row = grid.getEditorOwnerRow(e.sender);
+
+        var type = row["CtrlType"];
+        if (type == "text")
+            row["QueryType"] = "like";
+        else if (type == "dropdown" )
+            row["QueryType"] = "in";
+        else if (type == "date")
+            row["QueryType"] = "between";       
+        grid.updateRow(row);
+    }
+</script>
+<script type="text/javascript">
+    function AddRow(gridId) {
+        openWindow("FieldSelector", { width: 500, height: 450, onDestroy: function (data) {
+            if (data == "close")
+                return;
+            for (var i = 0; i <= data.length; i++) {
+                addRow(data[i], { gridId: gridId, isLast: true });
+            }
+        }
+        });
+    }
+</script>

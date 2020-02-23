@@ -1,0 +1,157 @@
+﻿/* 容器样式 */
+.laneContainer {
+}
+
+/* 单泳道样式 */
+.lane {
+    border: 1px solid #cccccc;
+}
+/* 单泳道标题单元格样式 */
+.laneTitle {
+    border: 1px solid #cccccc;
+    padding: 5px;
+    background-color: #e6e6e6;
+    font-size: 16px;
+    font-weight: bold;
+    color: #666;
+}
+/* 单泳道图形单元格样式 */
+.laneGraphic {
+    border: 1px solid #cccccc;
+}
+
+/* 节点样式 没有创建时间也没有执行时间 */
+/*.nodeStyle {
+    background-color: #fff;
+    border: 1px solid #b96d00;
+    color: #b96d00;
+}
+
+    .nodeStyle .nodeInnerTopTitle {
+        color: #b96d00;
+    }
+
+    .nodeStyle .nodeInnerBotTitle {
+        color: #b96d00;
+    }*/
+
+/* 节点样式 有创建时间 */
+.nodeStyleCreate {
+    background-color: #fff;
+    border: 1px solid #a70000;
+    color: #a70000;
+}
+
+    .nodeStyleCreate .nodeInnerTopTitle {
+        color: #a70000;
+    }
+
+    .nodeStyleCreate .nodeInnerBotTitle {
+        color: #a70000;
+    }
+
+/* 节点样式 有创建时间与执行时间 */
+.nodeStyleExcute {
+    background-color: #FFF;
+    border: 1px solid #004adf;
+    color: #002777;
+}
+
+    .nodeStyleExcute .nodeInnerTopTitle {
+        color: #002777;
+    }
+
+    .nodeStyleExcute .nodeInnerBotTitle {
+        color: #002777;
+    }
+
+/* 节点样式 有创建时间 尚未开始*/
+.nodeStyle {
+    background-color: #e0e0e0;
+    border: 1px solid #e0e0e0;
+    color: #666;
+}
+
+    .nodeStyleReady .nodeInnerTopTitle {
+        color: #666;
+    }
+
+    .nodeStyleReady .nodeInnerBotTitle {
+        color: #666;
+    }
+
+/* 节点外底部标题样式 */
+.botTitle {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top: 86px;
+    font-size: 14px;
+    color: #000;
+}
+
+/* 节点内容容器样式 */
+.nodeInnerTable {
+    width: 80%;
+    height: 100%;
+    border-collapse: collapse;
+    border: none;
+    text-align: center;
+    margin: 0 auto;
+}
+
+/* 节点内顶部标题样式 */
+.nodeInnerTopTitle {
+    /*border-bottom: 1px solid #333;*/
+    font-size: 12px;
+}
+
+/* 节点内底部标题样式 */
+.nodeInnerBotTitle {
+    font-size: 12px;
+}
+
+/* 横向线条样式 */
+.hLineStyle {
+    background: url(line-bg.jpg) repeat-x;
+    height: 2px;
+    overflow: hidden;
+}
+
+/* 竖向线条样式 */
+.vLineStyle {    
+    /*width: 1px;*/
+    overflow: hidden;
+    border:1px dashed #cfcfcf;
+    /*background-color:black;*/
+}
+
+.centerTranslate50 {
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #e6e6e6;
+    color: #000;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* 定位 */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

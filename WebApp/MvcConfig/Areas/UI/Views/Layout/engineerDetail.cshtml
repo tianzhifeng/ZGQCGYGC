@@ -1,0 +1,169 @@
+﻿@{
+    ViewBag.Title = "设计项目管理";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>设计项目管理</title>
+    <link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+    <link href="/PortalLTE/Scripts/dist/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="/MvcConfig/Scripts/CSS/dndx-detail.css" rel="stylesheet" type="text/css" />
+    <script src="/MvcConfig/Scripts/layout.js"></script>
+</head>
+<body>
+    <div class="dnd-left">
+        <div id="logo" class="dnd-prj-img">          
+        </div>
+        <div>
+            <ul class="sidebar-menu">
+                <li><a id="treerootmenu" class="treerootmenu" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" href="#" onclick="openSubNodeTab('project',this);"><i class="fa fa-fw fa-circle-o"></i>
+                    <span id="_projectName"></span><i class="glyphicon glyphicon-folder-open"></i></a>
+                    <ul class="treeview-menu" id="treeNenu">
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="dnd-right">
+        <iframe id="_frame" name="myFrame" src="GoToPage?Code=engineerTab" allowtransparency="true" frameborder="0" width="100%" height="100%" scrolling="no"></iframe>
+    </div>
+</body>
+</html>
+<script src="/PortalLTE/Scripts/jQuery/jQuery-2.2.0.min.js"></script>
+<script src="/PortalLTE/Scripts/jQuery/jquery.unobtrusive-ajax.min.js"></script>
+<script type="text/javascript">
+    var projectGroupRootId = getQueryString("projectGroupRootId");
+    var treemenuID = getQueryString("treemenuID");
+    var engineerJson = @Html.Raw(ViewBag.LayoutDef); 
+    var headHtml;
+    $(function () {
+        var main = $(document).height();
+        var logo = document.getElementById("logo").scrollHeight;
+        var bottom = main - logo;
+        $("#TreeInfo").height(bottom);
+        bind();
+
+        setTimeout(function() {
+            if(document.all) {
+                $(".treerootmenu").click();
+            }
+            else {
+                var e = document.createEvent("MouseEvents");
+                e.initEvent("click", true, true);
+                $(".treerootmenu").dispatchEvent(e);
+            }
+        }, 500);
+    });
+    
+    function openSubNodeTab(type, e){
+        $("#_frame").contents().find("#tabDetailList_tab").html("");
+        for (var i = 0; i < engineerJson.Tabs.length; i++) {
+            if (type == engineerJson.Tabs[i].type) {
+                $("#_frame").contents().find("#tabDetailList_tab").html($("#_frame").contents().find("#tabDetailList_tab").html() + "<a onclick=\"clickTab(this, "+i+",'"+e.id+"')\" ><li class=\"tab_li\"><i class=\"fa fa-fw fa-file-text-o\"></i><div id=\"" + engineerJson.Tabs[i].id +"\">" + engineerJson.Tabs[i].name + "</div></li></a>");
+            }
+        }
+        $("#_frame").contents().find("#tabDetailList_tab a:first").attr('id', 'defaultLink');
+        $("#_frame").contents().find("#tabDetailList_tab li:first").addClass('active');
+        $("#_frame").contents().find('#defaultLink').trigger('click');
+    
+    }; 
+ 
+
+    function openSubMenu(cur, e) {
+        var $this = $(cur);
+        var checkElement = $this.next();
+
+        if ((checkElement.is('.treeview-menu')) && (checkElement.is(':visible'))) {
+            checkElement.slideUp('normal', function () {
+                checkElement.removeClass('menu-open');
+            });
+            checkElement.parent("li").removeClass("active");
+        }
+        else if ((checkElement.is('.treeview-menu')) && (!checkElement.is(':visible'))) {
+            var parent = $this.parents('ul').first();
+            var ul = parent.find('ul:visible').slideUp('normal');
+            ul.removeClass('menu-open');
+            var parent_li = $this.parent("li");
+            checkElement.slideDown('normal', function () {
+                checkElement.addClass('menu-open');
+                parent.find('li.active').removeClass('active');
+                parent_li.addClass('active');
+            });
+        }
+        if (checkElement.is('.treeview-menu')) {
+            e.preventDefault();
+        }
+    }
+
+    function replaceUrl(url, value){
+        return url.replace('{'+url.match(/[^\{]+(?=\})/gm)+'}', value);
+    }
+
+    function bind() {
+        $("#treerootmenu").attr("id",getQueryString("ID"));
+        $.ajax({
+            url: replaceUrl(engineerJson.head.url, getQueryString("ID")),
+            data: {},
+            type: "post",
+            success: function (text) {
+                var json = mini.decode(text).data;
+                var name = eval('json[0].' + engineerJson.head.treeName);
+                var logo = eval('json[0].' + engineerJson.head.treeImage);   
+                $("#_projectName").html(name);     
+                $("#logo").html('<img src="'+logo+'" />');   
+
+                var data = engineerJson.head.html;
+                var para = engineerJson.head.html.match(/[^\[]+(?=\])/gm);
+                if (para) {
+                    for (var j = 0; j < para.length; j++) {
+                        var re = '[' + para[j] + "]";
+                        data = data.replace(re, eval('json[0].' + para[j]));
+                    }
+                }
+                headHtml = data;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                msgUI("出错了,请联系管理员!");
+            }
+        });
+        $.ajax({
+            url: replaceUrl(engineerJson.Tree.url, getQueryString(engineerJson.Tree.url.match(/[^\{]+(?=\})/gm))),
+            data: {},
+            type: "post",
+            success: function (text) {
+                var json = mini.decode (text).data;
+                for (var i = 0; i < json.length; i++) {
+                    var id = eval('json[' + i + '].' + engineerJson.Tree.idField);
+                    var parentValue = eval('json[' + i + '].' + engineerJson.Tree.parentField);
+                    var textValue = eval('json[' + i + '].' + engineerJson.Tree.textField);
+                    $("#treeNenu").html($("#treeNenu").html()+'<li><a href="#" title="'+textValue+'" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="openSubMenu(this, event)"><i class="fa fa-fw fa-circle-o"></i>'+textValue+'<i class=""></i></a><ul class="treeview-menu" id="_nenu'+id+'"></ul></li>');
+                        $.ajax({
+                            url: replaceUrl(engineerJson.Tree.linkUrl, id),
+                            data: {},
+                            type: "post",
+                            success: function (text) {
+                                var json = mini.decode(text).data;
+                                for (var i = 0; i < json.length; i++) {
+                                    var id = eval('json[' + i + '].' + engineerJson.Tree.idField);
+                                    var parentValue = eval('json[' + i + '].' + engineerJson.Tree.parentField);
+                                    var textValue = eval('json[' + i + '].' + engineerJson.Tree.textField);
+                                    if($("#_nenu"+parentValue).length > 0){
+                                        $("#_nenu"+parentValue).html($("#_nenu"+parentValue).html() + '<li style="cursor: pointer"><a id="'+id+'" ui-href="/Base/Auth/Authorize/User" title="'+textValue+'" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="openSubNodeTab(\'node\',this)"><i class="fa fa-fw fa-circle-thin"></i>'+textValue+'<i class="fa fa-fw fa-file-text-o"></i></a></li>');
+                                    }
+                                }              
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                msgUI("出错了,请联系管理员!");
+                            }
+                        });
+                }            
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                msgUI("出错了,请联系管理员!");
+            }
+        });
+    }
+
+
+</script>

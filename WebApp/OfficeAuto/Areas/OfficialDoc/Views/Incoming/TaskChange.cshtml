@@ -1,0 +1,304 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+            </td>
+            <td class="gw-toolbar-right">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入文件名称或来文机关或收文编号" style="width: 300px;" 
+                    onenter="quickSearch('Title,JiGuan,Code');" onbuttonclick="quickSearch('Title,JiGuan,Code');" />
+            </td>
+            <td width="90">
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%;height: 100%;" allowMoveColumn="false" url="GetListFlow" onshowrowdetail="onShowRowDetail">
+        <div property="columns">
+            <div type="expandcolumn">
+            </div>
+            <div field="Title" headeralign="center" align="left" width="*" allowsort="true">
+                文件名称</div>
+           <div field="JiGuan" headeralign="center" align="left" width="100" allowsort="true">
+                来文机关</div>
+            <div field="Type" width="80" headeralign="center" align="center" allowsort="true">
+                收文类别</div>
+            <div field="Code" width="100" headeralign="center" allowsort="true" align="center">
+                收文编号</div>
+            <div field="HuanJi" width="60" headeralign="center" allowsort="true" align="center">
+                紧急程度</div>
+            <div field="ShouWenDate" width="80" headeralign="center" allowsort="true" align="center" dateFormat="yyyy-MM-dd">
+                收文日期</div>
+            <div field="Status" width="60" headeralign="center" allowsort="true" align="center">
+                状态</div>
+            <div field="InsFlowID" width="60" headeralign="center" allowsort="true" align="center" renderer="onTraceRender">
+                跟踪</div>
+        </div>
+    </div>
+</div>
+
+<div id="detailGrid_Form" style="display:none;">
+    <div id="detailGrid" class="mini-datagrid" style="width:100%;height:300px;"
+        showPager="false" url="/OfficeAuto/OfficialDoc/WorkFlow/GetFlowExecList">
+         <div property="columns">
+            <div name="action" width="50" headerAlign="center" align="center" renderer="onActionRenderer" cellStyle="padding:0;">新增/变更执行人</div>
+            <div field="StepName" headeralign="center" width="100" align="center">
+                环节名称</div>
+            <div field="Type" headeralign="center" width="60" align="center">
+                任务类型</div>
+            <div name="ExecUser" field="ExecUserID" displayfield="ExecUserName" headeralign="center" width="60" align="center" required="true">
+                执行人
+                <input property="editor" class="mini-autocomplete" required="true" style="width: 100%;" valuefield="ID" textfield="Name" url="/MvcConfig/Auth/User/SelectUsers" />
+            </div>
+            <div field="ExecRoutingName" headeralign="center" align="center" width="100">
+                执行</div>
+            <div field="CreateTime" width="110" headeralign="center" align="center" dateformat="yyyy-MM-dd HH:mm">
+                接收时间</div>
+            <div field="ExecTime" width="110" headeralign="center" align="center" dateformat="yyyy-MM-dd HH:mm">
+                执行时间</div>
+            <div name="delete" width="50" headerAlign="center" align="center" renderer="onDeleteRenderer" cellStyle="padding:0;">删除环节执行人</div>
+       </div>
+    </div>    
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; height: 240px;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr class="hideRow">
+                <td width="15%">
+                </td>
+                <td width="35%">
+                </td>
+                <td width="15%">
+                </td>
+                <td width="35%">
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    文件名称
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$Title" style="width: 90%" class="mini-textbox" /> 
+                </td>
+                <td width="15%" align="center">
+                    来文机关
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$JiGuan" style="width:90%;" class="mini-textbox" />
+                </td>
+            </tr>
+             <tr>
+                <td width="15%" align="center">
+                    收文类别
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$Type" class="mini-combobox" multiSelect="true" style="width:90%;"
+                        valueField="value" textField="text" data="IncomingType" />
+                </td>
+                <td width="15%" align="center">
+                    收文编号
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$Code" style="width:90%;" class="mini-textbox" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    收文日期
+                </td>
+                <td width="35%" align="left">
+                    <input name="$FR$ShouWenDate" style="width: 100px;" class="mini-datepicker" />
+                    -
+                    <input name="$TO$ShouWenDate" style="width: 100px;" class="mini-datepicker" />
+                </td>
+                <td width="15%" align="center">
+                    紧急程度
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$HuanJi" class="mini-combobox" multiSelect="true" style="width:90%;"
+                        valueField="value" textField="text" data="IncomingHuanJi" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    状态
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$Status" class="mini-combobox" multiSelect="true" style="width:90%;"
+                        valueField="value" textField="text" data="IncomingStatus" />
+                </td>
+                <td width="15%" align="center">
+                </td>
+                <td width="35%" align="left">
+                </td>
+            </tr>
+       </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("OA.IncomingType")
+    @Html.GetEnum(typeof(OfficeAuto.Logic.IncomingHuanJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.IncomingStatus))
+    @Html.GetEnum(typeof(Workflow.Logic.TaskExecType));
+
+    var taskProcessingStatus = "@ViewBag.TaskProcessingStatus";
+</script>
+<script type="text/javascript">
+    addGridLink("dataGrid", "Title", "Form?ID={ID}&FuncType=View", { title: "收文查看", width: "800px", height: "85%" });
+    addGridEnum("dataGrid", "Type", "IncomingType");
+    addGridEnum("dataGrid", "HuanJi", "IncomingHuanJi");
+    addGridEnum("dataGrid", "Status", "IncomingStatus");
+    addGridEnum('detailGrid', 'Type', 'TaskExecType');
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var dataGrid = mini.get("dataGrid");
+    var detailGrid = mini.get("detailGrid");
+    var detailGrid_Form = document.getElementById("detailGrid_Form");
+
+    function onTraceRender(e) {
+        var s = "";
+        if ($.trim(e.value) != "") {
+            s = "<a href='javascript:;' onclick='flowTrace({ ID: \"" + e.record["ID"] + "\"})'>跟踪</a>";
+        }
+        return s;
+    }
+
+    function onShowRowDetail(e) {
+        var grid = e.sender;
+        var row = e.record;
+
+        var td = grid.getRowDetailCellEl(row);
+        td.appendChild(detailGrid_Form);
+        detailGrid_Form.style.display = "block";
+
+        detailGrid.load({ id: row.ID });
+    }
+
+    function onActionRenderer(e) {
+        var rec = e.record;
+        var grid = e.sender;
+        var s = "";
+        if (rec.TaskStatus == taskProcessingStatus && $.trim(rec.ExecTime) == "") {
+            if (!grid.isEditingRow(rec)) {
+                s = '<div style="width:37px;margin:0px auto"><a class="icon-row-add" onclick="javascript:addRow(\'' + rec._uid + '\')"  title="添加" style="float:left;"></a>';
+                s += '<a class="icon-row-edit" onclick="javascript:editRow(\'' + rec._uid + '\')"  title="编辑" style="float:right;"></a></div>';
+            }
+            else {
+                s = '<div style="width:37px;margin:0px auto"><a class="icon-row-save" onclick="javascript:updateRow(\'' + rec._uid + '\')"  title="更新" style="float:left;"></a>';
+                s += '<a class="icon-row-cancel" onclick="javascript:cancelRow(\'' + rec._uid + '\')"  title="取消编辑" style="float:right;"></a></div>';
+            }
+        }
+        return s;
+    }
+
+    function onDeleteRenderer(e) {
+        var rec = e.record;
+        var s = "";
+        if (rec.TaskStatus == taskProcessingStatus && $.trim(rec.ExecTime) == "") {
+            s = '<a class="icon-row-delete" onclick="javascript:deleteRow(\'' + rec._uid + '\')"  title="删除" style="float:center;"></a>';
+        }
+        return s;
+    }
+
+    function addRow(row_uid) {
+        var rowTmpl = detailGrid.getRowByUID(row_uid);
+        var row = mini.clone(rowTmpl);
+        row["ID"] = undefined;
+        row["_id"] = undefined;
+        row["_uid"] = undefined;
+        row["TaskUserID"] = undefined;
+        row["TaskUserName"] = undefined;
+        row["ExecUserID"] = undefined;
+        row["ExecUserName"] = undefined;
+        detailGrid.addRow(row, detailGrid.indexOf(rowTmpl) + 1);
+        detailGrid.scrollIntoView(row);
+        detailGrid.cancelEdit();
+        detailGrid.beginEditRow(row);
+    }
+
+    function editRow(row_uid) {
+        var row = detailGrid.getRowByUID(row_uid);
+        if (row) {
+            detailGrid.cancelEdit();
+            detailGrid.beginEditRow(row);
+        }
+    }
+
+    function deleteRow(row_uid) {
+        var row = detailGrid.getRowByUID(row_uid);
+        var other = detailGrid.findRow(function (item) {
+            if (item.ID != row.ID && item.TaskID == row.TaskID && $.trim(item["ExecUserID"]) != "")
+                return true;
+        });
+        if (other === undefined) {
+            msgUI("必须保留至少一条有人员执行环节的记录");
+            return;
+        }
+        msgUI("确认删除这条执行任务?", 2, function (action) {
+            if (action == "ok") {
+                detailGrid.removeRow(row);
+                saveTaskExec("删除");
+            }
+        });
+    }
+
+    function updateRow(row_uid) {
+        var row = detailGrid.getRowByUID(row_uid);
+        var execEditor = detailGrid.getCellEditor(detailGrid.getColumn("ExecUser"), row);
+        var executor = execEditor.getValue();
+        if (executor == "") {
+            msgUI("执行人不能为空")
+            return;
+        }
+        var stepID = row["StepID"];
+        var result = detailGrid.findRow(function (rec) {
+            if (rec._uid != row_uid && rec["StepID"] == stepID && rec["ExecUserID"] == executor) return true;
+        });
+        if (typeof result != "undefined") {
+            msgUI("执行人不能同原来流程中的人员相同");
+            return;
+        }
+        if ($.trim(row["ExecUserName"]) == "" && $.trim(row["ExecUserID"]) == "") {
+            detailGrid.updateRow(row, {
+                TaskUserName: execEditor.getText(),
+                TaskUserID: executor,
+                ExecUserName: execEditor.getText(),
+                ExecUserID: executor
+            });
+        }
+        saveTaskExec("保存");
+    }
+
+    function saveTaskExec(actionTitle) {
+        var pathName = window.location.pathname.replace("Incoming/TaskChange", "WorkFlow/SaveTaskExecList");
+        execute(pathName, {
+            actionTitle: actionTitle,
+            gridId: "detailGrid"
+        });
+    }
+
+    function cancelRow(row_uid) {
+        var row = detailGrid.getRowByUID(row_uid);
+        if (row) {
+            var execEditor = detailGrid.getCellEditor(detailGrid.getColumn("ExecUser"), row);
+            var executor = execEditor.getValue();
+            if (executor == "") {
+                msgUI("执行人不能为空")
+                return;
+            }
+            detailGrid.cancelEditRow(row);
+        }
+    }
+
+</script>

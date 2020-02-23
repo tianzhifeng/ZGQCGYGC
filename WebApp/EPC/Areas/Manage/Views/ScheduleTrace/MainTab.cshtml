@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        @{
+            var list = ViewBag.ScheduleDefines as List<EPC.Logic.Domain.S_C_ScheduleDefine>;
+            var engineeringInfoID = ViewBag.EngineeringInfo.ID;
+            foreach (var item in list)
+            {
+                var title = item.Name;
+                var code = item.Code;
+                var url = "/EPC/Manage/ScheduleTrace/TraceList?ScheduleCode=" + code + "&EngineeringInfoID=" + engineeringInfoID;
+                if (Request["Gantt"] == "True")
+                {
+                    url = "/EPC/Manage/ScheduleTrace/Gantte?ScheduleCode=" + code + "&EngineeringInfoID=" + engineeringInfoID;
+                }
+                <div title="@title" url="@url">
+                </div>
+            }
+
+        }
+    </div>
+</div>

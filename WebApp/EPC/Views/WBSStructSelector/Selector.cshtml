@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnData();" plain="true">
+                    选择
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+        enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="true"></ul>
+</div>
+
+<script type="text/javascript">
+    var modeID = getQueryString("ModeID");
+    var url = "GetStructTree?ModeID=" + modeID;
+    $("#dataTree").attr("url", url);
+
+    function returnData() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        closeWindow(node);
+    }
+
+</script>

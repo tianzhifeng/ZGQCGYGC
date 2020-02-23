@@ -1,0 +1,140 @@
+﻿@section scripts{
+    <script type="text/javascript" charset="utf-8" src="/UEditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/UEditor/ueditor.all.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="/UEditor/lang/zh-cn/zh-cn.js"></script>
+}
+
+<style>
+    .send {background-image:url(/CommonWebResource/RelateResource/image/icons/icon_mail.gif)}
+</style>
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="send" onclick="sendMsg()">@ViewBag.Send</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">@ViewBag.Cancel</a>
+                <span class="separator"></span>
+                <input class="mini-checkbox" id="cbHigh" text="@ViewBag.Importance"  onvaluechanged="onHighValueChanged"/>
+                <input class="mini-checkbox" id="cbReadReceipt" text="@ViewBag.Read"  onvaluechanged="onReceiptValueChanged"/>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">@ViewBag.Help</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<input name="ParentID" class="mini-hidden" />
+<input id="IsReadReceipt" name="IsReadReceipt" class="mini-hidden" />
+<input id="Importance" name="Importance" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>@ViewBag.EssentialInformation</legend>
+        <div>
+            <table style="table-layout:fixed">
+                <tr>
+                    <td width="15%">@ViewBag.Title</td>
+                    <td width="85%">
+                        <input name="Title" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>@ViewBag.ReceiverName</td>
+                    <td>
+                        <input name="ReceiverIDs" textname="ReceiverNames" class="mini-buttonedit" style="width: 100%;" />
+                    </td>
+                </tr>
+                 <tr>
+                    <td>@ViewBag.ReceiverDepartment</td>
+                    <td>
+                        <input name="ReceiverDeptIDs" textname="ReceiverDeptNames" class="mini-buttonedit" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>@ViewBag.Content</td>
+                    <td>
+                        <script id="editor" type="text/plain" style="width:100%;height:350px;"></script>
+                    </td>
+                </tr>
+                <tr id="trView" style="display:none">
+                    <td>@ViewBag.RelatLink</td>
+                    <td colspan="3">
+                        <div class="link_on">
+                            <input class="mini-hidden" id="LinkUrl" name="LinkUrl" />
+                            <a href="javascript:void(0)"><img src="/CommonWebResource/Theme/Default/MiniUI/icons/link_form.png" border="0px" alt="相关链接" width="16" height="16" align="absmiddle" />
+                            @ViewBag.RelatLink</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @ViewBag.Attachment
+                    </td>
+                    <td>
+                        <input class="mini-multifile" style="width:100%" name="AttachFileIDs" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    addMultiOrgSelector("ReceiverDeptIDs");
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var hidLinkUrl = mini.get("LinkUrl");
+    var hidReadReceipt = mini.get("IsReadReceipt");
+    var hidImportance = mini.get("Importance");
+
+    function onFormSetData(data) {
+        if ($.trim(data.LinkUrl) != "") {
+            $("#trView").find("a").bind("click", clickLinkForm);
+            $("#trView").show();
+        }
+        if ($.trim(data.Importance) == "1") {
+            mini.get("cbHigh").setValue(true);
+        }
+
+        UE.getEditor('editor').addListener('ready', function (editor) {
+            UE.getEditor('editor').setContent(data.Content, false); //Content
+        });
+    };
+
+    function sendMsg() {
+        if (mini.getbyName("ReceiverIDs").getValue() == "" && mini.getbyName("ReceiverDeptIDs").getValue() == "") {
+            msgUI("接收人或接收部门至少有一个不为空!");
+            return;
+        }
+
+        var content = UE.getEditor('editor').getContent();
+        var contentTxt = UE.getEditor('editor').getPlainTxt();
+        addExecuteParam("content", content);
+        addExecuteParam("contenttext", contentTxt);
+        save({ action: '../SendMsg/Save', actionTitle: '发送' });
+    }
+
+    function clickLinkForm(e) {
+        var url = hidLinkUrl.getValue();
+        if ($.trim(url) != "")
+            openWindow(url, { width: "80%", height: "80%" });
+    }
+
+    function onHighValueChanged(e) {
+        if (e.sender.getValue() == "true")
+            hidImportance.setValue("1");
+        else
+            hidImportance.setValue("0");
+    }
+
+    function onReceiptValueChanged(e) {
+        if (e.sender.getValue() == "true")
+            hidReadReceipt.setValue("1");
+        else
+            hidReadReceipt.setValue("0");
+    }
+
+</script>

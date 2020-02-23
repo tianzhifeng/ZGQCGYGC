@@ -1,0 +1,67 @@
+﻿/*
+.flag
+{
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    margin: auto;
+    text-align: center;
+    display: block;
+}
+
+.redflag
+{
+    background: url(images/red.gif) no-repeat;
+}
+.greenflag
+{
+    background: url(images/green.gif) no-repeat;
+}
+.yellowflag
+{
+    background: url(images/yellow.gif) no-repeat;
+}
+.yellow2flag
+{
+    background: url(images/yellow2.gif) no-repeat;
+}
+.blueflag
+{
+    background: url(images/blue.gif) no-repeat;
+}
+.grayflag
+{
+    background: url(images/gray.gif) no-repeat;
+}
+*/
+
+.ShowStatus
+{
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    margin: auto;
+    text-align: center;
+    display: block;
+}
+
+.DelayUndone
+{
+    background: url(images/DelayUndone.png) no-repeat;
+}
+.NormalUndone
+{
+    background: url(images/NormalUndone.png) no-repeat;
+}
+.NormalFinish
+{
+    background: url(images/NormalFinish.png) no-repeat;
+}
+.DelayFinish
+{
+    background: url(images/DelayFinish.png) no-repeat;
+}
+.DelayFinish2
+{
+    background: url(images/DelayFinish.png) no-repeat;
+}

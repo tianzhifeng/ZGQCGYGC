@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "UserSummaryList";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         showpager="false" borderstyle="border:0">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="UserName" width="70" headeralign="center" allowsort="true">
+                人员姓名
+            </div>
+            @{
+                foreach (var item in ViewBag.MistakeLevel)
+                {
+                    var len = item.Name.Length * 20;
+                    <div field="@item.Code" width="@len" headeralign="center" renderer="onLinkRender" align="right" summarytype="sum">
+                        @item.Name
+                    </div>
+                }
+            }
+            <div field="Summary" width="80" headeralign="center" align="right" summarytype="sum">
+                合计
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var requestData = {};
+    function setData(queryData) {
+        requestData = $.extend({}, mini.clone(queryData), requestData);
+        var grid = mini.get("dataGrid");
+        grid.setUrl("GetUserSummaryInfo");
+        grid.load({ "queryFormData": mini.encode(queryData) });
+    }
+</script>

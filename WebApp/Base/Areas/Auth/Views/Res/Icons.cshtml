@@ -1,0 +1,75 @@
+﻿
+    <style type="text/css">
+       .bs-glyphicons {
+            padding-left: 0;
+            padding-bottom: 1px;
+            margin-bottom: 20px;
+            list-style: none;
+            overflow: hidden;
+        }
+
+        .bs-glyphicons li {
+            float: left;
+            width: 15%;
+            height: 55px;
+            padding: 10px;
+            margin: 0 -1px -1px 0;
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: center;
+            border: 1px solid #ddd;
+            cursor:pointer;
+        }
+
+        .bs-glyphicons img {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        img {
+          height:50px;
+          width:auto;
+        }
+        .bs-glyphicons li:hover {
+            background-color: rgba(86,61,124,.1);
+        }
+
+</style>
+
+
+    <div class="nav-tabs-custom">
+        <div class="tab-content">
+            <div class="tab-pane active" id="glyphicons">
+                <ul class="bs-glyphicons">                   
+                  </ul>
+            </div>
+         </div>
+    </div>
+
+     <script type="text/javascript">
+        $(".mobileIcon").css("cursor", "pointer");
+    
+        $.ajax({
+            url: "GetMobileIcon?path=/Scripts/Auth/menuIcons/",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                if (data.length > 0) {
+                    for (var key in data) {
+                        if (data[key].OriginalPath != undefined) {
+                            var htmltext = '<li class="mobileIcon"><input type="hidden" value="menuIcons/' + data[key].OriginalPath + '" /><img  src="/base/Scripts/Auth/menuIcons/' + data[key].OriginalPath + '" /></li>';
+                            $(".bs-glyphicons").append($(htmltext));
+
+                        }
+                       }
+                    $(".mobileIcon").bind("click", function () {
+                        var cls = $(this).find("input")[0].value;
+                        if (window.CloseOwnerWindow)
+                            return window.CloseOwnerWindow(cls, true);
+                        else
+                            window.close();
+                    })
+                }
+            }
+        });
+    </script>

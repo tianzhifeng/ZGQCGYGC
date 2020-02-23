@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({width:'800',height:'600'});" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ width: '800', height: '600' });" plain="true">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-copy" onclick="copy()" plain="true">复制</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入编号或名称" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="config" width="60" headeralign="center" align="center">
+                配置
+            </div>
+            <div field="Code" width="120" headeralign="center" allowsort="true" align="center">
+                编号
+            </div>
+            <div field="Name" width="150" headeralign="center" allowsort="true" align="center">
+                名称
+            </div>
+            <div field="Priority" width="120" headeralign="center" allowsort="true" align="center">
+                优先级
+            </div>
+            <div field="Remark" width="auto" headeralign="center" allowsort="true">
+                描述
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "config", "Config?ID={ID}", { linkText: "配置", height: "90%", width: "85%" });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+    function copy() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) {
+            msgUI("请选择一个模式"); return;
+        }
+        msgUI("您确定需要复制选中的模式吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ID", row.ID);
+            execute("Copy", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });      
+    }
+
+</script>

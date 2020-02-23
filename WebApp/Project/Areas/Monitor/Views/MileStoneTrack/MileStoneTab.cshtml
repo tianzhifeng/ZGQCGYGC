@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "MileStoneTab";
+}
+
+<div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px" buttons="#tabsButtons">
+    @{
+        for (int i = 0; i < ViewBag.SubProjectList.Count; i++)
+        {
+            var subProject = ViewBag.SubProjectList[i] as Project.Logic.Domain.S_W_WBS;
+            <div title="@subProject.Name" url="MileStoneTrackList?ProjectInfoID=@subProject.ProjectInfoID&WBSID=@subProject.ID&SpaceCode=@ViewBag.SpaceCode&AuthType=@ViewBag.AuthType"></div>
+        }
+    }
+</div>
+<style type="text/css">
+    .mini-layout-proxy {
+        border-top: 0px;
+        border-left: 0px;
+    }
+</style>

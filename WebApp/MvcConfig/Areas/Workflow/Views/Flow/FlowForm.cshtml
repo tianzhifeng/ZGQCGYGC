@@ -1,0 +1,1316 @@
+﻿<link href="@Url.Content("/CommonWebResource/RelateResource/Uploadify/uploadifive.css")" rel='stylesheet' type='text/css' />
+<script src="@Url.Content("/CommonWebResource/RelateResource/Uploadify/jquery.uploadifive.min.js")" type="text/javascript"></script>
+@section scripts{
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/kindeditor-min.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/lang/zh_CN.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/Base/Scripts/KindEditor/themes/default/default.css")" rel="stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript">
+        var editor;
+        KindEditor.ready(function (K) {
+            editor = K.create('textarea.KindEditor', {
+                //height:'700px',
+                filterMode: false, newlineTag: 'br', pasteType: 1, dialogAlignType: ''
+            });
+            var autoheight = $(".mini-splitter").height() - 180;
+            editor.edit.setHeight(autoheight);
+            if (flowFormID != null)
+                execute("GetLayout?FormID=" + flowFormID, {
+                    onComplete: function (data) {
+                        var obj = mini.decode(data);
+                        if (obj != '' && obj != null)
+                            editor.html(obj.layout);
+                        if (obj && !obj.layout) {
+                            editor.html('<p>' +
+                                '<strong><span style="font-family:Microsoft YaHei;font-size:16px;">操作说明:</span></strong><br />' +
+                                '<strong><span style="font-family:Microsoft YaHei;font-size:14px;">方法1:</span></strong><br />' +
+                                '<span style="font-family:Microsoft YaHei;font-size:14px;">1) </span><span style="font-family:Microsoft YaHei;"><span style="font-size:14px;">在右边点击《</span><strong><span style="font-size:14px;">添加</span></strong><span style="font-size:14px;">》按钮添加字段信息,配置好控件类型、标题等信息后点击《</span><strong><span style="font-size:14px;">保存</span></strong><span style="font-size:14px;">》按钮。注：一次可以添加多个字段后保存。</span></span><br />' +
+                                '<span style="font-family:Microsoft YaHei;"><span style="font-size:14px;">2)&nbsp;在左边点击《</span><strong><span style="font-size:14px;">布局</span></strong><span style="font-size:14px;">》选择你要显示的格式。</span><br />' +
+                                '<span style="font-size:14px;">3) 以上两步配置好之后点击右上方的《</span><strong><span style="font-size:14px;">暂存》</span></strong><span style="font-size:14px;">按钮。</span><br />' +
+                                '<span style="font-size:14px;">4) 点击《<strong>下一步</strong>》或点击上面的导航</span></span><span style="font-family:Microsoft YaHei;font-size:14px;">&nbsp;。<br />' +
+                                '&nbsp;<br />' +
+                                '<strong>方法2：</strong><br />' +
+                                '1)&nbsp;在上面的编辑器上找到<strong>表格</strong>的图标，输入几行几列的表格。<br />' +
+                                '2) 在表格的里输入字段的名称,<strong>注:两个列表示一个字段,前一列是字段名称,后一列是字段名:写法{姓名}</strong>。<br />' +
+                                '3) 在右边点击《<strong>导入</strong>》按钮，选择从布局导入。<br />' +
+                                '4) 配置右边已导入的字段信息。<br />' +
+                                '5) 点击右上方《<strong>暂存</strong>》按钮保存所有的信息。<br/> ' +
+                                '6) 点击《<strong>下一步</strong>》或点击上面的导航。&nbsp;<br />' +
+                                '</span><span style="font-family:Microsoft YaHei;font-size:14px;"><strong>&nbsp;&nbsp;</strong>&nbsp;&nbsp;</span>' +
+                                '</p>');
+                        }
+                    }
+                });
+        });
+
+
+/**/</script>
+}
+<div class="mini-splitter" vertical="true" style="width: 100%; height: 100%; border: 0px" handlersize="0" allowresize="false">
+    <div showcollapsebutton="false" style="border: 0px" size="42">
+        <div class="mini-toolbar" id="btnDiv" style="border-top: 0px; border-left: 0px; border-bottom: 1px solid #ccc">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-menubutton" id="createFormMenu" iconcls="icon-add" plain="true" menu="#popupCreateFormMenu">创建表单</a>
+                        <ul id="popupCreateFormMenu" class="mini-menu" style="display: none;">
+                            <li iconcls="icon-new" onclick="openFormWindow(false);">空表单</li>
+                            <li iconcls="icon-word"><input id="UploadWord" name="UploadWord" type="file" style="float:left;" /></li>
+                            <li iconcls="icon-item" onclick="clone()">表单克隆</li>
+                        </ul>
+                    </td>
+                    <td id="btnRight">
+                        <span id="span1" style="margin-left: 3px; font-size: 13px; display: none;">切换:</span>
+                        <span id="span3" style="margin-right: 5px; display: none;">
+                            <input name="HistoryUseForm" class="mini-combobox" shownullitem="false" onitemclick="onItemClickHistoryForm" style="width: 235px; margin-left: 6px; margin-right: 6px;" shownullitem="true" allowinput="true" />
+                        </span>
+                        <span id="span2" style="display: none;">
+                            <a class="mini-button" plain="true" iconcls="icon-remove" onclick="del">删除</a>
+                            <a class="mini-button" plain="true" iconcls="icon-save" id="saveForm" onclick="SaveFormList">暂存</a>
+                        </span>
+                        @*                        <span id="span4" style="display: none;" class="separator"></span>
+
+                            <a class="mini-button" id="_prev" iconcls="icon-up" onclick="prev();">上一步</a>
+                            <a class="mini-button" id="_next" style="display: none;" iconcls="icon-down" onclick="next();">下一步</a>*@
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div showcollapsebutton="false" borderstyle="border:0px">
+        <div id="divDes" style="font-family: 'Microsoft YaHei'; display: none; font-size: 25px; font-weight: bold; text-align: center; width: 100%; margin-top: 150px;">请创建一个表单试试吧!</div>
+        <div class="mini-splitter" id="homeSplitter" vertical="false" style="width: 100%; height: 100%;" borderstyle="border:0px">
+            <div showcollapsebutton="true" borderstyle="border:0px" size="60%" id="editorButton">
+                <div class="mini-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td id="btnRight" style="width: 100%;">
+                                <a class="mini-button" iconcls="icon-node" onclick="preView();" style="float: right">预览</a>
+
+                                <a class="mini-menubutton" iconcls="icon-setting" plain="true" menu="#popupLayoutMenu">布局</a>
+                                <ul id="popupLayoutMenu" class="mini-menu" style="display: none;">
+                                    <li iconcls="icon-edit" onclick="onItemClick('2,fieldset','两列式布局')">两列式布局</li>
+                                    <li iconcls="icon-edit" onclick="onItemClick('3,fieldset','三列式布局')">三列式布局</li>
+                                    <li iconcls="icon-edit" onclick="onItemClick('2,table','两列式布局(table)')">两列式布局(table)</li>
+                                    <li iconcls="icon-edit" onclick="onItemClick('3,table','三列式布局(table)')">三列式布局(table)</li>
+                                    <li iconcls="icon-edit" onclick="customLayout()">自定义布局</li>
+                                    <li class="separator"></li>
+                                    <li iconcls="icon-remove" onclick="cleanLayout()">清空</li>
+                                </ul>
+
+
+                                <a class="mini-menubutton" iconcls="icon-setting" plain="true" menu="#popupPrintMenu">打印模板(<span id="_seted" style="display: none; color: red;">已设置</span><span id="_setting" style="display: none; color: blue;">无</span>)</a>
+                                <ul id="popupPrintMenu" class="mini-menu" style="display: none;">
+                                    <li iconcls="icon-word" onclick="uploadWord">上传Word</li>
+                                    <li iconcls="icon-cutover" onclick="generateWord">生成模板</li>
+                                    <li iconcls="icon-bottom" onclick="downloadWord">下载模板</li>
+                                    <li iconcls="icon-set" onclick="settingWord">高级设置</li>
+                                </ul>
+
+                                <a class="mini-button" iconcls="icon-setting" onclick="setting();">表单脚本</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <textarea name="Content" class="KindEditor" style="width: 100%; height: 450px;"></textarea>
+
+            </div>
+            <div showcollapsebutton="true" id="filedButton" style="width: 100%; height: 100%; border-left-width: 0px; border-top-width: 0px; border-bottom-width: 0px; border-right-width: 0px;">
+                <div class="mini-toolbar" id="btnDiv">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-add" onclick="addRow({FieldType:'nvarchar(200)',ItemType:'TextBox',Enabled:'true',Visible:'true',Group:'基本信息'},{createId:true,isLast:true})">添加</a>
+                                <a class="mini-button" iconcls="icon-remove" onclick="removeLayoutFiled();delRow();">移除</a>
+                                <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                                <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+                                <a class="mini-menubutton" iconcls="icon-down" plain="true" menu="#popupImportMenu">导入</a>
+                                <ul id="popupImportMenu" class="mini-menu" style="display: none;">
+                                    <li onclick="importItem">从布局导入</li>
+                                    <li onclick="importFromDB">从数据库导入</li>
+                                </ul>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveItemList();">保存</a>
+                            </td>
+                            <td id="btnRight"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true"
+                         multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false" allowunselect="false"
+                         onlycheckselection="true" ondrawcell="onDrawCell" onrowclick="onRowClick" editnextonenterkey="true" editnextrowcell="true" onpreload="onPreLoad" oncellcommitedit="OnCellCommitEdit">
+                        <div property="columns">
+                            <div type="checkcolumn">
+                            </div>
+                            <div field="settings" width="80">
+                                详细设置
+                            </div>
+                            <div type="comboboxcolumn" field="FieldType" width="100" autoshowpopup="true" align="center">
+                                字段类型
+                                <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="fieldType"
+                                       onitemclick="commitEdit" />
+                            </div>
+                            <div type="comboboxcolumn" field="ItemType" width="100" autoshowpopup="true" align="center">
+                                控件类型
+                                <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="ItemType"
+                                       onitemclick="commitEdit" onvaluechanged="itemTypeChanged" />
+                            </div>
+                            <div field="Name" width="200" vtype="required;">
+                                控件标题
+                                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                            </div>
+                            <div field="Code" width="100">
+                                控件编号
+                                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                            </div>
+                            <div type="checkboxcolumn" field="Enabled" truevalue="true" falsevalue="false" width="60">
+                                是否可用
+                            </div>
+                            <div type="checkboxcolumn" field="Visible" truevalue="true" falsevalue="false" width="60">
+                                是否显示
+                            </div>
+                            <div type="checkboxcolumn" field="Unique" truevalue="true" falsevalue="false" width="60">
+                                验证唯一
+                            </div>
+                            <div field="DefaultValue" displayfield="DefaultValue" width="120">
+                                默认值
+                                <input property="editor" class="mini-combobox" style="width: 100%" shownullitem="true" allowinput="true"
+                                       data="dafaultValues" onitemclick="commitEdit" />
+                            </div>
+                            <div field="Group" width="60">
+                                分组
+                                <input property="editor" class="mini-textbox" style="width: 100%;" />
+                            </div>
+                            <div field="Action" width="100">
+                                拖动
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="addNewFormWindow" class="mini-window" title="表单基本信息" style="width: 330px; min-height: 130px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="newForm" method="post">
+
+            <div style="padding-left: 15px; padding-bottom: 5px; padding-right: 15px; padding-top: 5px;">
+                <div>
+                    <table style="width: 100%; text-align: left;">
+                        <tr class="hideRow">
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                            <td width="25%"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">
+                                表单名称
+                            </td>
+                            <td colspan="3">
+                                <input name='Title' emptytext='请输入表单名称' required="true" class='mini-textbox' style='width: 100%;' onvaluechanged="onTitleValueChanged" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">
+                                表单编号
+                            </td>
+                            <td colspan="3">
+                                <input name='TmplCode' required="true" class='mini-textbox' style='width: 100%;' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 6px;">
+                                表名
+                            </td>
+                            <td colspan="3">
+                                <input name='TableName' required="true" class='mini-textbox' style='width: 100%;' />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mini-toolbar" style="padding-left: 40px;">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-save" onclick="save();">保存</a>
+                            <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeForm()">取消</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="upLoadHelpWindow" class="mini-window" title="帮助说明" style="width: 700px; max-height: 400px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+    <ul class="window_ul">
+        <li style="line-height: 18px; height: 18px; font-weight: bold;"><a href="#" onclick="exportWord();">点击导出示例模板</a></li>
+        <li class="window_ul_li">
+            <div class="flowNumber">1</div>
+            <div style="margin-bottom: 2px;">表单标题放到word文档的头部,格式选择标题</div>
+            <img src="~/FlowFile/Help/Images/form_title.png" />
+        </li>
+        <li class="window_ul_li">
+            <div class="flowNumber">2</div>
+            <div style="margin-bottom: 2px;">表头标题合并一行单元格,独立占一行</div>
+            <img src="~/FlowFile/Help/Images/form_tabletitle.png" />
+        </li>
+        <li class="window_ul_li">
+            <div class="flowNumber">3</div>
+            <div style="margin-bottom: 2px;">表字段后空一列表示一个字段</div>
+            <img src="~/FlowFile/Help/Images/form_filed.png" />
+        </li>
+        <li class="window_ul_li">
+            <div class="flowNumber">4</div>
+            <div style="margin-bottom: 2px;">枚举内容前加E:表示，如<所属区域></div>
+            <img src="~/FlowFile/Help/Images/form_mj.png" />
+        </li>
+        <li class="window_ul_li">
+            <div class="flowNumber">5</div>
+            <div style="margin-bottom: 2px;">子表是一行中所有列必须填写，并且下一行中的列必须为空,如<图书信息></div>
+            <img src="~/FlowFile/Help/Images/form_sub.png" />
+        </li>
+        <li class="window_ul_li" style="margin-bottom: 25px;">
+            <div class="flowNumber">6</div>
+            <div style="margin-bottom: 2px;">文字说明前面加D:</div>
+            <img src="~/FlowFile/Help/Images/form_d.png" /><br />
+        </li>
+    </ul>
+</div>
+
+<style type="text/css">
+    .flowNumber {
+        border-radius: 7px;
+        width: 14px;
+        height: 14px;
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+        line-height: 14px;
+        float: left;
+        margin-right: 3px;
+        background-color: #308ac0;
+        margin-top: 3px;
+    }
+
+    .window_ul {
+        overflow: auto;
+        height: 345px;
+        list-style: none;
+        font-size: 14px;
+        font-family: 'Microsoft YaHei';
+    }
+
+    .window_ul_li {
+        margin-top: 8px;
+        font-weight: bold;
+        color: #000;
+    }
+
+    .window_ul::-webkit-scrollbar {
+        width: 1px;
+        height: 12px;
+        background-color: #f5f5f5;
+    }
+
+    .window_ul::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        border-radius: 10px;
+        background-color: #f5f5f5;
+    }
+
+    .window_ul::-webkit-scrollbar-thumb {
+        height: 20px;
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #555;
+    }
+
+    .mini-menu-border {
+        border-bottom: 1px solid #f9f9f9;
+        border-left: 0px;
+        border-right: 0px;
+        border-top: 0px;
+    }
+
+    .mini-menu-horizontal .mini-menu-inner {
+        background-image: none;
+        background-color: #f9f9f9;
+        padding: 6px;
+    }
+
+    .mini-separator {
+        display: block;
+        border-top: solid 1px #fff;
+        margin-top: 1px;
+        margin-bottom: 1px;
+        margin-right: 1px;
+        margin-left: 26px;
+    }
+
+    .ke-toolbar .ke-hr {
+        overflow: hidden;
+        height: 1px;
+        clear: both;
+        display: none;
+    }
+
+    .file-word:before {
+        content: "\f1c2";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .icon-word::before {
+        content: "";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .mini-menuitem {
+        line-height: 20px;
+        height: 20px;
+        width: auto;
+        position: relative;
+        border: 0;
+        padding: 1px;
+    }
+
+    .mini-menuitem-hover {
+        background-image: none;
+        background-color: #3c8dbc;
+    }
+
+    .mini-menuitem-text {
+        cursor: default;
+        color: #201F35;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        cursor: pointer;
+    }
+
+    .mini-separator {
+        display: block;
+        border-top: solid 1px #9b9b9b;
+        margin-top: 1px;
+        margin-bottom: 1px;
+        margin-right: 1px;
+        margin-left: 26px;
+    }
+
+    #tdUpload a:before {
+        content: "\f063";
+        padding-right: 61px;
+        font-size: 14px;
+    }
+
+    .mymenu .mini-menu-float {
+        float: right;
+    }
+
+    .mini-menu-horizontal .mini-menu-inner {
+        background-image: none;
+        background-color: #f9f9f9;
+        padding: 9px;
+    }
+
+    #menu {
+        display: inline-block !important;
+        width: auto !important;
+        margin-top: -1px;
+        /*width: 80px!important;*/
+    }
+
+    .mini-menu-horizontal .mini-menu-inner {
+        padding: 0px !important;
+    }
+
+    .list_button {
+        width: auto;
+        height: 19px;
+        display: block;
+        position: relative;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #ccc;
+        border-image: initial;
+        padding: 4px 22px 4px 1px;
+        overflow: hidden;
+        margin-top: 1px;
+    }
+
+    .mini-listbox {
+        position: relative;
+        background: #f9f9f9;
+        overflow: hidden;
+    }
+
+    .mini-menuitem-icon, .mini-menuitem-allow {
+        width: 16px !important;
+        height: 16px;
+        line-height: 16px;
+        overflow: hidden;
+        position: absolute;
+        left: 3px;
+        top: 2px;
+        display: none;
+        _left: -25px;
+        _top: -3px;
+        _height: 18px;
+    }
+
+    .mini-splitter-pane2 {
+    }
+
+    .mini-splitter-pane2-vertical {
+        border: 0;
+    }
+
+    .mini-popup {
+        background: white;
+        border: 1px solid #ccc;
+        overflow: auto;
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+    }
+
+    .mini-buttonedit-input {
+        background: none;
+        border: 0;
+        line-height: 19px;
+        font-family: Verdana;
+        font-size: 9pt;
+        padding: 0;
+        margin: 0;
+        outline: none;
+        z-index: 1;
+        cursor: text;
+        width: 100%;
+        height: 19px;
+        float: right;
+        _position: absolute;
+        _left: 2px;
+        _top: 0px;
+        cursor: pointer;
+        text-decoration: underline;
+        color: #0000ee;
+    }
+
+    #createFormMenu, #saveForm {
+        font-family: 微软雅黑;
+        text-align: center;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -moz-linear-gradient(top, #3c8dbc, #2e88c0);
+        background: linear-gradient(top, #3c8dbc, #2e88c0);
+        background: -ms-linear-gradient(top, #3c8dbc, #2e88c0);
+        background-color: #2e88c0;
+        box-shadow: 0 1px 2px #B8DCF1 inset, 0 -1px 0 #316F96 inset;
+        color: #fff;
+    }
+
+        #saveForm .icon-save, #createFormMenu .icon-add {
+            color: #fff;
+            background-image: none;
+            font: normal normal normal 12px/14px FontAwesome, "微软雅黑";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+    .mini-listbox td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        overflow: hidden;
+        line-height: 22px;
+        cursor: default;
+        padding-left: 4px;
+        padding-right: 2px;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+        text-align: left;
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+    var flowFormID = getCache("_CacheFlowFormID");
+    var categoryID = getCache("_CacheCategoryID");
+    var isEdit = false;
+    function pageLoad() {
+        getUseFormList();
+        if (flowFormID)
+            mini.get("dataGrid").setUrl(changeToFullUrl('GetItemList') + '?ID=' + flowFormID);
+
+    }
+
+    var lists = [];
+    function getUseFormList() {
+        addExecuteParam("CategoryID", categoryID);
+        execute('GetUseFormList', {
+            onComplete: function (result) {
+                if (result) {
+                    for (var i = 0; i < result.length; i++) {
+                        var c = result[i];
+                        var isExist = false;
+                        for (var j = 0; j < lists.length; j++) {
+                            if (c.ID == lists[j].value)
+                                isExist = true;
+                        }
+                        if (!isExist)
+                            lists.push({ value: c.ID, code: c.Code, text: c.Name, tableName: c.TableName });
+                    }
+                    mini.getbyName("HistoryUseForm").setData(lists);
+                    if (!flowFormID && lists.length > 0) {
+                        editor.html(result[0].Layout);
+                        mini.get("#dataGrid").setData(mini.decode(result[0].Items));
+                    }
+                    var formID = flowFormID = flowFormID ? flowFormID : (lists.length > 0 ? lists[0].value : flowFormID);
+                    mini.getbyName("HistoryUseForm").setValue(formID);
+                    setCache("_CacheFlowFormID", formID);
+                    for (var j = 0; j < lists.length; j++) {
+                        if (formID == lists[j].value) {
+                            setCache("_CacheTmplCode", lists[j].code);
+                            break;
+                        }
+                    }
+                    getFormWord();
+                    if (result.length > 0) {
+                        $('#span1,#span2,#span3,#_next,#homeSplitter').show();
+                        $('#divDes,#createForm').hide();
+                    } else {
+                        $('#span1,#span2,#span3,#_next,#homeSplitter').hide();
+                        $('#divDes,#createForm').show();
+                    }
+                }
+            }
+        });
+    }
+
+    function getFormWord() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        execute("/Base/UI/Word/GetWordList", {
+            onComplete: function (result) {
+                if (result.data) {
+                    var isTrue = false;
+                    for (var i = 0; i < result.data.length; i++) {
+                        if (result.data[i].FormID == flowFormID && result.data[i].HasWord == "1") {
+                            isTrue = true;
+                            break;
+                        }
+                    }
+                    if (isTrue) {
+                        $("#_seted").show();
+                        $("#_setting").hide();
+                    } else {
+                        $("#_seted").hide();
+                        $("#_setting").show();
+                    }
+                }
+
+            }
+        });
+    }
+
+    function onItemClickHistoryForm(e) {
+        if (e.item.value != '' && e.item.value != flowFormID) {
+            addExecuteParam("ID", e.item.value);
+            execute("HistoryForm", {
+                onComplete: function (result) {
+                    if (result != null) {
+                        removeCache("_CacheRoleID");
+                        removeCache("_CacheUseID");
+                        removeCache("_CacheFinish");
+                        setCache("_CacheFlowFormID", result.ID);
+                        setCache("_CacheTmplCode", result.TmplCode);
+                        setCache("_CacheFlowID", result.FlowID);
+                        window.location.reload();
+                    }
+                },
+                onError: function (data) {
+                }
+            });
+        }
+    }
+
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+</script>
+<script type="text/javascript">
+
+    var ItemType = [
+        { value: 'TextBox', text: '单行文本框' },
+        { value: 'TextArea', text: '多行文本框' },
+        { value: 'DatePicker', text: '日期选择框' },
+        { value: 'CheckBoxList', text: '多选框列表' },
+        { value: 'RadioButtonList', text: '单选框列表' },
+        { value: 'ComboBox', text: '组合下拉框' },
+        { value: 'ButtonEdit', text: '弹出选择框' },
+        { value: 'SingleFile', text: '单附件上传' },
+        { value: 'MultiFile', text: '多附件上传' },
+        { value: 'AuditSign', text: '流程签字框' },
+        { value: 'CheckBox', text: '复选框' },
+        { value: 'Spinner', text: '数字输入框' },
+        { value: 'LinkEdit', text: '链接选择框' },
+        { value: 'SubTable', text: '子表' }
+    ];
+
+    var fieldType = [
+        { value: 'nvarchar(50)', text: '字符串（50）' },
+        { value: 'nvarchar(200)', text: '字符串（200）' },
+        { value: 'nvarchar(500)', text: '字符串（500）' },
+        { value: 'nvarchar(2000)', text: '字符串（2000）' },
+        { value: 'nvarchar(max)', text: '字符串（max）' },
+        { value: 'ntext', text: '字符串（text）' },
+        { value: 'int', text: '整型' },
+        { value: 'float', text: '浮点型' },
+        { value: "decimal(18 2)", text: '小数（2位）' },
+        { value: "decimal(18 4)", text: '小数（4位）' },
+        { value: "decimal(18 6)", text: '小数（6位）' },
+        { value: 'datetime', text: '日期型' }
+    ];
+
+    var dafaultValues = [
+        { value: "{CurrentTime}", text: "{CurrentTime}" },
+        { value: "{CurrentDate}", text: "{CurrentDate}" },
+        { value: "{CurrentUserID}", text: "{CurrentUserID}" },
+        { value: "{CurrentUserName}", text: "{CurrentUserName}" },
+        { value: "{CurrentUserOrgID}", text: "{CurrentUserOrgID}" },
+        { value: "{CurrentUserOrgName}", text: "{CurrentUserOrgName}" },
+        { value: "{CurrentUserID},{CurrentUserName}", text: "{CurrentUserID},{CurrentUserName}" },
+        { value: "{CurrentUserOrgID},{CurrentUserOrgName}", text: "{CurrentUserOrgID},{CurrentUserOrgName}" }
+    ];
+
+    function saveLayout() {
+        addExecuteParam("layout", window.editor.html());
+        execute("SaveLayout", { actionTitle: '保存' });
+    }
+
+    function CreateLayout() {
+        var mode = mini.get("layoutMode").getValue();
+        if (!mode) {
+            msgUI("请先选择布局模式");
+            return;
+        }
+        var url = "CreateLayout?mode=" + mini.get("layoutMode").getValue();
+        execute(url, {
+            onComplete: function (data) {
+                var obj = mini.decode(data);
+                editor.html(obj.layout);
+            }
+        });
+    }
+
+    function preView() {
+        var TmplCode = getCache("_CacheTmplCode");
+        if (TmplCode != null) {
+            var url = "/MvcConfig/UI/Form/PageView?TmplCode=" + TmplCode + "&IsPreView=True";
+            openWindow(url, {});
+        } else {
+            msgUI("表单未生成!");
+        }
+    }
+
+    function isExistFiled(data, filed) {
+        var result = false;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Code == filed.Code || data[i].Name == filed.Name)
+                result = true;
+        }
+        return result;
+    }
+
+    function clone() {
+        openWindow('HistoryFormList', {
+            width: '800px', title: '历史表单', height: '580px', onDestroy: function (result) {
+                var dataGrid = mini.get("dataGrid");
+                if (result != 'close') {
+                    addExecuteParam("FormID", result.ID);
+                    addExecuteParam("CategoryID", categoryID);
+                    execute('CloneForm', {
+                        onComplete: function (data) {
+                            setCache("_CacheFlowFormID", data.ID);
+                            setCache("_CacheTmplCode", data.Code);
+                            msgUI("克隆成功!", 1, function (action) {
+                                if (action == "ok") {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function cleanLayout() {
+        msgUI("确认要清空吗?", 2, function (action) {
+            if (action == "ok") {
+                if (KindEditor.instances.length > 0) {
+                    editor.html('');
+                }
+            }
+        });
+    }
+
+    function exportSQL() {
+        var url = "SqlFile?DefID=" + categoryID + "&TableName=S_M_Category";
+        window.open(url);
+    }
+
+    function customLayout() {
+        openWindow('CustomLayout', {
+            width: 350, height: 170, title: '自定义', showMaxButton: false, onDestroy: function (data) {
+
+                jQuery.ajax({
+                    url: changeToFullUrl('AutoCreateLayout'),
+                    type: "post",
+                    data: { ID: flowFormID, data: mini.encode(data) },
+                    cache: false,
+                    async: false,
+                    success: function (text, textStatus) {
+                        //增加新版报错分支
+                        if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                            var fail = jQuery.parseJSON(text);
+                            var msg = getErrorFromHtml(fail.errmsg);
+                            msgUI(msg, 4);
+                            return;
+                        }
+                        var obj = mini.decode(text);
+                        editor.html(obj.layout);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+            }
+        });
+    }
+
+    function onItemClick(value, title) {
+        if (value != '') {
+            msgUI("确认要生成(" + title + ")布局吗?", 2, function (action) {
+                if (action == "ok") {
+                    var url = "AutoCreateLayout?ID=" + flowFormID + "&mode=" + value;
+                    execute(url, {
+                        onComplete: function (result) {
+                            var obj = mini.decode(result);
+                            editor.html(obj.layout);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $("span").each(function () {
+            if ($(this).hasClass("mini-buttonedit-border")) {
+                $(this).removeClass("mini-buttonedit-border");
+                $(this).addClass("list_button");
+            }
+        });
+        $("input").each(function () {
+            if ($(this).hasClass("mini-buttonedit-input")) {
+                $(this).attr("readonly", "readonly");
+            }
+        });
+        $(".mini-buttonedit-input").click(function () {
+            edit();
+        });
+    });
+
+
+    function setting() {
+        var url = 'SettingsForm?ID=' + flowFormID;
+        openWindow(url, {
+            title: '高级设置',
+            onDestroy: function (data) {
+                getUseFormList();
+            }
+        });
+    }
+
+    function openFormWindow(is) {
+        isEdit = is;
+        if (!is) {
+            mini.getbyName("Title").setValue("");
+            mini.getbyName("TmplCode").setValue("");
+            mini.getbyName("TableName").setValue("");
+        }
+        var window = mini.get('addNewFormWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.onscroll = scroll;
+        window.queryWindowId = window.id;
+        window.show();
+    }
+
+    function save() {
+        var title = mini.getbyName("Title").getValue();
+        var tableName = mini.getbyName("TableName").getValue();
+        var tmplCode = mini.getbyName("TmplCode").getValue();
+        if ($.trim(title) == '' || $.trim(tableName) == '' || $.trim(tmplCode) == '') {
+            msgUI("请输入表单名称,表单编辑,表名!");
+            return;
+        }
+
+        if (checkSpecialchar(title) || checkSpecialchar(tmplCode) || checkSpecialchar(tableName))
+            return;
+        if (!isEdit) {
+            removeCache("_CacheRoleID");
+            removeCache("_CacheUseID");
+            removeCache("_CacheFinish");
+            removeCache("_CacheFlowFormID");
+            removeCache("_CacheTmplCode");
+            removeCache("_CacheFlowID");
+        }
+
+        addExecuteParam("CategoryID", categoryID);
+        addExecuteParam("Name", title);
+        addExecuteParam("TmplCode", tmplCode);
+        addExecuteParam("TableName", tableName);
+        addExecuteParam("FormID", getCache("_CacheFlowFormID"));
+        addExecuteParam("IsEdit", isEdit);
+        execute('EditForm', {
+            onComplete: function (result) {
+                setCache("_CacheFlowFormID", result.ID);
+                setCache("_CacheTmplCode", result.Code);
+                msgUI("创建成功!", 1, function (action) {
+                    if (action == "ok") {
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+
+    }
+
+    function closeForm() {
+        var window = mini.get('addNewFormWindow');
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.queryWindowId = window.id;
+        window.hide();
+    }
+
+    function onTitleValueChanged(e) {
+        var tableName = mini.getbyName("TableName").getValue();
+        var value = window.parent.getPYCode(mini.getbyName("Title").getValue());
+        if (!tableName) {
+            mini.getbyName("TableName").setValue("T_UI_" + value);
+        }
+        var tmplCode = mini.getbyName("TmplCode").getValue();
+        if (!tmplCode) {
+            mini.getbyName("TmplCode").setValue(value);
+        }
+    }
+
+    function OnCellCommitEdit(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var field = e.field, value = e.value;
+        if (field == "Name" && !record.Code) {
+            grid.updateRow(record, { Code: window.parent.getPYCode(value) });
+        }
+    }
+
+    function SaveFormList(e) {
+        var html = window.editor.html().replace('<a>', '').replace('</a>', '').replace('<a href="javascript:">', '').replace('style="border:1px solid red;"', '');
+        window.editor.html(html);
+        var grid = mini.get("dataGrid");
+        //var flowFormID = getCache("_CacheFlowFormID")
+        //if (flowFormID == null) {
+        msgUI("确认要暂存吗?", 2, function (action) {
+            if (action == "ok") {
+                saveForm(false);
+            }
+        });
+        //} else {
+        //    var flowID = getCache("_CacheFlowID");
+        //    if (!flowID) {
+        //        msgUI("确认要生成流程吗?", 2, function (action) {
+        //            if (action == "ok") {
+        //                saveForm(true);
+        //            } else {
+        //                saveForm(false);
+        //            }
+        //        });
+        //    } else {
+        //        saveForm(false);
+        //    }
+        //}
+
+        function saveForm(isCreateFlow) {
+            var isTrue = false;
+            var data = mini.get("dataGrid").getData();
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    var code = data[i].Code;
+                    var name = data[i].Name;
+                    if (code != '' && name != '') {
+                        var fc = code.substring(0, 1);
+                        var fn = name.substring(0, 1);
+                        if (checkSpecialchar(fc) || !isNaN(fc) || checkSpecialchar(fn) || !isNaN(fn)) {
+                            isTrue = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (isTrue) {
+                msgUI("字段字母不能包含特殊字符与数字!");
+                return;
+            }
+
+            $("#saveForm").find("span").html("暂存中...");
+            var messageid = mini.loading("暂存中，请稍等...", "暂存中");
+            var flowFormID = getCache("_CacheFlowFormID");
+            addExecuteParam("FormID", flowFormID);
+            addExecuteParam("Layout", html);
+            addExecuteParam("ItemList", data);
+            addExecuteParam("IsCreateFlow", isCreateFlow);
+            execute('SaveFormList', {
+                onComplete: function (result) {
+                    removeCache("_CacheRoleID");
+                    removeCache("_CacheUseID");
+                    removeCache("_CacheFinish");
+                    setCache("_CacheFlowFormID", result.ID);
+                    setCache("_CacheTmplCode", result.TmplCode);
+                    if (result.FlowID != '')
+                        setCache("_CacheFlowID", result.FlowID);
+
+                    if (result != 'close') {
+                        var resultData = mini.decode(result.Items);
+                        grid.setData(resultData);
+                    }
+                    saveItemList();
+                    $("#saveForm").find("span").html("暂存");
+                    mini.hideMessageBox(messageid);
+                }
+            });
+        }
+    }
+
+    function itemTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["Settings"] = "";
+        var type = row["ItemType"];
+        if (type == "SubTable")
+            row["FieldType"] = "";
+        else if (type == "TextArea" || type == "MultiFile")
+            row["FieldType"] = "nvarchar(500)";
+        else if (type == "AuditSign")
+            row["FieldType"] = "nvarchar(max)";
+        else if (type == "DatePicker")
+            row["FieldType"] = "datetime";
+        else if (type == "TextBox")
+            row["FieldType"] = "nvarchar(200)";
+        else if (type == "Spinner")
+            row["FieldType"] = "decimal(18 4)";
+        grid.updateRow(row);
+    }
+
+
+    function del() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        msgUI("确认要删除吗?", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("ID", flowFormID);
+                execute('DeleteForm', {
+                    onComplete: function (result) {
+                        removeCache("_CacheFlowFormID");
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    }
+
+    function edit() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        if (!flowFormID) {
+            msgUI("没找到可编辑的表单!");
+            return;
+        }
+        for (var i = 0; i < lists.length; i++) {
+            var c = lists[i];
+            if (c.value == flowFormID) {
+                mini.getbyName("Title").setValue(c.text);
+                mini.getbyName("TmplCode").setValue(c.code);
+                mini.getbyName("TableName").setValue(c.tableName);
+            }
+        }
+        openFormWindow(true);
+    }
+
+    function next() {
+        window.parent.flowNavBar(window.parent.FlowDesign);
+    }
+    function prev() {
+        window.parent.flowNavBar(window.parent.UseEdit);
+    }
+
+    function exportWord() {
+        window.open('ExportWord?FileName=Word导入模板.docx');
+    }
+
+    function onRowClick(e) {
+        var record = e.record;
+        /*选择字段定位编辑器*/
+        //$("iframe").contents().find('.ke-content td').each(function (event) {
+        //    if (this.innerText == '{' + record.Name + '}') {
+        //        $(this).css('border', '1px solid red');
+        //    } else {
+        //        $(this).css('border', '');
+        //    }
+        //})
+    }
+
+    addGridButton("dataGrid", "settings", {
+        linkText: '详细', onButtonClick: function (row) {
+            var type = row["ItemType"];
+            if (!type) { msgUI('请先选择控件类型!'); return; }
+            var url = "/Base/UI/Form/Settings" + type;
+            var title = getitemTypeText(type);
+            var width = 350;
+            if (type == "SubTable")
+                width = 1000;
+            openWindow(url, {
+                width: width, title: title, data: row["Settings"], onDestroy: function (data) {
+                    if (data != "close")
+                        row["Settings"] = mini.encode(data);
+                }
+            });
+        }
+    });
+
+    function onDrawCell(e) {
+        var record = e.record, field = e.field;
+
+        if (field == "Action") {
+            e.cellStyle = "text-align:center";
+            e.cellHtml = "<a href=\"javascript:\">{" + record.Name + "}</a>";
+        }
+    }
+
+    function getitemTypeText(value) {
+        for (var i = 0; i < ItemType.length; i++) {
+            if (ItemType[i]["value"] == value)
+                return ItemType[i]["text"];
+        }
+    }
+
+    function importItem() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        msgUI("确认从布局导入吗？", 2, function (act) {
+            if (act == "ok") {
+                addExecuteParam("FormID", flowFormID);
+                addExecuteParam("Layout", window.editor.html());
+                execute("ImportItemFromLayout", {
+                    onComplete: function (data) {
+                        var grid = mini.get("dataGrid");
+                        grid.setData(mini.decode(data));
+                    }
+                });
+            }
+        });
+    }
+
+    function importFromDB() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        msgUI("确认从数据库表导入吗？", 2, function (act) {
+            if (act == "ok") {
+                addExecuteParam("FormID", flowFormID);
+                execute("ImportItemFormDB", {
+                    onComplete: function (data) {
+                        var grid = mini.get("dataGrid");
+                        grid.setData(mini.decode(data));
+                    }
+                });
+            }
+        });
+    }
+
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+
+    function uploadWord() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        addExecuteParam("FormID", flowFormID);
+        execute("upWord", {
+            actionTitle: "上传", validateForm: false, onComplete: function (data) {
+                openWindow("/Base/UI/Word/Upload?TmplCode=" + data.Code, {
+                    height: "150px", width: "650px", title: "上传模板", onDestroy: function (data) {
+                        getFormWord();
+                    }
+                });
+            }
+        });
+    }
+
+    function generateWord() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        for (var i = 0; i < lists.length; i++) {
+            if (lists[i].value == flowFormID) {
+                var url = "/Base/UI/Word/DownloadNewDoc?TmplCode=" + lists[i].code;
+                window.open(url);
+            }
+        }
+    }
+
+    function downloadWord() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        for (var i = 0; i < lists.length; i++) {
+            if (lists[i].value == flowFormID) {
+                var url = "/Base/UI/Word/DownloadWord?TmplCode=" + lists[i].code;
+                window.open(url);
+            }
+        }
+    }
+
+    function settingWord() {
+        var flowFormID = getCache("_CacheFlowFormID");
+        addExecuteParam("FormID", flowFormID);
+        execute("upWord", {
+            actionTitle: "格式控制", validateForm: false, onComplete: function (data) {
+                openWindow("/Base/UI/Word/ItemList?WordID=" + data.ID, {
+                    title: "格式控制", onDestroy: function (data) {
+                    }
+                });
+            }
+        });
+    }
+
+    function onPreLoad(e) {
+        if (e.data.length < 1) {
+            var flowFormID = getCache("_CacheFlowFormID");
+            if (flowFormID != null && flowFormID != 'null') {
+                addExecuteParam("FormID", flowFormID);
+                execute("ImportItemFormDB", {
+                    onComplete: function (data) {
+                        var grid = mini.get("dataGrid");
+                        grid.setData(mini.decode(data));
+                    }
+                });
+            }
+        }
+    }
+
+    function saveItemList() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        grid.validate();
+        if (grid.isValid() == false) {
+            msgUI("输入数据有误！");
+            return;
+        }
+        var flowFormID = getCache("_CacheFlowFormID");
+        addExecuteParam("ItemList", grid.getData());
+        addExecuteParam("FormID", flowFormID);
+        execute("SaveItemList", { actionTitle: "保存", validateForm: false });
+    }
+
+    function openHelpWindow(windowID) {
+        var window = mini.get(windowID);
+        if (!window) { msgUI("未找到指定的window窗体！", 4); return; }
+        window.onscroll = scroll;
+        window.queryWindowId = window.id;
+        window.show();
+    }
+
+    function removeLayoutFiled() {
+        var dataGrid = mini.get("dataGrid");
+        var selects = dataGrid.getSelecteds();
+        if (selects.length > 0) {
+            var html = window.editor.html();
+            for (var i = 0; i < selects.length; i++) {
+                var name1 = selects[i].Name;
+                var name2 = '{' + name1 + '}';
+                if (name1) {
+                    html = html.replace(name2, '').replace(name1, '');
+                }
+            }
+            editor.html(html);
+            $("iframe").contents().find('.ke-content td').each(function (event) {
+                $(this).css('border', '');
+            })
+        }
+    }
+</script>
+<script type="text/javascript">
+ $(function () {
+    $("#UploadWord").uploadifive({
+        'multi': false,
+        'auto': true,
+        'checkScript': '',
+        'formData': {},
+        'queueID': "UploadWord",
+        uploadScript: "/MvcConfig/Workflow/Flow/UploadWord",
+        buttonClass: "",
+        buttonText: "<SPAN class=\"mini-button-text\" style=\"cursor: pointer;padding:0;float: left;\">从Word导入创建</SPAN>",
+        width: 120,
+        height: 20,
+        fileType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword",
+        onFallback: function () {
+            alert("该浏览器无法使用!");
+        },
+        onUploadComplete: function (file, data, response) {
+            if (data.split(';')[2] == 'False') {
+                setCache("_CacheFlowFormID", data.split(';')[0]);
+                setCache("_CacheTmplCode", data.split(';')[1]);
+                msgUI("新表单导入成功！", 1, function (act) {
+                    if (act == "ok") {
+                        window.location.reload();
+                    }
+                });
+            } else {
+                msgUI("word模板导入解析失败，请确认word表格内容可解析！");
+            }
+        },
+        onAddQueueItem: function (file) {
+            if (file && file.name)
+            {
+                var _pos = file.name.lastIndexOf(".");
+                if (_pos > -1) {
+                    var fileName = file.name.substring(0, _pos);
+                    var tmplCode = window.parent.getPYCode(fileName);
+                    $('#UploadWord').data('uploadifive').settings.formData = { 'title': tmplCode, 'categoryID': categoryID };
+                }
+            }
+        }
+    });
+ });
+    /*
+    window.onload = function () {
+        $("#uploadifive-UploadWord").each(function (i, e) {
+            var outHTML = e.outerHTML;
+            var imgHTML = '<img onclick="openHelpWindow(\'upLoadHelpWindow\')" style="height:16px;width:16px;margin-top:1px;float:right;cursor:pointer;" src="/CommonWebResource/Theme/Default/MiniUI/icons/help.png" />';
+            if (outHTML) {
+                e.outerHTML = outHTML + imgHTML;
+            }
+        });
+    }
+    */
+</script>

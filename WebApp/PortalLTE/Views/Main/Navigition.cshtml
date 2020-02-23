@@ -1,0 +1,331 @@
+﻿@using System.Data
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <!--miniui-->
+    <script>var IsUseNewPortal = '@ViewBag.IsUseNewPortal';var NoPopupLayer = '@ViewBag.NoPopupLayer'; var PortalKeys = '@ViewBag.PortalKeys';var userInfo = '@ViewBag.User.UserID';var PortalNewsTime = @ViewBag.PortalNewsTime; </script>
+   
+    <link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+    <!-- FontAwesome 4.3.0 -->
+    <link href="/PortalLTE/Scripts/dist/css/font-awesome.min.css?main=1" rel="stylesheet"
+          type="text/css" />
+    <!-- Ionicons 2.0.0 -->
+    <link href="/PortalLTE/Scripts/dist/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <script src="/PortalLTE/Scripts/jQuery/jQuery-2.2.0.min.js"></script>
+    
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/PortalLTE/Scripts/dist/css/AdminLTE.min.css">
+    <script src="/CommonWebResource/CoreLib/bootstrap/js/jquery.nicescroll.min.js" type="text/javascript"></script>
+
+    <style>     
+        .hassearch{
+            background-color:white;
+            border-radius:20px;
+            cursor:pointer;
+        }       
+        .nosearch{
+            cursor:default;
+        }
+        .display{
+            display:none;
+        }
+        .table-cell{
+            display:table-cell;            
+        }
+   
+        body {
+            height: 100%;
+            overflow: hidden;
+            font-family: '微软雅黑','Helvetica Neue',Helvetica,Arial,sans-serif; 
+        }
+  
+        .navigitiondiv:hover .navigitions{
+            background-color:#0f3a64 !important;
+            color:white  !important;
+        }
+        .navigitiondiv:hover {
+            background-color:#0f3a64 !important;
+            color:white  !important;
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color: #646464 !important;
+        }
+        .searchbody ::-webkit-scrollbar {
+            width: 9px;
+            height: 9px;
+        }
+    </style>
+   
+</head>
+<body id="pageviewbody" style="background-color:white;overflow:auto;">
+    <div class="page-header firstNavition" style="z-index:8;position:fixed;width:100%;top:-10px;left:0px;height:70px;padding:0px;background-color:white;">
+        <h1 style="margin-left:10px;margin:22px 35px;font-size: 26px;">
+            <i class="glyphicon glyphicon-th-large" style="margin-right: 8px;"></i>
+            全部应用
+        </h1>
+    </div>
+     
+    <div id="searchnav" style="z-index:9;border-radius: 20px;width:420px;display:table;position:fixed;background-color:white;top:52px;box-shadow: 1px 1px 6px #888888;">
+        <i style="display:table-cell;vertical-align:middle;color:#141414;padding: 0 13px;" class="glyphicon glyphicon-search"></i>
+        <input id="searchInput" style="display:table-cell;width:350px;border:0px;padding:0px" type="text" placeholder="请输入搜索内容" onkeyup="Search(this)" onchange="Search(this)" class="form-control">
+        <div  class="display searicon" style="vertical-align:middle;border-right:1px solid #d2d6de;color:#a2a2a2"><span id="currno" style="padding:2px">1</span><span>/</span><span id="totalno" style="padding:2px">10</span></div>
+        <div  class="display searicon" style="vertical-align:middle;color:#a2a2a2;padding-left:14px;padding-right:7px" onclick="up();"><i class="glyphicon glyphicon-chevron-up"></i></div>
+        <div  class="display searicon" style="vertical-align:middle;color:#a2a2a2;padding-left:7px;padding-right:7px" onclick="down();"><i class="glyphicon glyphicon-chevron-down"></i></div>
+        <div  class="display searicon" style="vertical-align:middle;color:red;padding-left:7px;padding-right:15px" onclick="cannelSearch()"><i class="glyphicon glyphicon-remove"></i></div>
+    </div>
+    <div id="searchcover"  style="overflow:auto;top: 70px;width:100%;position: fixed;height: 89%;padding-top:20px;">
+        @Html.Raw(ViewBag.NavHtmlRows)
+    </div>
+    
+    <script>
+        $(function () {
+            //滚动条            
+            $("#searchcover").css("height",document.documentElement.clientHeight-70+"px");       
+            $(window).resize(function () {
+                $("#searchcover").css("height",document.documentElement.clientHeight-70+"px");       
+            });       
+            $("#searchcover").niceScroll({
+                touchbehavior:false,
+                cursorwidth:6,
+                cursorborder:"0px",
+                cursorborderradius:"15px",
+                background:"rgba(255,255,255,0)",
+                autohidemode:"true"
+            });  // hw acceleration enabled when using wrapper
+            $("#searchnav").css("left",document.body.clientWidth/2-document.getElementById("searchnav").clientWidth/2);
+
+            //处理键盘事件 禁止后退键（Backspace）密码或单行、多行文本框除外
+            function banBackSpace(e) {
+                var ev = e || window.event; //获取event对象
+                var obj = ev.target || ev.srcElement; //获取事件源
+
+                var t = obj.type || obj.getAttribute('type'); //获取事件源类型
+
+                //获取作为判断条件的事件类型
+                var vReadOnly = obj.getAttribute('readonly');
+                var vEnabled = obj.getAttribute('enabled');
+                //处理null值情况
+                vReadOnly = (vReadOnly == null) ? false : vReadOnly;
+                vEnabled = (vEnabled == null) ? true : vEnabled;
+
+                //当敲Backspace键时，事件源类型为密码或单行、多行文本的，
+                //并且readonly属性为true或enabled属性为false的，则退格键失效
+                var flag1 = (ev.keyCode == 8 && (t == "password" || t == "text" || t == "textarea")
+                    && (vReadOnly == true || vEnabled != true)) ? true : false;
+
+                //当敲Backspace键时，事件源类型非密码或单行、多行文本的，则退格键失效
+                var flag2 = (ev.keyCode == 8 && t != "password" && t != "text" && t != "textarea")
+                    ? true : false;
+
+                //禁止TAB键
+                var flag3 =  (ev.keyCode == 9 && t != "password" && t != "text" && t != "textarea") ? true : false;
+                //判断
+                if (flag2) {
+                    return false;
+                }
+                if (flag1) {
+                    return false;
+                }
+                if (flag3) {
+                    return false;
+                }
+            }
+
+            //禁止后退键 作用于Firefox、Opera
+            document.onkeypress = banBackSpace;
+            //禁止后退键 作用于IE、Chrome
+            document.onkeydown = banBackSpace;
+
+        });
+        //iframe跳转
+        var selectlist=new Array(),currentno=1;
+        function goUrl(name,url,ele) {
+            window.parent.goNavUrl(name,url,ele);
+        }
+        function up(){
+            if(currentno>1){
+                $("#currno").text(currentno-1);
+                currentno=currentno-1;
+                $("#"+selectlist[(currentno)].id).css("background","#ffffff");
+                $("#"+selectlist[(currentno)].id).parent().css("background","#ffffff");
+                $("#"+selectlist[currentno-1].id).parent().css("background","#fee972");
+                $("#"+selectlist[currentno-1].id).css("background","#fee972");
+                $("#searchcover").scrollTop(selectlist[(currentno-1)].height);
+                //$("#searchnav").css("scrollTop",selectlist[(currentno-1)].height+"px");
+            }
+        }
+        function down(){
+            if(currentno<selectlist.length){
+                $("#currno").text(currentno+1);
+                currentno=currentno+1;
+                $("#"+selectlist[(currentno-2)].id).parent().css("background","#ffffff");
+                $("#"+selectlist[(currentno-1)].id).parent().css("background","#fee972");
+                $("#"+selectlist[(currentno-2)].id).css("background","#ffffff");
+                $("#"+selectlist[(currentno-1)].id).css("background","#fee972");
+                $("#searchcover").scrollTop(selectlist[(currentno-1)].height);
+                //$("#searchnav").css("scrollTop",selectlist[(currentno-1)].height+"px");
+            }
+        }
+        function pageY(elem){
+            return elem.offsetParent ? elem.offsetTop + pageY(elem.offsetParent) : elem.offsetTop;
+        }
+        function cannelSearch(){
+            $('#searchInput').val('');
+            $("#searchcover").scrollTop(0);
+            $("#pageviewbody").removeClass("searchbody");
+            $("#searchcover .navigitions").parent().css("cursor",'pointer');
+            $(".firstNavition").css("border-bottom","1px solid #d2d6de");
+            $(".box-shadowul").css("box-shadow","1px 1px 0px 1px #E2E2E2");            
+            $(".searicon").removeClass("table-cell");
+            $(".searicon").addClass("display");
+            $("#searchcover").css("background","#ffffff");
+            $(".page-header").css("background","#ffffff");
+            $("#searchcover .navigitions").css("background","#ffffff");
+            $("#searchcover .navigitions").parent().css("background","#ffffff");
+            $("#searchcover .navigitions").parent().removeClass("nosearch");
+            $("#searchcover .navigitions").parent().addClass("hassearch");
+            $("#searchcover .navigitions").removeClass("nosearch");
+            $("#searchcover .navigitions").addClass("hassearch");
+            $("#searchcover .navigitions").parent().addClass("navigitiondiv");
+        }
+        function Search(sear){
+            selectlist=[];
+            $("#searchcover").css("background","#7f7f7f");        
+            
+            $("#searchcover .navigitions").css("background","#7f7f7f");
+            $("#searchcover .navigitions").parent().css("background","#7f7f7f");
+            $("#searchcover .navigitions").parent().css("background","#7f7f7f");
+            $(".firstNavition").css("border-bottom","1px solid #7f7f7f");
+            $(".box-shadowul").css("box-shadow","1px 1px 0px 1px #E2E2E2");
+            $(".page-header").css("background","#7f7f7f");
+            $("#searchcover .navigitions").parent().removeClass("navigitiondiv");
+            $("#searchcover .navigitions").parent().removeClass("hassearch");
+            $("#searchcover .navigitions").parent().addClass("nosearch");
+            $("#searchcover .navigitions").parent().css("cursor",'default');            
+            $("#searchcover .navigitions").removeClass("hassearch");
+            $("#searchcover .navigitions").addClass("nosearch");
+            $(".searicon").addClass("table-cell");
+            $(".searicon").removeClass("display");
+            $(".box-shadowul").css("box-shadow","1px 1px 0px 1px #6f7175");
+            
+            if(sear.value==""){
+                $("#pageviewbody").removeClass("searchbody");
+                $("#searchcover").scrollTop(0);
+                $(".box-shadowul").css("box-shadow","1px 1px 0px 1px #E2E2E2");
+                $("#searchcover .navigitions").parent().css("cursor",'pointer');
+                $(".firstNavition").css("border-bottom","1px solid #d2d6de");
+                $(".searicon").removeClass("table-cell");
+                $(".searicon").addClass("display");
+                $("#searchcover").css("background","#ffffff");
+                $(".page-header").css("background","#ffffff");
+                $("#searchcover .navigitions").css("background","#ffffff");
+                $("#searchcover .navigitions").parent().css("background","#ffffff");
+                $("#searchcover .navigitions").parent().removeClass("nosearch");
+                $("#searchcover .navigitions").parent().addClass("hassearch");
+                $("#searchcover .navigitions").removeClass("nosearch");
+                $("#searchcover .navigitions").addClass("hassearch");
+                $("#searchcover .navigitions").parent().addClass("navigitiondiv");
+            }else{
+                $("#pageviewbody").addClass("searchbody");
+                $("#searchInput").css("width","300px");
+                $('#searchcover .navigitions').each(function (index,domEle){
+                    if(domEle.innerText.toLowerCase().indexOf(sear.value.toLowerCase())>=0){
+                        domEle.parentNode.style.backgroundColor="#ffffff";
+                        domEle.style.backgroundColor="#ffffff";
+                        domEle.parentNode.style.cursor="pointer";
+                        domEle.classList.remove("nosearch");
+                        domEle.classList.add("hassearch");  
+                        domEle.parentNode.classList.remove("nosearch");
+                        domEle.parentNode.classList.add("hassearch");    
+                        domEle.parentNode.classList.add("navigitiondiv");    
+                        var domelet={
+                            id:domEle.id,
+                            height:pageY(domEle)-180,
+                        }
+                        selectlist.push(domelet);
+                    }
+                });
+                if(selectlist.length==0){                    
+                    $("#currno").text(0);
+                    $("#totalno").text(0);
+                }else{                   
+                    $("#currno").text(1);
+                    $("#"+selectlist[0].id).css("background","#fee972");
+                    $("#"+selectlist[0].id).parent().css("background","#fee972");
+                    currno=1;
+                    $("#totalno").text(selectlist.length);
+                    $("#searchcover").scrollTop(selectlist[0].height);
+                    //window.document.body.scrollTop=selectlist[0].height;
+                    //$("#searchnav").css("scrollTop",selectlist[0].height+"px");
+                }
+                currentno=1;
+                $("#totalno").innerHtml =selectlist.length;
+            }
+        }
+        //判断是否跨域，如果跨域则带上token
+        function GetTokenUrl(url){
+            if(url.indexOf("http")>=0){
+                var domain = url.split('/'); //以“/”进行分割
+                var returnurl="";
+                if( domain[2] ) {
+                    returnurl = domain[0]+"//"+domain[2];
+                } else {
+                    returnurl = ''; //如果url不正确就取空
+                }
+
+                var urlflag=false;
+                var lourl= path = "http://"+document.location.host;
+                if(returnurl.indexOf(":")){
+                    if(returnurl.indexOf(lourl)<0){
+                        urlflag=true;
+                    }
+                }else{
+                    lourl=lourl.substr(0, lourl.indexOf(':'));
+                    if(document.location.port!="80"||returnurl.indexOf(lourl)<0){
+                        urlflag=true;
+                    }
+                }
+                if(urlflag){
+                    var tokens= GetToken();
+                    if (typeof (tokens.Token) != "undefined" && typeof (tokens.TokenKey) != "undefined" && tokens.TokenKey && tokens.Token) {
+                        if (url.indexOf(tokens.TokenKey + "=") < 0) {
+                            if (url.indexOf("?") > 0) {
+                                url += "&" + tokens.TokenKey + "=" + tokens.Token;
+                            }
+                            else {
+                                url += "?" + tokens.TokenKey + "=" + tokens.Token;
+                            }
+                        }
+                    }
+                }
+            }
+            return url;
+        }
+        //获取token
+        function GetToken(){
+            var data;
+            $.ajax({
+                url: "/PortalLTE/Main/GetToken",
+                type: "get",
+                dataType: "json",
+                async: false,
+                success: function (sdata) {
+                    data= sdata;
+                }
+            });
+            return data;
+        }
+
+    </script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="/PortalLTE/Scripts/bootstrap/js/bootstrap.min.js"></script>
+   
+</body>
+</html>

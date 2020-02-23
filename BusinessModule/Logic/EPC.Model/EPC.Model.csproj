@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3D6F7E9F-1903-418F-8772-E83BF0EB1766}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EPC.Model</RootNamespace>
+    <AssemblyName>EPC.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain.Partial\Form\Finance\S_F_DeptFundPlan.cs" />
+    <Compile Include="Domain.Partial\Form\Finance\S_F_EngineeringFundPlan.cs" />
+    <Compile Include="Domain\BaseModelExtend.cs" />
+    <Compile Include="Domain\Config\S_C_Meun.cs" />
+    <Compile Include="Domain\Config\S_C_Mode.cs" />
+    <Compile Include="Domain\Config\S_C_OBSTemplate.cs" />
+    <Compile Include="Domain\Config\S_C_PBSStruct.cs" />
+    <Compile Include="Domain\Config\S_C_QBSStruct.cs" />
+    <Compile Include="Domain\Config\S_C_ScheduleDefine.cs" />
+    <Compile Include="Domain\Config\S_C_ScheduleDefine_Nodes.cs" />
+    <Compile Include="Domain\Config\S_C_WBSStruct.cs" />
+    <Compile Include="Domain\Config\S_T_CBSNodeTemplate.cs" />
+    <Compile Include="Domain\Config\S_T_DefineParams.cs" />
+    <Compile Include="Domain\Config\S_T_EquipmentMaterialTemplate.cs" />
+    <Compile Include="Domain\Config\S_T_FolderDef.cs" />
+    <Compile Include="Domain\Config\S_T_FolderTemplate.cs" />
+    <Compile Include="Domain\Infrastructure.cs">
+      <DependentUpon>Infrastructure.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Domain\Instance\Design\S_C_BOQ_Version.cs" />
+    <Compile Include="Domain\Instance\Design\S_E_AuditForm.cs" />
+    <Compile Include="Domain\Instance\Design\S_E_Bom.cs" />
+    <Compile Include="Domain\Instance\Design\S_E_Bom_Detail.cs" />
+    <Compile Include="Domain\Instance\Design\S_E_CooperationExe.cs" />
+    <Compile Include="Domain\Instance\Design\S_E_DrawingResult.cs" />
+    <Compile Include="Domain\Instance\Design\S_E_MajorPutInfo.cs" />
+    <Compile Include="Domain\Instance\Document\S_D_Document.cs" />
+    <Compile Include="Domain\Instance\Document\S_D_Folder.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_BudgetInfo_Detail.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_CBS.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_Engineering.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_OBS.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_PBS.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_PBS_Version.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_PBS_Version_PBSData.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_WBS.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_WBS_Task.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_WBS_Version.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_WBS_Version_Node.cs" />
+    <Compile Include="Domain\Instance\Manage\S_I_WBS_Version_Task.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_BidOffer.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_BidOffer_CBS.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_ContractInfo.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_ContractInfo_ReceiptObj.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_ContractInfo_ReceiptObj_PlanReceipt.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_CustomerInfo.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_Invoice.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_Receipt.cs" />
+    <Compile Include="Domain\Instance\Market\S_M_ReceiptRegister.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Arrival.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_ContractInfo.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_ContractInfo_PaymentObj.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_ContractInfo_PaymentObj_PaymentPlan.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Invoice.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Package.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Payment.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Plan.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Plan_Package.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_Plan_Package_Item.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_ProcurementApply.cs" />
+    <Compile Include="Domain\Instance\Procurement\S_P_ProcurementSmartApply.cs" />
+    <Compile Include="Domain\Instance\Quality\S_I_Section.cs" />
+    <Compile Include="Domain\Instance\Quality\S_Q_QBS.cs" />
+    <Compile Include="Domain\Instance\Quality\S_Q_QBS_Version.cs" />
+    <Compile Include="Domain\Instance\Quality\S_Q_QBS_Version_QBSData.cs" />
+    <Compile Include="Domain\Project.cs">
+      <DependentUpon>Project.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Enums\BOMEnum.cs" />
+    <Compile Include="Enums\CapitalPlanCalcEnum.cs" />
+    <Compile Include="Enums\CBSEnums.cs" />
+    <Compile Include="Enums\CommonConst.cs" />
+    <Compile Include="Enums\CooperationUserEnum.cs" />
+    <Compile Include="Enums\DesignSpaceEnum.cs" />
+    <Compile Include="Enums\DocEnum.cs" />
+    <Compile Include="Enums\EnumDocumentState.cs" />
+    <Compile Include="Enums\EnumOperaType.cs" />
+    <Compile Include="Enums\PayCheckDetailTemplateEnum.cs" />
+    <Compile Include="Enums\PaymentEnum.cs" />
+    <Compile Include="Enums\ProjectEnum.cs" />
+    <Compile Include="Enums\RecieptEnum.cs" />
+    <Compile Include="Enums\RoleEnums.cs" />
+    <Compile Include="Enums\SpaceEnums.cs" />
+    <Compile Include="Enums\StorageEnum.cs" />
+    <Compile Include="Enums\SupplierEnum.cs" />
+    <Compile Include="Enums\UnitEnum.cs" />
+    <Compile Include="Enums\WBSEnum.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BaseLogic\Base.Logic\Base.Logic.csproj">
+      <Project>{ec8bb43b-4f2b-4e79-9be7-5521d4a86f62}</Project>
+      <Name>Base.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Domain\EF.Reverse.POCO.Core.ttinclude" />
+    <None Include="Domain\EF.Reverse.POCO.ttinclude" />
+    <None Include="Domain\Infrastructure.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Infrastructure.cs</LastGenOutput>
+    </None>
+    <None Include="Domain\Project.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Project.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain.Partial\Form\Design\" />
+    <Folder Include="Domain.Partial\Form\Manage\" />
+    <Folder Include="Domain.Partial\Form\Market\" />
+    <Folder Include="Domain.Partial\Form\Procurement\" />
+    <Folder Include="Domain\Instance\Finance\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

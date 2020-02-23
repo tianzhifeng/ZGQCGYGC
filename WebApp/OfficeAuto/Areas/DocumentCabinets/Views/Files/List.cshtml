@@ -1,0 +1,233 @@
+﻿@{
+    ViewBag.Title = "文件列表";
+}
+<div class="mini-toolbar">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a id="btnAdd" class="mini-button" iconcls="icon-add" onclick="doAdd" plain="true">增加</a>
+                <a class="mini-button" id="btnEdit" iconcls="icon-edit" onclick="edit({width:950,height:550,addQueryString:false})" plain="true">编辑</a>
+                <a class="mini-button" id="btnDel" iconcls="icon-remove" onclick="del" plain="true">删除</a>
+                <a class="mini-button" id="btnInvalid" iconcls="icon-cancel" onclick="doInvalid" plain="true">作废</a>
+                <a class="mini-button" id="btnValid" iconcls="icon-ok" onclick="doValid" plain="true">取消作废</a>
+                @Html.ExportButton()
+            </td>
+            <td id="btnRight" style="white-space: nowrap">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入文件名称或编号" style="width: 200px;"
+                       onenter="quickSearch('FileName,FileCode');" onbuttonclick="quickSearch('FileName,FileCode');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="height: 100%; width: 100%;" url="GetList"
+         idfield="ID" allowresize="true" pagesize="20" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn" width="45">
+            </div>
+            <div field="FileCode" width="100" headeralign="center" headerstyle="cursor:pointer"
+                 allowsort="true" align="center">
+                文件编号
+            </div>
+            <div field="FileName" width="200" headeralign="center" headerstyle="cursor:pointer"
+                 allowsort="true" align="left">
+                文件名称
+            </div>
+            <div field="CreateUserName" width="100" headeralign="center" headerstyle="cursor:pointer"
+                 allowsort="true" align="center">
+                上传人
+            </div>
+            <div field="OrgName" width="120" headeralign="center" align="center" headerstyle="cursor:pointer"
+                 allowsort="true">
+                所属部门
+            </div>
+            <div field="ExtName" width="60" headeralign="center" headerstyle="cursor:pointer"
+                 allowsort="true" align="center">
+                扩展名
+            </div>
+            <div field="FileSize" width="100" headeralign="center" align="right" headerstyle="cursor:pointer"
+                 allowsort="true">
+                文件大小(B)
+            </div>
+            <div field="CreateDate" width="80" headeralign="center" align="center" headerstyle="cursor:pointer"
+                 allowsort="true" dateformat="yyyy-MM-dd">
+                创建日期
+            </div>
+            <div field="IsValid" width="60" headeralign="center" headerstyle="cursor:pointer"
+                 allowsort="true" align="center">
+                是否作废
+            </div>
+            <div field="Down" width="80" headeralign="center" align="center" renderer="onDownRenderer">
+                下载
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px;" showmodal="true"
+     allowresize="false" allowdrag="true" allowmovecolumn="false">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="13%" align="center">
+                        文件编号
+                    </td>
+                    <td width="37%" align="left">
+                        <input name="$LK$FileCode" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                    <td width="13%" align="center">
+                        文件名称
+                    </td>
+                    <td width="37%">
+                        <input name="$LK$FileName" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        扩展名
+                    </td>
+                    <td width="37%" align="left">
+                        <input name="$LK$ExtName" class="mini-textbox" style="width: 88%;" onenter="search();" />
+                    </td>
+                    <td align="center">
+                        是否作废
+                    </td>
+                    <td align="left">
+                        <input name="$EQ$IsValid" class="mini-combobox" style="width: 88%;" textfield="text"
+                               valuefield="value" emptytext="请选择..." data="IsValid" allowinput="false" shownullitem="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        上传人
+                    </td>
+                    <td width="37%" align="left">
+                        <input name="CreateUserID" textname="$EQ$CreateUserName" class="mini-buttonedit"
+                               style="width: 88%;" emptytext="请输入拼音..." />
+                    </td>
+                    <td align="center">
+                        所属部门
+                    </td>
+                    <td align="left">
+                        <input name="OrgID" textname="$LK$OrgName" class="mini-buttonedit" style="width: 88%;"
+                               emptytext="请输入部门名称..." />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        创建日期
+                    </td>
+                    <td align="left">
+                        <input name="$FR$CreateDate" class="mini-datepicker" style="width: 88%;" />
+                    </td>
+                    <td align="center">
+                        至
+                    </td>
+                    <td align="left">
+                        <input name="$TO$CreateDate" class="mini-datepicker" style="width: 88%;" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询
+            </a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                清空
+            </a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("System.IsValid")
+
+    addGridEnum("dataGrid", "IsValid", "IsValid");
+
+    addSingleUserSelector("CreateUserID");
+    addSingleOrgSelector("OrgID");
+
+    addGridLink('dataGrid', 'FileCode', 'Edit?ID={ID}', { funcType: 'view', width: 950, height: 550 });
+
+    var highest = '@ViewBag.HighestAuthority';
+    var isValid = '@ViewBag.IsValid';
+    var grid;
+    var documentInfoID;
+    function pageLoad() {
+        grid = mini.get('#dataGrid');
+        documentInfoID = getQueryString("DocumentInfoID");
+        var btnAdd = mini.get("btnAdd");
+        var btnEdit = mini.get("btnEdit");
+        var btnDel = mini.get("btnDel");
+        var btnInvalid = mini.get("btnInvalid");
+        var btnValid = mini.get("btnValid");
+        if (isValid == "F") {
+            btnAdd.setVisible(false);
+            btnEdit.setVisible(false);
+
+            if (highest == "ReadOnly" || highest == "None") {
+                btnDel.setVisible(false);
+                btnInvalid.setVisible(false);
+                btnValid.setVisible(false);
+            }
+        }
+        else if (highest == "ReadOnly" || highest == "None") {
+            btnAdd.setVisible(false);
+            btnEdit.setVisible(false);
+            btnDel.setVisible(false);
+            btnInvalid.setVisible(false);
+            btnValid.setVisible(false);
+        }
+    }
+
+    function doAdd() {
+        var url = "Edit?DocumentInfoID=" + documentInfoID;
+        openWindow(url, {
+            title: "增加文件", width: 950, height: 550, addQueryString: false
+        });
+    }
+
+    function doInvalid() {
+        var row = grid.getSelected();
+        if (row) {
+            if (row.IsValid == "T") {
+                msgUI("是否确认作废？", 2, function (action) {
+                    if (action == "ok") {
+                        addExecuteParam("ID", row.ID);
+                        execute("DoInvalid", { actionTitle: "作废" });
+                    }
+                });
+            } else {
+                msgUI("该记录已作废！");
+            }
+        } else {
+            msgUI("请选择一条记录！");
+        }
+    }
+
+    function doValid() {
+        var row = grid.getSelected();
+        if (row) {
+            if (row.IsValid == "F") {
+                msgUI("是否确认取消作废？", 2, function (action) {
+                    if (action == "ok") {
+                        addExecuteParam("ID", row.ID);
+                        execute("DoValid", { actionTitle: "取消作废" });
+                    }
+                });
+            } else {
+                msgUI("该记录未作废！");
+            }
+        } else {
+            msgUI("请选择一条记录！");
+        }
+    }
+
+    function onDownRenderer(e) {
+        var record = e.record;
+        var thtml = "<a href=\"javascript:DownloadFile('" + record.SourceFileID + "')\">下载</a>";
+        return thtml;
+    }
+</script>

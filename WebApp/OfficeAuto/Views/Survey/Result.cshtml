@@ -1,0 +1,115 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta content="IE=10.000" http-equiv="X-UA-Compatible">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>@ViewBag.tittle</title>
+    <link href="/OfficeAuto/CusStyle/images_files/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css">
+    <script src="/OfficeAuto/CusStyle/images_files/jquery-1.10.1.js" type="text/javascript"></script>
+    <script src="/OfficeAuto/CusStyle/images_files/jquery-ui-1.10.3.custom.js" type="text/javascript"></script>
+    <!--  -->
+    <script src="/OfficeAuto/CusStyle/images_files/menu.js" type="text/javascript"></script>
+    <link href="/OfficeAuto/CusStyle/images_files/templatemo_style.css" rel="stylesheet" type="text/css">
+    <link href="/OfficeAuto/CusStyle/images_files/default.css" rel="stylesheet" type="text/css">
+    <link href="/OfficeAuto/CusStyle/images_files/qt.css" rel="stylesheet" type="text/css">
+    <script src="/OfficeAuto/CusStyle/images_files/jquery.cookie.js" type="text/javascript"></script>
+    <link href="/OfficeAuto/CusStyle/images_files/mysurvey.css" rel="stylesheet" type="text/css">
+    <script src="/OfficeAuto/CusStyle/images_files/list.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //currentMenu(5);
+            currentMenu(1);
+        });
+    </script>
+    <style type="text/css"></style>
+    <script language="javascript" type="text/javascript"></script>
+    <meta name="GENERATOR" content="MSHTML 10.00.9200.16897">
+</head>
+<body onload="Load()">
+    <div id="body_wrapper">
+        <div class="wrapper">
+            <div id="m-content">
+                <div class="m-content-right">
+                    <div class="content-right-title">
+                    </div>
+                    <div class="m-content-right-body">
+                        <div class="content-list">
+                            <div class="r_surveyTitle">
+                                <h2>
+                                    @ViewBag.tittle</h2>
+                            </div>
+                            <div class="r_handler">
+                                <ul class="catalog_path">
+                                    <li>发布人：<a href="#">@ViewBag.Writer</a>&nbsp;&nbsp;<span style="color: rgb(232, 232, 232);">|</span>&nbsp;&nbsp;</li>
+                                    <li><span style="color: red;">@ViewBag.totalNumber</span>人参与&nbsp;&nbsp;<span style="color: rgb(229, 229, 229);">|</span>&nbsp;&nbsp;</li>
+                                    <li>@ViewBag.State</li>
+                                    <li style="float: right;">附件：@Html.Raw(ViewBag.Attachment)</li></ul>
+                                <div style="clear: both;">
+                                </div>
+                            </div>
+                            <div class="r_tabs">
+                            </div>
+                            <table width="100%" id="content-tableList" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    @Html.Raw(ViewBag.htr)
+                                </tbody>
+                            </table>
+                            <div style="padding-top: 10px;">
+                                </div>
+                            <div style="padding-top: 10px;">
+                                &nbsp;&nbsp;当前时间：@ViewBag.time</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script language="javascript" type="text/javascript">
+    var OpParam = "@ViewBag.OpParam";
+    function Load() {
+        var arr = new Array();
+        arr = OpParam.split(",");
+        var chkObjs;
+        var id = "";
+        var total;
+        var totalnumber;
+        var bfbFloat;
+        var bfbVal;
+        for (var i = 0; i < arr.length; i++) {
+            id = arr[i].split('|')[0];
+            totalnumber = parseInt(arr[i].split('|')[1]);
+            total = parseInt(arr[i].split('|')[2]);
+            bfbFloat = total / totalnumber * 100;
+            bfbVal = bfbFloat.toFixed(2);
+            if (isNaN(bfbVal)) bfbVal = 0;
+            $("#" + id + "_1").html(bfbVal + "%");
+            $("#" + id).progressbar({ value: bfbFloat });
+        }
+    }
+
+    function OpenUserList(url, type, isMemoryUser) {
+        if (type == "radio") {
+            if (isMemoryUser == "1") {
+                openWindow(url, { title: '投票人员列表', width: 560, height: 510 });
+            }
+            else {
+                msgUI("该调查为匿名投票，无法查看投票人员");
+            }
+        }
+        else {
+            openWindow(url, { title: '评论列表', width: 560, height: 510 });
+        }
+    }
+
+    function OpenAttachment(url)
+    {
+        if(url=="")
+        {   
+            msgUI("无附件!");
+        }
+        else openWindow(url);
+    }
+</script>

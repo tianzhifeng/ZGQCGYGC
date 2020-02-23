@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Folder";
+}
+<div class="mini-toolbar" style="padding: 0px; ">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class='mini-button' id='btnSelect' iconcls='icon-refer' text='选择' enabled='true' visible='true' onclick='thisReturnList();'></a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+        enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="@ViewBag.DisplayLevel"
+        allowdrag="false" allowdrop="false"></ul>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.FolderType));
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var url = "GetTree?EngineeringInfoID=" + engineeringInfoID;
+    $("#dataTree").attr("url", url);
+
+    function thisReturnList() {
+        var tree = mini.get('dataTree');
+        closeWindow(tree.getSelectedNode());
+    }
+</script>

@@ -1,0 +1,592 @@
+﻿<style>
+    .mini-tabs-position-left .mini-tabs-header {
+        width: 33px;
+    }
+
+    #uploadifive-blueLogo, #uploadifive-blueFootLogo, #uploadifive-yellowLogo, #uploadifive-yellowFootLogo {
+        top: 13px;
+    }
+</style>
+<div class="mini-tabs" activeindex="0" id="tabs" newline="true" tabposition="left" tabposition="top" style="width: 100%; height: 100%" onactivechanged="onActiveChanged">
+    <div title="门&lt;br /&gt;户&lt;br /&gt;配&lt;br /&gt;置&lt;br /&gt;">
+        <div class="mini-splitter" style="width: 100%; height: 100%; border: 0;">
+            <div size="500" showcollapsebutton="false">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-add" plain="true" onclick="add({url:'Edit?IsNew=true'});">增加</a>
+                                <a class="mini-button" iconcls="icon-edit" plain="true" onclick="edit({url:'Edit?IsNew=true'});">编辑</a>
+                                <a class="mini-button" iconcls="icon-remove" plain="true" onclick="del();">删除</a>
+                            </td>
+                            <td class="gw-toolbar-right">
+                                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或标题" onenter="quickSearch('Code,Title',{gridId:'dataGrid',queryBoxId:'key'});" onbuttonclick="quickSearch('Code,Title',{gridId:'dataGrid',queryBoxId:'key'});" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="dataGrid" class="mini-datagrid" onselectionchanged="bindRoleGrid" style="width: 100%; height: 100%;" url="GetList?IsNew=true" multiselect="true">
+                        <div property="columns">
+                            <div type="indexcolumn" width="25">
+                            </div>
+                            <div field="Code" width="60" allowsort="true" align="center">
+                                编号
+                            </div>
+                            <div field="Title" allowsort="true">
+                                标题
+                            </div>
+                            <div field="Setting" width="45" align="center">
+                                配置
+                            </div>
+                            <div field="IsEnabled" name="IsEnabled" width="35" headeralign="center" align="center" renderer="onIsEnabledRenderer">是否失效</div>
+                            <div field="Xorder" width="25" align="center">
+                                排序
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a id="btnRole" class="mini-button" iconcls="icon-setting" plain="true" onclick="relationAppending(urlConstant.multiRole,{fullRelation:false,paramFrom:'dataGrid',isGrid:true,onDestroy:portalRelationAppended,type:0,action:'SetPortalRoleRelation'});">授权到角色</a>
+                                <a id="btnOrg" class="mini-button" iconcls="icon-setting2" plain="true" onclick="relationAppending(urlConstant.multiOrg,{fullRelation:false,paramFrom:'dataGrid',isGrid:true,onDestroy:portalRelationAppended,type:1,action:'SetPortalRoleRelation',width: 320, height: 500});">授权到组织</a>
+                                <a id="btnUser" class="mini-button" iconcls="icon-user" plain="true" onclick="relationAppending(urlConstant.multiUser,{fullRelation:true,paramFrom:'dataGrid',isGrid:true,onDestroy:portalRelationAppended,type:2,action:'SetPortalRoleRelation', width: 750, height: 595});">授权到用户</a>
+                            </td>
+                            <td class="gw-toolbar-right">
+                                <a class="mini-button" iconcls="icon-user" plain="true" onclick="openWindow('UserTempletView?IsNew=true', {title: '人员模板查看', width: 750, height: 600, onDestroy: function (rows) {}});">查看人员模板</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="roleGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 100%;"
+                        multiselect="false" allowunselect="false">
+                        <div property="columns">
+                            <div type="indexcolumn" width="35">
+                            </div>
+                            <div field="Type" width="80" align="center">
+                                类型
+                            </div>
+                            <div field="Name" width="*" align="center">
+                                名称
+                            </div>
+                            <div field="Delete" width="60">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="蓝&lt;br /&gt;|&lt;br /&gt;白&lt;br /" name="Blue">
+        <form id="dataBlueForm">
+            <div class="formDiv">
+                <fieldset style="display: none">
+                    <legend>LOGO图片</legend>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%"></td>
+                            <td width="35%"></td>
+                            <td width="15%"></td>
+                            <td width="35%"></td>
+                        </tr>
+                        <tr>
+                            <td>LOGO(200px*50px)
+                            </td>
+                            <td>
+                                <img style="width: 70%; height: 50px; float: left;" src="/PortalLTE/Images/Portal/Blue/logo.png" />
+                                <input id="blueLogo" type="file" name="blueLogo" style="float: left;" />
+                            </td>
+                            <td>底部(400px*80px)
+                            </td>
+                            <td>
+                                <img style="width: 70%; height: 50px; float: left;" src="/PortalLTE/Images/Portal/Blue/foot-logo.jpg" />
+                                <input id="blueFootLogo" type="file" name="blueFootLogo" style="float: left;" />
+                            </td>
+                        </tr>
+                    </table>
+
+                </fieldset>
+                <fieldset>
+                    <legend>滚动图片</legend>
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <div style="width: 100%;">
+                                    <div id="toolbar2" class="mini-toolbar" style="border-bottom: 0; padding: 0px;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td id="tdUpload" style="width: 78px; text-align: right">
+                                                    <input id="bluePictureFile" name="bluePictureFile" type="file" style="float: left;" />
+                                                </td>
+
+                                                <td></td>
+                                                <td align="right" style="width: 300px"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="blueDataGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 380px;" allowcelledit="true" allowcellselect="true">
+                                    <div property="columns">
+                                        <div type='indexcolumn' headeralign='center'>序号</div>
+                                        <div field="PictureName" width="100" headeralign="center" allowmove="false">图片名称</div>
+                                        <div field="Description" headeralign="center" width="200" allowmove="false" align="center">描述</div>
+                                        <div field="Delete" headeralign="center" width="50" allowmove="false" align="center"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>注意:图片显示的排序方式是按名称来排序,图片最佳比较是(1440px*704px)</td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+    <div title="黄&lt;br /&gt;|&lt;br /&gt;白&lt;br /" name="Yellow">
+        <form id="dataYellowForm">
+            <div class="formDiv">
+                <fieldset style="display: none">
+                    <legend>LOGO图片</legend>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%"></td>
+                            <td width="35%"></td>
+                            <td width="15%"></td>
+                            <td width="35%"></td>
+                        </tr>
+                        <tr>
+                            <td>LOGO(200px*50px)
+                            </td>
+                            <td>
+                                <img style="width: 70%; height: 50px; float: left;" src="/PortalLTE/Images/Portal/Yellow/logo.png" />
+                                <input id="yellowLogo" type="file" name="yellowLogo" style="float: left;" />
+                            </td>
+                            <td>底部(400px*80px)
+                            </td>
+                            <td>
+                                <img style="width: 70%; height: 50px; float: left;" src="/PortalLTE/Images/Portal/Yellow/foot-logo.jpg" />
+                                <input id="yellowFootLogo" type="file" name="yellowFootLogo" style="float: left;" />
+                            </td>
+                        </tr>
+                    </table>
+
+                </fieldset>
+                <fieldset>
+                    <legend>滚动图片</legend>
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <div style="width: 100%;">
+                                    <div id="toolbar" class="mini-toolbar" style="border-bottom: 0; padding: 0px;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td id="tdUpload" style="width: 78px; text-align: right">
+                                                    <input id="yellowPictureFile" name="yellowPictureFile" type="file" style="float: left;" />
+                                                </td>
+
+                                                <td></td>
+                                                <td align="right" style="width: 80px"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="yellowDataGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 380px;" allowcelledit="true" allowcellselect="true">
+                                    <div property="columns">
+                                        <div type='indexcolumn' headeralign='center'>序号</div>
+                                        <div field="PictureName" width="100" headeralign="center" allowmove="false">图片名称</div>
+                                        <div field="Description" headeralign="center" width="200" allowmove="false" align="center">描述</div>
+                                        <div field="Delete" headeralign="center" width="50" allowmove="false" align="center"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>注意:图片显示的排序方式是按名称来排序,图片最佳比较是(1440px*704px)</td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+    <div title="公&lt;br /&gt;共&lt;br /&gt;信&lt;br /&gt;息&lt;br /&gt;配&lt;br /&gt;置" name="PublicInfo">
+        <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" plain="true" onclick="addLoginRow();">增加</a>
+                        <a class="mini-button" iconcls="icon-save" plain="true" onclick="saveLoginPortal();">保存</a>
+                    </td>
+                    <td class="gw-toolbar-right"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="loginGrid" class="mini-datagrid" showpager="false" url="GetNewPortalTemplet" style="width: 100%; height: 100%;"
+                multiselect="false" allowunselect="false">
+                <div property="columns">
+                    <div type="indexcolumn" width="35">
+                    </div>
+                    <div headeralign="center" header="操作">
+                        <div property="columns">
+                            <div field="Edit" width="80" allowsort="true" align="center">
+                                修改</div>
+                            <div field="Delete" width="80" allowsort="true">
+                                删除</div>
+                        </div>
+                    </div>
+                    <div field="Type" width="80" align="center">
+                        类型
+                    </div>
+                    <div field="Title" width="180" align="center">
+                        标题
+                    </div>
+                    <div field="Keys" width="*" align="center">
+                        栏目名称
+                    </div>
+                    <div field="Count" width="100" align="center">
+                        显示条数
+                    </div>
+                    <div field="SortIndex" width="80" align="center">
+                        排序
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    @Html.GetEnum(typeof(Base.Logic.NewPortalType));
+    var Categories = @Html.Raw(ViewBag.Catalogs);
+    addGridEnum("loginGrid", "Type", "NewPortalType");
+    addGridEnum("loginGrid", "Keys", "Categories");
+
+    addGridButton("roleGrid", "Delete", {
+        linkText: '删除', onButtonClick: function (row) {
+            msgUI("确认要删除该记录？", 2, function (action) {
+                if (action == "ok") {
+                    execute("DeleteRole?ID=" + row.ID, {
+                        onComplete: function (data, settings) {
+                            mini.get("roleGrid").reload();
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    addGridButton("loginGrid", "Delete", { linkText: '删除', onButtonClick: function (row) {
+        msgUI("确认删除？", 2, function (action) {
+            if(action == "ok"){
+                var dataGrid = mini.get("loginGrid");
+                var rows = dataGrid.getSelecteds();
+                if (rows.length > 0) {
+                    dataGrid.removeRows(rows, true);
+                }
+            }
+        });
+    }
+    });
+
+    function saveLoginPortal(data){
+        var dataGrid = mini.get("loginGrid");
+        addExecuteParam("Data", mini.encode(dataGrid.getData()));
+        execute("SaveLoginPortal",{
+            onComplete: function (data, settings) {
+                msgUI("保存成功!");
+                dataGrid.reload();
+            }
+        }); 
+        
+    }
+
+    function addLoginRow(){
+        var url = "LoginEdit";
+        openWindow(url, { width: 600, data:"", title: "添加", onDestroy: function (data) {
+            if (data != "close"){
+                var dataGrid = mini.get("loginGrid");
+                var loginData = dataGrid.getData();
+                loginData.push(data);
+                dataGrid.setData(loginData); 
+                msgUI("添加成功!");
+            }
+        }
+        });
+    }
+
+    addGridButton("loginGrid", "Edit", { linkText: '编辑', onButtonClick: function (row) {
+        var url = "LoginEdit";
+        openWindow(url, { width: 600, title: "编辑", data: row, onDestroy: function (data) {
+            if (data != "close"){
+                var dataGrid = mini.get("loginGrid");
+                var rows = dataGrid.getSelecteds();
+                if (rows.length > 0) {
+                    dataGrid.updateRow(rows[0], data);
+                }
+            }
+        }
+        });
+    }
+    });
+
+    var grid = mini.get("blueDataGrid");
+    function onActiveChanged(e) {
+        if (e.name == 'Yellow')
+            grid = mini.get("yellowDataGrid");
+        else
+            grid = mini.get("blueDataGrid");
+        if (e.name != '') {
+            grid.setUrl("GetPictures?Type=" + e.name);
+            grid.reload();
+        }
+    }
+
+    function addPictures(files) {
+        grid.addRows(files);
+    }
+
+    function delRow(fileName, type) {
+        if (fileName) {
+            msgUI("确认要删除该记录？", 2, function (action) {
+                if (action == "ok") {
+                    execute("DeletePicture?FileName=" + fileName + "&Type=" + type);
+                    grid.reload();
+                }
+            });
+        }
+    }
+
+
+    addH5Upload({
+        ID: "blueLogo",
+        title: "上传(png)",
+        buttonClass: "uploadify-button-link",
+        fileType: "image/png",
+        closeWindow: false,
+        width: 80,
+        height: 25,
+        isMulti: false,
+        url: 'SingleUpload?Type=Blue&FileName=logo',
+        onComplete: function (file) {
+            location.reload();
+        }
+    });
+
+    addH5Upload({
+        ID: "blueFootLogo",
+        title: "上传(jpg)",
+        buttonClass: "uploadify-button-link",
+        fileType: "image/jpg",
+        closeWindow: false,
+        width: 80,
+        height: 25,
+        isMulti: false,
+        url: 'SingleUpload?Type=Blue&FileName=foot-logo',
+        onComplete: function (file) {
+            location.reload();
+        }
+    });
+
+    addH5Upload({
+        ID: "bluePictureFile",
+        title: "批量上传",
+        buttonClass: "uploadify-button",
+        fileType: "image/*",
+        closeWindow: false,
+        width: 85,
+        height: 25,
+        isMulti: true,
+        url: "MultipleUpload?Type=Blue",
+        onComplete: function () {
+            grid.reload();
+        }
+    });
+
+    addH5Upload({
+        ID: "yellowLogo",
+        title: "上传(png)",
+        buttonClass: "uploadify-button-link",
+        fileType: "image/png",
+        closeWindow: false,
+        width: 80,
+        height: 25,
+        isMulti: false,
+        url: 'SingleUpload?Type=Yellow&FileName=logo',
+        onComplete: function (file) {
+            location.reload();
+        }
+    });
+
+    addH5Upload({
+        ID: "yellowFootLogo",
+        title: "上传(jpg)",
+        buttonClass: "uploadify-button-link",
+        fileType: "image/jpg",
+        closeWindow: false,
+        width: 80,
+        height: 25,
+        isMulti: false,
+        url: 'SingleUpload?Type=Yellow&FileName=foot-logo',
+        onComplete: function (file) {
+            location.reload();
+        }
+    });
+
+    addH5Upload({
+        ID: "yellowPictureFile",
+        title: "批量上传",
+        buttonClass: "uploadify-button",
+        fileType: "image/*",
+        closeWindow: false,
+        width: 85,
+        height: 25,
+        isMulti: true,
+        url: "MultipleUpload?Type=Yellow",
+        onComplete: function () {
+            grid.reload();
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.RoleType));
+    addGridEnum("roleGrid", "Type", "RoleType");
+
+    addGridButton("dataGrid", "Setting", {
+        linkText: '门户配置', onButtonClick: function (row) {
+            var url = "Main?ID=" + row["ID"];
+            var width = window.screen.width - 100;
+            var height = window.screen.height - 130;
+            openWindow(url, {
+                title: '门户配置', width: width, height: height, onDestroy: function (rows) {
+
+                }
+            });
+        }
+    });
+
+    var templetID, roleID;
+    function onActionRenderer(e) {
+        var record = e.record;
+        var data = mini.get("dataGrid").getSelected();
+        if (data != undefined && record != undefined) {
+            templetID = data.ID; roleID = record.ID;
+        }
+        var html = "<a href=\"javascript:openWindow('Selector?SelectMode=Multi&ID=" + templetID + "&RoleID=" + roleID + "', { width: 320, height: 500 })\">组织授权</a>";
+        return (record.Effective == true || record.Effective == '1') && record.Type == 'OrgRole' ? html : "";
+    }
+
+    function bindRoleGrid(e) {
+        if (e != undefined && e.selected) {
+            var roleGrid = mini.get("roleGrid");
+            var data = mini.get("dataGrid").getSelecteds();
+            var url = changeToFullUrl('GetRole') + '?TempletID=' + data[0].ID;
+            roleGrid.setUrl(url);
+            roleGrid.reload();
+        }
+    }
+
+    function setRole(record, node, role) {
+        var selectMaps = new Array();
+        var data = role.findRows(function (row) {
+            if (row.Effective == true || row.Effective == '1') return true;
+        });
+        for (var i = 0; i < data.length; i++) {
+            selectMaps.push(data[i].ID);
+        }
+        if (node == undefined || role == undefined || data == undefined)
+            return;
+        jQuery.ajax({
+            url: changeToFullUrl('SetRole'),
+            type: "post",
+            data: { ID: node.ID, IDs: selectMaps.toString() },
+            cache: false,
+            async: false,
+            success: function (text, textStatus) {
+                //增加新版报错分支
+                if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    function setRoleUser(e) {
+        if (e && e.field == 'Effective') {
+            var record = e.record;
+            var node = mini.get("dataGrid").getSelected();
+            var role = mini.get("roleGrid");
+            if (record.Effective) {
+                jQuery.ajax({
+                    url: changeToFullUrl('GetTempletRole'),
+                    type: "post",
+                    data: { roleID: record.ID },
+                    cache: false,
+                    async: false,
+                    success: function (text, textStatus) {
+                        //增加新版报错分支
+                        if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                            var fail = jQuery.parseJSON(text);
+                            var msg = getErrorFromHtml(fail.errmsg);
+                            msgUI(msg, 4);
+                            return;
+                        }
+
+                        if (text != 'true') {
+                            msgUI(text, 2, function (act) {
+                                if (act == "ok") {
+                                    setRole(record, node, role);
+                                } else {
+                                    role.load();
+                                    return;
+                                }
+                            });
+                        } else { setRole(record, node, role); }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+
+                    }
+                });
+            } else {
+                setRole(record, node, role);
+            }
+        }
+    }
+
+    function portalRelationAppended(data, settings) {
+
+        if (data == undefined || data == "close" || data.length == 0)
+            return;
+        settings = $.extend(true, {}, executeParamSettings, settings);
+        var node;
+        if (settings.isGrid)
+            node = mini.get(settings.gridId).getSelected();
+        else
+            node = mini.get(settings.treeId).getSelectedNode();
+
+        addExecuteParam("TempletID", node.ID);
+        addExecuteParam("Type", settings.type);
+        addExecuteParam("RelationData", mini.encode(data));
+
+        execute(settings.action, {
+            onComplete: function (data, settings) {
+                mini.get("roleGrid").reload();
+            }
+        });
+    }
+
+    function onIsEnabledRenderer(e) {
+        if (e.value == 1) return "是";
+        else return "否";
+    }
+</script>

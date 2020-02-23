@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "Tab";
+}
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="待结算数据">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="sumSettlementData();" plain="true">汇集未结算数据</a>
+                            @*<a class="mini-button" iconcls="icon-add" onclick="" plain="true">Excel导入</a>*@
+                            <a class="mini-button" iconcls="icon-add" onclick="newRow()" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveList();" plain="true">暂存</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="relationToDetail();" plain="true">关联至明细</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="removeRow();" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-ok" onclick="confirmData();" plain="true">确认结算</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" url="GetWaitList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                     allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" showpager="false"
+                     ondrawcell="onDrawingCell" allowcellwrap="true" oncellendedit="oncellendedit"
+                     oncellbeginedit="onCellBeginEdit">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" width="150" headeralign="center" allowsort="false" vtype="required">
+                            名称<input property="editor" class="mini-textbox" style="width:100%;" />
+                        </div>
+                        <div field="CBSID" displayfield="CBSName" width="200" headeralign="center" allowsort="false" autoshowpopup="true">
+                            对应费用科目
+                            <input property="editor" class="mini-treeselect" url="GetCBSList?EngineeringInfoID=@ViewBag.EngineeringInfoID" multiselect="false"
+                                   textfield="Name" valuefield="ID" parentfield="ParentID" allowinput="false" onnodeclick="onnodeclick" expandonload="true"
+                                   popupwidth="300" popupheight="500" showpopuponclick="true" />
+                        </div>
+                        <div field="DetailName" width="200" headeralign="center" allowsort="false" align="left">
+                            关联明细
+                        </div>
+                        <div field="Quantity" width="70" headeralign="center" allowsort="false" align="right" vtype="float;">
+                            数量<input property="editor" class="mini-textbox" style="width:100%;" />
+                        </div>
+                        <div field="UnitPrice" headeralign="center" width="80" allowsort="false" align="right" vtype="float;">
+                            单价（元）<input property="editor" class="mini-textbox" style="width:100%;" />
+                        </div>
+                        <div field="TotalValue" headeralign="center" width="90" allowsort="false" align="right" vtype="required;float;">
+                            总价（元）<input property="editor" class="mini-textbox" style="width:100%;" />
+                        </div>
+                        <div field="CostDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false" align="center" vtype="required;">
+                            结算日期<input property="editor" class="mini-datepicker" style="width:100%;" />
+                        </div>
+                        <div field="FinaceSubjectName" headeralign="center" width="100" allowsort="false" align="center">
+                            财务科目
+                        </div>
+                        <div field="FinaceSubjectCode" headeralign="center" width="100" allowsort="false" align="center">
+                            财务科目编码
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="已结算明细">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-ok" onclick="revertData();" plain="true">撤销结算</a>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="settlementGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" width="150" headeralign="center" allowsort="true">
+                            名称
+                        </div>
+                        <div field="CBSID" displayfield="CBSName" width="200" headeralign="center" allowsort="false" autoshowpopup="true">
+                            对应费用科目
+                        </div>
+                        <div field="DetailName" width="200" headeralign="center" allowsort="false" align="left">
+                            关联明细
+                        </div>
+                        <div field="Quantity" width="70" headeralign="center" allowsort="true" align="right" vtype="float;">
+                            数量
+                        </div>
+                        <div field="UnitPrice" headeralign="center" width="80" allowsort="true" align="right" vtype="float;">
+                            单价（元）
+                        </div>
+                        <div field="TotalValue" headeralign="center" width="80" allowsort="true" align="right" vtype="required;float;">
+                            总价（元）
+                        </div>
+                        <div field="CostDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center" vtype="required;">
+                            结算日期
+                        </div>
+                        <div field="FinaceSubjectName" headeralign="center" width="100" allowsort="true" align="center">
+                            财务科目
+                        </div>
+                        <div field="FinaceSubjectCode" headeralign="center" width="100" allowsort="true" align="center">
+                            财务科目编码
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function onnodeclick(e) {
+        var node = e.node;
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        dataGrid.updateRow(row, { CBSFullID: node.FullID, CBSCode: node.Code });
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (field == "FinaceSubjectName" || field == "FinaceSubjectCode") {
+            e.cellStyle = " background: #f0f0f0;";
+        }
+        else if (record.DetailID && field == "CBSID") {
+            e.cellStyle = " background: #f0f0f0;";
+        }
+    }
+
+    function sumSettlementData() {
+        msgUI("您确定需要汇总未结算的数据吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", "");
+            execute("SummarySettlementData", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    mini.get("dataGrid").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onCellBeginEdit(e) {
+        var field = e.field;
+        var record = e.record;
+        if (record.DetailID && field == "CBSID") {
+            e.cancel = true; return;
+        }
+    }
+
+    function oncellendedit(e) {
+        var field = e.field;
+        var record = e.record;
+        var dataGrid = mini.get("dataGrid");
+        if (field == "UnitPrice" || field == "Quantity") {
+            var quantity = parseFloat(record.Quantity);
+            if (isNaN(quantity)) quantity = 0;
+            var unitPrice = parseFloat(record.UnitPrice);
+            if (isNaN(unitPrice)) unitPrice = 0;
+            var totalValue = unitPrice * quantity;
+            if (dataGrid) {
+                dataGrid.updateRow(record, { TotalValue: totalValue.toFixed(2) });
+            }
+        }
+    }
+
+    function relationToDetail() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一条记录"); return;
+        }
+        var cbsID = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (i == rows.length - 1) {
+                cbsID += rows[i].CBSID;
+            }
+            else {
+                cbsID += rows[i].CBSID + ",";
+            }
+        }
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=SingleBudgetDetailSelector&EngineeringInfoID=" + engineeringInfoID;
+        if (cbsID) {
+            url += "&CBSID=" + cbsID;
+        }
+        openWindow(url, {
+            refresh: false, title: "明细选择", width: "70%", height: "60%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") return;
+                var detail = data[0];
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i]
+                    dataGrid.updateRow(row, {
+                        CBSID: detail.CBSID,
+                        CBSName: detail.CBSName, CBSCode: detail.CBSCode, DetailName: detail.Name, DetailID: detail.ID
+                    });
+                }
+            }
+        });
+    }
+
+    function saveList() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getChanges();
+        grid.validate();
+        if (grid.isValid() == false) {
+            var error = grid.getCellErrors()[0];
+            var txt = error.errorText;
+            if (error.column.header)
+                txt = error.column.header + "：" + txt;
+            msgUI(txt);
+            return;
+        }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("SaveList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                msgUI("保存成功");
+                grid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function newRow() {
+        var row = { EngineeringInfoID: engineeringInfoID, State: "Create" };
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.addRow(row, 0);
+        dataGrid.validateRow(row);   //加入新行，马上验证新行
+    }
+
+    function removeRow() {
+        del({
+            onComplete: function (data) {
+                var dataGrid = mini.get("dataGrid");
+                var rows = dataGrid.getSelecteds();
+                dataGrid.removeRows(rows);
+            }
+        });
+    }
+
+    function revertData() {
+        var dataGrid = mini.get("settlementGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请选择至少一条记录"); return;
+        }
+        msgUI("您确定要撤销已经确认的结算数据吗？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ListData", mini.encode(rows));
+            execute("RevertData", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    function confirmData() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("本次操作将确认所有待结算数据，您确定要继续吗？", 2, function (result) {
+                if (result != "ok") return;
+                addExecuteParam("ListData", mini.encode(rows));
+                addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                execute("ConfirmData", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataGrid.reload();
+                    }, validateForm: false
+                });
+            });
+        }
+        else {
+            msgUI("本次操作将确认选中的待结算数据，您确定要继续吗？", 2, function (result) {
+                if (result != "ok") return;
+                addExecuteParam("ListData", mini.encode(rows));
+                addExecuteParam("EngineeringInfoID", engineeringInfoID);
+                execute("ConfirmData", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataGrid.reload();
+                    }, validateForm: false
+                });
+            });
+        }
+    }
+</script>

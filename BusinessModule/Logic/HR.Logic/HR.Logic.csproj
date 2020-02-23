@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{83327B3A-859A-470A-A69D-8FAB7B65FB9F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HR.Logic</RootNamespace>
+    <AssemblyName>HR.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="MvcAdapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\MvcAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessFacade\AttendanceFO.cs" />
+    <Compile Include="BusinessFacade\CommonMethod.cs" />
+    <Compile Include="BusinessFacade\EmployeeServiceAuto.cs" />
+    <Compile Include="BusinessFacade\Enums.cs" />
+    <Compile Include="BusinessFacade\ExcelToDataBase.cs" />
+    <Compile Include="BusinessFacade\HighChart\HighChartHelper.cs" />
+    <Compile Include="BusinessFacade\HighChart\PieChart\ColumnChart.cs" />
+    <Compile Include="BusinessFacade\HighChart\PieChart\PieChart.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\BaseChart.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\Chart.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\PlotOptions.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\Series.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\SubTitle.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\Title.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\ToolTip.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\xAxis.cs" />
+    <Compile Include="BusinessFacade\HighChart\Property\yAxis.cs" />
+    <Compile Include="BusinessFacade\ObjectHelper.cs" />
+    <Compile Include="BusinessFacade\WorkHourFO.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_Employee.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EmployeeWorkPerformance.cs" />
+    <Compile Include="Domain.Partial\FormInstance\T_EmployeeWorkPost.cs" />
+    <Compile Include="Domain.Partial\InstanceBase\S_S_PostLevelTemplate.cs" />
+    <Compile Include="Domain.Partial\InstanceBase\S_W_UserWorkHour.cs" />
+    <Compile Include="Domain.Partial\MyColumn.cs" />
+    <Compile Include="Domain\HR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HR.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Domain\EF.Reverse.POCO.Core.ttinclude" />
+    <None Include="Domain\EF.Reverse.POCO.ttinclude" />
+    <None Include="Domain\HR.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>HR.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BaseLogic\Base.Logic\Base.Logic.csproj">
+      <Project>{EC8BB43B-4F2B-4E79-9BE7-5521D4A86F62}</Project>
+      <Name>Base.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

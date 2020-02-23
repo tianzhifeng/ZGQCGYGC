@@ -1,0 +1,292 @@
+﻿
+<div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px">
+    <div size="350" minsize="200" showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td style="width:100%;text-align:right">
+                        <a id="btnRight" class="mini-button" iconcls="icon-setting" onclick="MobileGroup();">分组维护</a>
+                    </td> 
+                    <td style="width:100%;text-align:right">
+                        <a id="btnRight" class="mini-button" iconcls="icon-setting" onclick="PublicMobileNode();">发布</a>
+                    </td>            
+                </tr>
+            </table>
+       
+        </div>
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetMobileTree" contextmenu="#treeMenu" ongivefeedback="onNodeDroping"
+             showtreeicon="true" imgField="MenuIcon" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false" onnodeclick="onNodeSelect" expandonload="0" onload="treeLoad"></ul>
+        </div>
+    </div>
+        <div showcollapsebutton="false">
+            <form id="dataForm" method="post" autogetdata="false">
+                <input name="ID" class="mini-hidden" />
+                <input name="ParentID" class="mini-hidden" />
+                <div class="formDiv">
+                    <fieldset>
+                        <legend>基本信息</legend>
+                        <div>
+                            <table>
+                                <tr class="hideRow">
+                                    <td width="15%"></td>
+                                    <td width="35%"></td>
+                                    <td width="15%"></td>
+                                    <td width="35%"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        菜单类型
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="Type" class="mini-combobox" style="width: 100%;" data="MobileMenuType" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        名称
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        图标
+                                    </td>
+                                    <td colspan="3">
+                                        <div style="width:100%">
+                                        <div style="width:30px;float:left">
+                                            <img id="iconimg" style="height:25px;padding-top:3px;width:auto" src="/base/Scripts/Auth/menuIcons/wx-news.png" />
+                                        </div>
+                                        <div style="padding-left:30px">
+                                            <input name="MenuIcon" class="mini-textbox" style="padding-left:30px;width: 100%;" />
+
+                                        </div>
+                                     </div>
+                                    </td>
+                                </tr>
+
+                                
+                                <tr>
+                                    <td>
+                                        Url
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="Url" class="mini-textbox" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        是否一级菜单
+                                    </td>
+                                    <td colspan="3">
+                                        <div name="Component" style="width: 100%" class="mini-combobox" data="yesNo"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        是否显示
+                                    </td>
+                                    <td colspan="3">
+                                        <div name="IsPanelItem" style="width: 100%" class="mini-combobox" data="yesNo"></div>
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        排序
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="SortIndex" class="mini-textbox" style="width: 100%" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        所属分组
+                                    </td>
+                                    <td colspan="3">
+                                        <input class="mini-hidden" name="GroupName" class="mini-textbox" style="width: 100%;" />
+
+                                        <div name="GroupIndex" style="width: 100%" class="mini-combobox" data="MobileMenuGroup"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Code</td>
+                                    <td colspan="3">
+                                        <input name="Code" class="mini-textarea" style="width: 100%; height: 50px" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        备注
+                                    </td>
+                                    <td colspan="3">
+                                        <input name="Remark" class="mini-textarea" style="width: 100%; height: 100px" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </div>
+    <ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+        <li id="addmenu" iconcls="icon-add" onclick="MobileNodeAdding();">增加菜单入口</li>
+        <li id="editmenu" iconcls="icon-edit" onclick="MobileNodeEditing('{ID}');">编辑菜单入口</li>
+        <li id="delmenu" iconcls="icon-remove" onclick="MobileNodeDeleting('{ID}');">删除菜单入口</li>
+    </ul>
+    <script type="text/javascript">
+     @Html.GetEnum("MobileMenuType");
+    @Html.GetEnum("MobileMenuGroup");
+     @Html.GetEnum("PublicInformCatalog");
+    </script>
+    <style>
+        .mini-tree-icon {
+            background-size: 100% 100%;
+        }
+    </style>
+    <script type="text/javascript">
+
+        function onBeforeOpen(e) {
+            var menu = e.sender;
+            var tree = mini.get("dataTree");
+            var node = tree.getSelectedNode();
+            if (!node) {
+                e.cancel = true;
+                return;
+
+            }
+            if (node._level >= 2) {
+                $("#delmenu").show();
+                $("#editmenu").show();
+                $("#addmenu").hide();
+            }else if (node._level == 0) {
+                $("#delmenu").hide();
+                $("#editmenu").hide();
+                $("#addmenu").show();
+            } else {
+                $("#delmenu").show();
+                $("#editmenu").show();
+                $("#addmenu").show();
+            }
+           
+        }
+        function PublicMobileNode() {
+            $.ajax({
+                url: 'PublicMobileNode',
+                type: "post",
+                cache: false,
+                success: function (text) {
+                    //增加新版报错分支
+                    msgUI("保存成功", 1, function (act) {
+                        var datatree = mini.get("dataTree");
+                        datatree.reload();                       
+                            if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                                var fail = jQuery.parseJSON(text);
+                                var msg = getErrorFromHtml(fail.errmsg);
+                              
+                                return;
+                            }                       
+                    });
+                
+                }
+            });
+            
+        }
+        function MobileGroup() {
+            openWindow('MobileEnumGroup', {
+                title: "分组维护", onDestroy: function (data) {
+                    if (data != "close") {
+                        var datatree = mini.get("dataTree");
+                        datatree.reload();
+                    }
+                }
+            });
+        }
+        function onNodeSelect(e) {
+        var url = "GetMobileModel?ID=" + e.node.ID;
+        var form = new mini.Form("#dataForm");
+       
+        $.ajax({
+            url: url,
+            type: "post",
+            cache: false,
+            success: function (text) {
+                //增加新版报错分支
+                if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var data = mini.decode(text);
+                form.setData(data);
+                form.setChanged(false);
+                setFormDisabled(true);
+                $("#iconimg").attr("src", "/base/Scripts/Auth/"+data.MenuIcon);
+            }
+        });
+    }
+
+    function MobileNodeAdding() {
+        var plam = {
+            url: "MobileNodeEdit",
+            onDestroy: function (data) {
+                var datatree = mini.get("dataTree");
+                datatree.reload();
+            }
+        }
+        nodeAdding(plam);
+    }
+    function MobileNodeEditing(id) {
+        var plam = {
+            url: "MobileNodeEdit",
+            onDestroy: function (data) {
+                var datatree = mini.get("dataTree");
+                datatree.reload();
+            }
+        }
+        nodeEditing(plam);
+    }
+    function MobileNodeDeleting(id) {
+        var plam = { action: 'DeleteMobileNode?ID='+id }
+        nodeDeleting(plam);
+    }
+   
+    function treeLoad(e) {
+        var tree = e.sender;
+        var node = tree.getRootNode();
+        node = tree.getChildNodes(node)[0];
+        tree.selectNode(node);
+        var e = {};
+        e.node = node;
+        onNodeSelect(e);
+    }
+
+    treeConfig.title = "移动端菜单入口";
+    </script>
+    <script type="text/javascript">
+    //function exportSQL() {
+    //    var tree = mini.get("dataTree");
+    //    var node = tree.getSelectedNode();
+    //    var url = "/Base/Auth/Res/SqlFile?ResID=" + node.ID;
+    //    window.open(url);
+    //}
+    </script>
+    <style type="text/css">
+        .Menu {
+            background: url(/CommonWebResource/Theme/Default/MiniUI/icons/flowstart.gif) no-repeat;
+        }
+
+        .Button {
+            background: url(/CommonWebResource/Theme/Default/MiniUI/icons/set.gif) no-repeat;
+        }
+
+        .Data {
+            background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+        }
+    </style>

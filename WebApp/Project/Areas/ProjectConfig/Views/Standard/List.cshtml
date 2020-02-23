@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<style>
+    .Root {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+
+    .Folder {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/cutover.png) no-repeat;
+    }
+</style>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="west" showheader="false" region="west" width="250" expanded="true" showspliticon="true"
+             style="border-bottom: 0; padding-top: 1px;">
+            <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" url="GetTree"
+                showtreeicon="true" textfield="Name" idfield="ID" enablehottrack="false"
+                parentfield="ParentID" resultastree="false" expandonload="true" onnodeselect="onNodeSelected"
+                contextmenu="#treeMenu"></ul>
+        </div>
+        <div title="center" region="center" style="border-bottom: 0; border-right: 0;">
+            <div class="mini-toolbar  gw-grid-toolbar" style="padding: 0px; border-top: 0; border-left: 0;
+                border-right: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <a class="mini-button" iconcls="icon-add" onclick="addFile" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="editFile" plain="true">编辑</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="deleteFile()" plain="true">删除</a>
+                        </td>
+                        <td class="gw-toolbar-right">
+                            <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称或编号" onenter="quickSearch('Name,Code');"
+                                   onbuttonclick="quickSearch('Name,Code');" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" url="" borderstyle="border-bottom:0;border-left:0;border-right:0;"
+                     class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                     ondrawcell='onDrawCell(e)'>
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="Name" width="300" headeralign="center" allowsort="true" align="left">
+                            名称
+                        </div>
+                        <div field="Code" width="120" headeralign="center" allowsort="true" align="left">
+                            编号
+                        </div>
+                        <div field="Version" width="60" headeralign="center" allowsort="true" align="center">
+                            版本
+                        </div>
+                        <div field="PublishMechanism" width="120" headeralign="center" allowsort="true "
+                             align="left">
+                            标准发布机构
+                        </div>
+                        <div field="PublishDate" width="100" dateformat="yyyy-MM-dd" headeralign="center"
+                             allowsort="true" align="center">
+                            发布日期
+                        </div>
+                        <div field="State" width="60" headeralign="center" allowsort="true" align="center"
+                             data="StandardState">
+                            状态
+                        </div>
+                        <div field="Attachment" width="200" headeralign="center" allowsort="true" align="left">
+                            附件
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu">
+    <li iconcls="icon-add" onclick="addFolder">新增目录</li>
+    <li iconcls="icon-edit" onclick="editFolder">编辑目录</li>
+    <li iconcls="icon-remove" onclick="deleteFolder">删除目录</li>
+</ul>
+<script type="text/javascript">
+    @Html.GetEnum("Project.StandardState")
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "State", "StandardState");
+
+    function onDrawCell(e) {
+        var record = e.record;
+        if (e.field == "Attachment" && e.value != "" && e.value != null) {
+            e.cellHtml = '<a href="javascript:void(0);" onclick="DownloadFile(\'' + e.value + '\');">' + record.FileName + '</a>';
+        }
+    }
+
+    function addFolder() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        var url = "Edit?ParentID=" + node.ID;
+        openWindow(url, {
+            title: "新增目录",
+            width: "50%", height: 200,
+            onDestroy: function (data) {
+                tree.load(tree.url);
+            }
+        });
+    }
+
+    function editFolder() {
+        var param = { url: "StandardEdit" }
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        var url = "Edit?ID=" + node.ID;
+        openWindow(url, {
+            title: "编辑目录",
+            width: 550, height: 200,
+            onDestroy: function (data) {
+                if (data == "close") return;
+                tree.reload();
+            }
+        });
+    }
+
+    function deleteFolder() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) return;
+
+        msgUI("确认删除所选文件夹吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("StandardID", node.ID);
+            execute("Delete", {
+                onComplete: function () {
+                    tree.removeNode(node);
+                    msgUI("删除成功！");
+                }
+            });
+        });
+    }
+
+    function addFile() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个目录"); return; }
+        var url = "../StandardDocument/DocumentEdit?StandardID=" + node.ID;
+        openWindow(url, {
+            title: "增加", width: 800, height: 450,
+            onDestroy: function (data) {
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function deleteFile() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        msgUI("确认删除所选文件吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("Documents", mini.encode(rows));
+            execute("DeleteDocument", {
+                onComplete: function () {
+                    dataGrid.reload();
+                }
+            });
+        });
+    }
+
+    function editFile() {
+        var setting = { url: "../StandardDocument/DocumentEdit", title: "编辑", width: 800, height: 450 };
+        edit(setting);
+    }
+
+    function onNodeSelected(e) {
+        var node = e.node;
+        var url = "GetList?StandardID=" + node.ID;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.load();
+    }
+
+</script>

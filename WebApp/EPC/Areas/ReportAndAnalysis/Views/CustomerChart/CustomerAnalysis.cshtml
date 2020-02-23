@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "CustomerAnalysis";
+}
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="客户分析" showheader="false" region="north" height="300" showspliticon="false" allowresize="false">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100px">
+                        <input name="LastYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                               data="lastYearEnum" allowinput="false" onvaluechanged="reloadData();" value="1" />
+                    </td>
+                    <td>
+                        <div name="AnlysisValue" class="mini-radiobuttonlist" repeatitems="7" repeatlayout="table"
+                             repeatdirection="horizontal" textfield="text" valuefield="value" onvaluechanged="reloadData();"
+                             data="CustomerAnlysisType" value="ReceiptValue">
+                        </div>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="xyChartContainer" class="mini-fit">
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        @Html.ExportButton()
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                 multiselect="false" borderstyle="border-left:0;border-right:0;border-bottom:0" showpager="false" showsummaryrow="true"
+                 onload="onGridLoad" ondrawsummarycell="onDrawSummaryCell">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="Name" width="300" headeralign="center">
+                        客户名称
+                    </div>
+                    <div field="ContractValue" summarytype="sum" datatype="currency" currencyunit="￥"
+                         width="120" headeralign="center" align="right">
+                        合同金额（元）
+                    </div>
+                    <div field="ReceiptValue" summarytype="sum" datatype="currency" currencyunit="￥"
+                         width="120" headeralign="center" align="right">
+                        收款金额（元）
+                    </div>
+                    <div field="ReceivableValue" summarytype="sum" datatype="currency" currencyunit="￥"
+                         headeralign="center" width="120" align="right">
+                        财务应收账款（元）
+                    </div>
+                    <div field="RemainContractValue" summarytype="sum" datatype="currency" currencyunit="￥"
+                         headeralign="center" width="120" align="right">
+                        合同余额（元）
+                    </div>
+                    <div field="UnContractValue" summarytype="sum" datatype="currency" currencyunit="￥"
+                         headeralign="center" width="120" align="right">
+                        待签合同额（元）
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Areas.ReportAndAnalysis.Controllers.CustomerAnlysisType))
+</script>
+<script type="text/javascript">
+
+    addGridLink('dataGrid', 'Name', '/Market/Basic/Customer/Index?ID={CustomerID}', { funcType: 'view', height: "80%", width: "90%" });
+
+    var lastYearEnum = [
+          { text: "今年", value: "1" },
+          { text: "近2年", value: "2" },
+          { text: "近3年", value: "3" },
+          { text: "近4年", value: "4" },
+          { text: "近5年", value: "5" },
+          { text: "近6年", value: "6" },
+          { text: "近7年", value: "7" },
+          { text: "近8年", value: "8" },
+          { text: "近9年", value: "9" },
+          { text: "近10年", value: "10" }
+    ];
+    function onGridLoad(e) {
+        if (e.result && e.result.chartData) {
+            loadingChart("xyChartContainer", e.result.chartData);
+        }
+    }
+    function pageLoad() {
+        var url = "GetList";
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        reloadData();
+    }
+
+
+    function reloadData() {
+        var queryData = {};
+        queryData["LastYear"] = mini.getbyName("LastYear").getValue();
+        queryData["AnlysisValue"] = mini.getbyName("AnlysisValue").getValue();
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.load({ QueryData: mini.encode(queryData) });
+    }
+
+    function loadingChart(divID, option) {
+        $("#" + divID).highcharts(option);
+    }
+
+    function onDrawSummaryCell(e) {
+        e.cellStyle = " text-align: right;color:Brown";
+    }
+</script>
+

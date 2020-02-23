@@ -1,0 +1,555 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+}
+@using Config.Logic;
+<script src="@Url.Content("/EPC/Scripts/Design/Bom/jquery.tmpl.js")" type="text/javascript"></script>
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @{
+                    if (ViewBag.First)
+                    {
+                        <a class="mini-button" iconcls="icon-add" onclick="create()" plain="true">策划项目结构</a>
+                    }
+                    else if (ViewBag.FlowEnd)
+                    {
+                        <a class="mini-button" iconcls="icon-add" onclick="upgrad()" plain="true">变更项目结构</a>
+                    }
+                    else
+                    {
+                        if (ViewBag.FlowPhase == "Processing")
+                        {
+                            <a class="mini-button" iconcls="icon-add" name="btnAddChild" onclick="onAddChild" plain="true">新增子节点</a>
+                            <a class="mini-button" iconcls="icon-add" name="btnAdd" onclick="onAdd" plain="true">新增行</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">暂存</a>
+                            <a class="mini-button" iconcls="icon-remove" name="btnRemove" onclick="onRemove" plain="true">删除行</a>
+                            <a class="mini-menubutton" iconcls="icon-add" plain="true" menu="#popupMenu">导入</a>
+                            <a class="mini-button" iconcls="icon-flowstart" onclick="flowTrace()" plain="true">流程跟踪</a>
+                        }
+                        else
+                        {
+                            <a class="mini-button" iconcls="icon-edit" onclick="startFlow" plain="true">提交</a>
+                            <a class="mini-button" iconcls="icon-add" name="btnAddChild" onclick="onAddChild" plain="true">新增子节点</a>
+                            <a class="mini-button" iconcls="icon-add" name="btnAdd" onclick="onAdd" plain="true">新增行</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">暂存</a>
+                            <a class="mini-button" iconcls="icon-remove" name="btnRemove" onclick="onRemove" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-cancel" onclick="revert();" plain="true">撤销升版</a>
+                            <a class="mini-menubutton" iconcls="icon-add" plain="true" menu="#popupMenu">导入</a>
+                        }
+                    }
+                }
+            </td>
+            <td style="white-space: nowrap;">
+                &nbsp;  &nbsp;  &nbsp;
+                当前版本：<a href="javascript:void();" onclick="viewVersionList();">@ViewBag.VersionNo</a>
+                &nbsp;  &nbsp;  &nbsp;
+                显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType" allowinput="false"
+                          onvaluechanged="onShowTypeChanged" value="New" /> &nbsp;
+                &nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+         url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" oncellbeginedit="OnCellBeginEdit"
+         oncellendedit="onCellEndEdit" multiselect="true" borderstyle="border-left:0px;" onnodeselect="onNodeSelected"
+         treecolumn="Name" idfield="PBSID" parentfield="PBSParentID" resultastree="false" expandonload="true" iconfield="NodeType" contextmenu="#gridMenu"
+         allowresize="false" fitcolumns="false" allowdrag="true" allowdrop="true" allowleafdropin="true" ongivefeedback="onGiveFeedback"
+         ondrop="onNodeDrop">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="380" headeralign="center">
+                名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="200" align="left" headeralign="center">
+                编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Remark" width="400" align="left" headeralign="center">
+                备注
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" autoshowpopup="true" field="ToWBS" width="90" allowsort="true"
+                 align="center" headeralign="center">
+                同步计划管理
+                <input property="editor" class="mini-combobox" style="width:100%;" data="trueOrFalse" />
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="gridMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="add" iconcls="icon-add" onclick="onAdd">插入行</li>
+    <li name="addChild" iconcls="icon-add" onclick="onAddChild">插入子节点</li>
+    <li name="remove" iconcls="icon-remove" onclick="onRemove">删除行</li>
+    <li name="revert" iconcls="icon-remove" onclick="onRevert">撤销更改</li>
+</ul>
+<ul id="popupMenu" class="mini-contextmenu">
+    <li name="remove" iconcls="icon-add" onclick="bidImport">从投标概算导入</li>
+    <li name="remove" iconcls="icon-add" onclick="importNodes">从标准节点模板导入</li>
+</ul>
+
+<script type="text/javascript">
+    var flowEnd = "@Html.Raw(ViewBag.FlowEnd)";
+    var versionID = "@Html.Raw(ViewBag.VersionID)";
+
+</script>
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div style="text-align:left; font-weight:bolder; color:red;">上一版内容</div>
+    <table class="mini-grid-table" cellspacing="0" cellpadding="0" style="width:700px;table-layout:fixed;">
+        <tr>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center">名称</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center"> 备注</td>
+        </tr>
+        <tr>
+            <td style="text-align: center">${Name}</td>
+            <td style="text-align: center">${Remark}</td>
+        </tr>
+    </table>
+</script>
+<script type="text/javascript">
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var trueOrFalse = [{ text: "同步", value: "true" }, { text: "不同步", value: "false" }];
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    if (versionID) {
+        var url = "GetVersionTreeList?VersionID=" + versionID + "&ShowType=New&ShowAll=false";
+        $("#dataTree").attr("url", url);
+    }
+    normalParamSettings.gridId = "dataTree";
+    windowParamSettings.gridId = "dataTree";
+
+    $(window).bind('beforeunload', function () {
+        var dataTree = mini.get("dataTree");
+        var changes = dataTree.getChanges();
+        if (changes.length > 0) {
+            return false;
+        }
+    });
+
+    function bidImport() {
+        msgUI("该操作将会导入投标概算时策划的结构，您确定要继续吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("VersionID", versionID);
+            execute("ImportFromBidOffer", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    var grid = mini.get("dataTree");
+                    grid.reload();
+                }, validateForm: false, resetFormData:false
+            });
+        });
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType == "Root") {
+            e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+        }
+        else {
+            if (record.ModifyState == "Add") {
+                if (field == "Name") {
+                    e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+                }
+                e.cellStyle = "background:#BBFFFF;";
+            }
+            else if (record.ModifyState == "Modify") {
+                if (field == "Name") {
+                    e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+                }
+                e.cellStyle = " background: yellow;";
+            }
+            else if (record.ModifyState == "Remove") {
+                e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff;";
+            }
+            if (field == "ToWBS" && record.CanSynToWBS != "true") {
+                e.cellStyle = "background:#F0F0F0;";
+            }
+            if (record.NodeType != "Detail") {
+                e.cellStyle += "font-weight:bolder; ";
+            }
+        }
+    }
+
+    function onNodeSelected(e) {
+        if (e.node) {
+            var node = e.node;
+            if (node.CanAdd != true) {
+                mini.getbyName("btnAddChild").hide();
+            }
+            else {
+                mini.getbyName("btnAddChild").show();
+            }
+            if (node.CanParentAdd != true) {
+                mini.getbyName("btnAdd").hide();
+            }
+            else {
+                mini.getbyName("btnAdd").show();
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.showCellTooltip',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                var el = e.element;
+                var id = el.id;
+                if (id) {
+                    this.showLoading();
+                    addExecuteParam("ID", id);
+                    execute("GetLastDetailInfo", {
+                        showLoading: false, refresh: false, onComplete: function (data) {
+                            var html = $("#formTemplate").tmpl(data);
+                            tip.setContent(html);
+                        }, validateForm: false, resetFormData: false
+                    });
+                }
+            }
+        });
+    });
+
+    function viewVersionList() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=PBSVersionList&EngineeringInfoID=" + engineeringInfoID + "&VersionID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "历史版本信息", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onBeforeOpen(e) {
+        var dataTree = mini.get("dataTree");
+        var menu = e.sender;
+        var node = dataTree.getSelectedNode();
+        if (!node || flowEnd == "True") {
+            e.cancel = true;
+            e.htmlEvent.preventDefault();
+            return;
+        }
+
+        var addItem = mini.getbyName("add", menu);
+        var removeItem = mini.getbyName("remove", menu);
+        var revertItem = mini.getbyName("revert", menu);
+        var addChildItem = mini.getbyName("addChild", menu);
+
+        addItem.hide();
+        removeItem.hide();
+        revertItem.hide();
+        addChildItem.hide();
+        if (node.CanAdd == true) {
+            addChildItem.show();
+        }
+        if (node.CanParentAdd == true) {
+            addItem.show();
+        }
+        if (node.CanDelete == true) {
+            removeItem.show();
+        }
+        if (node.ModifyState != "Normal" && node.NodeType != "Root") {
+            revertItem.show();
+        }
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (flowEnd == "True") {
+            e.cancel = true;
+        }
+        else {
+            if (record.NodeType == "Root")
+                e.cancel = true;
+            else if (field == "ToWBS" && record.CanSynToWBS != "true") {
+                e.cancel = true; return;
+            }
+        }
+    }
+
+    function onCellEndEdit(e) {
+        var sender = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+    }
+
+    function create() {
+        msgUI("您确定要开始结构策划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            execute("UpgradPBS", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false, resetFormData: false
+            });
+        });
+    }
+
+    function upgrad() {
+        msgUI("您确定需要变更结构策划吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            execute("UpgradPBS", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false, resetFormData: false
+            });
+        });
+    }
+
+    function startFlow() {
+        if (!versionID) {
+            msgUI("没有找到指定的版本，无法提交"); return;
+        }
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("VersionID", versionID);
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "/EPC/Manage/PBSVersion/PageView?FlowCode=PBSVersion&TmplCode=PBSVersion&ID=" + versionID;
+                openWindow(url, {
+                    refresh: false, title: "工程结构策划审批", width: "70%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") return;
+                        window.location.reload();
+                    }
+                });
+            }, validateForm: false, resetFormData: false
+        });
+    }
+
+    function saveData() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("VersionID", versionID);
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                tree.reload();
+            }, validateForm: false, resetFormData: false
+        });
+    }
+
+    function revert() {
+        msgUI("撤销操作将撤销所有的编辑内容，您确定要继续吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("VersionID", versionID);
+            execute("Revert", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false, resetFormData: false
+            });
+        });
+    }
+
+    function onAdd() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            msgUI("请选择一个节点");
+            return;
+        }
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("AddMode", "After");
+        addExecuteParam("VersionID", versionID);
+        execute("AddVersionPBS", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.addNode(data, "after", node);
+            }, validateForm: false, resetFormData: false
+        });
+    }
+
+    function onAddChild() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            msgUI("请选择一个节点");
+            return;
+        }
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("AddMode", "AddChild");
+        addExecuteParam("VersionID", versionID);
+        execute("AddVersionPBS", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.addNode(data, "add", node);
+            }, validateForm: false, resetFormData: false
+        });
+
+    }
+
+    function onRemove() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+        msgUI("您确定要删除选中的内容吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListData", mini.encode(nodes));
+            addExecuteParam("VersionID", versionID);
+            execute("DeleteNodes", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].ModifyState == "Add") {
+                            dataTree.removeNode(nodes[i]);
+                        }
+                        else {
+                            var showType = mini.getbyName("ShowType");
+                            if (showType && showType.getValue() == "New") {
+                                dataTree.removeNode(nodes[i]);
+                            }
+                            else {
+                                dataTree.updateNode(nodes[i], { ModifyState: "Remove" });
+                            }
+                        }
+                    }
+                }, validateForm: false, resetFormData: false
+            });
+        });
+    }
+
+    function onRevert() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+        addExecuteParam("ListData", mini.encode(nodes));
+        addExecuteParam("VersionID", mini.encode(nodes));
+        execute("RevertNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    if (node.ModifyState == "Add") {
+                        dataTree.removeNode(node);
+                    }
+                    else {
+                        for (var m = 0; m < data.length; m++) {
+                            if (data[m].ID == node.ID) {
+                                dataTree.updateNode(node, data[m]);
+                                dataTree.commitEditRow(node);
+                                dataTree.acceptRecord(node);
+                            }
+                        }
+                    }
+                }
+            }, validateForm: false, resetFormData: false
+        });
+    }
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        var showDiff = mini.getbyName("ShowType").getValue();
+        tree.load({ ShowType: showDiff });
+    }
+
+    function flowTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "80%", height: "85%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false, resetFormData: false
+        });
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+        if (node.NodeType == "Root") {
+            e.effect = "no";
+        }
+        else if (targetNode.CanAdd != true && effect == "add") {
+            e.effect = "no";
+        }
+        else if ((effect == "after" || effect == "before") && targetNode.CanParentAdd != true) {
+            e.effect = "no";
+        }
+        if (flowEnd == "True") {
+            e.effect = "no";
+        }
+    }
+
+    function getParent(tree, child) {
+        if (!tree) {
+            return null;
+        }
+        var list = tree.findNodes(function (node) {
+            if (node.CBSID == child.CBSParentID) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+        if (list.length > 0) {
+            return list[0];
+        }
+        else
+            return null;
+    }
+
+    function getChildren(tree, parentNode) {
+        if (!tree || !parentNode) {
+            return null;
+        }
+        return tree.findNodes(function (node) {
+            if (node.CBSParentID == parentNode.CBSID && node.ModifyState != "Remove") {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+    }
+
+    function importNodes() {
+        var url = "/EPC/NodeTemplateSelector/Selector?NodeType=PBS";
+        openWindow(url, {
+            refresh: false, title: "节点模板导入", width: "70%", height: "80%",
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") {
+                    return;
+                }
+                var templateIds = "";
+                for (var i = 0; i < data.length; i++) {
+                    if (i == data.length - 1) {
+                        templateIds += data[i].ID;
+                    }
+                    else {
+                        templateIds += data[i].ID + ",";
+                    }
+                }
+                addExecuteParam("NodeIDs", templateIds);
+                addExecuteParam("VersionID", versionID);
+                execute("ImportNodeTemplate", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        mini.get("dataTree").reload();
+                    }, validateForm: false, resetFormData: false
+                });
+            }
+        });
+    }
+</script>

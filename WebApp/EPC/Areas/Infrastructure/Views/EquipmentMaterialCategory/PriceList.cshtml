@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="250" showcollapsebutton="false">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetTree" 
+                showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false" 
+                expandonload="true" onnodeselect="onNodeSelect" ondrawnode="OnDrawNode">
+            </ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+<div class="mini-toolbar gw-grid-toolbar" style="border-left: 0px">
+    <table>
+        <tr>
+            <td>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称或规格" 
+                    onenter="quickSearch('Size,Name');" 
+                    onbuttonclick="quickSearch('Size,Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect='false' 
+        borderstyle="border-left:0px" url="" allowcellvalid="false" multiselect="true" allowcelledit="false">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="Name" width="80" headeralign="center" allowsort="true">
+                设备名称
+            </div>
+            <div field="Size" width="50" headeralign="center" allowsort="true" >
+                规格
+            </div>
+            <div field="Model" width="50" headeralign="center" allowsort="true" >
+                型号
+            </div>
+            <div field="Material" width="50" headeralign="center" allowsort="true" >
+                材质
+            </div>
+            <div field="ConnectionMode" width="50" headeralign="center" allowsort="true" >
+                连接方式
+            </div>
+            <div field="Brand" width="50" headeralign="center" allowsort="true" >
+                品牌
+            </div>
+            @*<div field="Quantity" width="50" headeralign="center" allowsort="true" align="right">
+                数量
+            </div>*@
+            <div field="UnitPrice" width="50" headeralign="center" allowsort="true" align="right">
+                单价(元)
+            </div>
+            <div field="ProjectCode" width="50" headeralign="center" allowsort="true" >
+                项目号
+            </div>
+            <div field="ContractCode" width="50" headeralign="center" allowsort="true" >
+                合同号
+            </div>
+            <div field="SupplierName" width="50" headeralign="center" allowsort="true" >
+                供应商
+            </div>
+            <div field="Remark" width="50" headeralign="center" allowsort="true" >
+                备注
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function onNodeSelect(e) {
+        var grid = mini.get("dataGrid");
+        var url = "GetPriceList?CategoryID=" + e.node.ID;
+        grid.setUrl(url);
+        grid.reload();
+    }
+
+    function pageLoad() {
+        var tree = mini.get("dataTree");
+        var node = tree.getRootNode();
+        node = tree.getChildNodes(node)[0];
+        tree.selectNode(node);
+        var e = {};
+        e.node = node;
+        onNodeSelect(e);
+    }
+
+    function OnDrawNode(e) {
+        if (e.node.Type == "Category")
+            e.iconCls = "icon-item";
+        else
+            e.iconCls = "icon-register";
+    }
+</script>

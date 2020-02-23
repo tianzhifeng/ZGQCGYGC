@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "ProjectList";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td></td>
+            <td style="text-align: right;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号" style="width: 200px;" onenter="quickSearch('Name,SerialNumber');"
+                       onbuttonclick="quickSearch('Name,SerialNumber');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" url="GetProjectList"
+         multiselect="true">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="SerialNumber" headeralign="center" width="100" allowsort="true" align="center">
+                项目编号
+            </div>
+            <div field="Name" headeralign="center" width="250" allowsort="true" align="left">
+                项目名称
+            </div>
+            @*<div field="ChargerDeptName" headeralign="center" width="120" allowsort="true" align="center">
+                生产部门
+            </div>*@
+            <div field="ChargerUserName" headeralign="center" width="100" allowsort="true" align="center">
+                项目负责人
+            </div>
+            @*<div field="BusinessChargerUserName" headeralign="center" width="100" allowsort="true" align="center">
+                商务负责人</div>*@
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    addSingleUserSelector("$EQ$RegisterID");
+    addGridEnum("dataGrid", "PreProjectState", 'PreProjectState');
+    addGridEnum("dataGrid", "BusinessOpportunityType", 'BusinessOpportunity');
+    addGridEnum("dataGrid", "Resource", 'Resource');
+    addGridLink("dataGrid", "ProjectCode", 'Edit?ID={ID}&CustomerID={CustomerID}&LinkerName=&FuncType=view', { title: "前期项目信息" });
+    addGridEnum("trackDataGrid", "LinkType", 'ContactType');
+
+
+</script>

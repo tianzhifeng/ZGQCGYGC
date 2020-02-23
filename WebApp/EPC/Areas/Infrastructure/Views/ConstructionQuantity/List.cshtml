@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "标准工程量清单";
+}
+
+<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="250" showcollapsebutton="false">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetTreeList"
+                allowdrag="true" allowdrop="true" ongivefeedback="onNodeDroping" onbeforedrop="onNodeDrop" ondragstart="ChangeText" contextmenu="#treeMenu"
+                allowleafdropin="true" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false" iconfield="IconClass"
+                expandonload="true" onnodeselect="onNodeSelect" ondrawnode="OnDrawNode" onendedit="onEndEditNode"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" style="border-left: 0px">
+            <table>
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(ViewBag.IsForImport) && ViewBag.IsForImport == "true")
+                        {
+                            <a class="mini-button" iconcls="icon-add" onclick="returnList();" plain="true">选择</a>
+                        }
+                        else
+                        {
+                            <a class="mini-button" iconcls="icon-excel" onclick="excelImport" plain="true">导入Excel</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="addrow();" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="delrow()" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="savelist()" plain="true">保存</a>
+                        }
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <input id="EntityGridKey" class="mini-buttonedit gw-searchbox" emptytext="编号或名称"
+                               onenter="quickSearch('Name,Code', { gridId: 'dataGrid', queryBoxId: 'EntityGridKey' });"
+                               onbuttonclick="quickSearch('Name,Code', { gridId: 'dataGrid', queryBoxId: 'EntityGridKey' });" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <form id="EntityGridForm" action="/" method="post">
+                <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect='true'
+                     borderstyle="border-left:0px" url="" allowcellvalid="true" fitcolumns="true" multiselect="true" allowcelledit="true" onload="onGridLoad">
+                    <div property="columns">
+                        <div type="checkcolumn"></div>
+                        <div field="Code" width="50" headeralign="center" allowsort="true" vtype="required">
+                            清单编号<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+                        </div>
+                        <div field="Name" width="70" headeralign="center" allowsort="true" vtype="required">
+                            项目名称<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+                        </div>
+                        <div field="Property" width="100" headeralign="center" allowsort="true">
+                            项目特征<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+                        </div>
+                        <div field="Unit" width="20" headeralign="center" allowsort="true">
+                            单位<input property="editor" data="QuantityUnit" class="mini-combobox" style="width: 100%;" maxlength="200" />
+                        </div>
+                        <div field="Remark" width="80" headeralign="center" allowsort="true">
+                            备注<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="500" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu">
+    <li iconcls="icon-add" onclick="nodeAdding({ url: 'NodeAddOrEdit', width: 500, height: 200 });">增加</li>
+    <li iconcls="icon-edit" onclick="nodeEditing({ url: 'NodeAddOrEdit', width: 500, height: 200 });">编辑</li>
+    <li iconcls="icon-remove" onclick="nodeDeleting({ action: 'ThisDeleteNode' });">删除</li>
+</ul>
+<script type="text/javascript">
+    //树相关
+    var CurrentNode = null;
+    var DataCount = 0;
+    @Html.GetEnum("EPC.QuantityUnit");
+
+    function ChangeText(e) {
+        e.dragText = "<font size='2'>移动：" + e.node.Name + "</font>";
+    }
+
+    function onGridLoad(e) {
+        var rtnData = mini.decode(e.text);
+        DataCount = rtnData.total;
+    }
+
+    function onNodeSelect(e) {
+        CurrentNode = e.node;
+        var url = "GetDetailList?qID=" + CurrentNode.ID;
+        var grid = mini.get("dataGrid");
+        grid.setUrl(url);
+        grid.reload();
+    }
+
+    function onNodeDroping(e) {
+        //不能拖放到非同级节点的前后
+        if ((e.effect == "before" || e.effect == "after") && e.targetNode.ParentID != e.node.ParentID)
+            e.effect = "no";
+        if (e.effect == "add")
+            e.effect = "no";
+    }
+
+    function excelImport() {
+        if (CurrentNode == null) {
+            msgUI("请选中一个工程节点");
+            return;
+        }
+
+        var validateUrl = "/EPC/Infrastructure/ConstructionQuantity/ValidateData?QuantityID=" + CurrentNode.ID;
+        var saveUrl = "/EPC/Infrastructure/ConstructionQuantity/SaveExcelData?QuantityID=" + CurrentNode.ID;
+        var excelKey = "QuantityDetail_Import";
+        ImportExcel(excelKey, validateUrl, saveUrl);
+    }
+
+    function addrow() {
+        if (CurrentNode == null)
+            return;
+
+        var code = ++DataCount;
+        var newRowData = { Name: "新增清单" };
+        newRowData["QuantityID"] = CurrentNode.ID;
+        newRowData["QuantityFullID"] = CurrentNode.FullID;
+        //newRowData["Code"] = code;
+        newRowData["SortIndex"] = DataCount;
+        addRow(newRowData, { gridId: "dataGrid" });
+    }
+
+    function savelist() {
+        var setting = { action: 'SaveList', gridId: "dataGrid", formId: "EntityGridForm", QuantityID: CurrentNode.ID };
+        setting.onComplete = function () {
+            var tree = mini.get("dataTree");
+            tree.reload();
+            tree.selectNode(CurrentNode);
+            var e = {};
+            e.node = CurrentNode;
+            onNodeSelect(e);
+        }
+        saveList(setting);
+    }
+
+    function pageLoad() {
+        var tree = mini.get("dataTree");
+        var node = tree.getRootNode();
+        node = tree.getChildNodes(node)[0];
+        tree.selectNode(node);
+        var e = {};
+        e.node = node;
+        onNodeSelect(e);
+    }
+
+    function delrow() {
+        --DataCount;
+        delRow({ gridId: "dataGrid" });
+    }
+
+    function OnDrawNode(e) {
+        //if (e.node.Type == "FenBu")
+        //    e.iconCls = "icon-item";
+        //else
+        e.iconCls = "icon-register";
+    }
+
+</script>

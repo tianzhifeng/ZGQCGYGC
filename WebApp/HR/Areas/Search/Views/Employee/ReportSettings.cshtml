@@ -1,0 +1,196 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="200px;" style="padding: 5px; overflow: auto;">
+        <ul id="dataTree" class="mini-tree" data="treeData" showtreeicon="true" textfield="fieldName" onnodedblclick="nodeDblClick">
+        </ul>
+    </div>
+    <div>
+        <div class="mini-toolbar gw-grid-toolbar">
+            <table>
+                <tr>
+                    <td>
+                    </td>
+                    <td class="gw-toolbar-right">
+                        <a class="mini-button" id="btnOK" iconcls="icon-ok" onclick="ok();">确定</a>
+                        <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="remove();">删除</a>
+                        <a class="mini-button" id="btnMoveUp" iconcls="icon-up" onclick="moveUp();">上移</a>
+                        <a class="mini-button" id="btnMoveDown" iconcls="icon-down" onclick="moveDown();">下移</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true" showpager="false" allowcelledit="true" allowcellselect="true" oncellbeginedit="OnCellBeginEdit" oncellcommitedit="cellcommitedit">
+                <div property="columns">
+                    <div field="sumFieldName" width="150px" header="字段">
+                    </div>
+                    <div type="comboboxcolumn" field="sumType" width="80px" autoshowpopup="true" align="center" header="统计方式">
+                        <input name="sumType" property="editor" class="mini-combobox" style="width: 100%;" data="sumType" onitemclick="endEdit" />
+                    </div>
+                    <div field="sumFieldTitle" width="150px" header="统计标题">
+                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="extremumFieldCode" displayfield="extremumFieldName" width="120px" autoshowpopup="true" header="极值显示字段">
+                        <input name="extremumFieldCode" property="editor" class="mini-combobox" style="width: 100%;" valuefield="fieldCode" textfield="fieldName" multiselect="false" onitemclick="endEdit" shownullitem="true" />
+                    </div>
+                    <div field="groupFieldCode" displayfield="groupFieldName" width="120px" autoshowpopup="true" header="分组字段">
+                        <input name="groupFieldCode" property="editor" class="mini-combobox" style="width: 100%;" valuefield="fieldCode" textfield="fieldName" onitemclick="endEdit" shownullitem="true" />
+                    </div>
+                    <div field="groupFieldValue" displayfield="groupFieldText" width="*" autoshowpopup="true" header="分组过滤">
+                        <input property="editor" class="mini-combobox" style="width: 100%;" valuefield="value" multiselect="true" />
+                    </div>
+                    <div width="5px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var relation = [{ value: "and", text: "and" }, { value: "or", text: "or"}];
+    var queryType = [{ value: "in", text: "包含" }, { value: "like", text: "类似于" }, { value: ">", text: "大于" }, { value: "<", text: "小于" }, { value: ">=", text: "大于等于" }, { value: "<=", text: "小于等于"}];
+    var ctrlType = [{ value: "text", text: "文本框" }, { value: "date", text: "日期框" }, { value: "dropdown", text: "下拉框"}];
+    var sumType = [{ value: "count", text: "计数" }, { value: "sum", text: "求和" }, { value: "max", text: "最大" }, { value: "min", text: "最小" }, { value: "strSum", text: "字符串和"}];
+
+    var dataGrid;
+    var treeData = window.Owner.treeData;
+    function pageLoad() {
+        mini.get("dataTree").setData(treeData);
+        dataGrid = mini.get("dataGrid");
+    }
+
+    function endEdit(e) {
+        if (e.sender.name == "groupFieldCode") {
+            var data = e.sender.getData();
+            var row = dataGrid.getEditorOwnerRow(e.sender);
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].fieldCode == e.sender.value) {
+                    row.groupFieldEnumKey = data[i].enumKey;
+                    break;
+                }
+            }
+        }
+        if (e.sender.name == "sumType" && e.sender.value != "max" && e.sender.value != 'min') {
+            var row = dataGrid.getEditorOwnerRow(e.sender);
+            row.extremumFieldCode = "";
+            row.extremumFieldName = "";
+        }
+        if (e.sender.name == "groupFieldCode") {
+            var row = dataGrid.getEditorOwnerRow(e.sender);
+            row.groupFieldValue = "";
+            row.groupFieldText = "";
+        }
+        if (e.sender.name == "extremumFieldCode") {
+            var row = dataGrid.getEditorOwnerRow(e.sender);
+            row.sumFieldTitle = e.sender.getText();
+            if (row.sumFieldTitle == "")
+                row.sumFieldTitle = row.sumFieldName;
+        }
+
+        dataGrid.commitEdit();
+    }
+
+    function nodeDblClick(e) {
+        if (!e.isLeaf) return;
+        var node = e.node;
+        var row = dataGrid.findRow(function (row) {
+            if (row.sumFieldCode == node.fieldName) return true;
+        });
+        if (row)
+            return;
+        var data = {};
+        data.pid = node.pid;
+        data.table = node.table;
+        data.enumKey = node.enumKey;
+        data.sumFieldCode = node.fieldCode;
+        data.sumFieldName = node.fieldName;
+        data.sumFieldTitle = node.fieldName;
+        if (node.pid == "0")
+            data.sumType = "";
+        else
+            data.sumType = "count";
+
+        dataGrid.addRow(data);
+    }
+
+    function commitEdit() {
+        dataGrid.commitEdit();
+    }
+    function moveUp() {
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+    function moveDown() {
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+    function remove() {
+        var rows = dataGrid.getSelecteds();
+        dataGrid.removeRows(rows, false);
+    }
+    function OnCellBeginEdit(e) {
+        var record = e.record;
+        var field = e.field
+        if (!record.sumType) {
+            e.cancel = true;
+            return;
+        }
+
+        var node;
+        for (var i = 0; i < treeData.length; i++) {
+            if (treeData[i].id == record["pid"])
+                node = treeData[i];
+        }
+
+        if (field == "groupFieldCode") {
+            var arr = [];
+            for (var i = 0; i < node.children.length; i++)
+                if (node.children[i].ctrlType == "combobox")
+                    arr.push(node.children[i]);
+            e.editor.setData(arr);
+        }
+        else if (field == "groupFieldValue" && record.groupFieldCode) {
+            if (record.groupFieldEnumKey) {
+                eval("e.editor.setData(window.Owner." + record.groupFieldEnumKey + ");");
+            }
+            else {
+                e.editor.load("GetEnumData?tableName=" + record.table + "&fieldCode=" + record.groupFieldCode);
+            }
+        }
+        else if (field == "extremumFieldCode") { //极值显示字段
+            if (record.sumType != "max" && record.sumType != "min") {
+                e.cancel = true;
+                return;
+            }
+            var arr = [];
+            for (var i = 0; i < node.children.length; i++)
+                arr.push(node.children[i]);
+            e.editor.setData(arr);
+        }
+    }
+    function cellcommitedit(e) {
+        var record = e.record;
+        var field = e.field
+        if (field != "fieldValue") return;
+        e.value = window.v;
+        e.text = window.t;
+    }
+
+    function setData(data) {
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                dataGrid.addRow(data[i]);
+            }
+        }
+    }
+
+    function ok() {
+        var data = mini.clone(dataGrid.getData());
+        for (var i = 0; i < data.length; i++) {
+            delete data[i]._id;
+            delete data[i]._level;
+            delete data[i]._state;
+            delete data[i]._uid;
+        }
+        closeWindow(data);
+    }
+</script>

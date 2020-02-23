@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "DeptIndicatorInfo";
+}
+
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="300px" showspliticon="false" allowresize="false" showheader="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <div name="AnlysisValue" class="mini-radiobuttonlist" repeatitems="7" repeatlayout="table" repeatdirection="horizontal"
+                             textfield="text" valuefield="value" onvaluechanged="reloadData();" data="AnlysisValue" value="ReceiptValue">
+                        </div>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="container" class="mini-fit">
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetDeptIndicatorList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+                 borderstyle="border:0px;" showsummaryrow="true" ondrawsummarycell="onDrawSummaryCell" onload="onGridLoad" sortmode="client"
+                 ondrawcell="onDrawCell">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="text" width="120" headeralign="center" allowsort="true">
+                        部门名称
+                    </div>
+                    <div headeralign="center" header="收款情况">
+                        <div property="columns">
+                            <div field="ReceiptKPI" datatype="currency" summarytype="sum" width="100" headeralign="center" allowsort="true" align="right">
+                                收款目标（元）
+                            </div>
+                            <div field="ReceiptValue" datatype="currency" summarytype="sum" headeralign="center" width="100" allowsort="true" align="right">
+                                已收款（元）
+                            </div>
+                            <div field="RecepitComplateRate" width="70" headeralign="center" allowsort="true" align="right">
+                                完成率%
+                            </div>
+                            <div field="CanReceiptValue" datatype="currency" summarytype="sum" headeralign="center" width="120" allowsort="true" align="right">
+                                经营应收款（元）
+                            </div>
+                            <div field="RemaintContractValue" datatype="currency" summarytype="sum" headeralign="center" width="130" allowsort="true" align="right">
+                                当前剩余合同额（元）
+                            </div>
+                            <div field="ReceiptKPIRemain" datatype="currency" summarytype="sum" headeralign="center" width="120" allowsort="true" align="right">
+                                距收款目标（元）
+                            </div>
+                        </div>
+                    </div>
+                    <div headeralign="center" header="合同情况">
+                        <div property="columns">
+                            <div field="ContractKPI" datatype="currency" summarytype="sum" width="100" headeralign="center" allowsort="true" align="right">
+                                合同目标（元）
+                            </div>
+                            <div field="ContractValue" datatype="currency" summarytype="sum" headeralign="center" width="110" allowsort="true" align="right">
+                                已签订金额（元）
+                            </div>
+                            <div field="ContractComplateRate" width="70" headeralign="center" allowsort="true" align="right">
+                                完成率%
+                            </div>
+                            <div field="UnContractValue" datatype="currency" summarytype="sum" headeralign="center" width="110" allowsort="true" align="right">
+                                待签约金额（元）
+                            </div>
+                            <div field="ContractKPIRemain" datatype="currency" summarytype="sum" headeralign="center" width="110" allowsort="true" align="right">
+                                距合同目标（元）
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Areas.ReportAndAnalysis.Controllers.AnlysisValue))
+    var baseScale = @Html.Raw(Math.Round(Convert.ToDecimal( DateTime.Now.DayOfYear) / 365*100,2).ToString()+";")
+</script>
+
+<script type="text/javascript">
+    var serverYear='@ViewBag.ServerYear';
+    var belongYear = getQueryString("BelongYear");
+    if(!belongYear)
+        belongYear =serverYear;
+    if (!belongYear) {
+        var date = new Date;
+        var belongYear = date.getFullYear();
+    }
+    addGridLink('dataGrid', 'ContractValue', '/MvcConfig/UI/List/PageView?TmplCode=ContractInfo&BelongYear=' + belongYear + '&IsSigned=Signed&ProductionDept={value}', { funcType: 'view', height: '80%', width: '80%', addQueryString: false });
+    addGridLink('dataGrid', 'UnContractValue', '/MvcConfig/UI/List/PageView?TmplCode=ContractInfo&IsSigned=UnSigned&ProductionDept={value}', { funcType: 'view', height: '80%', width: '80%', addQueryString: false });
+    addGridLink('dataGrid', 'ReceiptValue', '/MvcConfig/UI/List/PageView?TmplCode=ReceiptInfo&BelongYear=' + belongYear + '&ProductUnit={value}', { funcType: 'view', height: '80%', width: '80%', addQueryString: false });
+    //addGridLink('dataGrid', 'CanReceiptValue', 'Index?ID={ID}&ProductUnit={ChargerDept}', { funcType: 'view', height: '80%', width: '80%' });
+
+    addGridLink('dataGrid', 'CanReceiptValue', '/MvcConfig/UI/List/PageView?TmplCode=ReceiptObjInfo&BelongYear=' + belongYear + '&ProductionDept={value}&CanReceipt=True', { funcType: 'view', height: '80%', width: '80%' });
+
+    $("#dataGrid").attr("url", "GetDeptIndicatorList?anlysisValue=ReceiptValue");
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var field =  e.field;
+        if (result.sumData && e.field) {
+            if (result.sumData[e.field] != undefined) {
+                e.cellHtml = result.sumData[e.field];
+                e.cellStyle = "text-align:right; color:Brown";
+
+                if (field == "ContractComplateRate" || field == "RecepitComplateRate") {
+                    if(e.value<baseScale){
+                        e.cellStyle = "color:green;font-weight:bold;text-align:right; ";
+                    }
+                    else{
+                        e.cellStyle = "color:red;font-weight:bold;text-align:right; ";
+                    }
+                    e.cellHtml =result.sumData[e.field] + "%";
+                }
+            }
+            else {
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+        }
+    }
+
+    function reloadData() {
+        var anlysisValue = mini.getbyName("AnlysisValue").getValue();
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl("GetDeptIndicatorList?anlysisValue=" + anlysisValue);
+        dataGrid.reload();
+    }
+
+    function onGridLoad(e) {
+        var dataInfo = mini.decode(e.text);
+        $('#container').highcharts(dataInfo.chart);
+    }
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field == "ContractComplateRate" || field == "RecepitComplateRate") {
+            if(e.value<baseScale){
+                e.cellStyle = "color:green;font-weight:bold;";
+            }
+            else{
+                e.cellStyle = "color:red;font-weight:bold;";
+            }
+            e.cellHtml = e.value + "%";
+        }
+    }
+
+</script>

@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "TreeSelector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">
+                    选择
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true" showcheckbox="false"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" iconfield="NodeType" multiselect="false"
+         allowresize="true" fitcolumns="false" expandonload="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px;">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div name="Name" field="Name" width="300">名称</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    $("#dataTree").attr("url", "GetPBSTree?EngineeringInfoID=" + engineeringInfoID);
+
+    function returnValue() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        var nodes = [];
+        if (node) {
+            nodes.push(node);
+        }
+        if (nodes.length == 0) {
+            msgUI("您选择一个节点");
+            return;
+        }
+         
+        if (!nodes[0].CanSelect) {
+            msgUI('不能在指定的PBS节点下新增BOM数据，请检查定义，BOM数据只能新增在PBS叶子节点上');
+            return;
+        }
+        closeWindow(nodes);
+    }
+</script>

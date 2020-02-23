@@ -1,0 +1,544 @@
+body {
+    height: 100%;
+    overflow: hidden;
+    font-size: 12px;
+    font-family: '微软雅黑', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: rgb(226, 231, 235);
+    background-size: cover;
+    background-position-x: 50%;
+    background-position-y: 0%;
+    background-size: cover;
+    background-repeat-x: no-repeat;
+    background-repeat-y: no-repeat;
+    margin: 0px;
+    padding: 0px;
+}
+
+a {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+ul {
+    padding: 0;
+    /* 将默认的内边距去掉 */
+    margin: 0;
+    /* 将默认的外边距去掉 */
+}
+
+    ul li {
+        list-style-type: none;
+        /* 将默认的列表符号去掉 */
+        padding: 0;
+        /* 将默认的内边距去掉 */
+        margin: 0;
+        /* 将默认的外边距去掉 */
+    }
+
+.mini-fit {
+    background-color: rgb(226, 231, 235);
+}
+
+.rowBox {
+    margin: 12px 12px 0px 12px;
+    height: 230px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+    /* rowBox 左侧 */
+
+    .rowBox .rowBox-left {
+        height: 100%;
+        width: 540px;
+        float: left;
+    }
+
+.rowBox-left .topBar {
+    height: 52px;
+    width: 100%;
+}
+
+    .rowBox-left .topBar img {
+        width: 26px;
+        height: 26px;
+        padding: 13px 11px 13px 15px;
+        float: left;
+    }
+
+    .rowBox-left .topBar .content {
+        float: left;
+        font-size: 20px;
+        height: 48px;
+        line-height: 48px;
+        color: #2a445b;
+    }
+
+.rowBox-left .botBar {
+}
+
+    .rowBox-left .botBar .content {
+        width: 400px;
+        height: 179px;
+        /* padding-top:30px; */
+        /* padding-left:70px; */
+        float: left;
+        /* background:yellow; */
+    }
+
+    .rowBox-left .botBar .plainBtn {
+        float: left;
+        width: 86px;
+        height: 116px;
+        text-align: center;
+        margin: 20px 0px 20px 10px;
+    }
+
+        .rowBox-left .botBar .plainBtn :hover {
+            background: #b4c2d0;
+        }
+
+        .rowBox-left .botBar .plainBtn img {
+            width: 48px;
+            height: 48px;
+            margin: 15px 0 0 0;
+        }
+
+        .rowBox-left .botBar .plainBtn div {
+            margin-top: 0px;
+            margin-left: 0px;
+        }
+
+        .rowBox-left .botBar .plainBtn a {
+            color: #2a445b;
+            font-size: 14px;
+            background: #e2e6ea;
+            width: 86px;
+            height: 116px;
+            display: block;
+            border-radius: 10px;
+            text-decoration-line: none;
+        }
+
+.rowBox-left .item,
+.split {
+    position: relative;
+    float: left;
+    text-align: center;
+    top: 20px;
+}
+
+.rowBox-left .content .item .topTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2a445b;
+    overflow: hidden;
+    height: 22px;
+}
+
+.rowBox-left .content .item .centerNumber {
+    font-size: 48px;
+    padding-top: 8px;
+    line-height: normal !important;
+}
+
+    .rowBox-left .content .item .centerNumber a {
+        color: #000;
+    }
+
+        .rowBox-left .content .item .centerNumber a:hover {
+            color: #0034ff;
+        }
+
+.rowBox-left .content .item .botTitle {
+    padding-top: 8px;
+    font-size: 13px;
+    color: #666666;
+    overflow: hidden;
+    height: 22px;
+}
+
+.rowBox-left .content .split {
+    float: left;
+    height: 90px;
+    background-color: #e0e0e0;
+    width: 1px;
+    margin-top: 18px;
+}
+
+/* 单个元素 */
+.rowBox1Items .item:nth-child(1) {
+    left: 160px;
+}
+
+
+/* 两个元素 */
+.rowBox2Items .item {
+    width: 199px;
+}
+
+    .rowBox2Items .item:nth-child(1) {
+        left: 0px;
+    }
+
+.rowBox2Items .split:nth-child(2) {
+    left: 0px;
+}
+
+.rowBox2Items .item:nth-child(3) {
+    left: 0px;
+}
+
+/* 三个元素 */
+.rowBox3Items .item {
+    width: 120px;
+}
+
+    .rowBox3Items .item:nth-child(1) {
+        left: 20px;
+    }
+
+.rowBox3Items .split:nth-child(2) {
+    left: 21px;
+}
+
+.rowBox3Items .item:nth-child(3) {
+    left: 21px;
+}
+
+.rowBox3Items .split:nth-child(4) {
+    left: 21px;
+}
+
+.rowBox3Items .item:nth-child(5) {
+    left: 21px;
+}
+
+/* rowBox 右侧列表 */
+
+.rowBox .rowBox-right {
+    height: 100%;
+    margin-left: 540px;
+    background: #F4F4F4;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
+}
+
+    .rowBox .rowBox-right .rightMain {
+        margin-top: 13px;
+        padding: 0px 10px 10px 10px;
+        height: 210px;
+        overflow: auto;
+    }
+
+        /*.rowBox .rowBox-right .rightMain .emptyData {
+            width: 100%;
+            text-align: center;
+            line-height: 160px;
+            font-size: 22px;
+            color: #ccc;
+            letter-spacing: 6px;
+            font-weight: 600;
+            border: none !important;
+        }*/
+
+    .rowBox .rowBox-right .rightMainPadding10 {
+        padding: 13px 10px;
+    }
+
+    .rowBox .rowBox-right .rightTab {
+        position: absolute;
+        width: 100%;
+        height: 39px;
+        font-size: 13px;
+        margin: 0px;
+        border-bottom: 1px solid #ddd;
+        z-index: 99;
+    }
+
+    .rowBox .rowBox-right .tab {
+        height: 38px;
+        line-height: 38px;
+        margin: 0 10px;
+        padding: 0 10px;
+        cursor: pointer;
+        color: #999;
+        float: left;
+    }
+
+    .rowBox .rowBox-right .tabActive {
+        border-bottom: 2px solid #5a98d7;
+        color: #2a445b !important;
+        font-weight: 600;
+    }
+
+    .rowBox .rowBox-right .rightTabContent {
+        margin-top: 39px;
+        padding: 0px 10px 10px 10px;
+        height: 175px;
+        overflow: auto;
+    }
+
+        .emptyData {
+            width: 100%;
+            text-align: center;
+            line-height: 180px;
+            font-size: 22px;
+            color: #ccc;
+            letter-spacing: 6px;
+            font-weight: 600;
+            border: none !important;
+        }
+
+/* 右侧ul样式 */
+
+.ulTable ul {
+    padding: 0;
+}
+
+    .ulTable ul li:first-child {
+        border-top: #dddddd solid 1px;
+    }
+
+    .ulTable ul li {
+        height: 14px;
+        padding: 13px 0px;
+        border-bottom: #dddddd solid 1px;
+    }
+
+        .ulTable ul li .leftTitle {
+            position: relative;
+        }
+
+            .ulTable ul li .leftTitle .numSpot {
+                float: left;
+                background: #e2e6ea;
+                color: #2a445b;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+                border-radius: 10px;
+                text-align: center;
+                margin-top: -1px;
+            }
+
+            .ulTable ul li .leftTitle .title {
+                color: #2a445b;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                position: absolute;
+                left: 28px;
+                right: 220px;
+            }
+
+        .ulTable ul li .rightBtn {
+            float: right;
+        }
+
+            .ulTable ul li .rightBtn i {
+                margin-top: -3px;
+                color: #ddd;
+            }
+
+        .ulTable ul li .plainBtn {
+            color: green;
+            font-weight: bolder;
+            width: 60px;
+            height: 20px;
+            line-height: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: block;
+            float: left;
+            text-decoration: none;
+            margin-top: -3px;
+            border: 1px solid #bbdab0;
+        }
+
+        .ulTable ul li .plainBtnOn {
+            color: #888888;
+            width: 60px;
+            height: 20px;
+            line-height: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: block;
+            float: left;
+            text-decoration: none;
+            margin-top: -3px;
+            border: 1px solid #ddd;
+        }
+
+        .ulTable ul li i {
+            float: left;
+        }
+
+/* 右侧table样式 */
+
+.rowBox-right table {
+    padding: 0px;
+    width: 100%;
+    height: auto;
+    border-spacing: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+    .rowBox-right table tr {
+        height: 41px;
+    }
+
+        .rowBox-right table tr:first-child td {
+            border-top: #dddddd solid 1px;
+        }
+
+        .rowBox-right table tr td {
+            border-bottom: #dddddd solid 1px;
+            text-align: center;
+        }
+
+        .rowBox-right table tr .numTd {
+            width: 30px;
+        }
+
+            .rowBox-right table tr .numTd .numSpot {
+                float: left;
+                background: #e2e6ea;
+                color: #2a445b;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+                border-radius: 10px;
+                text-align: center;
+                margin-top: -1px;
+            }
+
+        .rowBox-right table tr td {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+        }
+
+
+
+            .rowBox-right table tr td a {
+                text-align: center;
+                margin-right: 4px;
+            }
+
+/* 右侧图片ul样式 */
+
+.ulPicGroup {
+    overflow: hidden;
+    position: relative;
+}
+
+    .ulPicGroup ul {
+        position: absolute;
+        height: 100%;
+        /* width:8000px; */
+    }
+
+        .ulPicGroup ul li {
+            /* position:absolute; */
+            margin-top: 62px;
+            width: 158px;
+            height: 160px;
+            padding-left: 10px;
+            float: left;
+        }
+
+            .ulPicGroup ul li:first-child {
+                margin-left: 0px;
+            }
+
+            .ulPicGroup ul li img {
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .ulPicGroup ul li img:hover{
+                 transform: scale(1.1); /* 放大1.2倍 */
+                 transition: all 0.3s;
+                 box-shadow: 0px 1px 5px rgba(0,0,0,0.8);
+            }
+
+    .ulPicGroup .emptyPic {
+            list-style-type:initial;
+            width: 100%;
+            text-align: center;
+            line-height: 210px;
+            font-size: 22px;
+            color: #ccc;
+            letter-spacing: 6px;
+            font-weight: 600;
+            border: none !important;            
+    }
+
+.rowBox .rowMore {
+    position: absolute;
+    right: 10px;
+    top: -8px;
+    background-color: rgba(50,199,211,0.6);
+    width: 26px;
+    height: 26px;
+    display: block;
+    border-radius: 15px;
+    border: 2px solid #fff;
+    z-index: 10;
+}
+
+    .rowBox .rowMore :hover {
+        background: #04848e;
+        border-radius: 15px;
+    }
+
+    .rowBox .rowMore img {
+        width: 26px;
+        height: 26px;
+    }
+
+/* 滚动条样式 */
+
+/*::-webkit-scrollbar-track-piece {
+    background-color: #f8f8f8;
+}
+
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #dddddd;
+    background-clip: padding-box;
+    min-height: 28px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #bbb;
+    }
+
+.mini-fit::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mini-fit::-webkit-scrollbar-track {
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+}
+
+.mini-fit::-webkit-scrollbar-thumb {
+    background-color: #162B52;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+}*/

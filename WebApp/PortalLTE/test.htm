@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script type="text/javascript">
+        function todo() {
+
+            var url0 = "http://10.10.1.104:8053/PortalLTE/Scripts/dist/css/AdminLTE.min.css";
+            var url1 = "http://10.10.1.104:8053/PortalLTE/Scripts/dist/css/AdminLTE.css";
+            var url2 = "http://10.10.1.104:8053/PortalLTE/Scripts/dist/css/font-awesome.min.css";
+            var url3 = "http://10.10.1.104:8053/PortalLTE/Scripts/dist/css/ionicons.min.css";
+            var url4 = "http://10.10.1.104:8053/PortalLTE/Scripts/bootstrap/js/bootstrap.min.js";
+
+            download(url0, "AdminLTE.min.css");
+            download(url1, "AdminLTE.css");
+            download(url2, "font-awesome.min.css");
+            download(url3, "ionicons.min.css");
+            download(url4, "bootstrap.min.js");
+            
+
+            //            window.open(url0, "download", "", "_self");
+            //            window.open(url1, "download", "", "_self");
+            //            window.open(url2, "download", "", "_self");
+            //            window.open(url3, "download", "", "_self");
+
+
+            //            var ifr = document.createElement('iframe');
+
+            //            ifr.style.display = 'none';
+            //            ifr.src = url0;
+            //            document.body.appendChild(ifr);
+
+            //            ifr.src = url1;
+            //            ifr.src = url2;
+            //            ifr.src = url3;
+
+            //document.body.removeChild(ifr);
+
+
+
+
+
+
+        }
+
+        function download(url, fileName) {
+
+            //            var aLink = document.createElement("a");
+            //            document.body.appendChild(aLink);
+            //            var evt = document.createEvent("HTMLEvents");
+            //            evt.initEvent("click", false, false);
+            //            aLink.download = fileName;
+            //            aLink.href = url;
+            //            aLink.dispatchEvent(evt);
+
+            //            var ifr = document.createElement('iframe');
+
+            var ifr = document.createElement('iframe');
+            ifr.style.display = 'none';
+            ifr.src = url;
+            document.body.appendChild(ifr);
+            //document.body.removeChild(ifr);
+        }
+    </script>
+</head>
+<body>
+    <a href="#" onclick="todo();">测试</a>
+    <a href="http://10.10.1.104:8053/PortalLTE/Scripts/dist/css/AdminLTE.min.css" >http://10.10.1.104:8053/PortalLTE/Scripts/dist/css/AdminLTE.min.css</a>
+</body>
+</html>

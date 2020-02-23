@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "项目一览表";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目编号或项目名称" style="width: 200px;"
+                       onenter="tabSearch();" onbuttonclick="tabSearch();" />
+                @*<a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                        详细查询
+                    </a>*@
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;" id="GridArea">
+    <div id="dataGrid" url="GetProjectList" class="mini-datagrid" style="width: 100%;
+        height: 100%;" idfield="ID" frozenstartcolumn="0" frozenendcolumn="2" multiselect="false"
+         showsummaryrow="true" ondrawsummarycell="onDrawSummaryCell" sortfield="ContractRMBValue">
+        <div property="columns">
+            <div type="indexcolumn">
+                序号
+            </div>
+            <div field="ProjectClass" name="ProjectClass" width="100" allowsort="true" headeralign="center" allowsort="true"
+                 align="center">
+                类型
+            </div>
+            <div field="Name" name="Name" width="300" headeralign="left" allowsort="true" allowsort="true"
+                 align="left">
+                项目名称
+            </div>
+            <div field="ContractMode" name="ContractMode" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="center">
+                类型2
+            </div>
+            <div field="SerialNumber" name="SerialNumber" width="150" headeralign="left" allowsort="true" allowsort="true"
+                 align="center">
+                编号
+            </div>
+            <div field="ProjectScale" name="ProjectScale" width="150" headeralign="left" allowsort="true" allowsort="true"
+                 align="left">
+                规模
+            </div>
+            <div field="CustomerInfoName" name="CustomerInfoName" width="300" headeralign="left" allowsort="true" allowsort="true"
+                 align="left">
+                业主
+            </div>
+            <div field="ContractRMBValue" name="ContractRMBValue" datatype="currency" currencyunit="￥"
+                 width="130" headeralign="center" allowsort="true" align="right">
+                合同金额
+            </div>
+            <div field="Budget" name="Budget" datatype="currency" currencyunit="￥"
+                 width="130" headeralign="center" allowsort="true" align="right">
+                预算金额
+            </div>
+            <div field="" name="" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="left">
+                计划竣工时间
+            </div>
+            <div field="" name="" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="left">
+                竣工状态
+            </div>
+            <div field="ChargerUserName" name="ChargerUserName" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="center">
+                项目经理
+            </div>
+            <div field="" name="" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="left">
+                当前进度
+            </div>
+            <div field="ReceiptRate" name="" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="right">
+                当前回款（%）
+            </div>
+            <div field="currentReceiptValue" name="currentReceiptValue" datatype="currency" currencyunit="￥"
+                 width="130" headeralign="center" allowsort="true" align="right">
+                本月回款
+            </div>
+            <div field="" name="" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="left">
+                预算工时
+            </div>
+            <div field="ActualHours" name="ActualHours" width="100" headeralign="center" allowsort="true" allowsort="true"
+                 align="left">
+                实际工时
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    normalParamSettings.searchFields = "Name,SerialNumber";
+
+    function cusTabSearch(tabData, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+        }
+        var date = new Date();
+        var belongYear = date.getYear();
+        var belongMonth = date.getMonth();
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "BelongYear") {
+                belongYear = tabDataInfo.value;
+                continue;
+            }
+            if (tabDataInfo.queryfield == "BelongMonth") {
+                belongMonth = tabDataInfo.value;
+                continue;
+            }
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({
+                Year: belongYear, Month: belongMonth, queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData)
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+
+    //计算合计
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        if (result.sumData && e.field) {
+            if (result.sumData[e.field] != undefined) {
+                e.cellHtml = result.sumData[e.field];
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+            else if (result.avgData[e.field] != undefined) {
+                e.cellHtml = "平均：" + result.avgData[e.field];
+                e.cellStyle = "text-align:center; color:Brown;datatype:currency";
+            }
+            else {
+                e.cellHtml = "";
+                e.cellStyle = "text-align:right; color:Brown";
+            }
+        }
+        else {
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+    }
+</script>

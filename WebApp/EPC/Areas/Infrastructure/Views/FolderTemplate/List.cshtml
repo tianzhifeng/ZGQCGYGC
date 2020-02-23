@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({width:'90%',height:'80%'});" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ width: '90%', height: '80%' });" plain="true">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            @*<div field="Push" width="60" headeralign="center" align="center">
+                发布
+            </div>*@
+            <div field="Config" width="60" headeralign="center" align="center">
+                配置
+            </div>
+            <div field="Name" width="200" headeralign="center" allowsort="true">
+                名称
+            </div>
+            <div field="Code" width="200" headeralign="center" allowsort="true">
+                编号
+            </div>
+            <div field="ModeKey" width="200" headeralign="center" allowsort="true">
+                应用于模式
+            </div>
+            <div field="Remark" width="*" headeralign="center" allowsort="true">
+                备注
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.Mode")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "ModeKey", "Mode");
+
+    addGridButton("dataGrid", "Config", {
+        linkText: "配置",
+        onButtonClick: function (row) {
+            var url = "FolderConfig?TemplateID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "目录设置", width: "85%", height: "95%",
+                onDestroy: function (data) { }
+            });
+        }
+    });
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var rec = e.record;
+        if (field == "Config") {
+        }
+    }
+</script>

@@ -1,0 +1,191 @@
+﻿<style>
+    .display {
+        display: none;
+    }
+</style>
+<script id="Grid" type="text/x-jquery-tmpl">
+    <div class="BIinfo-block ${Style}">
+        <div id="${ID}BIinfo-block-content" class="BIinfo-block-content" style="position: relative;">
+            <div class="title" style="position: relative;">
+                <i>|</i>${Title} {{if HasFilter=="true"}}<span id="${ID}FillterIcon" class="fa fa-filter" onclick="toggleFilterClass('${ID}');" style="cursor:pointer;position:absolute;right:7px;line-height: 33px;font-size:19px;color:black"></span>{{/if}}
+            </div>
+            {{if AllowChangeDataSource=="true"|| HasFilter=="true"}}
+            <div id="${ID}Fillter" class="mini-toolbar display" style="padding: 0px; border-top: 0;padding-left:20px;padding-top:20px;position:absolute;height:auto;min-height:100px;right: 0px;z-index: 99;width: 100%;border: 1px solid #e0e0e0;">
+                <table style="width: 100%;height:100%" cellpadding="2" cellspacing="2">
+                    <tr>
+                        {{if HasFilter=="true"}}
+                        <td id="${ID}pcfilter" align="left" style="display: flex;position:relative">
+                            <div name="queryForm" style="display:block;">
+                                {{each FilterInfo}}
+                                {{if AllowChangeDataSource=="true"}}
+                                <div style="width:auto;display:-webkit-inline-box;margin-bottom:5px;">
+                                    <div style="width:80px;"> ${$value.FieldName}</div>
+                                    {{if EnumData}}
+                                    <select name="${$value.Field}" class="select" style="margin-right:20px;margin-left:5px;width:180px;">
+                                        <option value="">全部</option>
+                                        {{each EnumData}}
+                                        {{if IsDefault=="true"}}
+                                        <option value="${$value.value}" selected>${$value.text}</option>
+                                        {{else}}
+                                        <option value="${$value.value}">${$value.text}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                    {{else}}
+                                    <input id="${$value.Field}" name="${$value.Field}" class="text" style="width:180px;display:table-cell;margin-right:20px;margin-left:5px;height:30px;" />
+                                    {{/if}}
+                                </div>
+                                {{else}}
+                                <div style="width:auto;display:-webkit-inline-box;margin-bottom:5px;">
+                                    <div style="width:80px;"> ${$value.FieldName}</div>
+                                    {{if EnumData}}
+                                    <select name="${$value.Field}" class="select" style="margin-right:20px;margin-left:5px;width:180px;">
+                                        <option value="">全部</option>
+                                        {{each EnumData}}
+                                        {{if IsDefault=="true"}}
+                                        <option value="${$value.value}" selected>${$value.text}</option>
+                                        {{else}}
+                                        <option value="${$value.value}">${$value.text}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                    {{else}}
+                                    <input id="${$value.Field}" class="text" name="${$value.Field}" style="width:180px;display:table-cell;height:30px;margin-right:20px;margin-left:5px" />
+                                    {{/if}}
+                                </div>
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            <div id="${ID}Fillterbtns" style="position:absolute;right:60px;">
+                                <button id="${ID}FillterSearch" style="border-radius:5px;width:50px;height:30px;cursor:pointer;top:0px;background-color:#3a638f;color:white; display:table-cell;position:absolute" class="btn" onclick="reloadChart('${GridID}','${DefaultDataSource}')"> 筛选</button>
+                                <button id="${ID}FillterClear" style="border-radius:5px;width:50px;height:30px;cursor:pointer;top:35px;background-color:white;color:#3a638f; display:table-cell;position:absolute" class="btn" onclick="clearfilter('${GridID}', '${DefaultDataSource}')"> 清除</button>
+                            </div>
+                        </td>
+                        <td id="${ID}mobilefilter" style="display:none;z-index:999;top:0px;height:100%;padding-bottom:120px;overflow:auto">
+                            <div id="${ID}filterbackload" style="z-index:999;position:fixed;top:0px;width:30%;opacity:0.5;background-color:black;height:100%" onclick="closefilter('${ID}')"></div>
+
+                            <div id="${ID}queryFormm" name="queryForm" style="background-color:white;z-index:999;height:100%;overflow:auto;position:fixed;width:70%;right:0;top:0px;border-bottom:1px solid;padding-bottom: 120px;">
+                                <div style="margin:10px ">筛选</div>
+                                {{each FilterInfo}}
+                                {{if AllowChangeDataSource=="true"}}
+                                <div style="margin-bottom:5px;padding-left:10px;">
+                                    <div style="width:80px;padding-left:10px;margin-top:10px"> ${$value.FieldName}</div>
+                                    {{if EnumData}}
+                                    <select name="${$value.Field}" class="select" style="margin-left:10%;width:80%;">
+                                        <option value="">全部</option>
+                                        {{each EnumData}}
+                                        {{if IsDefault=="true"}}
+                                        <option value="${$value.value}" selected>${$value.text}</option>
+                                        {{else}}
+                                        <option value="${$value.value}">${$value.text}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                    {{else}}
+                                    <input id="${$value.Field}" name="${$value.Field}" class="text" style="border-radius: 5px;border: 1px solid #ccc;margin-left:10%;width:80%;height:30px;" />
+                                    {{/if}}
+                                </div>
+                                {{else}}
+                                <div style="margin-bottom:5px;padding-left:10px;">
+                                    <div style="width:80px;padding-left:10px;margin-top:10px"> ${$value.FieldName}</div>
+                                    {{if EnumData}}
+                                    <select name="${$value.Field}" class="select" style="margin-left:10%;width:80%;">
+                                        <option value="">全部</option>
+                                        {{each EnumData}}
+                                        {{if IsDefault=="true"}}
+                                        <option value="${$value.value}" selected>${$value.text}</option>
+                                        {{else}}
+                                        <option value="${$value.value}">${$value.text}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                    {{else}}
+                                    <input id="${$value.Field}" name="${$value.Field}" class="text" style="border-radius: 5px;border: 1px solid #ccc;margin-left:10%;width:80%;height:30px;" />
+                                    {{/if}}
+                                </div>
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            <div id="${ID}Fillterbtnsm" style="background: white;height: 120px;position: fixed; bottom: 0px;right: 0px;z-index: 9999;width: 70%;">
+                                <button id="${ID}FillterSearchm" style="z-index:9999;border-radius:5px;width:30%;height:40px;border:0px;cursor:pointer;bottom:60px;background-color:#3A638F;color:white; display:table-cell;position:fixed;right:3%" class="btn" onclick="reloadChart('${GridID}','${DefaultDataSource}')"> 筛选</button>
+                                <button id="${ID}FillterClearm" style="z-index:9999;border-radius:5px;width:30%;height:40px;cursor:pointer;bottom:60px;border:0px;background-color:#CCCCCC;color:white;position:fixed;right:37%" class="btn" onclick="clearfilter('${GridID}', '${DefaultDataSource}')"> 清除</button>
+                                <button id="${ID}FillterCannelm" style="z-index:9999;border-radius:5px;width:64%;height:40px;cursor:pointer;bottom:10px;border:0px;background-color:#BB2E2E;color:white; display:table-cell;position:fixed;right:3%" class="btn" onclick="closefilter('${ID}')"> 取消</button>
+
+                            </div>
+                        </td>
+                        {{/if}}
+                        <td align="right" style="white-space: nowrap;">
+                            {{if AllowChangeDataSource=="true"}}
+                            <div style="width:80px; display:table-cell;">
+                                统计内容：
+                            </div>
+                            <div style="display:table-cell;">
+                                <div style="display: table; cursor:default;">
+                                    {{each dataSourceEnum}}
+                                    {{if $value.value == defaultDataSource }}
+                                    <div style="display: table-cell; padding-right: 5px;">
+                                        <input name="${ID}_dataSourceName" style=" vertical-align:middle;" type="radio" value="${$value.value}" checked="checked" onclick="reloadChart('${chartId}', '${$value.value}')" />
+                                        <label onclick="onRadioLableClick(this);" style=" vertical-align:middle;"> ${$value.text}</label>
+                                    </div>
+                                    {{else}}
+                                    <div style="display: table-cell; padding-right: 5px; ">
+                                        <input name="${ID}_dataSourceName" style=" vertical-align:middle;" type="radio" value=" ${$value.value}" onclick="reloadChart('${chartId}', '${$value.value}')" />
+                                        <label onclick="onRadioLableClick(this);" style=" vertical-align:middle;"> ${$value.text}</label>
+                                    </div>
+                                    {{/if}}
+                                    {{/each}}
+                                </div>
+                            </div>
+                            {{/if}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            {{/if}}
+            <div id="${ID}datadiv" style="width: 100%;">
+                <table id="${GridID}" class="table table-bordered table-hover dataTable" style="margin:0px;" role="grid">
+                    <thead>
+                        <tr role="row">
+                            <th style="text-align: center; padding-top: 4px; padding-bottom:4px; width:30px;"></th>
+                            {{each ColumnDefine}}
+                            <th style="text-align:center;padding-top: 4px; padding-bottom: 4px; width:${$value.Width};" field="${$value.Field}">${$value.Title}</th>
+                            {{/each}}
+                        </tr>
+                    </thead>
+                </table>
+                <div id="${GridID}Container" style="background-color:#fff; width:100%;height:${gridHeight};">
+                    <table class="table table-bordered table-hover dataTable" role="grid">
+                        <tbody id="${GridID}Data"></tbody>
+                    </table>
+                </div>
+                {{if showSummaryRow=="true"}}
+                <div id="${GridID}Summary" style="background: #f6f6f6">
+                    <table class="table table-bordered table-hover dataTable" role="grid">
+                        <tbody id="${GridID}SummaryData">
+                            <tr role="row" style="height:0px;">
+                                <td style="text-align: center; padding-top: 2px; padding-bottom: 2px; width: 30px; "></td>
+                                {{each ColumnDefine}}
+                                <td style="text-align: center; padding-top: 2px; padding-bottom: 2px;width: ${$value.Width};" field="${$value.Field}">
+                                    <div class="mini-grid-cell-inner  mini-grid-cell-nowrap" style="text-align: ${$value.Align};">&nbsp;</div>
+                                </td>
+                                {{/each}}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {{/if}}
+                <div id="${GridID}pagination" style="background: #f6f6f6">
+                    <ul class="pagination" style="float:right;padding:10px;margin:0px;display: flex;padding-top:0px">
+                        <li id="${GridID}previous"><a href="javascript:void(0);">&laquo;</a></li>
+                        <li id="${GridID}first"><a href="javascript:void(0);">1</a></li>
+                        <li id="${GridID}firstmore"><a href="javascript:void(0);">...</a></li>
+                        <li id="${GridID}current"><a id="${GridID}acurrent" class="pagecurrent" href="#">10</a></li>
+                        <li id="${GridID}lastmore"><a href="javascript:void(0);">...</a></li>
+                        <li id="${GridID}last"><a id="${GridID}alast" href="javascript:void(0);">34</a></li>
+                        <li id="${GridID}next"><a href="javascript:void(0);">&raquo;</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

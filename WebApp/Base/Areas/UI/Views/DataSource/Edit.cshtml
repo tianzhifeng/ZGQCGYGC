@@ -1,0 +1,121 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        数据源编号
+                    </td>
+                    <td>
+                        <input name="Code" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                    <td>
+                        数据源名称
+                    </td>
+                    <td>
+                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                </tr>
+                <tr style="display:none">
+                    <td>
+                        所属模块
+                    </td>
+                    <td>
+                        <input name="ConnName" class="mini-combobox" style="width: 100%" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                    </td>
+                    <td>
+                        所属分类
+                    </td>
+                    <td>
+                        <input name="CategoryID" class="mini-combobox" style="width: 100%" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表名
+                    </td>
+                    <td colspan="3">
+                        <input name="TableName" class="mini-textbox" style="width: 100%" required="true" onvaluechanged="onTableValueChanged"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        SQL
+                    </td>
+                    <td colspan="3">
+                        <textarea class="mini-textarea" name="SQL" style="width: 100%; height: 330px;"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory);
+</script>
+<script type="text/javascript">
+
+    function onFormSetData(data) {
+        var connName = getQueryString("ConnName");
+        var categoryID = getQueryString("CategoryID");
+        if (connName) {
+            mini.getbyName("ConnName").setValue(connName);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(data.ConnName, data.CategoryID);
+        }
+
+        var categoryCode = getQueryString("CategoryCode");
+        if (categoryCode && categoryCode != "{CategoryCode}") {
+            mini.getbyName("Code").setValue(categoryCode + "_");
+        }
+    }
+
+    function onTableValueChanged(e){
+        mini.getbyName("SQL").setValue("select * from " + e.value)
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+        mini.getbyName("CategoryID").setData(CateEnum);
+        mini.getbyName("CategoryID").setValue(categoryID);
+    }
+</script>

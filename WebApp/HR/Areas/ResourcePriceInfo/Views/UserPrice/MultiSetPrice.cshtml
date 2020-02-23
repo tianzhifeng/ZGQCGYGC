@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "MultiSetPrice";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="returnValue();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm" autogetdata="false">
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td></td>
+                        <td colspan="3" style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td width="15%">单价（元）</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="UnitPrice" style="width: 100%" class="mini-textbox" required="true" vtype="float" />
+                        </td>
+                        <td width="15%">生效日期</td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="StartDate" class="mini-datepicker" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>强制更新单价</td>
+                        <td style="padding-right: 40px;">
+                            <input name="RemoveLater" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="trueOrFalse" allowinput="false" value="true" />
+                        </td>
+                        <td></td>
+                        <td style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td>生效年份</td>
+                        <td style="padding-right: 40px;">
+                            <input name="BelongYear" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="YearEnum" allowinput="false" onvaluechanged="setStartDate" />
+                        </td>
+                        <td>生效月份</td>
+                        <td style="padding-right: 40px;">
+                            <input name="BelongMonth" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="MonthEnum" allowinput="false" onvaluechanged="setStartDate" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="Remark" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("YearEnum")
+    @Html.GetEnum("MonthEnum")
+
+    var trueOrFalse = [{ value: "true", text: "是" }, { value: "false", text: "否" }];
+</script>
+<script type="text/javascript">
+
+    function pageLoad() {
+        setFormItemDisabled("StartDate");
+    }
+
+    function setStartDate(e) {
+        var belongYear = mini.getbyName("BelongYear").getValue();
+        var belongMonth = mini.getbyName("BelongMonth").getValue();
+        if (belongYear && belongMonth) {
+            var date = new Date(belongYear, belongMonth - 1, 1);
+            mini.getbyName("StartDate").setValue(date);
+        }
+    }
+
+    function returnValue() {
+        var form = new mini.Form("dataForm");
+        form.validate();
+        if (form.isValid() == false) {
+            msgUI("页面输入信息有误，请检查");
+            return;
+        }
+        closeWindow(form.getData());
+    }
+</script>

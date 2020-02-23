@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<html>
+<head>
+    <style>
+        .ay_main {
+            width: 313px;
+            height: 135px;
+            margin: 20px;
+            padding: 0 15px 0 0;
+            border-bottom: 1px solid #dfdfdf;
+            border-right: 1px solid #eeeeee;
+            border-left: 1px solid #eeeeee;
+            border-top: 3px solid #2d4f74;
+            float: left;
+            overflow: hidden;
+            background-color: rgba(255,255,255,.9) !important;
+        }
+
+        .ay_main_photo {
+            width: 103px;
+            height: 135px;
+            line-height: 135px;
+            float: left;
+            overflow: hidden;
+        }
+
+            .ay_main_photo img {
+                width: 103px;
+                height: 135px;
+            }
+
+        .ay_main_right {
+            width: 200px;
+            height: 135px;
+            float: right;
+            overflow: hidden;
+        }
+
+        .ay_right_top {
+            width: 100%;
+            border-bottom: 1px solid #dfdfdf;
+            padding: 15px 0 5px 0;
+            overflow: hidden;
+        }
+
+        .ay_name {
+            font: 14px "Microsoft YaHei", "Arial", Helvetica, sans-serif;
+            color: #000;
+            float: left;
+            line-height: 24px;
+            height: 24px;
+            margin-left: 5px;
+        }
+
+        .ay_duty {
+            font-size: 12px;
+            color: #666;
+            float: left;
+            line-height: 24px;
+            height: 24px;
+            margin-left: 5px;
+        }
+
+        .ay_info {
+            font-size: 12px;
+            color: #666;
+            line-height: 20px;
+            overflow: hidden;
+            margin: 10px 0 0 5px;
+        }
+    </style>
+</head>
+<body style="width: 99%; height: 99%;">
+    @foreach (var user in ViewBag.EngineeringUsers)
+    {
+        <div class="ay_main">
+            <div class="ay_main_photo">
+                <input id="Portrait" class="mini-Pic" src='/HR/YellowPage/YellowPage/GetPic?ID=@user.ID&ImageType=Portrait' noneimagesrc="/CommonWebResource/RelateResource/image/photo.jpg" />
+            </div>
+            <div class="ay_main_right">
+                <div class="ay_right_top">
+                    <div class="ay_name">
+                        @user.UserName
+                    </div>
+                </div>
+                <div class="ay_info">
+                    <span style="font-weight:bold">电 话：</span>@user.Phone<br />
+                    <span style="font-weight:bold">部 门：</span>@user.DeptName<br />
+                    <span style="font-weight:bold">角 色：</span>@user.RoleName<br />
+                </div>
+            </div>
+        </div>
+    }
+</body>
+</html>

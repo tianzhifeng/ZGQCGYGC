@@ -1,0 +1,263 @@
+﻿@section scripts{
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/kindeditor-min.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/Base/Scripts/KindEditor/lang/zh_CN.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/Base/Scripts/KindEditor/themes/default/default.css")" rel="stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript">
+        var editor;
+        KindEditor.ready(function (K) {
+            editor = K.create('textarea.KindEditor', { filterMode: false, items: [] });
+        });
+    </script>
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <table width="100%" style="table-layout: fixed;">
+        <tr style="height: 0px">
+            <td width="15%">
+            </td>
+            <td width="35%">
+            </td>
+            <td width="15%">
+            </td>
+            <td width="35%">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                相关模块
+            </td>
+            <td>
+                <input name="Module" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+            </td>
+            <td>
+                期望完成时间
+            </td>
+            <td>
+                <input name='ExpectedCompleteTime' class='mini-datepicker' style='width: 100%' />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                反馈标题
+            </td>
+            <td colspan='3'>
+                <input name="Title" style="width: 100%" class="mini-textbox" vtype="maxLength:50"
+                    required="true" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                反馈地址
+            </td>
+            <td colspan='3'>
+                <input class="mini-textbox" name="Url" style="width: 100%;" required="true"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                反馈人
+            </td>
+            <td>
+                <input name='CreateUserID' textname='CreateUserName' class='mini-buttonedit' required='true'
+                    style='width: 100%' enabled='false' />
+            </td>
+            <td>
+                反馈时间
+            </td>
+            <td>
+                <input name='CreateTime' class='mini-datepicker' style='width: 100%' enabled='false' />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                严重程度
+            </td>
+            <td>
+                <input name="Level" class="mini-combobox" style="width: 100%;" data="FeedbackLevel"
+                    required="true" />
+            </td>
+            <td>
+                反馈类型
+            </td>
+            <td>
+                <input name="Type" class="mini-combobox" style="width: 100%;" data="FeedbackType"
+                    required="true" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                反馈内容
+            </td>
+            <td colspan='3'>
+                <textarea class="mini-textarea" name="Content" style="width: 100%; height: 88px"
+                    required="true"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                相关截图
+            </td>
+            <td colspan='3'>
+                IE11和FireFox浏览器可直接粘贴截图，其它浏览器请上传图片 <input type="file" accept=".png,.bmp,.jpg,.jpeg,.gif"
+                    onchange="fileChange(this);" style="width: 170px;" />
+                <textarea name="Attachment" class="KindEditor" style="width: 100%; height: 265px;"></textarea>
+            </td>
+        </tr>
+    </table>
+</div>
+</form>
+<script language="javascript" type="text/javascript">
+    @Html.GetEnum("System.TorF")
+</script>
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $("#btnSave").bind("click", function () {
+
+            save({ showLoading: true, onComplete: function (data) {
+
+                if (FeedbackServerUrl == "" || FeedbackProjectName == "") {
+                    closeWindow();
+                    return;
+                }
+
+                var executeParams = new mini.Form("#dataForm").getData();
+                executeParams.ProjectName = FeedbackProjectName;
+                executeParams.ID = data.ID;
+                executeParams.CreateTime = null;
+                executeParams.Attachment = window.editor.html();
+                executeParams.ExpectedCompleteTime = funConvertUTCToNormalDateTime(executeParams.ExpectedCompleteTime);
+                jQuery.ajax({
+                    url: FeedbackServerUrl,
+                    type: "post",
+                    data: executeParams,
+                    dataType: "text",
+                    cache: false,
+                    success: function (text, textStatus) {
+                        //增加新版报错分支
+                        if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                            var fail = jQuery.parseJSON(text);
+                            var msg = getErrorFromHtml(fail.errmsg);
+                            msgUI(msg, 4);
+                            return;
+                        }
+                        closeWindow();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        msgUI("反馈提交成功，发送反馈到金慧软件有限公司失败！");
+                    }
+                });
+            }
+            });
+        });
+    });
+    function onFormSetData(data) {
+        if (data == undefined || data.Url == undefined) {
+            mini.getbyName("Url").setValue(getQueryString("url"));
+
+            var title = getQueryString("Title");
+            title = UrlDecode(title);
+            mini.getbyName("Title").setValue(title);
+        }
+
+        //浏览器判断
+        var browser = navigator.appName
+        var b_version = navigator.appVersion
+        var version = b_version.split(";");
+        var trim_Version = version[1].replace(/[ ]/g, "");
+        if (browser == "Microsoft Internet Explorer" && trim_Version == "MSIE6.0") {
+            msgUI('请使用IE9及以上、火狐、Chrome浏览器！', 1, function () { closeWindow(); });
+        }
+        else if (browser == "Microsoft Internet Explorer" && trim_Version == "MSIE7.0") {
+            msgUI('请使用IE9及以上、火狐、Chrome浏览器！', 1, function () { closeWindow(); });
+        }
+        else if (browser == "Microsoft Internet Explorer" && trim_Version == "MSIE8.0") {
+            msgUI('请使用IE9及以上、火狐、Chrome浏览器！', 1, function () { closeWindow(); });
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function UrlDecode(zipStr) {
+        var uzipStr = "";
+        for (var i = 0; i < zipStr.length; i++) {
+            var chr = zipStr.charAt(i);
+            if (chr == "+") {
+                uzipStr += " ";
+            } else if (chr == "%") {
+                var asc = zipStr.substring(i + 1, i + 3);
+                if (parseInt("0x" + asc) > 0x7f) {
+                    uzipStr += decodeURI("%" + asc.toString() + zipStr.substring(i + 3, i + 9).toString());
+                    i += 8;
+                } else {
+                    uzipStr += AsciiToString(parseInt("0x" + asc));
+                    i += 2;
+                }
+            } else {
+                uzipStr += chr;
+            }
+        }
+
+        return uzipStr;
+    }
+
+    function StringToAscii(str) {
+        return str.charCodeAt(0).toString(16);
+    }
+    function AsciiToString(asccode) {
+        return String.fromCharCode(asccode);
+    }
+
+</script>
+<script type="text/javascript">
+    var dealStatus = [{ value: "问题待确认", text: "问题待确认" }, { value: "暂缓", text: "暂缓" }, { value: "不处理", text: "不处理" }, { value: "待安排", text: "待安排" }, { value: "进行中", text: "进行中" }, { value: "修改完成", text: "修改完成" }, { value: "确认完成", text: "确认完成"}];
+    var FeedbackType = [{ value: '界面报错', text: '界面报错' }, { value: '界面美化', text: '界面美化' }, { value: '功能改进', text: '功能改进' }, { value: '性能低下', text: '性能低下' }, { value: '新增功能', text: '新增功能'}];
+    var FeedbackLevel = [{ value: '一般', text: '一般' }, { value: '严重', text: '严重' }, { value: '非常严重', text: '非常严重'}];
+    var FeedbackProblemNature = [{ value: 'BUG', text: 'BUG' }, { value: '修订', text: '修订' }, { value: '新增', text: '新增' }, { value: '变更', text: '变更'}];
+    var FeedbackProjectName = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectName"]';
+    var FeedbackProjectPrincipal = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectPrincipal"]';
+    var FeedbackProjectDept = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackProjectDept"]';
+    var FeedbackServerUrl = '@System.Configuration.ConfigurationManager.AppSettings["FeedbackServerUrl"]';    
+</script>
+<script type="text/javascript">
+    function funConvertUTCToNormalDateTime(utc) {
+        var date = new Date(utc);
+        var ndt;
+        ndt = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + (date.getUTCDate() + 1);
+        return ndt;
+    }
+</script>
+<script type="text/javascript">
+    function fileChange(e) {
+
+        if (typeof (FileReader) === 'undefined') {
+            alert("抱歉，你的浏览器不支持 FileReader，请使用支持Html5的浏览器！");
+            return;
+        }
+        var file = e.files[0];
+        //这里我们判断下类型如果不是图片就返回 去掉就可以上传任意文件   
+        if (!/image\/\w+/.test(file.type)) {
+            alert("请确保文件为图像类型");
+            return false;
+        }
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+            var s = this.result;
+            window.editor.html('<img src="' + this.result + '" alt=""/>');
+        }
+    }
+</script>

@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "社会招聘动态表";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="white-space: nowrap;">
+                年份：
+                <input class="mini-combobox" name="Year" style="width: 80px;" valuefield="value"
+                    data="yearEnum" textfield="text" shownullitem="false" onvaluechanged="YearMonthSearch()" / value="@DateTime.Now.Year">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="GetSociaDynamicList" class="mini-datagrid" style="width: 100%;
+        height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div field="DeptName" width="200" headeralign="center" allowsort="true">
+                部门</div>
+            <div field="PassRate" width="100" headeralign="center" allowsort="true" align="center">
+                面试通过率%</div>
+            <div field="EntryRate" width="100" headeralign="center" allowsort="true" align="center">
+                入职率%</div>
+            <div field="FinishRate" width="100" headeralign="center" allowsort="true" align="center">
+                招聘完成率%</div>
+            <div field="Need" width="100" headeralign="center" allowsort="true" align="center">
+                招聘需求人数</div>
+            <div field="All" width="100" headeralign="center" allowsort="true" align="center">
+                面试总人数</div>
+            <div field="Pass" width="100" headeralign="center" allowsort="true" align="center">
+                面试通过人数</div>
+            <div field="Entry" width="100" headeralign="center" allowsort="true" align="center">
+                入职人数</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var yearEnum = setYear();
+
+    function YearMonthSearch() {
+        var _year = mini.getbyName("Year").getValue();
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.load({ year: _year });
+    }
+
+    function setYear() {
+        var nowYear = new Date().getFullYear();
+        var arr = [];
+        for (var i = (nowYear - 10); i < nowYear + 1; i++) {
+            arr.push({
+                "value": i,
+                "text": i
+            });
+        }
+        arr.reverse();
+        return arr;
+    }
+</script>

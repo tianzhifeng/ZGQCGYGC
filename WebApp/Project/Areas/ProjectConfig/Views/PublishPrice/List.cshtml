@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "出图单价";
+}
+<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-save" onclick="saveList();" id="btnSave">保存</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入图纸出版类型" onenter="quickSearch('PublicationType');"
+                       onbuttonclick="quickSearch('PublicationType');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true" showpager="false"
+         allowcelledit='true' allowcellselect='true' fitcolumns="false" oncellendedit="oncellendedit" allowcellvalid="true" oncellvalidation="oncellvalidation">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="PublicationType" width="200" allowsort="true" align="left">
+                图纸出版类型
+            </div>
+            @{
+                var specifications = ViewBag.Specifications as List<Formula.Helper.EnumItemInfo>;
+                foreach (var specification in specifications)
+                {
+                    <div field="@specification.Code" width="80" headeralign="center" align="right">
+                        @specification.Name (元)
+                        <input property='editor' class='mini-textbox' allowinput='true' style='width:100%;' />
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.PublicationType");
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "PublicationType", "PublicationType");
+    var list = [];
+    function oncellendedit(e) {
+        var row = e.record, field = e.field, value = e.value;
+        var obj = list.filter(function (x) {
+            return x.PublicationType == row.PublicationType && x.Specification == field;
+        })
+        if (obj.length != 0)
+            obj[0].Price = value;
+        else
+            list.push({ PublicationType: row.PublicationType, Specification: field, Price: value });
+    }
+
+    function saveList() {
+        var dataGrid = mini.get("dataGrid");
+        if (!dataGrid.isValid()) {
+            return msgUI("请输入数字");
+        }
+        addExecuteParam("listData", mini.encode(list));
+        execute("SaveListData", {
+            showLoading: true, onComplete: function (data) {
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function oncellvalidation(e) {
+        if (isNaN(e.value)) {
+            msgUI("请输入数字");
+            e.isValid = false;
+        }
+    }
+</script>

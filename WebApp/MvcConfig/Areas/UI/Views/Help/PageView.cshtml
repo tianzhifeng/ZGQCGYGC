@@ -1,0 +1,10 @@
+﻿<script type="text/javascript">    
+    document.onkeydown = function (event) {       
+        var e = event || window.event || arguments.callee.caller.arguments[0];
+        if (e && e.keyCode == 27) {
+            closeWindow();
+        }
+    }
+    window.parent.document.onkeydown = document.onkeydown;
+</script>
+@Html.Raw(ViewBag.HelpHtml)

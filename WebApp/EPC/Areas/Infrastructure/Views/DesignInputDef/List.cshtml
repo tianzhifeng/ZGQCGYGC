@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addRow({});" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delRow()" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveList();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称或编号" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" showpager="false"
+         allowcelledit="true" allowcellselect="true" multiselect="true" editnextonenterkey="true" editnextrowcell="true" sortorder="asc">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="*" headeralign="center" allowsort="true" vtype="required">
+                资料名称<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="Code" width="120" headeralign="center" allowsort="true">
+                编号<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="Class" width="120" autoshowpopup="true" headeralign="center" allowsort="true" vtype="required">
+                资料分类<input property="editor" class="mini-combobox" style="width:100%;" data="DesignInpuClass" />
+            </div>
+            <div field="DocType" headeralign="center" autoshowpopup="true" width="120" allowsort="true" align="right">
+                资料文件类别<input property="editor" class="mini-combobox" style="width:100%;" data="InputType" />
+            </div>
+            <div field="ProjectClass" headeralign="center" autoshowpopup="true" width="200" allowsort="true" align="left" vtype="required">
+                所属业务类型<input property="editor" multiselect="true" class="mini-combobox" style="width:100%;" data="ProjectClass" />
+            </div>
+            @*<div field="PhaseValues" headeralign="center" width="200" allowsort="true" align="left" vtype="required">
+                    所属阶段<input property="editor" multiselect="true" class="mini-combobox" style="width:100%;" data="Phase" />
+                </div>*@
+            <div field="SortIndex" headeralign="center" width="150" allowsort="true" align="right" vtype="int">
+                排序<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.DesignInpuClass")
+    @Html.GetEnum("Base.ProjectClass")
+    @Html.GetEnum("Base.InputType")
+
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "Class", "DesignInpuClass");
+    addGridEnum("dataGrid", "ProjectClass", "ProjectClass");
+    addGridEnum("dataGrid", "DocType", "InputType");
+</script>
+

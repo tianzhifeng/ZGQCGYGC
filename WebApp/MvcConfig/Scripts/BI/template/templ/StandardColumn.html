@@ -1,0 +1,37 @@
+﻿<script id="StandardColumn" type="text/x-jquery-tmpl">
+    <div class="BIinfo-block ${Style}">
+        <div class="BIinfo-block-content">
+            <span class="title"><i>|</i>${Title}</span>
+            {{if AllowChangeDataSource=="true"}}
+            <div class="mini-toolbar" style="padding: 0px; border-top: 0;">
+                <table style="width: 100%;" cellpadding="2" cellspacing="2">
+                    <tr>
+                        <td width="80px;">&nbsp;&nbsp;&nbsp;统计内容：</td>
+                        <td align="left">
+                            <div style="display: table; border-spacing:5px 0px;">
+                                {{each dataSourceEnum}}
+                                {{if $value.value == defaultDataSource }}
+                                <div style="display:table-cell">
+                                    <input name="dataSourceName" style=" vertical-align:middle;" type="radio" value="${$value.value}" checked="checked" onclick="reloadChart('${chartId}', '${$value.value}')" />
+                                    <label onclick="onRadioLableClick(this);" style=" vertical-align:middle;"> ${$value.text}</label>
+                                </div>
+                                {{else}}
+                                <div style="display:table-cell">
+                                    <input name="dataSourceName" style=" vertical-align:middle;" type="radio" value=" ${$value.value}" onclick="reloadChart('${chartId}', '${$value.value}')" />
+                                    <label onclick="onRadioLableClick(this);" style=" vertical-align:middle;"> ${$value.text}</label>
+                                </div>
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                        </td>
+                        <td style="white-space: nowrap;"></td>
+                    </tr>
+                </table>
+            </div>
+            {{/if}}
+            <div id="${chartId}" style="height:${chartHeight};">
+            </div>
+        </div>
+    </div>
+</script>
+

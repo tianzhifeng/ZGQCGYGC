@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+
+<div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px">
+    <div title="个人任务">
+        <div class="mini-toolbar gw-grid-toolbar" style="padding: 0px; border: 0">
+            <table>
+                <tr>
+                    <td style="width: 100%;height: 37px;padding-left: 10px;font-weight:bolder;">
+                        
+                    </td>
+                    <td class="gw-toolbar-right" style="white-space: nowrap;">
+                        @*<input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入任务名称或流程名称" onenter="quickSearch('FlowName,TaskName');"
+                            onbuttonclick="quickSearch('FlowName,TaskName');" />*@
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetPersonTaskList?ProjectInfoID=@ViewBag.ProjectInfoID&UserID=@ViewBag.UserID"
+                            multiselect="true" borderstyle="border-left:0;border-right:0;" ondrawgroup="onDrawGroup" onload="onGridLoad" showpager="false">
+                <div property="columns">
+                    <div type='indexcolumn' headeralign='center'>序号</div>
+                    <div field="FlowName" width="150" textalign="center" allowsort="false" headeralign="center">流程名称</div>
+                    <div field="TaskName" width="250" headeralign="center" allowsort="false" renderer="onTaskLinkRenderer">任务名称</div>
+                    <div field="FlowStartUserName" width="55" align="center" allowsort="false" headeralign="center">流程发起人</div>
+                    <div field="CreateTime" width="130" align="center" allowsort="false" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss">发送时间</div>
+                    <div field="ExecTime" width="130" align="center" allowsort="false" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss">执行时间</div>
+                    <div field="Status" width="80" headeralign="center" align="center">流程状态</div>
+                    <div field="SortIndex" width="150" dataType="int" visible="false">排序</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="个人工时" url=""></div>
+    <div title="个人成果" url=""></div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Workflow.Logic.FlowTaskStatus))
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "Status", "FlowTaskStatus");
+    addGridLink("dataGrid", "Status", "/MvcConfig/Workflow/Trace/Diagram?ID={FormInstanceID}&FuncType=FlowTrace", { title: '流程跟踪', width: 1000, height: "85%" });
+    function pageLoad() {
+        var ProjectInfoID = getQueryString("ProjectInfoID");
+        var MarketProjectInfoID = getQueryString("MarketProjectInfoID");
+        var UserID = getQueryString("UserID");
+        var mainTab = mini.get("mainTab");
+        var tabWorkHour = mainTab.getTab(1);
+        tabWorkHour.url = "/MvcConfig/UI/List/PageView?TmplCode=WorkHourDetail";
+        if (ProjectInfoID)
+            tabWorkHour.url += "&ProjectID=" + ProjectInfoID;
+        if (UserID)
+            tabWorkHour.url += "&UserID=" + UserID;
+        mainTab.updateTab(tabWorkHour);
+        var tabProduct = mainTab.getTab(2);
+        tabProduct.url = "/MvcConfig/UI/List/PageView?TmplCode=ProductDetail";
+        if (ProjectInfoID)
+            tabProduct.url += "&ProjectInfoID=" + ProjectInfoID;
+        if (UserID)
+            tabProduct.url += "&CreateUserID=" + UserID;
+        mainTab.updateTab(tabProduct);
+
+        mainTab.reloadTab(tabWorkHour);
+    }
+
+    function onDrawGroup(e) {
+        var grid = e.sender;
+        var finishCount = 0, unFinishCount = 0;
+        finishCount = $.grep(e.rows, function (item, index) {
+            return item.IsFinish == "T";
+        }).length;
+        unFinishCount = $.grep(e.rows, function (item, index) {
+            return item.IsFinish == "F";
+        }).length;
+        e.cellHtml = e.rows[0].FlowName + "<font style='color:#FF4500' > (" + e.rows.length + ")</font>（已执行：" + finishCount + "，未执行：" + unFinishCount + "）";
+    }
+    function onGridLoad(e)
+    {
+        var grid = e.sender;var data = e.result.data;
+        var total = data.length||0;
+        var finishCount = 0, unFinishCount = 0;
+        finishCount = $.grep(data, function (item, index) {
+            return item.IsFinish == "T";
+        }).length;
+        unFinishCount = $.grep(data, function (item, index) {
+            return item.IsFinish == "F";
+        }).length;
+
+        $(".mini-toolbar td:first").html("任务总数：<font style='color:#FF4500' >" + total + "</font>个（已执行：<font style='color:#FF4500' >" + finishCount + "</font>个，未执行：<font style='color:#FF4500' >" + unFinishCount + "</font>个）");
+        grid.groupBy("SortIndex");
+        grid.collapseGroups();
+    }
+</script>

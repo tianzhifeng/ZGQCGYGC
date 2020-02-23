@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "工程项目管理";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>工程项目管理</title>
+    <script src="@Url.Content("/PortalLTE/Scripts/jQuery/jQuery-2.2.0.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/MvcConfig/Scripts/jquery.cookie.js")" type="text/javascript"></script>
+    <link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+    <link href="/MvcConfig/Scripts/CSS/dndx.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="_bodyList" style="height:100%;overflow:hidden">
+    </div>
+</body>
+</html>
+<script src="/PortalLTE/Scripts/jQuery/jquery.nicescroll.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        BindList();
+        $("#_bodyList").niceScroll({ touchbehavior: false, cursoropacitymax: 0, cursorwidth: 1 });
+    });
+
+    function openDetail(e) {
+        //获取url中的参数
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.parent.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+        window.parent.location.href = "DetailPage?TmplCode=" + getUrlParam("TmplCode") + "&ID=" + e.id;
+    }
+
+    function BindList() {
+        var searchKey = "", sort = "", group = getQueryString("group"), html = "", gCount = 0;
+        if (getQueryString("Key").length > 0) { searchKey = getQueryString("Key"); }
+        var pageIndex = getQueryString("pageIndex") > 1 ? getQueryString("pageIndex") : '1';
+        var pageSize = getQueryString("pageSize") > 1 ? getQueryString("pageSize") : '10';
+        if (getQueryString("sort").length > 0) { sort = getQueryString("sort"); }
+        $.ajax({
+            url: parent.engineerJson.List.url + "&pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&searchKey=" + searchKey + "&sort=" + sort + "&group=" + group,
+            data: {},
+            type: "post",
+            success: function (text) {
+                var json = eval(mini.decode(text));
+                count = json[0] != undefined ? json[0].pageCount : 0; Page(count);
+                $('#_pageCount', window.parent.document).html(count);
+                for (var i = 0; i < json.length; i++) {
+                    var data = parent.engineerJson.List.html;
+                    var para = parent.engineerJson.List.html.match(/[^\[]+(?=\])/gm);
+                    var isTop = parent.engineerJson.List.html.match(/[^\{]+(?=\})/gm);
+                    if (para) {
+                        for (var j = 0; j < para.length; j++) {
+                            var re = '[' + para[j] + "]";
+                            data = data.replace(re, eval('json[' + i + '].' + para[j]));
+                        }
+                    }
+                    if (isTop) {
+                        for (var j = 0; j < isTop.length; j++) {
+                            var re = '{' + isTop[j] + "}";
+                            var id = eval('json[' + i + '].' + para[j]);
+                            data = data.replace(re, $.cookie(id) == null ? "" : "置顶");
+                        }
+                    }
+
+                    if (group.length > 0) {
+                        var keys = eval('json[' + i + '].GROUPCOLUMN');
+                        if (keys != null) {
+                            html += (gCount == 0 ? "" : "</ul></ul>") + "<ul><li><a href=\"javascript:gClick('" + i + "')\">" + keys.replace(group, window.parent.gName) + "</a></li><ul id='_group_" + i + "'>";
+                            gCount += 1;
+                        } else {
+                            html += data;
+                        }
+                    }
+                    else {
+                        html += (i == 0 ? '<ul>' : '') + data + (i == json.length - 1 ? '</ul>' : '');
+                    }
+                }
+                $("#_bodyList").html(html);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                msgUI("出错了,请联系管理员!");
+            }
+        });
+    }
+
+    function gClick(index) {
+        if ($("#_group_" + index).css("display") == "none") {
+            $("#_group_" + index).css("display", "");
+        } else {
+            $("#_group_" + index).css("display", "none");
+        }
+    }
+
+    function Page(count) {
+        var ms = {
+            init: function (totalsubpageTmep, args) {
+                return (function () {
+                    ms.fillHtml(totalsubpageTmep, args);
+                    ms.bindEvent(totalsubpageTmep, args);
+                })();
+            },
+            //填充html
+            fillHtml: function (totalsubpageTmep, args) {
+                return (function () {
+                    var totalsubpageTmep = "";
+                    // 页码大于等于4的时候，添加第一个页码元素
+                    if (args.currPage != 1 && args.currPage >= 4 && args.totalPage != 4) {
+                        totalsubpageTmep += '<input type="button" value="1" class="geraltTb_pager" style="margin-right:5px;" data-go="" onclick="GetPageByID(this)" />';
+                    }
+                    /* 当前页码>4, 并且<=总页码，总页码>5，添加“···”*/
+                    if (args.currPage - 2 > 2 && args.currPage <= args.totalPage && args.totalPage > 5) {
+                        totalsubpageTmep += '<span style="color:#fff;margin-right:5px;">...</span>';
+                    }
+                    /* 当前页码的前两页 */
+                    var start = args.currPage - 2;
+                    /* 当前页码的后两页 */
+                    var end = args.currPage + 2;
+
+                    if ((start > 1 && args.currPage < 4) || args.currPage == 1) {
+                        end++;
+                    }
+                    if (args.currPage > args.totalPage - 4 && args.currPage >= args.totalPage) {
+                        start--;
+                    }
+
+                    for (; start <= end; start++) {
+                        if (start <= args.totalPage && start >= 1) {
+                            if (start != args.currPage) {
+                                totalsubpageTmep += '<input type="button" value="' + start + '" class="geraltTb_pager" style="margin-right:5px;" data-go="" onclick="GetPageByID(this)" />';
+                            } else {
+                                totalsubpageTmep += '<input type="button" value="' + start + '" class="geraltTb_pager" style="margin-right:5px;" data-go="" onclick="GetPageByID(this)" />';
+                            }
+                        }
+                    }
+
+                    if (args.currPage + 2 < args.totalPage - 1 && args.currPage >= 1 && args.totalPage > 5) {
+                        totalsubpageTmep += '<span style="color:#fff;margin-right:5px;">...</span>';
+                    }
+
+                    if (args.currPage != args.totalPage && args.currPage < args.totalPage - 2 && args.totalPage != 4) {
+                        totalsubpageTmep += '<input type="button" value="' + args.totalPage + '" class="geraltTb_pager" style="margin-right:5px;" data-go="" onclick="GetPageByID(this)" />';
+                    }
+                    $('#_pages', window.parent.document).html(totalsubpageTmep);
+                })();
+            },
+            //绑定事件
+            bindEvent: function (totalsubpageTmep, args) {
+                return (function () {
+                    //totalsubpageTmep.on("click", "input.geraltTb_pager", function (event) {
+                    //    var current = parseInt($(this).text());
+                    //    ms.fillHtml(totalsubpageTmep,{"currPage":current,"totalPage":args.totalPage,"turndown":args.turndown});
+                    //    if(typeof(args.backFn)=="function"){
+                    //        args.backFn(current);
+                    //    }
+                    //});
+                })();
+            }
+        }
+        ms.init(this, {
+            totalPage: count,
+            currPage: count > 8 ? count / 2 : 1,
+            turndown: 'true',
+            backFn: function (p) {
+                console.log("回调函数：" + p);
+            }
+        });
+    }
+
+</script>

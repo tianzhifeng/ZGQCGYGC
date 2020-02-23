@@ -1,0 +1,39 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="execute('AllowPush',{actionTitle:'允许',mustSelectRow:true});">允许推送移动端</a>
+                <a class="mini-button" id="btnDelete" iconcls="icon-remove" onclick="execute('DenyPush',{actionTitle:'禁止',mustSelectRow:true});">禁止推送移动端</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入流程编号或名称" onenter="quickSearch('FlowCode,FlowName');" onbuttonclick="quickSearch('FlowCode,FlowName');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="AllowToMobile" width="100" align="center" allowsort="true">
+                推送到移动端</div>
+            <div field="FlowName" width="*" allowsort="true">
+                流程名称</div>
+            <div field="Name" width="250" allowsort="true">
+                环节名称</div>
+            <div field="FlowCode" width="150" allowsort="true">
+                流程编号</div>
+            <div field="Code" width="150" allowsort="true">
+                环节编号</div>
+            <div field="Phase" width="80" allowsort="true">
+                所属阶段</div>
+            <div width="*">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "AllowToMobile", "yesNo");
+    addGridLink("dataGrid", "FlowName", "/Workflow/DefFlow/Edit?ID={FlowID}&FuncType=View", { title: "查看流程", refresh: false });
+</script>

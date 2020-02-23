@@ -1,0 +1,65 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="~/Scripts/webPrint/print.css" />
+
+
+    <style>
+        .printheader { border-bottom:1px solid #ccc}
+        .printheader span {font-size: 10px;font-family: "Microsoft YaHei"; float: right; line-height:30px;}
+        .printheader img { height:30px;}
+        h1 {font-family: "Microsoft YaHei"; font-size: 20px; min-height:45px;}
+        fieldset { position:relative;margin-top:30px; border-bottom: 0px #cdcdcd solid; border-left: 0px #cdcdcd solid; border-right: 0px #cdcdcd solid; border-top: 1px #333 solid;}
+        legend { font-size:12px; position: absolute; top: -26px; font-weight: bolder;font-family: "Microsoft YaHei"}
+        table tr td {    border: 1px solid #ddd;  padding: 5px;  font-size: 12px;  font-family: "Microsoft YaHei";}
+        .auditSignDiv table tr td {    border: 0px solid #ddd !important; }
+        .auditSignDiv div {border: 0px solid #ddd !important; }
+        .auditSignDiv hr {border: 1px solid #ddd !important; }
+        .textareaDiv { display:inline-block;}
+    </style>
+
+
+    <script language="javascript">
+        function preview(oper) {
+            if (oper < 10) {
+                bdhtml = window.document.body.innerHTML;//获取当前页的html代码
+                sprnstr = "<!--startprint" + oper + "-->";//设置打印开始区域
+                eprnstr = "<!--endprint" + oper + "-->";//设置打印结束区域
+                prnhtml = bdhtml.substring(bdhtml.indexOf(sprnstr) + 18); //从开始代码向后取html
+                prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));//从结束代码向前取html
+                window.document.body.innerHTML = prnhtml;
+                window.print();
+                window.document.body.innerHTML = bdhtml;
+            } else {
+                window.print();
+            }
+        }
+    </script>
+</head>
+<body>
+    <!--startprint1-->
+
+    <div id="printheader" class='printheader'><img src='@Html.Raw(ViewBag.webPrintLogo)'><span>@Html.Raw(ViewBag.webPrintHeader)</span></div>
+
+    @Html.Raw(ViewBag.FormPrintHtml)
+
+    <!--endprint1-->
+
+
+    <script type="text/javascript">
+        preview(1);
+    </script>
+
+    <script type="text/javascript">
+        $(".subTable").parent().css("padding", "0").css("border", "0");
+//        $(".auditSignDiv").parent().css("padding", "0").css("border", "0");
+    </script>
+</body>
+</html>

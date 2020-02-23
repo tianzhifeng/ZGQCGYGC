@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "SettlementList";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                年份：<input name="BelongYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                          data="YearEnum" allowinput="false" value="@DateTime.Now.Year" onvaluechanged="" />
+                月份：<input name="BelongMonth" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                          data="MonthEnum" allowinput="false" value="@DateTime.Now.Month" onvaluechanged="" />
+                <a class="mini-button" iconcls="icon-add" onclick="" plain="true">汇集结算数据</a>
+                <a class="mini-button" iconcls="icon-add" onclick="" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         allowcelledit="true" allowcellselect="true" multiselect="true" editnextonenterkey="true" editnextrowcell="true"
+         showpager="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="EngineeringInfoCode" width="120" headeralign="center" allowsort="true">
+                工程编号
+
+            </div>
+            <div field="EngineeringInfoName" width="200" headeralign="center" allowsort="true">
+                工程名称
+            </div>
+            <div field="Name" width="120" headeralign="center" allowsort="true">
+                费用名称
+            </div>
+            <div field="Code" width="120" headeralign="center" allowsort="true">
+                费用编码
+            </div>
+            <div field="Quantity" width="60" headeralign="center" allowsort="true">
+                数量<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="UnitPrice" headeralign="center" width="100" allowsort="true" align="center">
+                单价（元）<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="TotalValue" headeralign="center" width="120" allowsort="true" align="right">
+                费用总计（元）<input property="editor" class="mini-textbox" style="width:100%;" />
+            </div>
+            <div field="CostDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                结算日期<input property="editor" class="mini-datepicker" style="width:100%;" />
+            </div>
+            <div field="FinaceSubjectName" headeralign="center" width="100" allowsort="true" align="center">
+                财务科目
+            </div>
+            <div field="FinaceSubjectCode" headeralign="center" width="100" allowsort="true" align="center">
+                财务科目编码
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("YearEnum")
+    @Html.GetEnum("MonthEnum")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+
+
+    function sumSettlement() {
+        var belongYear = mini.getbyName("BelongYear").getValue();
+        var belongMonth = mini.getbyName("BelongMonth").getValue();
+
+        addExecuteParam("BelongYear", "");
+        addExecuteParam("BelongMonth", "");
+        execute("URL", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+
+            }, validateForm: false
+        });
+
+    }
+</script>

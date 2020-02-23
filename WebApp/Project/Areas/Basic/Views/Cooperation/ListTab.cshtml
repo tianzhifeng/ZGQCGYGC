@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="子项选择" region="north" height="250" showspliticon="true">
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetSubProjectList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 onselectionchanged="onSelectionChanged" showpager="false" borderstyle="border:0px;">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="Name" width="*" headeralign="center" allowsort="true">
+                        子项名称
+                    </div>
+                    <div field="ExtField1" width="120" headeralign="center" allowsort="true" align="center">
+                        建筑面积
+                    </div>
+                    <div field="PhaseCode" width="200" headeralign="center" allowsort="true" align="left">
+                        所属阶段
+                    </div>
+                    <div field="ExtField2" headeralign="center" width="200" allowsort="true" align="left">
+                        单体
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" style="border:0px;">
+        <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Phase");
+
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "PhaseCode", "Phase");
+    var spaceCode = getQueryString("SpaceCode");
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var authType = getQueryString("AuthType");
+    function onSelectionChanged(e) {
+        var subProject = e.selected;
+        var phaseValue = subProject.PhaseCode.split(',');
+        var tabs = mini.get("mainTab");
+        tabs.removeAll();
+        for (var i = 0; i < phaseValue.length; i++) {
+            var url = "Plan?SpaceCode=" + spaceCode + "&AuthType=" + authType + "&SubProjectID=" + subProject.ID + "&ProjectInfoID=" + projectInfoID;
+            var title = subProject.Name;
+            var tab = { name: subProject.ID, title: title, url: url, showCloseButton: false };
+            tabs.addTab(tab);
+        }
+        if (tabs.getTabs().length > 0) {
+            tabs.activeTab(tabs.getTabs()[0]);
+            mini.get("mainLayout").collapseRegion("north");
+        }
+    }
+</script>
+
+<style type="text/css">
+    .mini-layout-proxy {
+        border-top: 0px;
+        border-left: 0px;
+    }
+</style>

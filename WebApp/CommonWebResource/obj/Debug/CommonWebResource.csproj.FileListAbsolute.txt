@@ -1,0 +1,11 @@
+D:\Project\中汽工程\代码\公司产品\EPMEPC融合版本\Code\WebApp\CommonWebResource\bin\CommonWebResource.dll
+D:\Project\中汽工程\代码\公司产品\EPMEPC融合版本\Code\WebApp\CommonWebResource\bin\CommonWebResource.pdb
+D:\Project\中汽工程\代码\公司产品\EPMEPC融合版本\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.dll
+D:\Project\中汽工程\代码\公司产品\EPMEPC融合版本\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.pdb
+D:\Project\中汽工程\代码\公司产品\EPMEPC融合版本\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.csprojResolveAssemblyReference.cache
+D:\Files\Code\OtherWork\上海金慧\ProjectCodeOne\Code\WebApp\CommonWebResource\bin\CommonWebResource.dll
+D:\Files\Code\OtherWork\上海金慧\ProjectCodeOne\Code\WebApp\CommonWebResource\bin\CommonWebResource.pdb
+D:\Files\Code\OtherWork\上海金慧\ProjectCodeOne\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.csprojAssemblyReference.cache
+D:\Files\Code\OtherWork\上海金慧\ProjectCodeOne\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.csproj.CoreCompileInputs.cache
+D:\Files\Code\OtherWork\上海金慧\ProjectCodeOne\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.dll
+D:\Files\Code\OtherWork\上海金慧\ProjectCodeOne\Code\WebApp\CommonWebResource\obj\Debug\CommonWebResource.pdb

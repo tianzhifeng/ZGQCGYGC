@@ -1,0 +1,140 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td style="width: *;">
+                <a class="mini-button" plain="true" id="btnDelete" iconcls="icon-remove" onclick="deleteFlowClick">流程删除</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入文号或文稿标题" style="width: 200px;" 
+                     onenter="quickSearch('ZiHao,Title');" onbuttonclick="quickSearch('ZiHao,Title');"  />
+            </td>
+            <td width="90">
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%;height: 100%;" allowMoveColumn="false" url="GetListFlow">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Status" width="80" headeralign="center" allowsort="true" align="center" renderer="onStatusRender">
+                状态</div>
+            <div field="ZiHao" headeralign="center" align="left" width="80" allowsort="true">
+                文号</div>
+            <div field="Title" headeralign="center" align="left" width="*" allowsort="true">
+                文稿标题</div>
+            <div field="Drafter" width="80" headeralign="center" align="center" allowsort="true">
+                拟稿人</div>
+            <div field="DraftDept" width="80" headeralign="center" allowsort="true" align="center">
+                拟稿部门</div>
+            <div field="HuanJi" width="60" headeralign="center" allowsort="true" align="center">
+                紧急程度</div>
+            <div field="InsFlowID" width="60" headeralign="center" allowsort="true" align="center" renderer="onTraceRender">
+                跟踪</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; height: 200px;"
+    showmodal="true" allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="15%" align="center">
+                    文号
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$ZiHao" style="width: 90%" class="mini-textbox" /> 
+                </td>
+                <td width="15%" align="center">
+                    发文标题
+                </td>
+                <td width="35%" align="left">
+                     <input name="$LK$Title" style="width: 90%" class="mini-textbox" /> 
+                </td>
+            </tr>
+             <tr>
+                <td width="15%" align="center">
+                    拟稿人
+                </td>
+                <td width="35%" align="left">
+                    <input name="$IN$DrafterID" textName="Drafter" style="width: 90%;" class="mini-buttonedit" />
+                </td>
+                <td width="15%" align="center">
+                    拟稿部门
+                </td>
+                <td width="35%" align="left">
+                     <input name="$IN$DraftDeptID" textName="DraftDept" style="width: 90%" class="mini-buttonedit"  /> 
+                </td>
+            </tr>
+             <tr>
+                <td width="15%" align="center">
+                    紧急程度
+                </td>
+                <td width="35%" align="left">
+                     <input name="$IN$HuanJi" class="mini-combobox" multiSelect="true" style="width:90%;" valueField="value" textField="text" data="PostingHuanJi" />
+                </td>
+                <td width="15%" align="center">
+                    环节
+                </td>
+                <td width="35%" align="left">
+                     <input name="$IN$Status" class="mini-combobox" multiSelect="true" style="width:90%;" valueField="value" textField="text" data="PostingStatus" />
+                </td>
+            </tr>
+       </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingHuanJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingStatus))
+    addMultiUserSelector("$IN$DrafterID");
+    addMultiOrgSelector("$IN$DraftDeptID");
+
+</script>
+<script type="text/javascript">
+    addGridLink("dataGrid", "Title", "Form?ID={ID}&FlowCode=Posting&FuncType=View", { title: "发文查看", width: "800px", height: "85%" });
+    addGridEnum("dataGrid", "Status", "PostingStatus");
+    addGridEnum("dataGrid", "HuanJi", "PostingHuanJi");
+
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+
+    function onTraceRender(e) {
+        var s = "";
+        if ($.trim(e.value) != "") {
+            s = "<a href='javascript:;' onclick='flowTrace({ ID: \"" + e.record["ID"] + "\"})'>跟踪</a>";
+        }
+        return s;
+    }
+
+    function deleteFlowClick(e) {
+        var row = grid.getSelected();
+        if (row === undefined) {
+            msgUI("请选择一条发文记录");
+            return;
+        }
+        msgUI("确认删除\"" + row["Title"] + "\"发文流程?", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("FlowID", row.InsFlowID);
+                execute("DeleteInsFlow", {
+                    actionTitle: "流程删除",
+                    onComplete: function (data) {
+                        grid.reload();
+                    }
+                });
+            }
+        });
+    }
+
+</script>

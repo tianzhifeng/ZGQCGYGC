@@ -1,0 +1,169 @@
+﻿@{
+    ViewBag.Title = "Config";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addNode" plain="true">  增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delNode" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-save" onclick="push();" plain="true">应用</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="GetDefineTree" showtreeicon="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" allowresize="false" fitcolumns="false"
+         multiselect="true" expandonload="true" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true"
+         oncellbeginedit="OnCellBeginEdit" oncellendedit="onCellEndEdit" ondrawcell="onDrawingCell">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div name="Name" field="CBSName" width="200" headeralign="center">
+                CBS名称 <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="CBSCode" width="150" headeralign="center">
+                CBS编码<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="DefineType" autoshowpopup="true" width="90" align="center" headeralign="center">
+                节点定义
+                <input property="editor" class="mini-combobox" style="width:100%;" valuefield="value" textfield="text" data="SpaceDefineType" />
+            </div>
+            <div type="comboboxcolumn" field="NodeType" autoshowpopup="true" width="90" align="center" headeralign="center">
+                节点类型
+                <input property="editor" class="mini-combobox" style="width:100%;" valuefield="value" textfield="text" data="CBSNodeTypeEnum" />
+            </div>
+            <div type="comboboxcolumn" field="CBSType" autoshowpopup="true" width="120" align="center" headeralign="center">
+                费用类型
+                <input property="editor" class="mini-combobox" style="width:100%;" valuefield="value" textfield="text" data="CBSType" />
+            </div>
+            <div field="CalExpression" headeralign="center" width="300">
+                计算公式
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div property="columns" header="投标概算" headeralign="center">
+                <div property="columns">
+                    <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="BidAdd" width="60" align="center" headeralign="center">
+                        增加
+                    </div>
+                    <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="BidEdit" width="60" align="center" headeralign="center">
+                        编辑
+                    </div>
+                    <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="BidDelete" width="60" align="center" headeralign="center">
+                        删除
+                    </div>
+                </div>
+            </div>
+            <div property="columns" header="预算权限" headeralign="center">
+                <div property="columns">
+                    <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="CanAdd" width="60" align="center" headeralign="center">
+                        增加
+                    </div>
+                    <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="CanEdit" width="60" align="center" headeralign="center">
+                        编辑
+                    </div>
+                    <div type="checkboxcolumn" truevalue="1" falsevalue="0" field="CanDelete" width="60" align="center" headeralign="center">
+                        删除
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.SpaceDefineType))
+    @Html.GetEnum("Base.CBSType")
+    var CBSNodeTypeEnum=@Html.Raw(ViewBag.CBSNodeTypeEnum);
+</script>
+<script type="text/javascript">
+    var cbsDefineID = getQueryString("CBSDefineID");
+    $("#dataTree").attr("url", "GetDefineTree?CBSDefineID=" + cbsDefineID);
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (record.NodeType == "Root") {
+            e.cancel = true;
+        }
+        //else  if (record.DefineType == "Static"&&field=="NodeType") {
+        //    e.cancel = true;
+        //}
+    }
+
+    function onCellEndEdit(e) {
+        var treeGrid = mini.get("dataTree");
+        var record = e.record, field = e.field;
+        if (record.NodeType == "Root") {
+            return;
+        }
+    }
+
+    function onDrawingCell(e) {
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType == "Root") {
+            e.cellStyle = "background:#F0F0F0";
+        }
+        //else if (record.DefineType == "Static"&&field=="NodeType") {
+        //    e.cellStyle = "background:#F0F0F0";
+        //}
+    }
+
+    function addNode() {
+        var treeGrid = mini.get("dataTree");
+        var node = treeGrid.getSelectedNode();
+        if (!node) {
+            msgUI("请选择一个节点"); return;
+        }
+        addExecuteParam("ParentID", node.ID);
+        execute("AddEmptyNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.addNode(data, "add", node);
+            }, validateForm: false
+        });
+    }
+
+    function save() {
+        var treeGrid = mini.get("dataTree");
+        var nodes = treeGrid.getChanges();
+        if (nodes.length == 0)
+            return;
+        treeGrid.validate();
+        if (treeGrid.isValid() == false) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);return;
+        }
+        addExecuteParam("CBSInfo", mini.encode(nodes));
+        addExecuteParam("CBSDefineID", cbsDefineID);
+        execute("SaveCBSTemplate", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                treeGrid.accept();
+            }, validateForm: false
+        });
+    }
+
+    function push() {
+        addExecuteParam("CbsDefineID", cbsDefineID);
+        execute("Push", { showLoading: true, refresh: false, onComplete: function (data) {
+            msgUI("应用成功");
+        }, validateForm: false
+        });
+    }
+
+    function delNode() {
+        var treeGrid = mini.get("dataTree");
+        var nodes = treeGrid.getSelecteds(); if (nodes.length == 0) { msgUI("请至少选择一个节点"); return; }
+        msgUI("将删除下层所有子节点，是否继续？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("CBSInfo", mini.encode(nodes));
+            execute("DeleteCBSTemplate", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    treeGrid.removeNodes(nodes);
+                }, validateForm: false
+            });
+        });
+    }
+
+</script>

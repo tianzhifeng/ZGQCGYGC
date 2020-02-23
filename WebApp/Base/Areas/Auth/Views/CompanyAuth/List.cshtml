@@ -1,0 +1,435 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-right:0px;">
+    <div size="250" showcollapsebutton="false" minsize="200">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetOrgTree" showtreeicon="true" iconfield="Type" textfield="Name" idfield="ID" parentfield="ParentID"
+                resultastree="false" onnodeselect="loadList" expandonload="0" selectonload="false"></ul>
+        </div>
+    </div>
+    <div style="width: 100%; height: 100%; border: 0px;">
+        <div class="mini-tabs" id="tabs" activeIndex="0" style="width:100%;height:100%" onactivechanged="loadList">
+            <div title="表单定义">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveForm();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span id="formCount" style="color:green"></span>
+                                <input id="formKey" class="mini-checkbox" oncheckedchanged="search('form')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="formTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" textfield="Name" idfield="ID" parentfield="ParentID"
+                        showCheckBox="true" resultastree="false" expandonload="0" checkedfield="Checked" showTreeIcon="true" showFolderCheckBox="false" ondrawcell="ondrawcell" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="列表定义">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveList();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span id="listCount" style="color:green"></span>
+                                <input id="listKey" class="mini-checkbox" oncheckedchanged="search('list')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="listTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" textfield="Name" idfield="ID" parentfield="ParentID"
+                        showCheckBox="true" resultastree="false" expandonload="0" checkedfield="Checked" showTreeIcon="true" showFolderCheckBox="false" ondrawcell="ondrawcell" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="流程定义">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveFlow();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span id="flowCount" style="color:green"></span>
+                                <input id="flowKey" class="mini-checkbox" oncheckedchanged="search('flow')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="flowTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" textfield="Name" idfield="ID" parentfield="ParentID"
+                        showCheckBox="true" resultastree="false" expandonload="0" checkedfield="Checked" showTreeIcon="true" showFolderCheckBox="false" ondrawcell="ondrawcell" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="菜单入口" name="res">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" id="btnSaveRes" plain="true" iconcls="icon-save" onclick="saveRes();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span style="color:green" id="resCount"></span>
+                                <input id="resKey" class="mini-checkbox" oncheckedchanged="search('res')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="resTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID" checkedfield="Checked"
+                        resultastree="false" autocheckparent="true" checkrecursive="true" expandonload="0" showcheckbox="true" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="授权对象" name="rule">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" id="btnSaveRule" plain="true" iconcls="icon-save" onclick="saveRule();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span id="ruleCount" style="color:green"></span>
+                                <input id="ruleKey" class="mini-checkbox" oncheckedchanged="search('rule')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="ruleTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID" checkedfield="Checked"
+                        resultastree="false" autocheckparent="true" checkrecursive="true" expandonload="0" showcheckbox="true" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="Word模板">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveWord();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span id="wordCount" style="color:green"></span>
+                                <input id="wordKey" class="mini-checkbox" oncheckedchanged="search('word')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="wordTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" textfield="Name" idfield="ID" parentfield="ParentID"
+                        showCheckBox="true" resultastree="false" expandonload="0" checkedfield="Checked" showTreeIcon="true" showFolderCheckBox="false" ondrawcell="ondrawcell" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="枚举">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveEnum();">设置</a>
+                            </td>
+                            <td align="right">
+                                <font color='#006400'>当前已设置节点数：</font><span id="enumCount" style="color:green"></span>
+                                <input id="enumKey" class="mini-checkbox" oncheckedchanged="search('enum')" text="筛选显示" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="enumTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" textfield="Name" idfield="ID" parentfield="ParentID"
+                        showCheckBox="true" resultastree="false" expandonload="0" checkedfield="Checked" showTreeIcon="true" showFolderCheckBox="false" ondrawcell="ondrawcell" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="角色">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-save" onclick="saveRole();">设置</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <ul id="roleTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" textfield="Name" idfield="ID" parentfield="ParentID"
+                        showCheckBox="true" resultastree="false" expandonload="0" checkedfield="Checked" showTreeIcon="true" showFolderCheckBox="false" ondrawcell="ondrawcell" onload="onload"></ul>
+                </div>
+            </div>
+            <div title="分级管理员">
+                <div class="mini-toolbar gw-grid-toolbar" style="border: 0px;">
+                    <table>
+                        <tr>
+                            <td>
+                                <a class="mini-button" iconcls="icon-user" onclick="saveUser();">设置</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="userGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="true">
+                        <div property="columns">
+                            <div type="checkcolumn"></div>
+                            <div field="WorkNo" width="60px" allowsort="true" align="center">工号</div>
+                            <div field="Name" width="60px" allowsort="true" align="center">姓名</div>
+                            <div field="Sex" width="40px" allowsort="true" align="center">性别 </div>
+                            <div field="Code" width="60px" allowsort="true" align="center">账号</div>
+                            <div field="Phone" width="100px" allowsort="true" align="center">电话</div>
+                            <div field="MobilePhone" width="100px" allowsort="true" align="center">手机</div>
+                            <div field="RTX" width="100px" allowsort="true" align="center">RTX</div>
+                            <div field="DeptName" width="100px" allowsort="true" align="center">当前部门 </div>
+                            <div field="DeptNames" width="200px">所属部门</div>
+                            <div field="ErrorCount" width="60px" allowsort="true" align="center" renderer="onErrorCountRender">锁定状态</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .Menu {
+        background: url(/Base/Scripts/Auth/CompanyAuth/菜单.png) no-repeat;
+    }
+
+    .Rule {
+        background: url(/Base/Scripts/Auth/CompanyAuth/授权.png) no-repeat;
+    }
+
+    .Word {
+        background: url(/Base/Scripts/Auth/CompanyAuth/word.png) no-repeat;
+    }
+
+    .Form {
+        background: url(/Base/Scripts/Auth/CompanyAuth/表单.png) no-repeat;
+    }
+
+    .Role {
+        background: url(/Base/Scripts/Auth/CompanyAuth/角色.png) no-repeat;
+    }
+
+    .List {
+        background: url(/Base/Scripts/Auth/CompanyAuth/列表.png) no-repeat;
+    }
+
+    .Flow {
+        background: url(/Base/Scripts/Auth/CompanyAuth/流程.png) no-repeat;
+    }
+
+    .Enum {
+        background: url(/Base/Scripts/Auth/CompanyAuth/枚举.png) no-repeat;
+    }
+
+    .None {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+</style>
+
+<script type="text/javascript">
+    var _nodeID = "";
+    var _nodeName = "";
+    var _grid = null;
+    function loadList() {
+        var tabs = mini.get("tabs");
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+
+        if (node && node.ParentID && node.ParentID != '') {
+            tabs.show();
+
+            _nodeID = node.ID;
+            _nodeName = node.Name;
+
+            var url = "";
+            var keyType = "";
+            if (tabs.activeIndex == 0) {
+                _grid = mini.get("formTree");
+                keyType = "formKey";
+                url = "/Base/Auth/CompanyAuth/GetFormTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 1) {
+                _grid = mini.get("listTree");
+                keyType = "listKey";
+                url = "/Base/Auth/CompanyAuth/GetListTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 2) {
+                _grid = mini.get("flowTree");
+                keyType = "flowKey";
+                url = "/Base/Auth/CompanyAuth/GetFlowTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 3) {
+                _grid = mini.get("resTree");
+                keyType = "resKey";
+                url = "/Base/Auth/CompanyAuth/GetResTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 4) {
+                _grid = mini.get("ruleTree");
+                keyType = "ruleKey";
+                url = "/Base/Auth/CompanyAuth/GetRuleTree?CompanyID=" + _nodeID;
+
+            }
+            else if (tabs.activeIndex == 5) {
+                _grid = mini.get("wordTree");
+                keyType = "wordKey";
+                url = "/Base/Auth/CompanyAuth/GetWordTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 6) {
+                _grid = mini.get("enumTree");
+                keyType = "enumKey";
+                url = "/Base/Auth/CompanyAuth/GetEnumTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 7) {
+                _grid = mini.get("roleTree");
+                url = "/Base/Auth/CompanyAuth/GetRoleTree?CompanyID=" + _nodeID;
+            }
+            else if (tabs.activeIndex == 8) {
+                _grid = mini.get("userGrid");
+                url = "/Base/Auth/CompanyAuth/GetUserGrid?CompanyID=" + _nodeID;
+                _grid.setUrl(url);
+                _grid.reload();
+            }
+            _grid.setUrl(url);
+            if (keyType != "")
+                mini.get(keyType).setChecked(false);
+        }
+        else {
+            tabs.hide();
+        }
+    }
+
+    function saveRes() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveRes", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+
+    function saveRule() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveRule", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+
+    function saveForm() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveForm", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+    function saveList() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveList", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+    function saveWord() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveWord", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+    function saveFlow() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveFlow", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+    function saveEnum() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveEnum", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+
+    function saveRole() {
+        addExecuteParam("CompanyID", _nodeID);
+        addExecuteParam("CompanyName", _nodeName);
+        addExecuteParam("selectedIDs", getValues(_grid.getCheckedNodes(), "ID"));
+        execute("/Base/Auth/CompanyAuth/SaveRole", { actionTitle: "保存", onComplete: function () { _grid.reload(); } });
+    }
+    function saveUser() {
+        //"/MvcConfig/Auth/User/MultiScopeSelector?orgIDs=" + _nodeID
+        openWindow("/MvcConfig/Auth/User/MultiScopeSelector", {
+            refresh: false, title: "用户设置", width: 750, height: 600, data: mini.get("userGrid").getData(),
+            onDestroy: function (data) {
+                if (data != "close") {
+                    data = mini.decode(data);
+                    addExecuteParam("selectedIDs", getValues(data, "ID"));
+                    addExecuteParam("CompanyID", _nodeID);
+                    addExecuteParam("CompanyName", _nodeName);
+                    execute("/Base/Auth/CompanyAuth/SaveUser", { actionTitle: "保存", onComplete: function () { mini.get("userGrid").reload(); } });
+                }
+            }
+        });
+    }
+
+    function ondrawcell(e) {
+        if (e.record["iconCls"] && e.record["iconCls"] == "None")
+            e.showCheckBox = false;
+
+        if (e.field != "Name")
+            return;
+
+        var _name = (!e.record["Name"]) ? "" : e.record["Name"].toString();
+        var _code = (!e.record["Code"]) ? "" : e.record["Code"].toString();
+        var _flag = (!e.record["flag"]) ? "" : e.record["flag"].toString();
+        if (_flag == '1')
+            e.cellHtml = "<font color='darkslateblue'><b>" + _name + "</b>(" + _code + ")</font>";
+        else if (_flag == '2') {
+            var _companyName = (!e.record["CompanyName"]) ? "***" : e.record["CompanyName"].toString()
+            e.cellHtml = "<font color='coral'><i>" + _name + "(" + _code + ")</i></font> 【已授权：" + _companyName + "】";
+        }
+        else
+            if (_code != "")
+                e.cellHtml = _name + "(" + _code + ")";
+    }
+
+    function onload(e) {
+        var count = 0;
+        count = getNum(e.data);
+
+        if (e.sender.id == "resTree")
+            $("#resCount").html(count + "个。");
+        if (e.sender.id == "ruleTree")
+            $("#ruleCount").html(count + "个。");
+        if (e.sender.id == "formTree")
+            $("#formCount").html(count + "个。");
+        if (e.sender.id == "listTree")
+            $("#listCount").html(count + "个。");
+        if (e.sender.id == "wordTree")
+            $("#wordCount").html(count + "个。");
+        if (e.sender.id == "flowTree")
+            $("#flowCount").html(count + "个。");
+        if (e.sender.id == "enumTree")
+            $("#enumCount").html(count + "个。");
+    }
+
+    function search(type) {
+        var key = mini.get(type + "Key");
+        var tree = mini.get(type + "Tree");
+        if (!key.checked) {
+            tree.clearFilter();
+        } else {
+            tree.filter(function (node) {
+                if (node.Checked) {
+                    tree.expandPath(node);
+                    return true;
+                }
+                else
+                    return false;
+            });
+        }
+    }
+
+    function getNum(list) {
+        var count = 0;
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].Checked)
+                count++;
+            if (list[i].children)
+                count += getNum(list[i].children);
+        }
+        return count;
+    }
+</script>

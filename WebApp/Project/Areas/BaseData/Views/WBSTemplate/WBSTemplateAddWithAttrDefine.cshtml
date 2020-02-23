@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "WBS策划";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" height="36" showspliticon="false" showheader="false" allowresize="false"
+        splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="saveWBS();">保存</a>
+                    </td>
+                    <td id="btnRight">
+                        <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <form id="dataForm" method="post">
+        <input name="Type" class="mini-hidden" />
+        <input name="ParentIDs" class="mini-hidden" />
+        <div class="formDiv">
+            <fieldset>
+                <legend>WBS策划</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="10%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                            <td width="15%">
+                            </td>
+                            <td width="40%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <a class="mini-button" iconcls="" onclick="checkall();">全选</a>
+                                <a class="mini-button" iconcls="" onclick="uncheckall();">取消选中</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @ViewBag.NameTitle
+                            </td>
+                            <td colspan="3">
+                                <div name="childNodes" class="mini-checkboxlist" repeatitems="4" repeatlayout="table" textfield="text"
+                                    valuefield="value" data="defAttr" required="true" showallcheckbox="true">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+     var defAttr=@Html.Raw(ViewBag.DefineAttr)
+</script>
+<script type="text/javascript">
+    function saveWBS() {
+        var form = new mini.Form("dataForm");
+        form.validate(); if (form.isValid() == false) return;
+        addExecuteParam("Children", mini.encode(form.getData()));
+        execute("AddChildWithDefAttr", { showLoading: true, refresh: false, onComplete: function (data) {
+            closeWindow(data);
+        }
+        });
+    }
+
+    function checkall() {
+        mini.getbyName("childNodes").selectAll();
+    }
+
+    function uncheckall() {
+        mini.getbyName("childNodes").deselectAll();
+    }
+</script>

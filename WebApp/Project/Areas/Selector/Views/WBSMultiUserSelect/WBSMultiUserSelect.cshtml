@@ -1,0 +1,298 @@
+﻿@{
+    ViewBag.Title = "WBSMultiUserSelect";
+}
+<style type="text/css">
+    .icon-arrowleft:before
+    {
+        content: "\f060";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+    .icon-arrowright:after
+    {
+        content: "\f061";
+        padding-left: 5px;
+        font-size: 14px;
+    }
+</style>
+<div class="mini-toolbar" style="padding: 0px; border: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" onclick="returnValue" plain="true">确定</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow('close')" plain="true">
+                    关闭
+                </a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="false" handlersize="0">
+        <div showcollapsebutton="false" size="55%" style="border-bottom: 0px; border-right: 0px;">
+            <div id="tabs" class="mini-tabs" tabposition="left" onactivechanged="TabClick" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px;padding-top:0px;padding-right:0px;padding-bottom:0px"
+                plain="false">
+                <div title="按<br />组<br />织<br />部<br />门" name="deptRole">
+                    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px" allowresize="false" handlersize="0">
+                        <div showcollapsebutton="false" size="40%" style="border-right: 0px;padding:5px">
+                            <ul id="dataTree" class="mini-tree" url="/MvcConfig/Auth/Org/GetTree" style="width: 100%; height: 100%; overflow-x: hidden" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID"
+                                resultastree="false" onnodeselect="nodeSelect" expandonload="0" data="">
+                            </ul>
+                        </div>
+                        <div showcollapsebutton="false" size="60%">
+                            <div class="mini-toolbar gw-grid-toolbar" style="border: 0px; padding:0px">
+                                <table style="border-spacing:0px;padding:0px">
+                                    <tr>
+                                        <td style="white-space: nowrap;">
+                                            <input class="mini-buttonedit searchbox" id="key" emptytext="请输入关键字" style="width: 100%" onenter="quickSearch('WorkNo,Name,RoleCode,RoleName,MajorValue,MajorName',{gridId:'dataGrid'});" onbuttonclick="quickSearch('WorkNo,Name,RoleCode,RoleName,MajorValue,MajorName',{gridId:'dataGrid'});" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="mini-fit" style="width: 100%; height: 100%">
+                                <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-right:0px" multiselect="true" idfield="ID" 
+                                    url="GetOrgUserList?ProjectClass=@ViewBag.ProjectClass&ProjectLevel=@ViewBag.ProjectLevel&MajorCodes=@ViewBag.MajorCodes" 
+                                    allowresizecolumn="false" allowcellselect="true" showpager="true"showPagerButtonText="false" showPageSize="false" showPageIndex="false" pagesize="12">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="WorkNo" width="40" align="center" headeralign="center" allowsort="true">
+                                            工号
+                                        </div>
+                                        <div field="Name" width="50" align="center" headeralign="center" allowsort="true">
+                                            姓名
+                                        </div>
+                                        <div field="RoleName" name="RoleCode" align="center" headeralign="center" width="80" visible="false" allowsort="true">
+                                            角色
+                                        </div>
+                                        <div field="MajorName" name="MajorValue" align="center" headeralign="center" width="80"  visible="false" allowsort="true">
+                                            专业
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div title="项<br />目<br />组<br />成<br />员" name="projectUser">
+                    <div class="mini-toolbar gw-grid-toolbar" style="border-top: 0px;border-bottom:0px;border-right:0px; padding:0px">
+                        <table style="border-spacing:0px;padding:0px">
+                            <tr>
+                                <td>
+                                    <input id="projectUserKey" class="mini-buttonedit gw-searchbox" emptytext="请输入关键字" onenter="quickSearch('WorkNo,Name,RoleCode,RoleName,MajorValue,MajorName',{queryBoxId:'projectUserKey',gridId:'projectUser'});" onbuttonclick="quickSearch('WorkNo,Name,RoleCode,RoleName,MajorValue,MajorName',{queryBoxId:'projectUserKey',gridId:'projectUser'});"
+                                        style="width: 100%;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit" style="width: 100%; height: 480px">
+                        <div id="projectUser" class="mini-datagrid" style="width: 100%;height:100%" borderstyle="border-right:0px;" url="GetProjectUserList" multiselect="true" showfooter="false"
+                            showpager="false" pager="#pager3" pagesize="10">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="WorkNo" headeralign="center" align="center" allowsort="true" width="40">
+                                    工号
+                                </div>
+                                <div field="Name" headeralign="center" align="center" allowsort="true" width="50">
+                                    姓名
+                                </div>
+                                <div field="RoleName" headeralign="center" align="center" allowsort="true" width="80">
+                                    角色
+                                </div>
+                                <div field="MajorName" headeralign="center" align="center" allowsort="true" width="80">
+                                    专业
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-pager" width="130" style="border-left:1px solid #ccc" id="pager3" showpageindex="false" showpagesize="false" showpageinfo="false" showreloadbutton="false">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="false" size="45%" style="border-bottom: 0px; border-left: 1px;">
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-left-width:1px; border-top:0px" allowresize="false" handlersize="0">
+                <div showcollapsebutton="false" size="110px" style="border:0px; padding-top: 110px; background-color: #F9F9F9">
+                    <div class="mini-fit" style="width: 100%;text-align:center">
+                        <a class="mini-button" id="btnChargeUserAdd" iconcls="icon-arrowright" onclick="addSelected('ChargeUser','负责人')">负责人</a>
+                        @{
+                            for (int i = 0; i < ViewBag.RoleDefines.Count; i++)
+                            {
+                                var roleDefine = ViewBag.RoleDefines[i];
+                                        <a class="mini-button" id="btnAptAdd_@roleDefine.RoleCode" iconcls="icon-arrowright" onclick="addSelected('@roleDefine.RoleCode','@roleDefine.RoleName')">@roleDefine.RoleName</a>
+                            }
+                        }
+                        <a class="mini-button" id="btnAdd" iconcls="icon-arrowright" onclick="addSelected()">选择</a>
+                        <a class="mini-button" iconcls="icon-arrowleft" onclick="removeSelecteds">移除</a>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" size="*" style="">
+                    <div class="mini-toolbar gw-grid-toolbar" style="border-top: 0px;border-bottom:0px;border-right:0px; padding:0px;">
+                        已选择的人员：
+                    </div>
+                    <div class="mini-fit">
+                        <div id="selectedList" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-bottom:0px" showcheckbox="true" multiselect="true" showfooter="false" showpager="false">
+                            <div property="columns">
+                                <div type="checkcolumn"></div>
+                                <div field="Remove" width="40" headeralign="center" align="center">
+                                    删除
+                                </div>
+                                <div field="WorkNo" width="40" align="center" headeralign="center" allowsort="true">
+                                    工号
+                                </div>
+                                <div field="Name" align="center" headeralign="center" width="50" allowsort="true">
+                                    姓名
+                                </div>
+                                <div field="RoleName" align="center" headeralign="center" width="80" allowsort="true">
+                                    角色
+                                </div>
+                                <div field="MajorName" align="center" headeralign="center" width="80" allowsort="true">
+                                    专业
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var projectClass = "@ViewBag.ProjectClass";
+    var projectLevel = "@ViewBag.ProjectLevel";
+    var majorCodes = "@ViewBag.MajorCodes";
+</script>
+<script type="text/javascript">
+    
+    if (userAptitude) 
+        addGridButton('dataGrid', 'Name', { onButtonClick: addSingle });
+    addGridButton('projectUser', 'Name', { onButtonClick: addSingle });
+    addGridButton('selectedList', 'Remove', { onButtonClick: removeSingle, linkText: "删除" });
+    var projectInfoID = getQueryString("ProjectInfoID");
+
+    function pageLoad() {
+        var grid = mini.get("dataGrid");
+        if (userAptitude) {
+            grid.updateColumn("MajorValue", { visible: true });
+            grid.updateColumn("RoleCode", { visible: true });
+        }
+    }
+
+    function setData(data) {
+        var selectedList = mini.get("selectedList");
+        var userIds = getValues(data, "ID");
+        addExecuteParam("ids", userIds);
+        execute("GetUsers", {
+            onComplete: function (users) {
+                var items = [];
+                $.each(userIds.split(','), function (i, userId) {
+                    $.each(users, function (i, user) {
+                        if (user.ID == userId) {
+                            items.push(user);
+                        }
+                    });
+                });
+                selectedList.addRows(items);
+            }
+        });
+
+    }
+
+    function TabClick(e) {
+        switch (e.tab.name) {
+            case "deptRole":
+                var grid = mini.get("dataGrid");
+                grid.setUrl("GetOrgUserList?ProjectClass=" + projectClass + "&ProjectLevel=" + projectLevel + "&MajorCodes=" + majorCodes + "&ProjectInfoID=" + projectInfoID);
+                grid.load();
+                if (userAptitude) {
+                    $("[id^='btnAptAdd']").hide();
+                    $("[id='btnAdd']").show();
+                }
+                else {
+                    $("[id^='btnAptAdd']").show();
+                    $("[id='btnAdd']").hide();
+                }
+                break;
+            case "projectUser":
+                $("[id^='btnAptAdd']").hide();
+                $("[id='btnAdd']").show();
+                break;
+        }
+    }
+
+    function nodeSelect(e) {
+        var grid = mini.get("dataGrid");
+        grid.setUrl("GetOrgUserList?OrgID=" + e.node.ID + "&ProjectClass=" + projectClass + "&ProjectLevel=" + projectLevel + "&MajorCodes=" + majorCodes + "&ProjectInfoID=" + projectInfoID);
+        grid.load();
+    }
+
+    function addSingle(row) {
+        var selectedList = mini.get("selectedList");
+        var selecteds = selectedList.getData();
+        var exist = $.grep(selecteds, function (item, index) {
+            return row["ID"] == item.ID && row["RoleCode"] == item.RoleCode && row["MajorValue"] == item.MajorValue;
+        })
+        if (exist.length == 0)
+            selectedList.addRow({
+                ID: row["ID"], Name: row["Name"], WorkNo: row["WorkNo"], MajorValue: row["MajorValue"], MajorName: row["MajorName"],
+                DeptName: row["DeptName"], DeptID: row["DeptID"], RoleCode: row["RoleCode"], RoleName: row["RoleName"]
+            });
+    }
+    function removeSingle(row) {
+        var selectedList = mini.get("selectedList");
+        selectedList.removeRow(row);
+    }
+
+    function addSelected(rolecode,rolename) {
+        var selectedList = mini.get("selectedList");
+        var selecteds = selectedList.getData();
+
+        var grid, items;
+        switch (mini.get("tabs").activeIndex) {
+            case 1:
+                grid = mini.get("projectUser");
+                items = grid.getSelecteds();
+                break;
+            default:
+                grid = mini.get("dataGrid");
+                items = grid.getSelecteds();
+                break;
+        }
+
+        for (var i = items.length - 1; i >= 0; i--) {
+            var o = items[i];
+            var _roleCode = rolecode || o["RoleCode"];
+            var _roleName = rolename || o["RoleName"];
+            var _majorValue = o["MajorValue"] || "";
+            var _majorName = o["MajorName"] || "";
+            if (userAptitude && rolecode == "ChargeUser")
+            {
+                //启用资质情况下 ，负责人设置的是非专业的负责人，专业负责人需要做资质过滤；
+                _majorValue = "";
+                _majorName = "";
+            }
+            var exist = $.grep(selecteds, function (item, index) {
+                return o["ID"] == item.ID && _roleCode == item.RoleCode && _majorValue == item.MajorValue;
+            })
+            if (exist.length == 0)
+                selectedList.addRow({
+                    ID: o.ID, Name: o["Name"], WorkNo: o["WorkNo"], MajorValue: _majorValue, MajorName: _majorName,
+                    DeptName: o["DeptName"], DeptID: o["DeptID"], RoleCode: _roleCode, RoleName: _roleName
+                });
+        }
+    }
+    function removeSelecteds() {
+        var selectedList = mini.get("selectedList");
+        var items = selectedList.getSelecteds();
+        selectedList.removeRows(items);
+    }
+
+    function returnValue() {
+        var userGrid = mini.get("selectedList");
+        var data = userGrid.getData();
+        closeWindow(data);
+    }
+</script>

@@ -1,0 +1,332 @@
+﻿@if (string.IsNullOrEmpty(Request["IsPreView"]) && string.IsNullOrEmpty(Request["FlowCode"]) && string.IsNullOrEmpty(Request["TaskExecID"]) && (string.IsNullOrEmpty(Request["FuncType"]) || Request["FuncType"].ToLower() != "view"))
+{
+    <div style='width: 100%; height: 28px;'>
+    </div>
+}
+@using Config.Logic;
+<script src="@Url.Content("/EPC/Scripts/Design/Bom/jquery.tmpl.js")" type="text/javascript"></script>
+<form id="dataForm" method="post" align="center" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    @Html.Raw(ViewBag.HiddenHtml)
+    <div class="formDiv">
+        @Html.Raw(ViewBag.FormHtml)
+
+
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;"></td>
+                    <td style="white-space: nowrap;">
+                        显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType"
+                                  allowinput="false"
+                                  onvaluechanged="onShowTypeChanged" value="Diff" /> &nbsp;
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+        @{
+            var versionID = ViewBag.VersionID;
+            var url = "GetBomTreeList?EngineeringInfoID=" + ViewBag.EngineeringInfoID + "&MajorCode=" + ViewBag.MajorCode;
+            if (!String.IsNullOrEmpty(versionID))
+            {
+                url = "GetVersionTreeList?VersionID=" + versionID;
+            }
+            <div id="dataTree" class="mini-treegrid" style="width:100%;height:500px;" allowcellselect="true"
+                 url="@url" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true"
+                 treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType" url=""
+                 virtualscroll="@ViewBag.VirtualScroll" allowresize="false" fitcolumns="false">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    @{
+                        var columnDefines = ViewBag.GridDefine as List<Dictionary<string, object>>;
+                        foreach (var columnDefine in columnDefines)
+                        {
+                            var inputType = columnDefine.GetValue("ItemType");
+                            var inputClass = "mini-" + inputType;
+                            var title = columnDefine.GetValue("header");
+                            if (inputType == "autocomplete")
+                            {
+                                <div name="@columnDefine.GetValue("displayfield")" field="@columnDefine.GetValue("field")" displayfield="@columnDefine.GetValue("displayfield")" width="@columnDefine.GetValue("width")" headeralign="center" allowsort="false"
+                                     align="@columnDefine.GetValue("align")" visible="@columnDefine.GetValue("Visible")">
+                                    @title
+                                    <div property="editor" popupwidth="600" class="mini-autocomplete" textfield="Name" valuefield="Name"
+                                         style="width: 100%;" url="GetTemplate?MajorCode=@ViewBag.MajorCode" onvaluechanged="onAutoCompleteValueChanged">
+                                        <div property="columns">
+                                            <div header="设备名称" field="Name" width="120">
+                                            </div>
+                                            <div header="规格" field="Size" width="120">
+                                            </div>
+                                            <div header="型号" field="Model" width="120">
+                                            </div>
+                                            <div header="材质" field="Material" width="120">
+                                            </div>
+                                            <div header="品牌" field="Brand" width="120">
+                                            </div>
+                                            <div header="连接方式" field="ConnectionMode" width="120">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (inputType == "combox")
+                            {
+                                <div name="@columnDefine.GetValue("field")" field="@columnDefine.GetValue("field")" width="@columnDefine.GetValue("width")" headeralign="center" allowsort="false"
+                                     align="@columnDefine.GetValue("align")" visible="@columnDefine.GetValue("Visible")">
+                                    @title
+                                    <input property="editor" class="@inputClass" style="width:100%;" textfield="text" valuefield="value" data="@columnDefine.GetValue("field")" />
+                                </div>
+                            }
+                            else if (inputType.ToLower() == "singlefile")
+                            {
+                                var field = columnDefine.GetValue("field");
+                                var displayField = columnDefine.GetValue("field") + "Name";
+                                <div name="@columnDefine.GetValue("field")" field="@columnDefine.GetValue("field")"
+                                     displayfield="@displayField" width="@columnDefine.GetValue("width")" headeralign="center" allowsort="false"
+                                     align="@columnDefine.GetValue("align")" visible="@columnDefine.GetValue("Visible")" renderer='onFileRender'>
+                                    @title
+                                    <input property="editor" class="mini-fileupload" style="width: 100%;"
+                                           flashurl="/commonwebresource/RelateResource/Uploadify/uploadify.swf"
+                                           uploadurl="/FileStore/SWFUpload/FileUploadHandler.ashx" uploadonselect="true" onuploadsuccess="onuploadsuccess" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div name="@columnDefine.GetValue("field")" field="@columnDefine.GetValue("field")" width="@columnDefine.GetValue("width")" headeralign="center" allowsort="false"
+                                     align="@columnDefine.GetValue("align")" visible="@columnDefine.GetValue("Visible")" dateformat="yyyy-MM-dd">
+                                    @title
+                                    <input property="editor" class="@inputClass" style="width:100%;" />
+                                </div>
+
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+
+    @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+    {
+        <div style="margin-left: 35px; margin-right: 35px; margin-bottom: 65px;">
+            <fieldset>
+                <legend style="font-weight: bold;margin-left:35px;">操作信息</legend>
+                <div id="comment"></div>
+            </fieldset>
+        </div>
+
+        <script type="text/javascript">
+            function onCommentLoad(e) {
+                if (e.data.length == 0)
+                    $("#commentGrid").hide();
+            }
+        </script>
+    }
+</form>
+@if (!string.IsNullOrEmpty(Request["IsPreView"]))
+{
+}
+else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+{
+    @Html.GetFlowbar()
+}
+else
+{
+    <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+        <table>
+            <tr>
+                <td>
+                    <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                    <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                </td>
+                <td id="btnRight"></td>
+            </tr>
+        </table>
+    </div>
+}
+
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+
+<script type="text/javascript">
+    @Html.Raw(ViewBag.DataSource);
+    var formData=@Html.Raw(ViewBag.FormData);
+    var fieldInfo=@Html.Raw(ViewBag.FieldInfo);
+    var position = '@System.Configuration.ConfigurationManager.AppSettings["showCommentPosition"]';
+    @Html.Raw(ViewBag.Script)
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //大字段赋值给Grid
+        $("form .mini-datagrid").each(function () {
+            var id = $(this).attr("id");
+            if ((formData || 0)[id] != undefined)
+                mini.get(id).setData(mini.decode(formData[id]));
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+        //流程：加载FlowBar
+        var flowMenubar = mini.get("flowMenubar");
+        if (flowMenubar != undefined) {
+            flowLoadMenubar(formData);
+        }
+
+    });
+
+</script>
+<script type="text/javascript">
+    function onSummaryRenderer(e) {
+        var title = "";
+        switch (e.column.summaryType) {
+            case "count":
+                title = "总数：";
+                break;
+            case "max":
+                title = "最大：";
+                break;
+            case "min":
+                title = "最小：";
+                break;
+            case "sum":
+                title = "总计：";
+                break;
+            case "avg":
+                title = "平均：";
+                break;
+        }
+        e.cellHtml = "<div style='width:100%;text-align:right;'>" + title + (e.cellHtml.toFixed ? e.cellHtml.toFixed(2) : e.cellHtml) + "</div>";
+        return e.cellHtml;
+    }
+</script>
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div style="text-align:left; font-weight:bolder; color:red;">上一版内容</div>
+    <table class="mini-grid-table" cellspacing="0" cellpadding="0" style="width:700px;table-layout:fixed;">
+        <tr>
+            @{
+                foreach (var columnDefine in columnDefines)
+                {
+                    <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">@columnDefine.GetValue("header")</td>
+                }
+            }
+        </tr>
+        <tr>
+            @{
+                foreach (var columnDefine in columnDefines)
+                {
+                    <td style="width: 100px;text-align:@columnDefine.GetValue("align")">${@columnDefine.GetValue("field")}</td>
+                }
+            }
+        </tr>
+    </table>
+</script>
+<script type="text/javascript">
+    addMultiUserSelector("ReceiverIDs");
+    $("table").css("border-collapse", "collapse");
+
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var versionID = getQueryString("ID");
+
+    $("#dataTree").attr("url","GetVersionTreeList?VersionID="+versionID+"&ShowType=Diff")
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.NodeType != "Detail") {
+            e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+        }
+        else if (record.NodeType == "Detail") {
+            if (record.ModifyState == "Add") {
+                if (field == "Name") {
+                    e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+                }
+                e.cellStyle = "background:#BBFFFF";
+            }
+            else if (record.ModifyState == "Modify") {
+                if (field == "Name") {
+                    e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+                }
+                e.cellStyle = " background: yellow;";
+            }
+            else if (record.ModifyState == "Remove") {
+                e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff";
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.showCellTooltip',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                var el = e.element;
+                var id = el.id;
+                if (id) {
+                    this.showLoading();
+                    addExecuteParam("ID", id);
+                    execute("GetLastDetailInfo", {
+                        showLoading: false, refresh: false, onComplete: function (data) {
+                            var html = $("#formTemplate").tmpl(data);
+                            tip.setContent(html);
+                        }, validateForm: false
+                    });
+                }
+            }
+        });
+    });
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        var showDiff = mini.getbyName("ShowType").getValue();
+        var url="GetVersionTreeList?VersionID="+versionID+"&ShowType="+showDiff;
+        tree.setUrl(url);
+        tree.load();
+    }
+
+</script>
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    .showCellTooltip {
+        background: yellow;
+    }
+</style>

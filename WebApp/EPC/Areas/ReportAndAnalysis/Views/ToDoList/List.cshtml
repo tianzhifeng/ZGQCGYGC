@@ -1,0 +1,86 @@
+﻿<link rel="stylesheet" href="~/Scripts/ToDoList/style.css" />
+<script src="@Url.Content("/EPC/Scripts/ToDoList/template-web.js")" type="text/javascript"></script>
+
+<div id='toDoList'></div>
+
+<script id="template" type="text/html">
+<table class='laneContainer' style='border-collapse: collapse;border:none; width:<%=CalcData.ContainerWidth%>px;height:<%=CalcData.ContainerHeight%>px;top:<%=Config.TopGap%>px;left:<%=Config.LeftGap%>px'>
+<%for(var i=0;i<Lanes.length;i++){%>
+<%var lane = Lanes[i]%>
+<tr class='lane' style="position: relative;">
+  <td class='laneTitle' style='position: relative; text-align: center; width:<%=Config.TitleWidth%>px'>
+	<%=lane.Title%>
+  </td>
+  <td class= 'laneGraphic' style='position: relative; width:<%=CalcData.GraphicWidth%>px'>
+      <div class='vLineStyle centerTranslate50' style="position: absolute; height: <%=Config.LaneHeight%>px; left: <%=CalcData.BoundaryToLeft%>px;"></div>
+	  <%var nodeToLeft = Config.GraphicGap%>
+	  <%for(var j=0;j<lane.Nodes.length;j++){%>
+		<%var node = lane.Nodes[j]%>
+		<%if(node.Draw){%>
+        <div class='nodeStyle<%=node.State%> centerTranslate50' style="position: absolute; width: <%=2*Config.NodeR%>px;height: <%=2*Config.NodeR%>px;-moz-border-radius:<%=Config.NodeR%>px;-webkit-border-radius:<%=Config.NodeR%>px;border-radius:<%=Config.NodeR%>px;left: <%=nodeToLeft%>px;">
+        <div class='botTitle tooltip' style="text-align: center;width:100%; position: absolute; bottom: <%=-Config.NodeR%>px;">
+                    <%=node.BotTitle%>
+                    <%if(node.MultiBotTitle){%>
+                    <span class="tooltiptext"> <%=node.MultiBotTitle%></span>
+                    <%}%>
+                </div>
+                <table class='nodeInnerTable'>
+                    <tr>
+                        <td class='nodeInnerTopTitle' style="text-align: center;"><%=node.InnerTopTitle%></td>
+                    </tr>
+                    <tr>
+                        <td class='nodeInnerBotTitle' style="text-align: center;"><%=node.InnerBotTitle%></td>
+                    </tr>
+                </table>
+            </div>
+        <%}%>
+        <%if((j!=lane.Nodes.length-1)){%>
+        <div class='hLineStyle centerTranslate50' style="position: absolute; z-index: -1; width: <%=Config.NodeDis%>px; left: <%=nodeToLeft+Config.NodeDis/2%>px;"></div>
+        <%}%>
+        <% nodeToLeft += Config.NodeDis}%>
+      </td>
+    </tr>
+    <%}%>
+    </table>
+</script>
+<script>
+    var engineeringID = getQueryString('EngineeringInfoID')
+    var config = {
+        LaneHeight:220,
+        TopGap: 10,
+        LeftGap: 10,
+        TitleWidth: 80,
+        GraphicGap: 70,
+        NodeDis: 150,
+        NodeR: 35
+    }
+
+    addExecuteParam("EngineeringInfoID", engineeringID);
+    execute("GetList", {
+        showLoading: true, refresh: false, onComplete: function (data) {
+            if (data && data != '')
+            {
+                var graphicWidth = (data.MaxNodeCount - 1) * config.NodeDis + 2 * config.GraphicGap;
+                var containerWidth = config.TitleWidth + graphicWidth;
+                var containerHeight = data.Lanes.length * config.LaneHeight;
+                var boundaryToLeft = (data.InstanceNodeCount - 0.5) * config.NodeDis + config.GraphicGap;
+                var calcData = {
+                    ContainerWidth: containerWidth,
+                    GraphicWidth: graphicWidth,
+                    ContainerHeight: containerHeight,
+                    BoundaryToLeft: boundaryToLeft
+                }               
+
+                var d = {
+                    Config: config,
+                    CalcData: calcData,
+                    Lanes: data.Lanes
+                };
+
+                var html = template('template', d);
+                //找到并替换
+                document.getElementById('toDoList').innerHTML = html;
+            }           
+        }, validateForm: false
+    });
+</script>

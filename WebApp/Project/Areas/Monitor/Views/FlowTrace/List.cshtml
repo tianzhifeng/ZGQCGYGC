@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="search()"
+                       onbuttonclick="search()" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" showhgridlines="true" showvgridlines="false"
+         iconfield="Type" ondrawcell="onDrawingCell" allowresize="false" fitcolumns="true" expandonload="0">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="*" headeralign="center">名称</div>
+            <div field="FlowPhase" width="80" headeralign="center" align="center">流程状态</div>
+            <div field="CurrentUser" width="90" headeralign="center" align="center">当前执行人</div>
+            <div field="StepName" width="90" headeralign="center" align="center">当前环节</div>
+            <div field="StartUser" width="90" headeralign="center" align="center">流程发起人</div>
+            <div field="VersionNumber" width="60" headeralign="center" align="center">版本号</div>
+            <div field="StartDate" width="150" dateformat="yyyy-MM-dd hh:mm" align="center" headeralign="center">开始时间</div>
+            <div field="EndDate" width="150" dateformat="yyyy-MM-dd hh:mm" align="center" headeralign="center">结束时间</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("FlowPhase")
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    $("#dataTree").attr("url", "GetTreeList?ProjectInfoID=" + projectInfoID);
+    addGridEnum("dataTree", "FlowPhase", "FlowPhase");
+
+    function onDrawingCell(e) {
+        var grid = mini.get("dataTree");
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (field == "Name" && record.Type == "FlowNode") {
+            var html = record.Name + "（总共：" + record.FlowCount + "，  已完成：" + record.FinishCount + "，  流程中：" + record.UnFinishCount + "）";
+            e.cellHtml = html;
+        }
+        else if (field == "FlowPhase" && record.Type == "Form") {
+            if (record.FlowPhase) {
+                var flowPhase = "";
+                for (var i = 0; i < FlowPhase.length; i++) {
+                    if (FlowPhase[i].value == record.FlowPhase) {
+                        flowPhase = FlowPhase[i].text; break;
+                    }
+                }
+                var html = "<a href=\"javascript:flowTrace('" + record.ID + "')\">" + flowPhase + "</a>";
+                e.cellHtml = html;
+            }
+        }
+        else if (field == "FlowPhase" && record.Type == "Task") {
+            if (record.FlowPhase) {
+                e.cellHtml = "已完成";
+            }
+        }
+        else if (field == "Name" && record.Type == "Form" && record.LinkUrl) {
+            var html = "<a href=\"javascript:view('" + record.LinkUrl + "')\">" + record.Name + "</a>";
+            e.cellHtml = html;
+        }
+    }
+
+    function flowTrace(id) {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + id + "&FuncType=FlowTrace";
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "70%", height: "80%",
+            onDestroy: function (data) {
+
+            }
+        });
+    }
+
+    function view(url) {
+        openWindow(url, {
+            refresh: false, title: "表单查看", width: "70%", height: "80%",
+            onDestroy: function (data) {
+
+            }
+        });
+    }
+
+    function search() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.SearchFieldInfo ? node.SearchFieldInfo.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+
+</script>
+<style type="text/css">
+    .Catagory {
+        background: url(/CommonWebResource/RelateResource/image/Market/Project.png) no-repeat;
+    }
+
+    .FlowNode {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/module.png) no-repeat;
+    }
+
+    .Form {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/item.gif) no-repeat;
+    }
+
+    .Task {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+</style>

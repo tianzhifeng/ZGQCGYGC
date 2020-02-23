@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "CoopePlan2List";
+}
+<link href="~/Scripts/Flag/Style.css" rel="stylesheet" type="text/css" />
+<link href="~/Scripts/Menu/Style.css" rel="stylesheet" type="text/css" />
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table>
+        <tr>
+            <td>
+                &nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="正常完成" src="~/Scripts/Flag/images/NormalFinish.png">
+                正常完成<font class="fontnumber" id="NormalFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="进行中" src="~/Scripts/Flag/images/NormalUndone.png">
+                正常进行中<font class="fontnumber" id="NormalUndone">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期完成" src="~/Scripts/Flag/images/DelayFinish.png">
+                延期完成<font class="fontnumber" id="DelayFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期未完成" src="~/Scripts/Flag/images/DelayUndone.png">
+                延期未完成<font class="fontnumber" id="DelayUndone">(0)</font>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" class="mini-datagrid" url="GetCooperationPlanTrackList"
+         style="width: 100%; height: 100%;" allowresize="false" idfield="id" multiselect="true" sortorder="asc"
+         borderstyle="border-left:0;border-right:0;border-bottom:0;" ondrawcell="onDrawCellOfMls" sortField="PlanFinishDate" sortOrder="asc">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="ShowStatus" width="60">
+                状态
+            </div>
+            <div name="CooperationContent" field="CooperationContent" width="*" headeralign="center" allowsort="true" align="left">
+                资料名称
+            </div>
+            <div field="OutMajorValue" width="100" headeralign="center" allowsort="true" align="center"
+                 vtype="required">
+                提出专业
+            </div>
+            <div field="InMajorValue" width="200" headeralign="center" allowsort="true" align="left">
+                接收专业
+            </div>
+            <div field="PlanFinishDate" width="100" headeralign="center" allowsort="true" align="center"
+                 dateformat="yyyy-MM-dd">
+                计划完成日期
+            </div>
+            <div field="FactFinishDate" width="100" headeralign="center" allowsort="true" align="center"
+                 dateformat="yyyy-MM-dd">
+                实际完成日期
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var Major = @Html.Raw(ViewBag.Major);
+    addGridEnum("dataGrid", "OutMajorValue", "Major");
+    addGridEnum("dataGrid", "InMajorValue", "Major");
+
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var wbsID = getQueryString("WBSID");
+
+    
+
+    function onDrawCellOfMls(e) {
+        var record = e.record,
+        column = e.column,
+        field = e.field,
+        value = e.value;
+        if (e.field == "ShowStatus") {
+            e.cellHtml = getCss(record.PlanFinishDate,record.FactFinishDate);
+        }
+    }
+    var DelayUndone = 0;
+    var NormalFinish = 0;
+    var NormalUndone = 0;
+    var DelayFinish = 0;
+    function getCss(planDate,factDate)
+    {
+        if (planDate == "" || planDate == null || planDate == undefined || planDate == "null")
+            return "";
+
+        var value = "";
+        var pDate = Date.parse(planDate);
+        var cDate = Date.parse(new Date());
+        if (pDate >= cDate) {
+            if (factDate != "" && factDate != null && factDate != undefined && factDate != "null") {
+                value = "NormalFinish";
+                NormalFinish++;
+            }
+            else {
+                value = "NormalUndone";
+                NormalUndone++;
+            }
+        }
+        else {
+            if (factDate != "" && factDate != null && factDate != undefined && factDate != "null") {
+                var fDate = Date.parse(factDate);
+                if (fDate > pDate) {
+                    value = "DelayFinish";
+                    DelayFinish++;
+                }
+                else {
+                    value = "NormalFinish";
+                    NormalFinish++;
+                }
+            }
+            else {
+                value = "DelayUndone";
+                DelayUndone++;
+            }
+        }
+        $("#NormalFinish").html("(" + NormalFinish + ")");
+        $("#NormalUndone").html("(" + NormalUndone + ")");
+        $("#DelayFinish").html("(" + DelayFinish + ")");
+        $("#DelayUndone").html("(" + DelayUndone + ")");
+        var rtnStr = "<span class='ShowStatus " + value + "' style='float:center;'></span>";
+        return rtnStr;
+    }
+</script>

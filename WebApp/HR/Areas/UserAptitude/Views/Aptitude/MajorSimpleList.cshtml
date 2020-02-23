@@ -1,0 +1,229 @@
+﻿@{
+    ViewBag.Title = "MajorSimpleList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                请先选择一个专业：<div id="queryForm" style="display:inline-block;width:200px"><input name="$IN$EngageMajor" class="mini-buttonedit" required='false' maxlength='50' style='width:100%;' style='width:100%' /></div>
+                <span class="separator"></span>
+                <a class="mini-button" iconcls="icon-save" onclick="saveAptitude();" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="multiEdit();" plain="true">批量修改</a>
+                <a class='mini-button' enabled='true' visible='true' iconcls='icon-excel-up' text='导入Excel' id='btnImportExcel' onclick='importExcel();'></a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入人员姓名或部门" style="width: 200px;"
+                       onenter="tabSearch();" onbuttonclick="tabSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitTab" class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" ondrawcell="ondrawcell">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div type="indexcolumn">
+            </div>
+            <div field="Name" width="70" headeralign="center" allowsort="true" align="center">
+                人员姓名
+            </div>
+            <div field="DeptName" width="100" headeralign="center" allowsort="true" align="center">
+                所属部门
+            </div>
+            @{
+
+                var columnDt = ViewBag.ColumnTable as System.Data.DataTable;
+                foreach (System.Data.DataRow row in columnDt.Rows)
+                {
+                    var field = row["value"].ToString();
+                    var title = row["text"].ToString();
+                    <div field="@field" type="comboboxcolumn" autoshowpopup="true" headeralign="center" width="100" allowsort="true" align="center">
+                        @title <input property="editor" class="mini-combobox" valuefield="value" shownullitem="true"
+                                      textfield="text" style="width:100%;" data="AptitudeLevel" />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<div id="editWindow" class="mini-window" title="批量修改" style="width: 500px;">
+    <div class="queryDiv">
+        <form id="queryform">
+            <table>
+                <tr>
+                    <td width="30%" align="center"></td>
+                    <td width="70%" align="center"></td>
+                </tr>
+                @{
+                    var columns = ViewBag.ColumnTable as System.Data.DataTable;
+                    foreach (System.Data.DataRow row in columns.Rows)
+                    {
+                        var field = row["value"].ToString();
+                        var title = row["text"].ToString();
+                        <tr>
+                            <td align="center">@title</td>
+                            <td align="center">
+                                <input name='@field' class='mini-checkboxlist' repeatlayout="flow" multiselect='false' data='aptitudeLevelWithNull' />
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        </form>
+        <div style="text-align: center; padding: 10px;">
+            <a class="mini-button" onclick="confirm()" iconcls="icon-find" style="margin-right: 20px;">确定</a>
+            <a class="mini-button" onclick=" clearForm();hideWindow('editWindow')" iconcls="icon-undo">取消</a>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .queryDiv div {
+        text-align: center;
+        padding: 0px;
+    }
+</style>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Major");
+    @Html.GetEnum("System.AptitudeLevel");
+    @Html.GetEnum("HR.UserAptitude");
+    @Html.GetEnum("Market.BusinessType");
+</script>
+<script type="text/javascript">
+    var aptitudeLevelWithNull = [{ "value": "无", "text": "无" }];
+    for (var i = 0; i < AptitudeLevel.length; i++) {
+        aptitudeLevelWithNull.push(AptitudeLevel[i]);
+    }
+    normalParamSettings.searchFields = "Name,DeptName";
+    addGridEnum("dataGrid", "Major", "Major");
+    addSelector('$IN$EngageMajor', '/MvcConfig/UI/List/PageView?TmplCode=SelectorMajor',
+        {
+            allowResize: true, title: '专业', width: '800', height: '600', returnParams: 'value:Code,text:Name',
+            onSelected: function (data, settings) {
+                var value = ""; var text = "";
+                selector = mini.get(settings.selectorId);
+                if (data != "close")
+                    for (var i = 0; i < data.length; i++) {
+                        if (i == data.length - 1) {
+                            value += data[i] && data[i]["Code"];
+                            text += data[i] && data[i]["Name"];
+                        }
+                        else {
+                            value += data[i] && data[i]["Code"] + ",";
+                            text += data[i] && data[i]["Name"] + ",";
+                        }
+                    }
+                selector.setValue(value);
+                selector.setText(text);
+                var dataGrid = mini.get("dataGrid");
+                if (!dataGrid.getUrl())
+                    dataGrid.setUrl("GetList");
+                tabSearch();
+            }
+        });
+
+    function cusTabSearch(tabData, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var data = {};
+        var form = new mini.Form("#queryForm");
+        form.validate(); if (form.isValid() == false) return;
+        data = form.getData();
+
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({
+                queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData)
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+
+    function saveAptitude() {
+        var dataGrid = mini.get("dataGrid");
+        var data = dataGrid.getChanges();
+        addExecuteParam("ListData", mini.encode(data));
+        execute("SaveAptitude", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function ondrawcell(e) {
+        var field = e.field, value = e.value, row = e.row;
+        if (field && field != "Name" && field != "DeptName") {
+            if (value == "multi") {
+                e.cellHtml = "<i title='" + getEnumText(row[field + "Title"]) + "'>(多种)</i>";
+            }
+        }
+    }
+
+    function getEnumText(oldText) {
+        var text = oldText.replace(/\{[0-9a-zA-Z_\u4e00-\u9fa5]*\}/g, function (field) {
+            var key = field.substring(1, field.length - 1);
+            var t = "";
+            $(BusinessType).each(function (i, e) { if (e.value == key) { t = e.text; return; } });
+            $(Major).each(function (i, e) { if (e.value == key) { t = e.text; return; } });
+            $(AptitudeLevel).each(function (i, e) { if (e.value == key) { t = e.text; return; } });
+            return t;
+        });
+        return text;
+    }
+
+    function multiEdit() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0)
+            return msgUI("请选择需要修改的记录");
+        showWindow("editWindow");
+    }
+
+    function confirm() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        var object = {};
+        for (var i = 0; i < UserAptitude.length; i++) {
+            var item = mini.getbyName(UserAptitude[i].value);
+            if (item && item.getValue()) {
+                if (item.getValue() == "无")
+                    object[UserAptitude[i].value] = "";
+                else
+                    object[UserAptitude[i].value] = item.getValue();
+            }
+        }
+        for (var i = 0; i < rows.length; i++) {
+            dataGrid.updateRow(rows[i], object);
+        }
+        clearForm();
+        hideWindow('editWindow')
+    }
+
+    function clearForm() {
+        var form = new mini.Form("#queryform");
+        form.clear();
+    }
+
+    function importExcel() {
+        ImportExcel("UserAptitude_Import", "/HR/UserAptitude/Aptitude/ValidateData", "/HR/UserAptitude/Aptitude/SaveExcelData");
+    }
+</script>

@@ -1,0 +1,161 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false" style="top: 30px; position: relative;">
+<div class="formDiv">
+    <fieldset>
+        <legend>基本属性</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="50%">
+                    </td>
+                    <td width="50%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        控件宽度：
+                    </td>
+                    <td>
+                        <input name="style_width" class="mini-textbox" value="100%" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        必须填写：
+                    </td>
+                    <td>
+                        <input name="required" class="mini-combobox" value="false" data="yesNo" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        允许输入：
+                    </td>
+                    <td>
+                        <input name="allowInput" class="mini-combobox" value="true" data="yesNo" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        空文本提示：
+                    </td>
+                    <td>
+                        <input name="emptyText" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        数字格式：
+                    </td>
+                    <td>
+                        <input name="format" class="mini-combobox" data="numberFormat" value="n" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        保留小数点位数：
+                    </td>
+                    <td>
+                        <input name="decimalPlaces" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        最小值：
+                    </td>
+                    <td>
+                        <input name="mimValue" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        最大值：
+                    </td>
+                    <td>
+                        <input name="maxValue" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        增量值：
+                    </td>
+                    <td>
+                        <input name="increment" class="mini-textbox" style="width: 100%" value="1" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        强制约束大小范围：
+                    </td>
+                    <td>
+                        <input name="allowLimitValue" class="mini-combobox" style="width: 100%" value="false" data="yesNo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        滚动滚轮改变值：
+                    </td>
+                    <td>
+                        <input name="changeOnMousewheel" class="mini-combobox" style="width: 100%" value="false" data="yesNo" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>事件属性</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="50%">
+                    </td>
+                    <td width="50%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        值改变时发生：
+                    </td>
+                    <td>
+                        <input name="onvaluechanged" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    var yesNo = [{ "value": "true", "text": "是" }, { "value": "false", "text": "否" }];
+    var numberFormat = [{ "value": "n", "text": "小数点和千分位" }, { "value": "c", "text": "货币格式" }, { "value": "p", "text": "百分比格式" }, { "value": "¥#,0.00", "text": "¥#,0.00" }];
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+
+            //解决combobox的BUG
+            var fields = form.getFields();
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+                if (field.type == "combobox") {
+                    var v = field.getValue();
+                    var t = field.getText();
+                    if (t == "")
+                        field.setText(v);
+                }
+            }
+
+        }
+    }
+</script>

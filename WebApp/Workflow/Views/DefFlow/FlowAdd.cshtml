@@ -1,0 +1,138 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" id="btnCancel" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" style="top: 30px; position: relative;">
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        流程编号
+                    </td>
+                    <td>
+                        <input name="Code" class="mini-textbox" style="width: 100%" required="true" onvaluechanged="onCodeChanged" />
+                    </td>
+                    <td>
+                        流程名称
+                    </td>
+                    <td>
+                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" onvaluechanged="onNameChanged" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        流程名模板
+                    </td>
+                    <td>
+                        <input name="FlowNameTemplete" class="mini-textbox" style="width: 100%" required="true" />
+                    </td>
+                    <td>
+                        任务名模板
+                    </td>
+                    <td>
+                        <input name="TaskNameTemplete" class="mini-textbox" style="width: 100%" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单URL
+                    </td>
+                    <td colspan="3">
+                        <input name="FormUrl" class="mini-textbox" style="width: 100%" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单表名称
+                    </td>
+                    <td>
+                        <input name="TableName" class="mini-textbox" style="width: 100%" required="true" />
+                    </td>
+                    <td>
+                        流程分类模板
+                    </td>
+                    <td>
+                        <input name="FlowCategorytemplete" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单宽度
+                    </td>
+                    <td>
+                        <input name="FormWidth" class="mini-textbox" style="width: 100%" />
+                    </td>
+                    <td>
+                        表单高度
+                    </td>
+                    <td>
+                        <input name="FormHeight" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    function save() {
+        execute("CreateFlowDef", { onComplete: function (text) { closeWindow(text); } });
+    }
+
+    function onNameChanged(e) {
+        var name = mini.getbyName("Name").getValue();
+        if (name) {
+            var FlowNameTemplete = mini.getbyName("FlowNameTemplete");
+            if (FlowNameTemplete.getValue() == "")
+                FlowNameTemplete.setValue(name);
+            var TaskNameTemplete = mini.getbyName("TaskNameTemplete");
+            if (TaskNameTemplete.getValue() == "")
+                TaskNameTemplete.setValue("{StepName}-表单名(业务字段：{ID})");
+        }
+    }
+    function onCodeChanged(e) {
+        var code = mini.getbyName("Code").getValue();
+        if (code) {
+            var TableName = mini.getbyName("TableName");
+            if (TableName.getValue() == "") {
+                TableName.setValue("T_" + code);
+            }
+            var FormUrl = mini.getbyName("FormUrl");
+            if (FormUrl.getValue() == "") {
+                FormUrl.setValue("/MvcConfig/UI/Form/PageView?TmplCode=" + code);
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function onFormSetData(data) {
+        var categoryCode = getQueryString("CategoryCode");
+        if (categoryCode && categoryCode != "{CategoryCode}") {
+            mini.getbyName("Code").setValue(categoryCode + "_");
+        }
+    }
+
+</script>

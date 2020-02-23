@@ -1,0 +1,72 @@
+<div class="head search contract-search">
+    <span class="glyphicon glyphicon-menu-left important-cls" onclick="$monitor.goback(this)"></span>
+	<div class="return-cls">
+		<form onsubmit="return false;">
+			<i class="glyphicon glyphicon-search"></i>
+			<input type="search" placeholder="搜索" onchange="searchContractHistory(this)" onkeyup="$monitor.keyup(this)" />
+			<i class="glyphicon glyphicon-remove-sign" onclick="$monitor.clearInputValue(this)"></i>
+		</form>
+	</div>
+</div>
+
+<!-- 历史记录 -->
+<div class="content search-content">
+	<div class="search-title">
+		<i class="glyphicon glyphicon-search"></i>
+		<span>最近搜索</span>
+		<i class="glyphicon glyphicon-trash" onclick="clearSearchHistory()"></i>
+	</div>
+	<ul class="history">
+		<li way-repeat="contractSearchHistory" way-data="value" onclick="searchThisHistory(this)"></li>
+	</ul>
+</div>
+
+<!-- 搜索内容 -->
+<div class="content scroll" id="search-body" way-scope="contractSearch">
+    <div class="scroll-content">
+        <div class="search-body">
+            <div class="search-model">
+                <div class="title">
+                    <i class="glyphicon glyphicon-user"></i>
+                    <span>客户</span>
+                    (<span way-data="Customers.Count"></span>)
+                    <div onclick="hideOrShow(this)"><i class="glyphicon glyphicon-menu-up"></i></div>
+                </div>
+                <ul class="detail" way-scope-break="true" >
+                    <li way-repeat="contractSearch.Customers.Data" onclick="showSearchResult(this,'Customers')">
+                        <div class="liCls" way-data="Name"></div>
+                        <div class="rememberCls" way-data="ID"></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="search-model">
+                <div class="title">
+                    <i class="glyphicon glyphicon-user"></i>
+                    <span>合同</span>
+                    (<span way-data="Contracts.Count"></span>)
+                    <div onclick="hideOrShow(this)"><i class="glyphicon glyphicon-menu-up"></i></div>
+                </div>
+                <ul class="detail" way-scope-break="true">
+                    <li way-repeat="contractSearch.Contracts.Data" onclick="showContractInfo(this)">
+                        <div class="liCls" way-data="Name"></div>
+                        <div class="rememberCls" way-data="ID"></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="search-model">
+                <div class="title">
+                    <i class="glyphicon glyphicon-user"></i>
+                    <span>负责人</span>
+                    (<span way-data="Users.Count"></span>)
+                    <div onclick="hideOrShow(this)"><i class="glyphicon glyphicon-menu-up"></i></div>
+                </div>
+                <ul class="detail" way-scope-break="true">
+                    <li way-repeat="contractSearch.Users.Data" onclick="showSearchResult(this,'Users')">
+                        <div class="liCls" way-data="Name"></div>
+                        <div class="rememberCls" way-data="ID"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

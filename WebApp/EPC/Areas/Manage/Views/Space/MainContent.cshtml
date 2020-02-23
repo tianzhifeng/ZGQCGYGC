@@ -1,0 +1,293 @@
+﻿@{
+    ViewBag.Title = "MainContent";
+}
+@using Config.Logic;
+<script src="/EPC/Scripts/Manage/Space/js/jquery.min.js" type="text/javascript"></script>
+<link href="/EPC/Scripts/Manage/Space/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="/EPC/Scripts/Manage/Space/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<script src="/EPC/Scripts/Manage/Space/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/EPC/Scripts/Manage/Space/js/jquery.nicescroll.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/EPC/Scripts/Manage/Space/css/content.css" />
+<script>
+    $("body").css("background-color", "")
+</script>
+@{
+    var engineeringInfo = ViewBag.EngineeringInfo as EPC.Logic.Domain.S_I_Engineering;
+    var engineeringInfoDic = ViewBag.EngineeringInfoDic as Dictionary<string, object>;
+    string detpName = engineeringInfo.ChargerDeptName + "," + engineeringInfo.OtherDeptName;
+    DateTime? startWorkingDate = ViewBag.StartWorkingDate;
+    var difDay = 0;
+    if (startWorkingDate.HasValue)
+    {
+        var timeSpan = DateTime.Now.Subtract(startWorkingDate.Value);
+        difDay = timeSpan.Days + 1;
+    }
+
+    <div id="tab-content-container">
+        <div class="tab-content-right">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active">
+                    <div class="tab-content-title clearfix">
+                        <div class="left-img pull-left">
+                        </div>
+                        <div class="pull-left tab-title-left">
+                            <h4>@engineeringInfo.Name &nbsp;·&nbsp;<span id="eCode">@engineeringInfoDic.GetValue("Name")</span></h4>
+                            <div>
+                                @if (!string.IsNullOrEmpty(engineeringInfoDic.GetValue("CustomerInfoName")))
+                                {
+                                    <div class="edlink" id="customerInfo">
+                                        <a href="javascript:void(0)" onclick="openUrl('/EPC/Manage/CustomerInfo/PageView?TmplCode=CustomerInfo&FuncType=view&ID=@engineeringInfoDic.GetValue("CustomerInfo")','客户信息查看')">@engineeringInfo.CustomerInfoName</a>
+                                    </div>
+
+                                }
+                                @if (!string.IsNullOrEmpty(engineeringInfo.PhaseValue))
+                                {
+                                    <span>当前阶段：</span><span>@engineeringInfoDic.GetValue("PhaseValue")&nbsp;&nbsp;</span>
+                                }
+                                @if (difDay > 0)
+                                {    <span>累计开工天数：</span><span>@difDay 天</span>}
+                                else
+                                { <span>尚未开工</span>}
+
+                            </div>
+                        </div>
+                        <div class="pull-right tab-title-right">
+                            <p>
+                                <span class="lf">工程负责人：</span><span>@engineeringInfo.ChargerUserName</span> <span class="lf">参与部门：</span><span>@detpName.TrimEnd(',')</span>
+                            </p>
+                            @*<p>
+                                    <span class="lf">投资额：</span>
+                                    @if (!engineeringInfo.Investment.HasValue)
+                                    {
+                                        <span>0 万元</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@engineeringInfo.Investment 万元</span>
+                                    }
+                                    <span class="lf">建设地点： </span>
+                                    @if (string.IsNullOrEmpty(engineeringInfoDic.GetValue("Address")))
+                                    {
+                                        <span></span>
+                                    }
+                                    else
+                                    {
+                                        <span>@engineeringInfoDic.GetValue("Address")</span>
+                                    }
+                                </p>*@
+
+                        </div>
+                    </div>
+                    <div class="tab-content-contents clearfix">
+                        <div class="tab-content-contents-left">
+                            <div class="tab-content-contents-left-publish clearfix">
+                                @{
+                                    var list = ViewBag.LastestNotice as List<EPC.Logic.Domain.S_I_Notice>;
+
+                                    if (list.Count != 0)
+                                    {
+                                        <div class="white-block">
+                                        </div>
+                                    }
+                                    <ul>
+                                        @{
+                                            if (list.Count == 0)
+                                            {
+                                                <img src="/EPC/Scripts/Manage/Space/images/NoContent.png" class="nothings" />
+                                            }
+
+                                            foreach (var item in list)
+                                            {
+                                                var mins = (DateTime.Now - item.CreateDate.Value).TotalMinutes;
+                                                <li>
+                                                    <p>
+                                                        <a onclick="openNoticeForm('@item.ID','@item.LinkUrl')" href="javascript:void(0)">@item.Title</a>
+                                                    </p>
+                                                    <span>@item.CreateUserName</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    @if (mins < 1)
+                                                    {
+                                                        <span>刚刚上传</span>
+                                                    }
+                                                    else if (mins < 60)
+                                                    {
+                                                        var min = Math.Floor(mins);
+                                                        <span>@min 分钟前上传</span>
+                                                    }
+                                                    else if (mins < 1440)
+                                                    {
+                                                        var hour = Math.Floor(mins / 60);
+                                                        <span>@hour 小时前上传</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        var diffDate = Math.Floor(mins / 1440);
+                                                        <span>@diffDate 天前上传</span>
+                                                    }
+                                                    <span class="glyphicon glyphicon-time"></span>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                }
+                                <div class="tab-content-contents-forum">
+                                    <div onclick="openNotice('True','大事记')">
+                                        <p>@ViewBag.SysNoticeNum</p>
+                                        <span>大事记</span>
+                                    </div>
+                                    <div onclick="openNotice('False','工程公告')">
+                                        <p>@ViewBag.NoticeNum</p>
+                                        <span>公告</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content-contents-right">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                        </th>
+                                        <th>
+                                            主要人员
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var userTable = ViewBag.UserInfo as System.Data.DataTable;
+                                        var userRowCount = 9;
+                                        var count = 9;
+                                        if (count > userTable.Rows.Count)
+                                        {
+                                            count = userTable.Rows.Count;
+                                        }
+                                        for (int i = 0; i < count; i++)
+                                        {
+                                            var name = userTable.Rows[i]["UserName"].ToString();
+                                            var dept = userTable.Rows[i]["DeptName"].ToString();
+                                            var roleName = userTable.Rows[i]["RoleName"].ToString();
+                                            var mobilePhone = userTable.Rows[i]["MobilePhone"].ToString();
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                    </div>
+                                                </td>
+                                                <td class="info-one">
+                                                    <div>
+                                                        <span>@name</span><span>@dept</span>
+                                                    </div>
+                                                    <div style="font-size: 11px;">
+                                                        <span>@roleName</span><span>@mobilePhone</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        if (count < userRowCount)
+                                        {
+                                            for (int i = count; i < userRowCount; i++)
+                                            {
+                                                <tr>
+                                                    <td></td>
+                                                    <td class="info-one">
+                                                        <div class="nothing">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-content-upload clearfix">
+                        <div class="engineer">
+                            <div class="tab-title">
+                                <span>工程资料</span>
+                            </div>
+                            <ul>
+                                <li style="margin-top: 80px; border: none!important;">
+                                    <div style="text-align: center; width: 100%">
+                                        <h2 style="color: #cdced2; font-size: 16px;">
+                                            暂无资料
+                                        </h2>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="outputs">
+                            <div class="tab-title">
+                                <span>最新输出成果</span>
+                            </div>
+                            <ul>
+                                <li style="margin-top: 80px; border: none!important;">
+                                    <div style="text-align: center; width: 100%">
+                                        <h2 style="color: #cdced2; font-size: 16px;">
+                                            暂无成果
+                                        </h2>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    var groupID = getQueryString("GroupInfoID");
+
+    $(document).ready(function () {
+        $("html").niceScroll({ cursorborder: "none" });
+        $(".tab-content-contents-right").niceScroll({ cursorborder: "none" });
+    });
+
+    $(".tab-content-state .state-contaiber").not(".addstate").on("click", function (event) {
+        var prjID = $(this).find(".prjID").prevObject[0].id;
+        var title = $(this).find(".pn").attr("projectname");
+        var engineeringName = $(this).find(".pn").attr("engineeringname");
+        var engineeringID = $(this).find(".pn").attr("engineeringid");
+        var leftUrl = "SliderProject?ProjectInfoID=" + prjID;
+        var rightUrl = "";
+        window.parent.movespro(prjID, title, engineeringName, engineeringID);
+    });
+
+    $(".tab-content-state .state-content").on("mouseover", function () {
+
+        $(this).find(".shade").stop().animate({ top: "0px" })
+    }).on("mouseout", function () {
+        $(this).find(".shade").stop().animate({ top: "100%" })
+    });
+
+    function openNotice(isFromSys, title) {
+        if (isFromSys == "True")
+            openWindow("/MvcConfig/UI/List/PageView?TmplCode=SysNotice&GroupInfoID=" + groupID + "&Type=Engineering" + "&FuncType=View", { "width": "1000", "title": title });
+        else
+            openWindow("/MvcConfig/UI/List/PageView?TmplCode=Notice&GroupInfoID=" + groupID + "&Type=Engineering" + "&FuncType=View", { "width": "1000", "title": title });
+    }
+
+    function openNoticeForm(noticeID, linkUrl) {
+        var url = "/Project/Engineering/EngineeringNotice/Views?ID=" + noticeID;
+        if (linkUrl) { url = linkUrl; }
+        openWindow(url + "&FuncType=View", { "width": "70%", height: "80%", "title": "查看" });
+    }
+
+    function createNewProject(id, code) {
+        var url = "/Project/AutoUI/TaskNotice/PageView?TmplCode=TaskNotice&Code=" + code + "&EngineeringInfoID=" + id;
+        flowAdd("TaskNotice", {
+            url: url,
+            width: "70%",
+            height: "80%",
+            title: "设计任务通知单"
+        });
+    }
+
+    function openUrl(url, title) {
+        if (url && url != "")
+            openWindow(url, { "width": "80%", "title": title, addQueryString: false });
+    }
+
+</script>

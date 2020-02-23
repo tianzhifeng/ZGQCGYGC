@@ -1,0 +1,54 @@
+﻿<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>miniListQuery</Title>
+    <Author>dingx_new</Author>
+    <Shortcut>miniListQuery</Shortcut>
+    <Description>miniUI列表查询</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>Name</ID>
+        <Default>Name</Default>
+      </Literal>
+    </Declarations>
+    <Code Language="HTML">
+      <![CDATA[
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 145px;display:none;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="13%">编号</td>
+                <td width="35%">
+                    <input name="$$LK$$Code" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="13%">名称</td>
+                <td width="35%">
+                    <input name="$$LK$$Name" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="4%" />
+            </tr>
+            <tr>
+                <td>描述</td>
+                <td colspan="3">
+                    <input name="$$LK$$Description" class="mini-textbox" style="width: 100%;" />
+                </td>                
+                <td />
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+]]>
+    </Code>
+  </Snippet>
+</CodeSnippet>

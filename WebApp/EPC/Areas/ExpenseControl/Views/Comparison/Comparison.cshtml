@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "Comparison";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType" allowinput="false"
+                          onvaluechanged="onShowTypeChanged" value="All" /> &nbsp;
+                <div id="showAll" name="showAll" checked="false" class="mini-checkbox" text="显示明细" onvaluechanged="onCheckBoxValueChanged"></div>
+                &nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+         url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true"
+         multiselect="true" borderstyle="border-left:0px;" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType"
+         allowresize="false" fitcolumns="false">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" width="270" headeralign="center" allowsort="false">
+                科目名称
+            </div>
+            @{
+                var sourceInfo = ViewBag.SourceBudget as EPC.Logic.Domain.S_I_BudgetInfo;
+                var targetInfo = ViewBag.TargetBudget as EPC.Logic.Domain.S_I_BudgetInfo;
+                <div header="@sourceInfo.VersionName" headeralign="center" versionid="@sourceInfo.ID">
+                    <div property="columns">
+                        @{
+                            var sourcefield0 = sourceInfo.ID + "_Quantity";
+                            var sourcefield1 = sourceInfo.ID + "_UnitPrice";
+                            var sourcefield2 = sourceInfo.ID + "_TotalValue";
+                            var sourcefield3 = sourceInfo.ID + "_Branding";
+                        }
+                        <div field="@sourcefield0" headeralign="center" width="80" align="right">数量</div>
+                        <div field="@sourcefield1" headeralign="center" datatype="currency" width="80" align="right">单价（元）</div>
+                        <div field="@sourcefield2" headeralign="center" datatype="currency" width="120" align="right">总价（元）</div>
+                        <div field="@sourcefield3" headeralign="center" width="120" align="right">品牌</div>
+                    </div>
+                </div>
+
+                <div header="@targetInfo.VersionName" headeralign="center" versionid="@targetInfo.ID">
+                    <div property="columns">
+                        @{
+                            var targetfield0 = targetInfo.ID + "_Quantity";
+                            var targetfield1 = targetInfo.ID + "_UnitPrice";
+                            var targetfield2 = targetInfo.ID + "_TotalValue";
+                            var targetfield3 = targetInfo.ID + "_Branding";
+                        }
+                        <div field="@targetfield0" headeralign="center" width="80" align="right">数量</div>
+                        <div field="@targetfield1" headeralign="center" datatype="currency" width="80" align="right">单价（元）</div>
+                        <div field="@targetfield2" headeralign="center" datatype="currency" width="120" align="right">总价（元）</div>
+                        <div field="@targetfield3" headeralign="center" width="120" align="right">品牌</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var listIDs = "@ViewBag.SourceBudget.ID,@ViewBag.TargetBudget.ID";
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }];
+
+    function pageLoad() {
+        loadData();
+    }
+
+    function loadData() {
+        var ShowDetail = mini.get("showAll").getValue();
+        addExecuteParam("ListIDs", listIDs);
+        addExecuteParam("ShowDetail", ShowDetail);
+        execute("GetTreeList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var dataTree = mini.get("dataTree");
+                dataTree.loadList(data, "ID", "ParentID");
+                var showType = mini.getbyName("ShowType").getValue();
+                if (showType == "Diff") {
+                    dataTree.filter(function (node) {
+                        if (node.Diff == "True") {
+                            return true;
+                        }
+                    });
+                }
+            }, validateForm: false
+        });
+    }
+
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (record.Diff == "True") {
+            e.cellStyle = " background: yellow;";
+        }
+        if (record.NodeType != "Detail") {
+            e.cellStyle += "font-weight:bolder; ";
+        }
+    }
+
+    function onShowTypeChanged(e) {
+        var tree = mini.get("dataTree");
+        if (e.value == "Diff") {
+            tree.filter(function (node) {
+                if (node.Diff == "True") {
+                    return true;
+                }
+            });
+        }
+        else {
+            tree.clearFilter();
+        }
+    }
+
+
+    function onCheckBoxValueChanged(e) {
+        loadData();
+    }
+
+</script>

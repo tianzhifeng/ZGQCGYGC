@@ -1,0 +1,281 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="onAdd" plain="true">插入行</a>
+                <a class="mini-button" iconcls="icon-add" onclick="onAddSub" plain="true">下方插入行</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="onRemove" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveData" plain="true">保存</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+         url="" expandonload="true" showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" oncellbeginedit="onCellBeginEdit"
+         oncellendedit="onCellEndEdit" multiselect="true" borderstyle="border-left:0px;"
+         treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="CapitalPlanType" contextmenu="#gridMenu"
+         allowresize="false" fitcolumns="true" allowdrag="true" allowdrop="true" allowleafdropin="true" ongivefeedback="onGiveFeedback"
+         ondrop="onNodeDrop">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn">
+            </div>
+            <div name="Name" field="Name" width="150" headeralign="center">
+                名称
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div name="CapitalPlanType" renderer="onEnumRender" field="CapitalPlanType" width="40" align="center" headeralign="center">
+                类型
+                <input property="editor" class="mini-combobox" data="CapitalPlanTypeForSelect" onvaluechanged="capitalPlanTypeChange" style="width: 100%;" />
+            </div>
+            <div name="SourceSQL" field="SourceSQL" width="140" align="left" headeralign="center">
+                计划默认数据
+                <input property='editor' class='mini-textarea' emptytext="年:{year},月:{month}" style='width:100%;' />
+            </div>
+            <div name="SourceLink" field="SourceLink" width="140" align="left" headeralign="center">
+                计划链接
+                <input property='editor' class='mini-textarea' emptytext="年:{year},月:{month}" style='width:100%;' />
+            </div>
+            <div name="RealSourceSQL" field="RealSourceSQL" width="140" align="left" headeralign="center">
+                实际默认数据
+                <input property='editor' class='mini-textarea' emptytext="年:{year},月:{month}" style='width:100%;' />
+            </div>
+            <div name="RealSourceLink" field="RealSourceLink" width="140" align="left" headeralign="center">
+                实际链接
+                <input property='editor' class='mini-textarea' emptytext="年:{year},月:{month}" style='width:100%;' />
+            </div>
+            <div field="IsReadOnly" type="checkboxcolumn" truevalue="1" falsevalue="0" width="60" headeralign="center" align="center">
+                是否只读
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="gridMenu" class="mini-contextmenu">
+    <li name="add" iconcls="icon-add" onclick="onAdd">插入行</li>
+    <li name="add" iconcls="icon-add" onclick="onAddSub">下方插入行</li>
+    <li name="remove" iconcls="icon-remove" onclick="onRemove">删除行</li>
+</ul>
+<script>
+    var CapitalPlanTypeForSelect = @Html.Raw(ViewBag.CapitalPlanType);
+</script>
+<script>
+    var templateID = getQueryString("ID");
+
+    $("#dataTree").attr("url", "GetTreeList?ID=" + templateID);
+    addGridEnum("dataTree", "CapitalPlanType", "CapitalPlanTypeForSelect");
+
+    function onAdd() {
+        var node = getSelectNode();
+        if (!node)
+            return;
+
+        var dataTree = mini.get("dataTree");
+        addExecuteParam("targetID", node.ID);
+        addExecuteParam("isSub", false);
+        var parent = getNodeByID(node.ParentID);
+        if (parent)
+        {
+            addExecuteParam("capitalPlanType", parent.CapitalPlanType);
+        }
+        else
+        {
+            addExecuteParam("capitalPlanType", "");
+        }
+        execute("AddItem", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.addNode(data, 'after', node);
+            }, validateForm: false
+        });
+    }
+
+    function onAddSub() {
+        var node = getSelectNode();
+        if (!node)
+            return;
+
+        var dataTree = mini.get("dataTree");
+        addExecuteParam("targetID", node.ID);
+        addExecuteParam("isSub", true);
+        addExecuteParam("capitalPlanType", node.CapitalPlanType);
+        execute("AddItem", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var c = dataTree.getChildNodes(node).length
+                dataTree.addNode(data, c, node);
+            }, validateForm: false
+        });
+    }
+
+    function onRemove() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+
+        var allNodes = [];
+        for(i=0;i<nodes.length;i++)
+        {
+            allNodes.push(nodes[i]);
+            var childNodes = dataTree.getAllChildNodes(nodes[i]);
+            for(j=0;j<childNodes.length;j++)
+            {
+                allNodes.push(childNodes[j]);
+            }
+        }
+
+        addExecuteParam("ListData", allNodes);
+        execute("DeleteItems", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                for (var i = 0; i < nodes.length; i++) {
+                    dataTree.removeNode(nodes[i]);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function saveData() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveItems?ID=" + templateID, {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                tree.reload();
+            }, validateForm: false
+        });
+    }
+
+    function onDrawingCell(e)
+    {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+
+        //if (field == "SourceSQL") {
+        //    e.cellHtml = '<span class="showCellTooltip" data-placement="bottomleft">' + record.SourceSQL?record.SourceSQL:'' + '</span>';
+        //}
+    }
+
+    function onCellBeginEdit(e)
+    {
+        //if(e.field == 'CapitalPlanType' && e.row.CapitalPlanType == 'Total')
+        //{
+        //    e.cancel = true;
+        //}
+    }
+
+    function onCellEndEdit(e)
+    {
+
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+
+        if (effect == "add")
+        {
+            e.effect = "no";
+        }
+            //只能同一个父项内移动
+        else if (node.ParentID != targetNode.ParentID)
+        {
+            e.effect = "no";
+        }
+        //else
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveItem", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false
+        });
+    }
+
+    function capitalPlanTypeChange(e) {
+        var selectNode = getSelectNode();
+        var dataTree = mini.get("dataTree");
+        //本节点
+        dataTree.updateNode(selectNode, { CapitalPlanType: e.value });
+        //父项
+        upChangeCapitalPlanType(selectNode.ParentID, e.value);
+        //子项全部改变类型
+
+        var nodes = dataTree.getChildNodes(selectNode);
+        for (i = 0; i < nodes.length; i++) {
+            dataTree.updateNode(nodes[i], { CapitalPlanType: e.value });
+            //nodes[i].CapitalPlanType = e.value;
+        }
+    }
+
+    function upChangeCapitalPlanType(id, planType) {
+        var node = getNodeByID(id);
+        if (!node)
+            return;
+
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.findNodes(function (node) {
+            if (node.ParentID == id && node.CapitalPlanType != planType) return true;
+        });
+
+        if(nodes.length == 0)
+        {
+            dataTree.updateNode(node, { CapitalPlanType: planType });
+        }
+        else
+        {
+            dataTree.updateNode(node, { CapitalPlanType: '' });
+        }
+
+        upChangeCapitalPlanType(node.ParentID, planType)
+    }
+
+    function getSelectNode()
+    {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelectedNodes();
+        if (!nodes || nodes.length == 0) {
+            return;
+        }
+
+        var node = nodes[0];
+        return node;
+    }
+
+    function getNodeByID(id)
+    {
+        var dataTree = mini.get('dataTree');
+        var nodes = dataTree.findNodes(function (node) {
+            if (node.ID == id) return true;
+        });
+
+        if (nodes.length == 0)
+            return;
+
+        return nodes[0];
+    }
+
+    //$(function () {
+    //    var tip = new mini.ToolTip();
+    //    tip.set({
+    //        target: document,
+    //        selector: '.showCellTooltip',
+    //        onopen: function (e) {
+    //            tip.setContent('ssdd');
+    //        }
+    //    });
+    //})
+
+</script>

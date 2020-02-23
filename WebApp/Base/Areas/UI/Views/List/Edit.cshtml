@@ -1,0 +1,224 @@
+﻿@section scripts{
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/mode/javascript/javascript.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/mode/sql/sql.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.css")" rel="stylesheet" type="text/css" />
+}
+<style>
+    .CodeMirror {
+        border: 1px solid #ccc;
+        font-size: 13px;
+    }
+</style>
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-save" onclick="SaveData();">保存</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            列表编号
+                        </td>
+                        <td>
+                            <input name="Code" class="mini-textbox" style="width: 100%;" required="true" onvaluechanged="onCodeChanged" />
+                        </td>
+                        <td>
+                            列表名称
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            所属模块
+                        </td>
+                        <td>
+                            <input name="ConnName" class="mini-combobox" style="width: 100%" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                        </td>
+                        <td>
+                            所属分类
+                        </td>
+                        <td>
+                            <input name="CategoryID" class="mini-combobox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            涉及到的表
+                        </td>
+                        <td>
+                            <input name="TableNames" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                        <td></td>
+                        <td>
+                            <input name="DenyDeleteFlow" class="mini-checkbox" checked="true" />禁删流程&nbsp;&nbsp;<input name="HasRowNumber" class="mini-checkbox" />
+                            有序号&nbsp;&nbsp;<input name="HasCheckboxColumn" class="mini-checkbox" />
+                            选择列
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>默认显示查询框</td>
+                        <td>
+                            <input name="ShowQueryForm" class="mini-combobox" style="width: 100%" required="true" data="TrueOrFalse"
+                                   onvaluechanged="onShowQueryFormChanged" />
+                        </td>
+                        <td id="queryFormNumberTitle">查询栏列数</td>
+                        <td id="queryFormNumber"><input name="QueryFormColmuns" style="width: 100%" class="mini-textbox" vtype="int;maxLength:5" /></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            排序(需要order by)
+                        </td>
+                        <td colspan="3">
+                            <input name="OrderBy" class="mini-textbox" style="width: 100%;" />
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            SQL
+                        </td>
+                        <td colspan="3">
+                            <textarea id="SQL" class="editor" style="height: 100px;" ></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Script
+                        </td>
+                        <td colspan="3">
+                            <textarea id="Script" name="editor" style="height:300px;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory)
+</script>
+<script type="text/javascript">
+    var TrueOrFalse=[{text:"是",value:"T"},{text:"否",value:"F"}];
+    var script=null;
+    var sql=null;
+    function onFormSetData(data) {
+        var connName = getQueryString("ConnName");
+        var categoryID = getQueryString("CategoryID");
+        if (connName) {
+            mini.getbyName("ConnName").setValue(connName);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(data.ConnName, data.CategoryID);
+        }
+
+        var categoryCode = getQueryString("CategoryCode");
+        if (categoryCode && categoryCode != "{CategoryCode}") {
+            mini.getbyName("Code").setValue(categoryCode + "_");
+        }
+        if(data.ShowQueryForm=="T"){
+            $("#queryFormNumberTitle").show();
+            $("#queryFormNumber").show();
+        }
+        else
+        {
+            $("#queryFormNumberTitle").hide();
+            $("#queryFormNumber").hide();
+        }
+
+        script = CodeMirror.fromTextArea(document.getElementById('Script'), {
+            mode: "text/javascript",
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            theme : "xq-light"
+        });
+        script.setSize('auto','300px');
+        script.setValue(data.ScriptText);
+
+        sql = CodeMirror.fromTextArea(document.getElementById('SQL'), {
+            mode: "text/sql",
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            theme : "xq-light"
+        });
+        sql.setSize('auto','150px');
+        sql.setValue(data.SQL);
+    }
+
+    function onShowQueryFormChanged(e) {
+        if(e.value=="T"){
+            $("#queryFormNumberTitle").show();
+            $("#queryFormNumber").show();
+        }
+        else
+        {
+            $("#queryFormNumberTitle").hide();
+            $("#queryFormNumber").hide();
+        }
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+        mini.getbyName("CategoryID").setData(CateEnum);
+        mini.getbyName("CategoryID").setValue(categoryID);
+    }
+</script>
+<script type="text/javascript">
+    function onCodeChanged(e) {
+        var code = mini.getbyName("Code").getValue();
+        if (code) {
+            var Name = mini.getbyName("Name");
+            if (Name.getValue() == "") {
+                Name.setValue(code);
+            }
+            var TableNames = mini.getbyName("TableNames");
+            if (TableNames.getValue() == "") {
+                TableNames.setValue("T_" + code);
+            }
+            if (sql.getValue() == "") {
+                sql.setValue("select * from T_" + code);
+            }
+        }
+    }
+    function SaveData()
+    {
+        addExecuteParam("Script",script.getValue());
+        addExecuteParam("SQL",sql.getValue());
+        save();
+    }
+</script>

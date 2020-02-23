@@ -1,0 +1,254 @@
+﻿<style type="text/css">
+    .mini-grid-cell {
+        border-right-width: 1px !important;
+    }
+</style>
+@{
+    ViewBag.Title = "我的设计项目";
+}
+@section scripts{
+    <link href="@Url.Content("/Project/Scripts/MyProject/project.css")" rel="stylesheet" type="text/css" />
+}
+<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="75%" showcollapsebutton="false">
+        <div class="mini-toolbar gw-grid-toolbar" borderstyle="border:0px">
+            <table>
+                <tr>
+                    <td></td>
+                    <td class="gw-toolbar-right">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入项目名称或编号" onenter="quickSearch('Name,Code');"
+                               onbuttonclick="quickSearch('Name,Code');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px"
+                 vertical="true" allowresize="false" handlersize="0">
+                <div size="30" showcollapsebutton="false" style="border: 0px">
+                    <div class="left_filters">
+                        <div class="left_filter_wrapper">
+                            <div class="left_filter_left" style="margin-left: 21px; padding-top: 0px; color: Orange">
+                            </div>
+                            <div class="left_filter_right">
+                                <a href="javascript:gotoTop()"><span>置顶</span><i field="" class="up"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" style="border: 0px">
+                    <div id="dataGrid" borderstyle="border:0px" class="mini-datagrid" onrowclick="onRowclick"
+                         ondrawcell="OnDrawCell" style="width: 100%; height: 100%;" sortfield="Name,Code"
+                         sortorder="asc,asc" url="" sizelist="[5,10,15]" pagesize="5">
+                        <div property="columns">
+                            <div field="" width="20">
+                            </div>
+                            <div name="Content" width="*" renderer="onContentRenderer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div showcollapsebutton="true" style="border: 0px">
+        <div class="mini-toolbar gw-grid-toolbar" style="border: 1 0 0 0">
+            <table width="100%" style="padding-top: 7px;">
+                <tr>
+                    <td>
+                        项目人员列表
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="UserGrid" class="mini-datagrid" idfield="ID" style="width: 100%; height: 100%;"
+                 allowmovecolumn="false" multiselect="true">
+                <div property="columns">
+                    <div type="checkcolumn" width="25">
+                    </div>
+                    <div field="UserName" width="60" headeralign="center" align="center" allowsort="true">
+                        人员
+                    </div>
+                    <div field="DeptName" width="*" headeralign="center" align="left" allowsort="true">
+                        部门
+                    </div>
+                    <div field="Phone" width="100" headeralign="center" align="center" allowsort="true">
+                        移动电话
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Major")
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("dataGrid");
+    $(function () {
+        $(grid.getEl()).find(".mini-grid-columns").hide();
+        bindFilter();
+
+        grid.setUrl("GetMyProjectList?ShowAllMajor=" + getQueryString("ShowAllMajor"));
+        searchProject();
+    });
+
+    function gotoTop() {
+        if (grid.getSelected()) {
+            var id = grid.getSelected().ID;
+            addExecuteParam("ProjectInfoID", id);
+            execute("SetTopProject", { onComplete: function () { grid.reload(); } });
+        }
+    }
+    function searchProject() {
+        grid.load({}, function () {
+            if (grid.getSelected() == null)
+                grid.select(grid.getRow(0), true);
+            onRowclick();
+        });
+    }
+
+    function bindFilter() {
+        var $filter = $(".left_filter_right");
+        $filter.find("a").hover(
+        function () {
+            if (!$(this).hasClass("active"))
+                $(this).addClass("left_filter_right_on");
+        },
+        function () {
+            if ($(this).hasClass("left_filter_right_on"))
+                $(this).removeClass("left_filter_right_on");
+        });
+    }
+
+    function onRowclick(e) {
+        if (grid.getSelected() == null) return;
+
+        var id = grid.getSelected().ID;
+
+        var userGrid = mini.get("UserGrid");
+        userGrid.setUrl("GetUserInfo?ProjectInfoID=" + id);
+        userGrid.load();
+
+    }
+
+    function onContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+        var $img = $("<img>").attr("width", "74px").attr("height", "16px").attr("border", "0px").attr("align", "absmiddle");
+
+        //第一行
+        var id = rec.ID;
+        var ownerID = rec.OwnerID;
+        var $tr1td = $("<td></td>").append($("<h3></h3>").text(rec.Name));
+        $tr1td.append($("<h4></h4>").text("（" + rec.Code + "）"));
+        $tr1td.append($('<h0 style="float:right;"><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/project/Engineering/EngineeringSpace/MainIndex\',\'' + rec.ID + '\')">打开项目空间</a></h0>'));
+        var $tr1 = $("<tr></tr>").append($tr1td);
+        $table.append($("<tr></tr>").append($tr1));
+
+        //第二行
+        var title = $.trim(rec.Name);
+        var $tr2td = $("<td></td>");
+        $tr2td.append($("<h0></h0>").text("项目阶段：" + rec.Phase));
+        $tr2td.append($("<h0></h0>").text("项目状态：" + rec.Status));
+        $tr2td.append($("<h0></h0>").text("计划开始日期：" + rec.PlanStartDate.replace("/", "-").replace("/", "-")));
+        $tr2td.append($("<h0></h0>").text("项目经理：" + rec.ChargeUserName));
+        $tr2td.append($("<h0></h0>").text("参与角色：" + rec.Role));
+        var $tr2 = $("<tr></tr>").append($tr2td);
+        //$tr2.append($("<td></td>"));
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td = $("<td></td>");
+        $tr3td.append($("<h0></h0>").append($("<a class='now'></a>").attr("href", "javascript:showMore('设计输入','" + rec.ID + "')").text("设计输入")));
+        $tr3td.append($("<h0></h0>").append($("<span></span>").text("专业工作区：")));
+
+        if (rec.Major == "") {
+            $tr3td.append($("<h0></h0>").append($("<span></span>").text("暂无专业工作区")));
+        }
+        else {
+            var majors = rec.Major.split(',');
+            for (var i = 0; i < majors.length; i++) {
+                var title = "", majorCode = "";
+                if (majors[i].indexOf('&') >= 0) {
+                    var majorItem = majors[i].split('&');
+                    var majorCode = majorItem[2];
+                    var title = majorItem[1] + "专业工作区";
+                }
+                else {
+                    majorCode = majors[i];
+                    title = getEnumText(Major, majorCode) + "专业工作区";
+                }
+                $tr3td.append($("<h0></h0>").append($("<a class='now'></a>").attr("href", "javascript:showMore('" + title + "','" + rec.ID + "','" + majorCode + "')").text(title)));
+            }
+        }
+        var $tr3 = $("<tr></tr>").append($tr3td);
+
+        $table.append($tr3);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+    function getEnumText(enumArray, value) {
+        var text = "";
+        for (var i = 0; i < enumArray.length; i++) {
+            if (enumArray[i]["value"] == value) {
+                text = enumArray[i]["text"];
+                break;
+            }
+        }
+        return text;
+    }
+
+    function showMore(title, prjId, majorCode) {
+        var url = "";
+        if (title == "设计输入") {
+            url = "/project/Basic/DesignInput/List?ProjectInfoID=" + prjId + "&SpaceCode=Project";
+        }
+        else {
+            url = "/Project/Basic/WorkSpace/WorkSpace?ProjectInfoID=" + prjId + "&SpaceCode=" + majorCode;
+        }
+
+        if (url != "") {
+            openWindow(url, { width: "80%", height: "80%", title: title });
+        }
+    }
+
+    function openProjectInfo(Name, linkUrl, ProjectInfoID) {
+        if (!ProjectInfoID || !linkUrl) return;
+        linkUrl.indexOf("?") >= 0 ? linkUrl += "&IsOpenForm=True&SpaceCode=Project&AuthType=FullControl&ProjectInfoID=" + ProjectInfoID : linkUrl += "?IsOpenForm=True&SpaceCode=Project&AuthType=FullControl&ProjectInfoID=" + ProjectInfoID;
+        openWindow(linkUrl, {
+            refresh: false, title: Name, width: "90%", height: "90%",
+            onDestroy: function () { }
+        });
+    }
+
+    function imgMouseOver(e) {
+        if (!e) e = window.event;
+        var img = e.target || e.srcElement;
+        var src = $(img).attr("src").replace(".png", "on.png");
+        $(img).attr("src", src);
+    }
+
+    function imgMouseOut(e) {
+        if (!e) e = window.event;
+        var img = e.target || e.srcElement;
+        var src = $(img).attr("src").replace("on.png", ".png");
+        $(img).attr("src", src);
+    }
+
+    function OnDrawCell(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var uid = record._uid;
+        var rowIndex = e.rowIndex;
+        if (e.field == "Pic") {
+            e.cellHtml = "<span class='row-project'  style='float:center;'>新任务5个<br>将到期任务3个</span>";
+        }
+    }
+</script>

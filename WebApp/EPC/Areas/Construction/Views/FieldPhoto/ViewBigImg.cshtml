@@ -1,0 +1,9 @@
+﻿@{
+    ViewBag.Title = "ViewBigImg";
+}
+
+<div style="text-align:center"><img id="bigImg" src=""></div>
+
+<script>
+    $("#bigImg").attr('src', decodeURIComponent(getQueryString('src')+'&with=null&height=null'));
+</script>

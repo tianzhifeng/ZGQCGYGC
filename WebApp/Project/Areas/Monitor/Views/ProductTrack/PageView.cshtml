@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "成果跟踪";
+}
+<style type="text/css">
+    .Work
+    {
+        background-image: url('/CommonWebResource/Theme/Default/MiniUI/icons/item.gif');
+    }
+</style>
+<div class="mini-layout" style="width: 100%; height: 100%;" splitsize='3'>
+    <div region="west" width="250" expanded="true" showspliticon="true" showheader="false"
+        style="border-top: 0; border-bottom: 0;">
+        <div class="mini-toolbar" style="border-left: 0; border-right: 0; border-top: 0;">
+            <table style="width: 100%">
+                <tr>
+                    <td width="80px">
+                        <input name="ShowType" class="mini-combobox" style="width: 80px;" textfield="text"
+                            valuefield="value" data="transForm" onvaluechanged="onValueChanged" value="Project" />
+                    </td>
+                    <td align="right">
+                        <input id="treekey" class="mini-buttonedit gw-searchbox" onenter="searchTree();"
+                            onbuttonclick="searchTree();" style="width: 150px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="mytree" class="mini-tree" url="" style="width: 100%; height: 100%;" showtreeicon="true"
+                textfield="Name" iconfield="WBSType" idfield="ID" enablehottrack="false" parentfield="ParentID"
+                resultastree="false" expandonload="1" onnodeselect="onNodeSelect">
+            </ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+        @Html.Raw(ViewBag.ListHtml)
+    </div>
+</div>
+<script>
+    var transForm = @Html.Raw(ViewBag.TransForm);
+    var defaultViewType ="@Html.Raw(ViewBag.DefaultViewType)";
+</script>
+<script type="text/javascript" language="javascript">
+    @Html.Raw(ViewBag.FixedFields)
+    @Html.Raw(ViewBag.Script)
+
+    function pageLoad() {
+
+        var url = "GetTree?ProjectInfoID=" + getQueryString("ProjectInfoID") + "&ViewType=Project" + "&SpaceCode=" + getQueryString("SpaceCode");
+        mini.get("mytree").setUrl(url);
+        var tree = mini.get("mytree");
+        var node = tree.getRootNode();
+        node = tree.getChildNodes(node)[0];
+        tree.selectNode(node);
+        var e = {};
+        e.node = node;
+        onNodeSelect(e);
+    }
+
+    function loadingwbs(viewType) {
+        var tree = mini.get("mytree");
+        addExecuteParam("ProjectInfoID", getQueryString("ProjectInfoID"));
+        addExecuteParam("ViewType", viewType);
+        execute("GetTree", { refresh: false, onComplete: function (data) {
+            if (defaultViewType.indexOf(viewType) >= 0) {
+                tree.loadList(data, "ID", "ParentID");
+            }
+            else {
+                tree.loadList(data, "VirtualID", "ParentID");
+            }
+        }, validateForm: false
+        });
+    }
+
+    function onNodeSelect(e) {
+        var url = "";
+        wbsType = e.node.WBSType;
+        if (e.node.ID) {
+            wbsID = e.node.ID;
+            url = "GetList?ProjectInfoID=" + getQueryString("ProjectInfoID") + "&WBSID=" + wbsID;
+        } else if (e.node.VirtualID) {
+            url = "GetList?ProjectInfoID=" + getQueryString("ProjectInfoID") + "&MajorValue=" + escape(e.node.Code);
+        }
+        var grid = mini.get("dataGrid");
+        grid.setUrl(url);
+        grid.load();
+    }
+
+    function onValueChanged(e) {
+        loadingwbs(e.value);
+    }
+
+    function searchTree() {
+        var tree = mini.get("mytree");
+        var key = mini.get("treekey").getValue();
+        tree.filter(function (node) {
+            if (node.Name.indexOf(key) != -1) return true;
+        });
+    }
+    function exportList(currentPage) {
+        if (currentPage)
+            $("input[name='exportCurrentPage']").val("true");
+        else
+            $("input[name='exportCurrentPage']").val("false");
+        ExportExcel(getQueryString("TmplCode"), "dataGrid", "");
+    }
+
+    function onDrawcellGrid(e) {
+        if (e.field != undefined && FixedFields.indexOf(e.field.toUpperCase()) > -1) {
+        } else {
+            e.cellInnerCls = "mini-grid-cell-nowrap";
+        }
+    }
+
+</script>

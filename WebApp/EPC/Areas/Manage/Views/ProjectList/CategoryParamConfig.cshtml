@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "CategoryParamConfig";
+}
+
+<div class="mini-toolbar" id="btnDiv" style="border-top: 0px; border-left: 0px;">
+    <a class="mini-button" id="btnSelect" iconcls="icon-refer" plain="true" onclick="save">保存</a>
+</div>
+
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px;border-width:0px" allowresize="false" handlersize="0">
+        <div showcollapsebutton="false" size="40%" style="border-bottom: 0px; border-right: 0px;">
+            <div class="mini-fit">
+                <div id="dataGridLeft" url="" class="mini-datagrid" style="width: 100%; height: 100%;" showpager="false" showcheckbox="true"
+                     idfield="ID" multiselect="true" borderstyle="border-top: 0;border-right: 0px;">
+                    <div property="columns">
+                        <div type="checkcolumn" width="20%">
+                        </div>
+                        <div field="Name" width="90%" allowsort="true" headeralign="center">
+                            名称
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="false" size="60%" style="border-bottom: 0px; border-left: 1px;">
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-left-width:1px; border-top:0px" allowresize="false" handlersize="0">
+                <div showcollapsebutton="false" size="5%" style="border: 0px; padding-top: 80px; background-color: #F9F9F9">
+                    <div class="mini-fit" style="width: 100%">
+                        <a class="mini-button" iconcls="icon-right" onclick="addSelected"></a>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <a class="mini-button" iconcls="icon-left" onclick="removeSelecteds"></a>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" size="95%" style="">
+                    <div class="mini-fit">
+                        <div id="dataGridRight" class="mini-datagrid" style="width: 100%; height: 100%;"
+                             borderstyle="border:0px" showcheckbox="true" multiselect="true" idfield="ID"
+                             showfooter="false" showpager="false">
+                            <div property="columns">
+                                <div type="checkcolumn" width="20%"></div>
+                                <div field="Name" width="40%" allowsort="true" headeralign="center">
+                                    名称
+                                </div>
+                                <div field="moveUp" width="20%" allowsort="true" headeralign="center">
+                                    上移
+                                </div>
+                                <div field="moveDown" width="20%" allowsort="true" headeralign="center">
+                                    下移
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    addGridButton("dataGridRight", "moveUp", {
+        linkText: '上移', onButtonClick: function (row) {
+            var grid = mini.get('dataGridRight');
+            var index = grid.indexOf(row);
+            grid.moveRow(row, index - 1);
+        }
+    });
+
+    addGridButton("dataGridRight", "moveDown", {
+        linkText: '下移', onButtonClick: function (row) {
+            var grid = mini.get('dataGridRight');
+            var index = grid.indexOf(row);
+            grid.moveRow(row, index + 2);
+        }
+    });
+
+    function setData(data) {
+        var gridL = mini.get('dataGridLeft');
+        gridL.setData(data.FullData);
+        var gridR = mini.get('dataGridRight');
+        gridR.setData(data.ForSelect);
+    }
+
+    function save() {
+        var data = mini.get("dataGridRight").data;
+        window.CloseOwnerWindow(data);
+    }
+
+    function addSelected() {
+        var mainGrid = mini.get("dataGridLeft");
+        var mainrows = mainGrid.getSelecteds();
+        if (!mainrows || mainrows.length == 0) {
+            msgUI("请至少选择一项");
+            return;
+        }
+
+        var rightGrid = mini.get("dataGridRight");
+        for (i = 0; i < mainrows.length; i++) {
+            var existItems = $.grep(rightGrid.data, function (d) {
+                return d.ID == mainrows[i].ID;
+            });
+
+            //如果不存在则加入
+            if (existItems.length == 0)
+                rightGrid.addRow(mini.clone(mainrows[i]));
+        }
+    }
+    function removeSelecteds() {
+        var selectedList = mini.get("dataGridRight");
+        var items = selectedList.getSelecteds();
+        selectedList.removeRows(items);
+    }
+</script>

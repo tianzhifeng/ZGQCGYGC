@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "MonthList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div id="fitDiv" class="mini-fit">
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%; height: 100%;' url='GetMonthList'
+         allowalternating='false' showpagebar="true" fitcolumns="true" ondrawcell="onDrawCell">
+        <div property="columns">
+            <div type='indexcolumn' headeralign='center'>序号</div>
+            <div field="Year" name="Year" headeralign="center" width="80" align="center">年份</div>
+            <div field="Month" name="Month" headeralign="center" width="80" align="center">月份</div>
+            <div field="Workdays" name="Workdays" headeralign="center" width="60" align="center">应出勤</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("HR.AttendanceLegends")
+</script>
+<script type="text/javascript">
+
+    function onTabPageLoad() {
+        var grid = mini.get("dataGrid");
+        var columns = grid.getColumns();
+        $.each(AttendanceLegends, function (index, item) {
+            var _c = { field: item.value, name: item.value, header: item.Description, headerAlign: "center", width: "60", align: "center" };
+            columns.push(_c);
+        });
+        grid.setColumns(columns);
+    }
+
+    function onDrawCell(e) {
+        if (e.field != "Year" && e.field != "Month") {
+            if (e.value > 0) {
+                e.cellStyle = "font-weight:bold;";
+            }
+            else {
+                e.cellStyle = "color:#c4c4c4;";
+            }
+        }
+    }
+
+</script>

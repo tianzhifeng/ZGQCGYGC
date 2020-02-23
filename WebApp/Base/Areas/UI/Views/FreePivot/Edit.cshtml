@@ -1,0 +1,149 @@
+﻿<form id="dataForm" method="post">
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight">
+                <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<input name="ID" class="mini-hidden" />
+<div class="formDiv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <div>
+            <table>
+                <tr class="hideRow">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        自由透视表编号
+                    </td>
+                    <td>
+                        <input name="Code" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                    <td>
+                        自由透视表名称
+                    </td>
+                    <td>
+                        <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        所属模块
+                    </td>
+                    <td>
+                        <input name="ConnName" class="mini-combobox" style="width: 100%" required="true"
+                            onvaluechanged="setCategoryData(this.getValue(), '');" />
+                    </td>
+                    <td>
+                        所属分类
+                    </td>
+                    <td>
+                        <input name="CategoryID" class="mini-combobox" style="width: 100%" required="true" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+    <div style="height: 360px">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="addRow({},{gridId:'DataSource',isLast:true});">
+                            添加数据源</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId:'DataSource'});">
+                            删除数据源</a>
+                    </td>
+                    <td id="btnRight">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="DataSource" class="mini-datagrid" style="width: 100%; height: 100%;" pagesize="100"
+                multiselect="false" allowcelledit="true" allowcellselect="true" showpager="false"
+                allowcellvalid="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="100px" vtype="required;">
+                        数据源名称
+                        <input property="editor" class="mini-textbox" style="width: 100%;" /></div>
+                    <div field="Sql" width="*" vtype="required;">
+                        Sql
+                        <input property="editor" class="mini-textarea" style="width: 100%;" minheight="100" /></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory);
+</script>
+<script type="text/javascript">
+
+    function onDataClick() {
+        var btn = mini.getbyName("data");
+        var data = btn.getValue();
+        openWindow('/MvcConfig/Meta/Enum/EnumEdit', { width: 350, height: 300, data: data, onDestroy: function (s) {
+            if (s != "close") {
+                var d = s;
+                if (typeof (s) == "object" || typeof (s) == "array" || s.constructor == Array || s.constructor == Object)
+                    var d = mini.encode(s);
+                btn.setValue(d);
+                btn.setText(d);
+            }
+        }
+        });
+    }
+
+    function onFormSetData(data) {
+        var connName = getQueryString("ConnName");
+        var categoryID = getQueryString("CategoryID");
+        if (connName) {
+            mini.getbyName("ConnName").setValue(connName);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(data.ConnName, data.CategoryID);
+        }
+
+        var categoryCode = getQueryString("CategoryCode");
+        if (categoryCode && categoryCode != "{CategoryCode}") {
+            mini.getbyName("Code").setValue(categoryCode + "_");
+        }
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+        mini.getbyName("CategoryID").setData(CateEnum);
+        mini.getbyName("CategoryID").setValue(categoryID);
+    }
+</script>

@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "DeptCostView";
+}
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="north" region="north" showheader="false" height="300" showspliticon="false"
+         allowresize="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <input id="BelongMonth" name="BelongMonth" class="mini-combobox" style="width: 100px;"
+                               allowinput="false" value="@DateTime.Now.Month" onvaluechanged="onValuechanged" data="MonthEnum" />
+                    </td>
+                    <td style="white-space: nowrap; padding-right: 5px; font-weight: bold">
+                        单位：元
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div class="mini-splitter" vertical="false" allowresize="false" style="width: 100%;
+                height: 100%;" borderstyle="border-bottom:0px;">
+                <div size="50%" showcollapsebutton="false">
+                    <div id="pieChartContainer" class="mini-fit">
+                    </div>
+                </div>
+                <div showcollapsebutton="false">
+                    <div id="xyChartContainer" class="mini-fit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                 idfield="ID" multiselect="true" showpager="false" showsummaryrow="true" borderstyle="border:0px"
+                 ondrawsummarycell="onDrawSummaryCell" ondrawcell="onDrawCell" onload="onGridLoad">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="DeptName" width="100" headeralign="center" allowsort="true">
+                        部门名称
+                    </div>
+                    @{
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            var costValueField = i.ToString() + "MonthCostValue";
+                            var receiptValueField = i.ToString() + "MonthReceiptValue";
+                            var fieldName = i.ToString() + "月";
+
+                            <div header='@fieldName' headeralign='center'>
+                                <div property='columns'>
+                                    <div field="@costValueField" summarytype='sum' datatype="currency" width="50" headeralign="center"
+                                         allowsort="true" align="right">
+                                        成本额
+                                    </div>
+                                    <div field="@receiptValueField" summarytype='sum' datatype="currency" width="50" headeralign="center"
+                                         allowsort="true" align="right">
+                                        到款额
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div field="SumCostValue" width="80" headeralign="center" allowsort="true" align="right">
+                        合计
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("MonthEnum");
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    function loadingChart(divID, option) {
+        $("#" + divID).highcharts($.extend(true,
+            option,
+            {
+
+            }));
+    }
+
+    function onValuechanged(e) {
+        if (e.value) {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl("GetList?BelongYear=" + e.value + "&ProjectInfoID=" + projectInfoID);
+            dataGrid.reload();
+        }
+    }
+
+    function onGridLoad(e) {
+        if (e.result && e.result.chartData) {
+            loadingChart("xyChartContainer", e.result.chartData);
+            loadingChart("pieChartContainer", e.result.pieChartData);
+        }
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var field = e.field;
+        e.cellStyle = "text-align:right; color:Brown";
+    }
+
+    function onDrawCell(e) {
+        var field = e.field;
+        var record = e.record;
+        if (field != "SubjectName" && field) {
+            var belongMonth = field.replace("Month", "");
+            var belongYear = record["BelongYear"];
+            if (field == "SumCostValue") belongMonth = "";
+            e.cellHtml = '<a href="javascript:viewDetailInfo(\'' + record.SubjectCode + '\',\'' + belongYear + '\',\'' + belongMonth + '\',\'' + record.ProjectID + '\')">' + mini.formatNumber(e.value, "#,0") + '</a>&nbsp; ';
+        }
+    }
+
+    function viewDetailInfo(subjectCode, belongYear, belongMonth, projectID) {
+        url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectCostDetail";
+        width = "70%"; height = "75%";
+        var queryData = { "$EQ$ProjectID": projectID };
+        queryData["$EQ$SubjectCode"] = subjectCode;
+        if (belongYear)
+            queryData["$EQ$BelongYear"] = belongYear;
+        if (belongMonth)
+            queryData["$EQ$BelongMonth"] = belongMonth;
+        title = "成本明细";
+        openWindow(url, { data: queryData, width: width, height: height, title: title, addQueryString: false });
+    }
+
+
+
+</script>

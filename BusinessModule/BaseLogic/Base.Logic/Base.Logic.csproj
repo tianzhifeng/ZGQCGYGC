@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EC8BB43B-4F2B-4E79-9BE7-5521D4A86F62}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Base.Logic</RootNamespace>
+    <AssemblyName>Base.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.PivotGrid.v12.1.Core">
+      <HintPath>..\..\..\WebApp\DevPivotGrid\dll\DevExpress.PivotGrid.v12.1.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JWT">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\JWT.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.JScript" />
+    <Reference Include="MvcAdapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\MvcAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ThoughtWorks.QRCode">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\ThoughtWorks.QRCode.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing">
+      <HintPath>..\..\..\BaseFrame\Resource\Dll\zxing.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessFacade\AuthFO.cs" />
+    <Compile Include="BusinessFacade\BI\Component\Base\BaseComponent.cs" />
+    <Compile Include="BusinessFacade\BI\Component\Base\IBIComponent.cs" />
+    <Compile Include="BusinessFacade\BI\Component\ColumnGrid.cs" />
+    <Compile Include="BusinessFacade\BI\Component\ComplexTextBlock.cs" />
+    <Compile Include="BusinessFacade\BI\Component\FileGrid.cs" />
+    <Compile Include="BusinessFacade\BI\Component\Grid.cs" />
+    <Compile Include="BusinessFacade\BI\Component\Navigation.cs" />
+    <Compile Include="BusinessFacade\BI\Component\NoticeGrid.cs" />
+    <Compile Include="BusinessFacade\BI\Component\PieGrid.cs" />
+    <Compile Include="BusinessFacade\BI\Component\SimpleTitleGrid.cs" />
+    <Compile Include="BusinessFacade\BI\Component\StandardColumn.cs" />
+    <Compile Include="BusinessFacade\BI\Component\StandardPie.cs" />
+    <Compile Include="BusinessFacade\BI\Component\Tab.cs" />
+    <Compile Include="BusinessFacade\BI\Component\TargetColumn.cs" />
+    <Compile Include="BusinessFacade\BI\Component\TargetPie.cs" />
+    <Compile Include="BusinessFacade\BI\Component\TitleBlock.cs" />
+    <Compile Include="BusinessFacade\BI\Factory.cs" />
+    <Compile Include="BusinessFacade\CaculateFo.cs" />
+    <Compile Include="BusinessFacade\GenerateCode.cs" />
+    <Compile Include="BusinessFacade\LayoutFO.cs" />
+    <Compile Include="BusinessFacade\LayoutUIFO.cs" />
+    <Compile Include="BusinessFacade\MetaFO.cs" />
+    <Compile Include="BusinessFacade\Portal\PortalEnum.cs" />
+    <Compile Include="BusinessFacade\Portal\PortalHelper.cs" />
+    <Compile Include="BusinessFacade\Portal\PortalMain.cs" />
+    <Compile Include="BusinessFacade\QRCode.cs" />
+    <Compile Include="BusinessFacade\UIFO.cs" />
+    <Compile Include="Domain.Partial\S_A_User.cs" />
+    <Compile Include="Domain\Base.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Base.tt</DependentUpon>
+    </Compile>
+    <Compile Include="enums.cs" />
+    <Compile Include="Model\UI\Form\CalItem.cs" />
+    <Compile Include="Model\UI\Form\FormItem.cs" />
+    <Compile Include="Model\UI\Form\S_UI_Form.cs" />
+    <Compile Include="Model\UI\Graph\EChartHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="Domain\Base.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Base.cs</LastGenOutput>
+    </None>
+    <None Include="Domain\EF.Reverse.POCO.Core.ttinclude" />
+    <None Include="Domain\EF.Reverse.POCO.ttinclude" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

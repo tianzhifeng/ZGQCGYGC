@@ -1,0 +1,82 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false" style="top: 30px; position: relative;">
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本属性</legend>
+            <div>
+                <table style="width: 100%;">
+                    <tr class="hideRow">
+                        <td width="50%"></td>
+                        <td width="50%"></td>
+                    </tr>
+                    <tr>
+                        <td>是否多选：
+                        </td>
+                        <td>
+                            <input name="multiple" class="mini-combobox" value="0" data="yesNo" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>数据种类：
+                        </td>
+                        <td>
+                            @* <input name="type" class="mini-combobox" data="dataType" style="width: 100%"  allowinput="true" />*@
+                            <input name="type" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">说明：user是选择用户，project是选择项目，dept是选择部门，user_aptitude是资质选人，其他值将从数据源定义中获取。
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            返回值格式：
+                        </td>
+                        <td>
+                            <input name="selectBack" class="mini-textarea" style="width: 100%;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Url参数</legend>
+            <div>
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <input name="urlParam" class="mini-textarea" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>说明：Url参数需要配成Json数组，例如：<br />
+                            [{key:"",type:"main",value:""},{key:"",type:"item",value:""},{key:"",type:"hidden-item",value:[]},{key:"",type:"hidden-main",value:""}]，<br />
+                            type说明：main是需要替换的主表字段；item是需要替换的子表字段；hidden-item是不需要替换的子表隐藏字段；hidden-main是不需要替换主表隐藏字段；<span id="aptitudespan" hidden="hidden">资质选人必须要有Major（专业）、ProjectClass（项目类型）、Position（MajorPrinciple、Designer等）、AptitudeLevel（项目等级）、ProjectInfoID（项目ID）参数</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    var yesNo = [{ "value": "1", "text": "是" }, { "value": "0", "text": "否" }];
+    var dataType = [{ "value": "user", "text": "用户" }, { "value": "project", "text": "项目" }, { "value": "dept", "text": "部门" }];
+
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+        }
+    }
+</script>

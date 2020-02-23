@@ -1,0 +1,37 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="saveNode();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <input name="ParentID" class="mini-hidden" />
+    <input name="FullID" class="mini-hidden" />
+    <input name="Type" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本信息</legend>
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            名称
+                        </td>
+                        <td style="width:90%">
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" vtype="maxLength:50;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    @*@Html.GetEnum(typeof(Config.OrgType));
+@Html.GetEnum("System.OrgCharacter");*@
+</script>

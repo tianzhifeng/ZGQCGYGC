@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "计划收款拆分";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+        style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="splitPlan();" plain="true">拆分</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm">
+            <input name="ID" class="mini-hidden" />
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td>
+                            合同名称
+                        </td>
+                        <td colspan="3" style="padding-right: 40px;">
+                            <input name="ContractInfoName" style="width: 100%" class="mini-textbox" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%">
+                            项目名称
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="ProjectInfoName" style="width: 100%" class="mini-textbox" />
+                        </td>
+                        <td width="15%">
+                            计划收款名称
+                        </td>
+                        <td width="35%;" style="padding-right: 40px;">
+                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:200" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            责任部门
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="BusinessDeptName" style="width: 100%" class="mini-textbox" />
+                        </td>
+                        <td>
+                            责任人
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="BusinessChargerUserName" style="width: 100%" class="mini-textbox" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            计划完成日期
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="PlanDate" class="mini-monthpicker" style="width: 100%" />
+                        </td>
+                        <td>
+                            计划收款金额（元）
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="PlanValue" style="width: 100%" class="mini-textbox" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            拆分金额（元）
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="SplitValue" style="width: 100%" class="mini-textbox" required="true" vtype="float" />
+                        </td>
+                        <td>
+                            计划日期
+                        </td>
+                        <td style="padding-right: 40px;">
+                            <input name="NewReceiptDate" class="mini-monthpicker" style="width: 100%" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function pageLoad() {
+        setFormItemDisabled("ContractInfoName");
+        setFormItemDisabled("ProjectInfoName");
+        setFormItemDisabled("BusinessDeptName");
+        setFormItemDisabled("BusinessChargerUserName");
+        setFormItemDisabled("PlanDate");
+        setFormItemDisabled("PlanValue");
+        setFormItemDisabled("MaxCanSplitValue");
+    }
+
+    function splitPlan() {
+        var dataForm = new mini.Form("#dataForm");
+        dataForm.validate();
+        if (dataForm.isValid() == false) return;
+        var data = dataForm.getData();
+        data.NewPlanDate = data.NewReceiptDate;
+        closeWindow(data);
+    }
+</script>

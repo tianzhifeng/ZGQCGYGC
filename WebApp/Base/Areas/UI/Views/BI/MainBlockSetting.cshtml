@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "MainBlockSetting";
+}
+
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow()" plain="true">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm" autogetdata="false">
+            <div style="padding-left: 20px; padding-top: 10px;">
+                <fieldset>
+                    <legend>主区域配置</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%">主标题</td>
+                            <td width="35%;" style="padding-right: 40px;"><input name="MainTitle" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" /></td>
+                            <td width="15%"></td>
+                            <td width="35%;" style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td colspan="3" style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td>主数据字段</td>
+                            <td style="padding-right: 40px;"><input name="MainDataField" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" /></td>
+                            <td>主数据描述</td>
+                            <td style="padding-right: 40px;"><input name="MainDataDescription" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" /></td>
+                        </tr>
+                        <tr>
+                            <td>主数据单位</td>
+                            <td style="padding-right: 40px;"><input name="MainDataUnit" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" /></td>
+                            <td></td>
+                            <td style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td>副数据字段</td>
+                            <td style="padding-right: 40px;"><input name="SubDataField" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                            <td>副数据描述</td>
+                            <td style="padding-right: 40px;"><input name="SubDataDescription" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                        </tr>
+                        <tr>
+                            <td>副数据单位</td>
+                            <td style="padding-right: 40px;"><input name="SubDataUnit" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                            <td>副数据图标</td>
+                            <td style="padding-right: 40px;">
+                                <input name="SubIcon" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="TrueOrFalse" allowinput="false" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>进度条</td>
+                            <td style="padding-right: 40px;">
+                                <input name="HasProgress" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                       data="TrueOrFalse" allowinput="false" />
+                            </td>
+                            <td>进度条标题</td>
+                            <td style="padding-right: 40px;">
+                                <input name="ProgressTitle" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>进度数据字段</td>
+                            <td style="padding-right: 40px;">
+                                <input name="ProgressDataField" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                            <td>进度数据单位</td>
+                            <td style="padding-right: 40px;">
+                                <input name="ProgressDataUnit" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>目标数据字段</td>
+                            <td style="padding-right: 40px;">
+                                <input name="KPIDataField" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                            <td>目标数据单位</td>
+                            <td style="padding-right: 40px;">
+                                <input name="KPIDataUnit" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>目标标题</td>
+                            <td style="padding-right: 40px;"><input name="KPITitle" style="width: 100%" class="mini-textbox" vtype="maxLength:50" /></td>
+                            <td></td>
+                            <td style="padding-right: 40px;"></td>
+                        </tr>
+                        <tr>
+                            <td>基准刻度</td>
+                            <td style="padding-right: 40px;">
+                                <input name="HasBaseProgress" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="TrueOrFalse" allowinput="false" />
+                            </td>
+                            <td>基准刻度数据源</td>
+                            <td style="padding-right: 40px;">
+                                <input name="BaseProgressDataField" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>基准刻度描述</td>
+                            <td style="padding-right: 40px;">
+                                <input name="BaseProgressTitle" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                            </td>
+                            <td></td>
+                            <td style="padding-right: 40px;"></td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>副区域配置</legend>
+                </fieldset>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var TrueOrFalse = [{ value: "True", text: "有" }, { value: "False", text: "无" }];
+
+    function setData(data) {
+        var formData = mini.clone(data);
+        if (formData) {
+            var form = new mini.Form("dataForm");
+            form.setData(formData);
+        }
+    }
+
+    function save() {
+        var form = new mini.Form("dataForm");
+        form.validate();
+        if (form.isValid() == false) return;
+        var _formData = form.getData();
+        closeWindow(_formData);
+    }
+</script>

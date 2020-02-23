@@ -1,0 +1,515 @@
+﻿<script src="@Url.Content("/MvcConfig/Scripts/jquery.fly.min.js")" type="text/javascript"></script>
+<!--[if lte IE 9]>
+<script src="@Url.Content("/MvcConfig/Scripts/requestAnimationFrame.js")" type="text/javascript"></script>
+<![endif]-->
+<style type="text/css">
+    body
+    {
+        overflow:hidden;    
+    }
+    
+    body, td, th {
+        font-size: 12px;
+    }
+
+    .adduser {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        margin: auto;
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/adduser.gif) no-repeat;
+        text-align: center;
+        display: block;
+    }
+
+    .flyer-img {
+        display: block;
+        width: 30px;
+        height: 30px;
+        border-radius: 30px;
+        position: fixed;
+        z-index: 9999;
+    }
+
+    #msg {
+        position: fixed;
+        top: 300px;
+        right: 35px;
+        z-index: 10000;
+        width: 1px;
+        height: 52px;
+        line-height: 52px;
+        font-size: 20px;
+        text-align: center;
+        color: #fff;
+        background: #360;
+        display: none;
+    }
+    
+    .mini-grid .mini-grid-rightCell {
+    border-right-width: 0px;
+}
+</style>
+<div class="mini-toolbar" id="btnDiv" style="border-top: 0px; border-left: 0px;">
+    <a class="mini-button" id="btnSelect" iconcls="icon-ok" plain="true" onclick="returnValue">@ViewBag.Choice</a>
+    <span class="separator"></span><a class="mini-button" iconcls="icon-remove" plain="true" onclick="closeWindow();">@ViewBag.Cancel</a>
+</div>
+<div class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px;border-width:0px" allowresize="false" handlersize="0">
+        <div showcollapsebutton="false" size="55%" style="border-bottom: 0px; border-right: 0px;">
+            <div id="tabs" class="mini-tabs" tabposition="left" onactivechanged="TabClick" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px;padding-top:0px;padding-right:0px;padding-bottom:0px"
+                plain="false">
+                <div title="@ViewBag.Dept" name="deptRole">
+                    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px" allowresize="false" handlersize="0">
+                        <div showcollapsebutton="false" size="50%" style="border-right: 0px;padding:5px">
+                            <ul id="dataTree" class="mini-tree" url="../Org/GetTree" style="width: 100%; height: 100%; overflow-x: hidden" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID"
+                                resultastree="false" onnodeselect="nodeSelect" expandonload="0" data="">
+                            </ul>
+                        </div>
+                        <div showcollapsebutton="false" size="50%">
+                            <div class="mini-toolbar gw-grid-toolbar" style="border: 0px; padding:0px">
+                                <table style="border-spacing:0px;padding:0px">
+                                    <tr>
+                                        <td style="white-space: nowrap;">
+                                            <input class="mini-buttonedit searchbox" id="key" emptytext="@ViewBag.QueryKey" style="width: 100%" onenter="quickSearch('WorkNo,Name',{gridId:'dataGrid'});" onbuttonclick="quickSearch('WorkNo,Name',{gridId:'dataGrid'});" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="mini-fit" style="width: 100%; height: 100%">
+                                <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-right:0px" multiselect="true" idfield="ID" oncellclick="addLinkMan" ondrawcell="onDrawCell"
+                                     allowresizecolumn="false" allowcellselect="true" showpager="true" showPagerButtonText="false" showPageSize="false" showPageIndex="false" pagesize="12">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="WorkNo" width="40" align="center" headeralign="center" allowsort="true">
+                                            @ViewBag.EmployeeID
+                                        </div>
+                                        <div field="Name" width="50" align="center" headeralign="center" allowsort="true">
+                                            @ViewBag.Name
+                                        </div>
+                                        <div field="LinkMan" width="25" align="center" headeralign="center">
+                                            @ViewBag.Collect
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div title="@ViewBag.Role" name="sysRole">
+                    <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border:0px" allowresize="false" handlersize="5">
+                        <div showcollapsebutton="false" size="50%" style="border-left:1px solild #ccc; border-right: 1px solid #ccc; float: left; width: 50%; height: 100%;">
+                            <div class="mini-toolbar" style="border-top:0px;border-right:0px;line-height:24px">
+                                系统角色列表：
+                            </div>
+                            <div class="mini-fit">
+                                <div id="sysRoleGrid" showpager="false" class="mini-datagrid" onrowclick="onRoleRowClick" allowresizecolumn="false" style="width: 100%; height: 100%;" borderstyle="border-right:0px"
+                                    showfooter="false" pagesize="500">
+                                    <div property="columns">
+                                        <div type="checkcolumn" width="20px">
+                                        </div>
+                                        <div field="Name" headeralign="center" align="center" allowsort="true">
+                                            系统角色名
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div showcollapsebutton="false" size="50%">
+                            <div class="mini-toolbar gw-grid-toolbar" style="border: 0px; padding:0px">
+                                <table style="border-spacing:0px;padding:0px">
+                                    <tr>
+                                        <td style="white-space: nowrap;">
+                                            <input class="mini-buttonedit searchbox" id="key2" emptytext="请输入工号或姓名" style="width: 100%" onenter="quickSearch('WorkNo,Name',{gridId:'sysDataGrid',queryBoxId:'key2'});" onbuttonclick="quickSearch('WorkNo,Name',{gridId:'sysDataGrid',queryBoxId:'key2'});" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="mini-fit" style="width: 100%; height: 100%">
+                                <div id="sysDataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-right:0px" multiselect="true" idfield="ID" url="" oncellclick="addLinkMan" ondrawcell="onDrawCell"
+                                    allowcellselect="true" allowresizecolumn="false"  showpager="true" showPagerButtonText="false" showPageSize="false" showPageIndex="false" pagesize="12">
+                                    <div property="columns">
+                                        <div type="checkcolumn">
+                                        </div>
+                                        <div field="WorkNo" width="40" align="center" headeralign="center" allowsort="true">
+                                            @ViewBag.EmployeeID
+                                        </div>
+                                        <div field="Name" width="50" align="center" headeralign="center" allowsort="true">
+                                            @ViewBag.Name
+                                        </div>
+                                        <div field="LinkMan" width="25" align="center" headeralign="center">
+                                            @ViewBag.Collect
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div title="@ViewBag.Contact"  name="linkMan">
+                    <i id="_myMan"></i>
+                    <ul id="linkManTree" class="mini-tree" url="GetLinkManTree" style="width: 100%; height: 100%; overflow-x: hidden" showtreeicon="true" showtreeicon="true" textfield="Name" idfield="ID"
+                        parentfield="ParentID" ongivefeedback="onNodeDroping" onbeforedrop="onNodeDrop" ondragstart="onDragStart" resultastree="false" allowdrag="true" allowdrop="true" ondrawnode="OnDrawNode"
+                        expandonload="1" contextmenu="#treeMenu" showcheckbox="true">
+                    </ul>
+                </div>
+                <div title="@ViewBag.Leave" name="retiredUser">
+                    <div class="mini-toolbar gw-grid-toolbar" style="border-top: 0px;border-bottom:0px;border-right:0px; padding:0px">
+                        <table style="border-spacing:0px;padding:0px">
+                            <tr>
+                                <td>
+                                    <input id="retiredUserKey" class="mini-buttonedit gw-searchbox" emptytext="请输入原工号或姓名" onenter="quickSearch('WorkNo,Name',{queryBoxId:'retiredUserKey',gridId:'retiredUser'});" onbuttonclick="quickSearch('Code,Name',{queryBoxId:'retiredUserKey',gridId:'retiredUser'});"
+                                        style="width: 100%;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit" style="width: 100%; height: 480px">
+                        <div id="retiredUser" class="mini-datagrid" style="width: 100%;height:100%" borderstyle="border-right:0px;" url="GetRetiredUserList" multiselect="true" showfooter="false"
+                            showpager="false" pager="#pager3" pagesize="10">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="WorkNo" headeralign="center" align="center" allowsort="true" width="80">
+                                    @ViewBag.OriginalID
+                                </div>
+                                <div field="Name" headeralign="center" align="center" allowsort="true" width="80">
+                                    @ViewBag.Name
+                                </div>
+                                <div field="DeptName" headeralign="center" align="center" allowsort="true" width="*">
+                                    @ViewBag.OriginalDepartment
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-pager" width="130" style="border-left:1px solid #ccc" id="pager3" showpageindex="false" showpagesize="false" showpageinfo="false" showreloadbutton="false">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showcollapsebutton="false" size="45%" style="border-bottom: 0px; border-left: 1px;">
+            <div class="mini-splitter" style="width: 100%; height: 100%;" borderstyle="border-left-width:1px; border-top:0px" allowresize="false" handlersize="0">
+                <div showcollapsebutton="false" size="5%" style="border:0px; padding-top: 180px; background-color: #F9F9F9">
+                    <div class="mini-fit" style="width: 100%">
+                        <a class="mini-button" iconcls="icon-right" onclick="addSelected"></a>
+                        <br><br>
+                        <br><br>
+                        <a class="mini-button" iconcls="icon-left" onclick="removeSelecteds"></a>
+                    </div>
+                </div>
+                <div showcollapsebutton="false" size="95%" style="">
+                    <div class="mini-toolbar" style="border-top: 0px; border-bottom: 0px; border-left:0px;">
+                        @ViewBag.Personnel：
+                    </div>
+                    <div class="mini-fit">
+                        <div id="selectedList" class="mini-datagrid" style="width: 100%; height: 100%;" borderstyle="border-left:0px;border-bottom:0px" showcheckbox="true" multiselect="true" showfooter="false" showpager="false">
+                            <div property="columns">
+                                <div type="checkcolumn"></div>
+                                <div field="WorkNo" width="60" align="center" headeralign="center">
+                                    @ViewBag.EmployeeID
+                                </div>
+                                <div field="Name" align="center" headeralign="center" width="*">
+                                    @ViewBag.Name
+                                </div>
+                                <div field="DeptName" headeralign="center" width="80">
+                                    @ViewBag.Department
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li iconcls="icon-remove" onclick="nodeDeleting({action:'DeleteLinkMan?ID={ID}',treeId:'linkManTree', paramFrom:'linkManTree',mustConfirm:false,actionTitle:''});">删除联系人</li>
+</ul>
+<script type="text/javascript">
+
+    var linkMan = [];
+    $.ajax({
+        type: "POST",
+        url: "GetMyLinkManIDs",
+        success: function (data) {
+            //增加新版报错分支
+            if (data.errcode) {
+                var msg = getErrorFromHtml(data.errmsg);
+                msgUI(msg, 4);
+                return;
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                var id = data[i].ID;
+                linkMan[id] = 1;
+            }
+        },
+
+        dataType: "json"
+    });
+
+    function onNodeDroping(e) {
+        //不能拖放到非同级节点的前后
+        if ((e.effect == "before" || e.effect == "after") && e.targetNode.ParentID != e.node.ParentID)
+            e.effect = "no";
+        if (e.effect != "before" && e.effect != "after")
+            e.effect = "no";
+    }
+
+    function onDragStart(e) {
+        e.dragText = "<font size='2'>移动人员：" + e.node.Name + "</font>";
+    }
+
+    function TabClick(e) {
+        switch (e.tab.name) {
+            case "deptRole":
+                var grid = mini.get("dataGrid");
+                grid.setUrl("GetOrgUserList?RootFullID=" + getQueryString("RootFullID"));
+                grid.load();
+                break;
+            case "sysRole":
+                var sysGrid = mini.get("sysRoleGrid");
+                sysGrid.setUrl("../Role/GetSysRoleList");
+                sysGrid.load();
+
+                var grid = mini.get("sysDataGrid");
+                if (sysGrid.data.length > 0 && sysGrid.getRow(0).ID) {
+                    grid.setUrl("/MvcConfig/Auth/User/GetScopeUserList?RoleIDs=" + sysGrid.getRow(0).ID);
+                    grid.load();
+                    //sysGrid.setSelected(sysGrid.getRow(0));
+                }
+                else {
+                    //grid.clearRows();
+                    grid.setUrl("GetOrgUserList"); //首次加载全部数据
+                    grid.load();
+
+                }
+                break;
+            case "linkMan":
+                break;
+            case "retiredUser":
+                break;
+        }
+    }
+
+    function OnDrawNode(e) {
+        if (e.node.Name == "我的联系人")
+            e.iconCls = "Org";
+        else
+            e.iconCls = "Post";
+
+    }
+
+    function LinkManSelect(id, name, workno, deptname, deptid) {
+        var selectedList = mini.get("selectedList");
+        var selecteds = selectedList.getData();
+        var idMaps = {}; for (var i = 0, l = selecteds.length; i < l; i++) {
+            var o = selecteds[i];
+            var oid = o["ID"];
+            idMaps[oid] = o;
+        }
+        if (idMaps[id] == null)
+            selectedList.addRow({ ID: id, Name: name, WorkNo: workno, DeptName: deptname, DeptID: deptid });
+    }
+
+    function RemoveLinkMan(id) {
+        execute("DeleteLinkMan?ID='" + id +"'", {
+            mustConfirm: true, actionTitle: '移除', onComplete: function () {
+                var tree = mini.get("linkManTree");
+                var node = tree.getNode(id);
+                tree.removeNode(node);
+            }
+        });
+    }
+
+    function DeleteUser(e) {
+
+        var linkTree = mini.get("linkManTree");
+        var items = linkTree.getCheckedNodes(false); 
+        if(items.length==0 || items[0]["ID"]=="Root")
+        {
+            msgUI("请选中要删除的联系人！");
+        }
+        else
+        {
+            var rows = new Array();
+            for(var i = 0, l = items.length; i < l; i++) {
+                rows.push("'"+items[i]["ID"]+"'");
+                linkTree.removeNode(items[i]);
+            }
+            addExecuteParam("ID", rows.join(","));
+            execute("DeleteLinkMan", {onComplete: function (r) {}});
+            mini.get("linkManTree").reload();
+            msgUI("删除成功!");
+        }
+    }
+
+    function onDrawCell(e) {
+        if (e.field == "LinkMan") {
+            if (linkMan[e.record.ID] != 1) {
+                var title = CurrentLGID == "EN" ? "Add to my contacts" : "添加到我的联系人";
+                e.cellHtml = "<span class='adduser' id='" + (e.sender.id != undefined && e.sender.id.indexOf('sysDataGrid') > -1 ? "s" : "") + "cell_" + e.record["ID"] + "' title='" + title + "' style='cursor:pointer;float:center;'></span>";
+            }
+        }
+    }
+    function nodeSelect(e) {
+        var grid = mini.get("dataGrid");
+        grid.setUrl("/MvcConfig/Auth/User/GetScopeUserList?OrgIDs=" + e.node.ID);
+        grid.load();
+    }
+
+    function onRoleRowClick(e) {
+        var grid = mini.get("sysDataGrid");
+        grid.setUrl("/MvcConfig/Auth/User/GetScopeUserList?RoleIDs=" + e.record.ID);
+        grid.load();
+    }
+
+    function addSingle(row) {
+        var selectedList = mini.get("selectedList");
+        var selectDatas = selectedList.getData();
+        for (var i = 0, l = selectDatas.length; i < l; i++) {
+            var o = selectDatas[i];
+            if (row["ID"] == o["ID"])
+                return;
+        }
+        selectedList.addRow({ID:row["ID"],Name:row["Name"],WorkNo:row["WorkNo"], DeptName: row["DeptName"], DeptID: row["DeptID"] });
+    }
+
+    function addSelected() {
+        var selectedList = mini.get("selectedList");
+        var selecteds = selectedList.getData();
+        var idMaps = {}; for (var i = 0, l = selecteds.length; i < l; i++) {
+            var o = selecteds[i];
+            var id = o["ID"];
+            idMaps[id] = o;
+        }
+
+        var grid, items;
+        switch (mini.get("tabs").activeIndex) {
+            case 1:
+                grid = mini.get("sysDataGrid");
+                items = grid.getSelecteds();
+                break;
+            case 2:
+                grid = mini.get("linkManTree");
+                items = grid.getCheckedNodes(false);
+                for (var j = 0; j < items.length; j++)
+                    items[j].Name = items[j].UserName;
+                break;
+            case 3:
+                grid = mini.get("retiredUser");
+                items = grid.getSelecteds();
+                break;
+            default:
+                grid = mini.get("dataGrid");
+                items = grid.getSelecteds();
+                break;
+        }
+
+        for (var i = items.length - 1; i >= 0; i--) {
+            var o = items[i];
+            var id = o["ID"];
+            if (idMaps[id] == null)
+                selectedList.addRow({ID:id,Name:o["Name"],WorkNo:o["WorkNo"], DeptName: o["DeptName"], DeptID: o["DeptID"] });
+        }
+    }
+    function removeSelecteds() {
+        var selectedList = mini.get("selectedList");
+        var items = selectedList.getSelecteds();
+        selectedList.removeRows(items);
+    }
+    function returnValue() {
+        var selectedList = mini.get("selectedList");
+        closeWindow(selectedList.getData());
+    }
+
+    function addLinkMan(e) {
+        if (e.field == "LinkMan" && linkMan[e.record.ID] != 1 && !$("#" + (e.sender.id != undefined && e.sender.id.indexOf('sysDataGrid') > -1 ? "s" : "") + "cell_" + id).is(':hidden')) {
+            var id = e.record["ID"];
+            var offset = $("#_myMan").offset();
+            var img = '/CommonWebResource/Theme/Default/MiniUI/icons/adduser.gif';//获取当前点击图片链接
+            var flyer = $('<img class="flyer-img" src="' + img + '">');//抛物体对象
+            flyer.fly({
+                start: {
+                    left: e.htmlEvent.clientX - 10, //抛物体起点横坐标
+                    top: e.htmlEvent.clientY - 10////抛物体起点纵坐标
+                },
+                end: {
+                    left: 10, //抛物体终点横坐标
+                    top: 270, //抛物体终点纵坐标
+                },
+                onEnd: function () {
+                    $("#msg").show().animate({ width: '200px' }, 300).fadeOut(500);//成功加入动画效果
+                    this.destory();//销毁抛物体
+                }
+            });
+            $("#" + (e.sender.id != undefined && e.sender.id.indexOf('sysDataGrid') > -1 ? "s" : "") + "cell_" + id).hide();
+            addExecuteParam("linkManID", mini.encode(id));
+            execute("SaveUserLinkMan", { closeWindow: false, actionTitle: "收藏", onComplete: function () { mini.get("#linkManTree").load(); } });
+
+            linkMan[id] = 1;
+        }
+    }
+
+
+    function onBeforeOpen(e) {
+        e.cancel = true;
+        //阻止浏览器默认右键菜单
+        e.htmlEvent.preventDefault();
+        return;
+    }
+
+    function setData(data) {
+        var selectedList = mini.get("selectedList");
+        var userIds = getValues(data, "ID");
+        addExecuteParam("ids", userIds);
+        execute("GetUsers", {
+            onComplete: function (users) {
+                var items = [];
+                $.each(userIds.split(','), function (i, userId) {
+                    $.each(users, function (i, user) {
+                        if (user.ID == userId) {
+                            items.push(user);
+                        }
+                    });
+                });
+                selectedList.addRows(items);
+            }
+        });
+
+    }
+
+    addGridButton('dataGrid', 'Name', { onButtonClick: addSingle });
+    addGridButton('sysDataGrid', 'Name', { onButtonClick: addSingle });
+    addGridButton('retiredUser', 'Name', { onButtonClick: addSingle });
+</script>
+<style type="text/css">
+    .GroupCompany {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+
+    .Company {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+
+    .Org {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/org.gif) no-repeat;
+    }
+
+    .Dept {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/dept.gif) no-repeat;
+    }
+
+    .ManufactureDept {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/cutover.png) no-repeat;
+    }
+
+    .SubDept {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/node.png) no-repeat;
+    }
+
+    .Post {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/user.png) no-repeat;
+    }
+</style>

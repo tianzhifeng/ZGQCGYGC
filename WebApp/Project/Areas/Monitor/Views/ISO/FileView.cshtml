@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "FileView";
+}
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" showheader="false" width="470" expanded="true" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; ">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" id="btnAdd" onclick="addForm();" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" id="btnDel" onclick="delForm();" plain="true">删除</a>
+                        <a class="mini-button" iconcls="icon-pdf" id="ExportToPDF" onclick="exportToPDF();"
+                           plain="true">导出PDF</a>
+                    </td>
+                    <td style="white-space: nowrap;"></td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="onFilter()"
+                               onbuttonclick="onFilter()" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" url="" showtreeicon="true" onnodeselect="onNodeSelected"
+                 treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" showhgridlines="true" showvgridlines="false"
+                 iconfield="Type" ondrawcell="onDrawingCell" allowresize="false" fitcolumns="true" expandonload="0">
+                <div property="columns">
+
+                    <div name="Name" field="Name" width="400" headeralign="center">名称</div>
+                    <div field="VersionNumber" width="60" headeralign="center" align="center">版本号</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit" style="padding-top: 5px;">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px">
+                <div title="表单查看" name="formTab">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("FlowPhase")
+</script>
+<script type="text/javascript">
+    var viewTypeEnum = [{ text: "详细列表", value: "list" }, { text: "大图标", value: "image" }];
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var authType = getQueryString("AuthType");
+
+    var projectInfoID = getQueryString("ProjectInfoID");
+    $("#dataTree").attr("url", "GetTreeList?ProjectInfoID=" + projectInfoID);
+    addGridEnum("dataTree", "FlowPhase", "FlowPhase");
+
+    $(".mini-button").hide();
+
+
+    function onDrawingCell(e) {
+        var grid = mini.get("dataTree");
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (field == "Name" && record.Type == "FormDefine") {
+            var html = record.Name + "（" + record.FileCount + "&nbsp;张）";
+            e.cellHtml = html;
+        }
+    }
+
+    function flowTrace(id) {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + id + "&FuncType=FlowTrace";
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "70%", height: "80%",
+            onDestroy: function (data) {
+
+            }
+        });
+    }
+
+    function onNodeSelected(e) {
+
+        if (e.node) {
+            if (e.node.Type == "ISOForm") {
+                if (e.node.LinkUrl) {
+                    var mainTabs = mini.get("mainTab");
+                    var formTab = mainTabs.getTab("formTab");
+                    formTab.url = e.node.LinkUrl;
+                    mainTabs.reloadTab(formTab);
+                }
+                $(".mini-button").hide();
+                $("#ExportToPDF").show();
+                if (e.node.CanDelete == "True") {
+                    $("#btnDel").show();
+                }
+            }
+            else if (e.node.Type == "FormDefine") {
+                if (e.node.CanAddNewForm == "True" && authType == "FullControl") {
+                    $(".mini-button").hide();
+                    $("#btnAdd").show();
+                }
+                else {
+                    $(".mini-button").hide();
+                }
+            }
+            else {
+                $(".mini-button").hide();
+            }
+        }
+    }
+
+
+    function exportToPDF() {
+        var dataGrid = mini.get("dataTree");
+        var row = dataGrid.getSelectedNode();
+        if (!row) { msgUI("请需选择一条就"); return; }
+        if (!row.FormTmpCode) {
+            msgUI("表单编号为空，无法导出PDF"); return;
+        }
+        ExportPdf(row.FormTmpCode, row.ID, row.Name);
+    }
+
+    function delForm() {
+        var dataGrid = mini.get("dataTree");
+        var row = dataGrid.getSelectedNode();
+        if (!row) { return; }
+        if (row.FlowPhase != "Start") { msgUI("已经启动流程的数据，不能删除"); return; }
+        msgUI("您确定需要删除吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("ListIDs", row.ID);
+            addExecuteParam("FolderID", row.ParentID);
+            execute("Delete", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.removeNode(row);
+                }, validateForm: false
+            });
+        });
+    }
+
+
+    function addForm() {
+        var dataGrid = mini.get("dataTree");
+        var row = dataGrid.getSelectedNode();
+        if (!row) { return; }
+        if (row.Type != "FormDefine") return;
+        if (!row.AddUrl) return;
+        openWindow(row.AddUrl, {
+            refresh: false, title: "新增", width: "70%", height: "80%",
+            onDestroy: function (data) {
+                if (data == "close") { return; }
+                mini.get("dataTree").reload();
+            }
+        });
+    }
+
+    function onFilter() {
+        var grid = mini.get("dataTree");
+        var searchKey = mini.get("key").getValue();
+        if (!searchKey) {
+            grid.clearFilter();
+            return;
+        }
+
+        //多条件组合过滤
+        grid.filter(function (row) {
+            if (row.Name.indexOf(searchKey) >= 0)
+                return true;
+            else
+                return false;
+        });
+    }
+
+</script>
+<style type="text/css">
+    .mini-tabs-body {
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .Catagory {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .FormDefine {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/module.png) no-repeat;
+    }
+
+    .ISOForm {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/item.gif) no-repeat;
+    }
+</style>

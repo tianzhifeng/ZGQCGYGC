@@ -1,0 +1,349 @@
+﻿@{
+    ViewBag.Title = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("/CommonWebResource/Theme/Default/Tab/images/style.css")" rel="stylesheet" type="text/css" />
+
+<div id="divTabs" class="DivTab" style="width: 100%; overflow: hidden">
+    @{
+        if (ViewBag.Tab != null)
+        {
+            var tab = ViewBag.Tab as Formula.Tab;
+            var style = ""; var moreTabClass = "tab_menu_img_up";
+            if (!tab.IsDisplay)
+            {
+                style = "display: none";
+                moreTabClass = "tab_menu_img_down";
+            }
+            foreach (var category in tab.Categories)
+            {
+                var radio = "";
+                if (!category.Multi)
+                {
+                    radio = "T";
+                }
+                <div class="tab_menu_bg" style="@style">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td class="tab_menu_left_w" valign="top">
+                                <span class="tab_menu_left">@category.Name：</span>
+                            </td>
+                            <td>
+                                <ul class="tab_menu_top" queryfield="@category.QueryField" querymethod="@category.Method">
+                                    @{
+                                        foreach (var item in category.Items)
+                                        {
+                                            if (item.IsDefault)
+                                            {
+                                                var className = "current";
+                                                if (item.Value == "All")
+                                                {
+                                                    className = "currentall";
+                                                }
+                                                <li>
+                                                    <a class="@className" onclick="menuCheckd('@radio');" href="javascript:void(0)" value="@item.Value"><span></span>@item.Name</a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li>
+                                                    <a onclick="menuCheckd('@radio');" href="javascript:void(0)" value="@item.Value"><span></span>@item.Name</a>
+                                                </li>
+                                            }
+
+                                        }
+                                    }
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                                        }
+                                        <div id="divMoreTabs" class="menu_indent">
+                                            <div onclick="ShowHideMoreTabs()" class="@moreTabClass" style="cursor: pointer;border-top:0px;">
+                                            </div>
+                                        </div>
+                                        }
+    }
+</div>
+
+<div class="mini-toolbar">
+    <table style="width:100%">
+        <tr style="width:100%">
+            <td style="width:50%">
+                @*<a class="mini-button" id='btnSave' iconcls="icon-save" onclick="saveList" plain="true">保存</a>*@
+            </td>
+            <td style="text-align:right;width:50%">
+                分组：<input class="mini-combobox" id="cbGroup" style="width:100px;" textField="text" valueField="value" data="group" onvaluechanged="onGroupChange" />
+                &emsp;&emsp;
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width:100%;height:100%;" url="GetAllPlan" fitcolumns="false" showPager="false" allowCellEdit="false"
+        ondrawgroup="onDrawGroup" >
+        <div property='columns'>
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    @Html.GetEnum("EPC.FundType")
+    var planMonths = @Html.Raw(ViewBag.planMonths);
+    var prePlanMonths ="@ViewBag.prePlanMonths" ;
+
+    function setColumn()
+    {
+        var columns = [
+            { type: "indexcolumn", width: 40 },
+            { field: "ChargerDeptName",  name: "ChargerDeptName", width: 120, headerAlign: "center", header: "部门", align: "center" },           
+            { field: "EngineeringInfoName",  name: "EngineeringInfoName", width: 250, headerAlign: "center", header: "项目", align: "left" },
+            { field: "FundType",  name: "FundType", type: "comboboxcolumn", width: 60, headerAlign: "center", header: "款项类型", align: "center",  editor: { type: "combobox", data: FundType} }
+        ];
+
+        for (i = 0; i < planMonths.length; i++) {
+            var tmp = planMonths[i];
+            columns.push({ field: tmp.ColumnName, name: tmp.ColumnName, width: 120, headerAlign: "center", align: "right", numberFormat: 'n', vtype:'float', required: true, allowSort: false, header: tmp.Year + '年' + tmp.Month+'月'  });
+        }
+        var dataGrid = mini.get('dataGrid');
+        dataGrid.set({ columns: columns });
+        dataGrid.frozenColumns(0,3);
+    }
+
+    function commitGridEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        grid.validate();
+
+
+    }
+
+
+    function oncellbeginedit(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var field = e.field, value = e.value;
+        if (field == "FundType") {
+            e.cancel=true;
+        }
+
+    }
+    function onCellValidation(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var field = e.field, value = e.value;
+        if(field && field.substr(0,8) == "colMonth"){
+            if (isNaN(value)) {
+                e.isValid = false;
+                e.errorText = "【金额】格式不正确！";
+                //grid.updateRow(record, { Amount: 0 });
+                return;
+            }
+            if (value < 0) {
+                e.isValid = false;
+                e.errorText = "【金额】不能小于0";
+                //value = 0;
+                //grid.updateRow(record, { field: 0 });
+            }
+        }
+
+    }
+
+    function getPlanMonths(date) {
+        var result = [];
+        var planDate = date;
+        for (var i = 1; i <= 6; i++) {
+            planDate.setMonth(date.getMonth() + 1);
+            result.push({ ColumnName: prePlanMonths +mini.formatDate(planDate,"yyyy") + '_' +  (planDate.getMonth()+1), Year: planDate.getFullYear(), Month: planDate.getMonth()+1 });
+        }
+        return result;
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    function pageLoad() {
+        tabSearch();
+        if (typeof (onTabPageLoad) != undefined && typeof (onTabPageLoad) != "undefined") {
+            onTabPageLoad();
+        }
+    }
+
+    //分组 
+    var group = [{ "value": "", "text": "无" }, { "value": "EngineeringInfoName", "text": "项目" }, { "value": "ChargerDeptName", "text": "部门" }];
+    function onGroupChange() {
+        grouping();
+    }
+    function grouping() {
+        var grid = mini.get("dataGrid");
+        var selectedValue = mini.get("cbGroup").getValue();
+        var selectedText = mini.get("cbGroup").getText();
+        if (selectedValue) {
+            grid.groupBy(selectedValue, "asc");
+        } else {
+            grid.clearGroup();
+        }
+    }
+    function onDrawGroup(e) {
+        e.cellHtml = e.value;
+    }
+
+
+    function tabSearch(normalSettings) {
+        var tabData = GetTabsData();
+        var MakeYear=0;
+        var MakeMonth=0;
+        var chargerDept = "";
+        for (var i = 0; i < tabData.length; i++) {
+            switch (tabData[i].queryfield) {
+                case "MakeYear":
+                    MakeYear = tabData[i].value;
+                    break;
+
+                case "MakeMonth":
+                    MakeMonth = tabData[i].value;
+                    break;
+
+                case "ChargerDept":
+                    chargerDept = tabData[i].value;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        planMonths = getPlanMonths(mini.parseDate(MakeYear + "-" + MakeMonth + "-01"));
+        setColumn();
+
+        if (typeof (cusTabSearch) != "undefined") {
+            cusTabSearch(tabData, normalSettings);
+            return;
+        }
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+        }
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            var key = "$IN$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({
+                planMonths: mini.encode(planMonths),
+                queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData)
+            },function (data) {
+                
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+    //菜单选中取消
+    function menuCheckd(radio) {
+        var $a = $(event.srcElement);
+        if ($a[0] && $a[0].nodeName.toLocaleLowerCase() == "span")
+            $a = $a.parent();
+        var $tab_menu = $a.parent().parent();
+        if ($a.attr("value") == "All") {
+            if (!($a.hasClass("currentall"))) {
+                //'全部'选中
+                $tab_menu.find("a[value='All']").addClass("currentall");
+                $tab_menu.find("a[value!='All']").removeClass("current");
+            }
+        }
+        else {
+            if ($a.hasClass("current")) {
+                //取消
+                if (radio == "T") { return; }
+                $a.removeClass("current");
+                //如果都取消，则'全部'选中
+                if ($tab_menu.find("a.current").length == 0) {
+                    if ($tab_menu.find("a[value='_all']").length > 0) {
+                        $tab_menu.find("a[value='_all']").addClass("currentall");
+                    }
+                    else {
+                        $a.addClass("current");
+                    }
+                }
+            }
+            else {
+                //单选则先取消所有
+                if (radio == "T") {
+                    $tab_menu.find("a[value!='All']").removeClass("current");
+                }
+                //选中
+                $a.addClass("current");
+                //取消'全部'
+                $tab_menu.find("a[value='All']").removeClass("currentall");
+            }
+        }
+        tabSearch();
+    }
+    function ShowHideMoreTabs() {
+        var img = $("#divMoreTabs").find("div");
+        var arrMoretabs = $("#divTabs").find("div.tab_menu_bg");
+        if ($(img).hasClass("tab_menu_img_down")) {
+            $(img).removeClass("tab_menu_img_down").addClass("tab_menu_img_up");
+            arrMoretabs.each(function (i) {
+                if (i >= 0)
+                    $(this).show();
+            });
+        }
+        else {
+            $(img).removeClass("tab_menu_img_up").addClass("tab_menu_img_down");
+            arrMoretabs.each(function (i) {
+                if (i >= 0)
+                    $(this).hide();
+            });
+        }
+        SetGridHeight();
+    }
+    function SetGridHeight() {
+        $(".mini-fit").each(function () {
+            var layout = mini.get("#" + $(this).attr("id"));
+            if (layout)
+                layout.doLayout();
+        });
+    }
+    //获取标签数据
+    function GetTabsData() {
+        var data = [];
+        $.each($("#divTabs").find("ul.tab_menu_top"), function (i, ulTab) {
+            if ($(ulTab).find("a.currentall").length == 0) {
+                var tabData = {};
+                tabData.queryfield = $(ulTab).attr("queryfield");
+                tabData.querymethod = $(ulTab).attr("querymethod");
+                var vals = [];
+                $(ulTab).find("a.current").each(function (i) {
+                    vals.push($(this).attr("value"));
+                });
+                tabData.value = vals.join(',');
+                data.push(tabData);
+            }
+        });
+        return data;
+    }
+
+</script>

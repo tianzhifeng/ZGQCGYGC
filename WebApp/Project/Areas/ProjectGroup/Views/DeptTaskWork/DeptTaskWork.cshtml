@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "DeptTaskWork";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <div id="TimeType" class="mini-radiobuttonlist" style="float: left; padding-top: 3px; width: 150px" repeatlayout="table"
+                    textfield="text" valuefield="value" data="TimeType" onvaluechanged="ChangeReportTimeType" value="Month">
+                </div>
+                <input id="Year" name="Year" class="mini-combobox" style="width: 100px;" shownullitem="false"
+                            allowinput="false" value="@ViewBag.DefaultYear" onvaluechanged="loadData()" data="YearEnum"/>
+                <input id="Season" name="Season" class="mini-combobox" style="width: 100px; display: none" shownullitem="false"
+                    allowinput="false" onvaluechanged="loadData()" data="QuarterEnum" />
+                <input id="Month" name="Month" class="mini-combobox" style="width: 100px;" shownullitem="false"
+                            allowinput="false" value="@ViewBag.DefaultMonth" onvaluechanged="loadData()" data = "MonthEnum"/>
+            </td>
+            <td style="white-space: nowrap;">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="" showtreeicon="true" idfield="ID" ondrawsummarycell="onDrawSummaryCell"
+        style="width: 100%; height: 100%;" showsummaryrow="true" showpager="false">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="Name" headeralign="center" width="*" allowsort="true" align="left">
+                部门名称</div>
+            <div field="AllCount" width="90" headeralign="center" align="right" summarytype="sum">
+                卷册总数</div>
+            <div field="AllFinishedCount" width="90" headeralign="center" align="right" summarytype="sum">
+                已完成数</div>
+            <div field="AllFinishedPercent" width="90" headeralign="center" align="right">
+                完成比例(%)</div>
+            <div field="PeriodCount" width="90" headeralign="center" renderer="onLinkRender" align="right" summarytype="sum">
+                本期计划数</div>
+            <div field="PeriodFinished" width="90" headeralign="center" renderer="onLinkRender" align="right" summarytype="sum">
+                本期完成数</div>
+            <div field="PeriodPercent" width="100" headeralign="center" align="right">
+                本期完成比例(%)</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var Major = @Html.Raw(ViewBag.MajorJson)
+    @Html.GetEnum("YearEnum");
+    @Html.GetEnum("MonthEnum");
+    @Html.GetEnum("QuarterEnum");
+    var TimeType = [{ "value": "Year", "text": "年" }, { "value": "Season", "text": "季度" }, { "value": "Month", "text": "月"}]
+</script>
+<script type="text/javascript">
+    function pageLoad() {
+        loadData();
+    }
+
+    function loadData(queryData) {
+        var querydata = "";
+        if (queryData) querydata = mini.encode(queryData);
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl("GetList");
+        dataGrid.load({ Year: mini.getbyName("Year").getValue(), Season: mini.getbyName("Season").getValue(),
+            Month: mini.getbyName("Month").getValue(), queryFormData: querydata
+        });
+    }
+
+    function onLinkRender(e) {
+        var cls = "";
+        var uid = e.record._uid;
+        var s = '<a ' + cls + 'href="#" onclick="onGridLink(\'' + uid + '\',\'' + e.field + '\',\'' + e.sender.id + '\');">' + e.value + '</a>';
+        return s;
+    }
+
+    function onGridLink(UID, field, GridID) {
+        var dataGrid = mini.get(GridID);
+        var row = dataGrid.getRowByUID(UID);
+        var Year = mini.getbyName("Year").getValue();
+        var Season = mini.getbyName("Season").getValue();
+        var Month = mini.getbyName("Month").getValue();
+        var url = "FinishDetail"; var width = $(window).width(); var height = $(window).height();
+        var title = row.Name + "-完成卷册明细";
+        if (field == "PeriodCount") {
+            url = "PlanDetail"; var title = row.Name + "-计划卷册明细";
+        }
+        url += "?DeptID=" + row.ID + "&Year=" + Year + "&Season=" + Season + "&Month=" + Month;
+        openWindow(url, { title: title, width: width, height: height });
+    }
+
+    function ChangeReportTimeType(e) {
+        var seasonCo = mini.getbyName("Season");
+        var monthCo = mini.getbyName("Month");
+        seasonCo.hide(); monthCo.hide();
+        if (e.value == "Season") {
+            seasonCo.show();
+            monthCo.setValue("");
+        }
+        else if (e.value == "Month") {
+            monthCo.show();
+            seasonCo.setValue("");
+        }
+        else {
+            monthCo.setValue("");
+            seasonCo.setValue("");
+        }
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        if (e.field == "Name") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: left;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+    }
+
+</script>

@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "WorkSelector";
+}
+<style type="text/css">
+    .mini-tab-text
+    {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 16px;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+</style>
+<link href="@Url.Content("/CommonWebResource/Theme/Default/Tab/images/style.css")" rel="stylesheet" type="text/css" />
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnValue" plain="true">选择
+                </a>
+            </td>
+            <td style="white-space: nowrap;">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="padding-top: 0px;">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;"
+        tabposition="left">
+        <div title="全<br>部">
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <div class="mini-radiobuttonlist" repeatitems="1" repeatlayout="table" repeatdirection="vertical"
+                                textfield="text" valuefield="value" value="Production" onvaluechanged="onValueChanged"
+                                data="WorkHourType">
+                            </div>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入项目名称或编号" onenter="quickSearch('ProjectCode,ProjectName');"
+                                onbuttonclick="quickSearch('ProjectCode,ProjectName');" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit" id="gridarea">
+                <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                    idfield="ID" multiselect="@ViewBag.MultiSelect" borderstyle="border-left:0px;" sortfield="CreateDate">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="WorkHourType" width="90" headeralign="center" align="center">
+                            分类
+                        </div>
+                        <div field="ProjectName" width="350" headeralign="center" align="left">
+                            项目名称
+                        </div>
+                        <div field="ProjectCode" width="120" headeralign="center" align="center">
+                            项目编号
+                        </div>
+                        <div field="ProjectDeptName" width="120" headeralign="center" align="center">
+                            责任部门
+                        </div>
+                        <div field="ProjectChargerUserName" width="120" headeralign="center" align="center">
+                            项目负责人
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="最<br>近<br>填<br>报">
+            <div id="mygrid" url="GetUserDefaultList" class="mini-datagrid" style="width: 100%;
+                height: 100%;" idfield="ID" multiselect="@ViewBag.MultiSelect" borderstyle="border-left:0px;"
+                showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="WorkHourType" width="90" headeralign="center" align="center">
+                        分类
+                    </div>
+                    <div field="ProjectName" width="350" headeralign="center" align="left">
+                        项目名称
+                    </div>
+                    <div field="ProjectCode" width="120" headeralign="center" align="center">
+                        项目编号
+                    </div>
+                    <div field="ProjectDeptName" width="120" headeralign="center" align="center">
+                        责任部门
+                    </div>
+                    <div field="ProjectChargerUserName" width="120" headeralign="center" align="center">
+                        项目负责人
+                    </div>
+                    <div field="SubProjectName" headeralign="center" width="150" align="left">
+                        子项名称
+                    </div>
+                    <div field="MajorName" headeralign="center" width="100" align="center">
+                        专业
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("System.WorkHourType")
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "WorkHourType", "WorkHourType");
+    addGridEnum("mygrid", "WorkHourType", "WorkHourType");
+
+    function onValueChanged(e) {
+        var url = "GetList?WorkHourType=" + e.value;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        onSearch();
+    }
+
+    function onSearch() {
+        quickSearch("ProjectName,ProjectCode");
+    }
+
+    function returnValue() {
+        var result = [];
+        var rows = mini.get("dataGrid").getSelecteds();
+        var myRows = mini.get("mygrid").getSelecteds();
+        for (var i = 0; i < rows.length; i++) {
+            result.push(rows[i]);
+        }
+        for (var i = 0; i < myRows.length; i++) {
+            var exist = false;
+            for (var m = 0; m < result.length; m++) {
+                if (result[i].Project == myRows[i].Project) {
+                    exist = true;
+                    continue;
+                }
+            }
+            if (exist) continue;
+            result.push(myRows[i]);
+        }
+        closeWindow(result);
+    }
+
+</script>

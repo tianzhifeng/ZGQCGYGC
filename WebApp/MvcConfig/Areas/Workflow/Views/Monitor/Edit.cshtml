@@ -1,0 +1,202 @@
+﻿<script src="@Url.Content("/Workflow/Scripts/raphael-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/flow.js")" type="text/javascript"></script>
+<script src="@Url.Content("/Workflow/Scripts/flow.jpdl.js")" type="text/javascript"></script>
+
+
+<div class="mini-splitter" style="width: 100%; height: 100%;" vertical="true">
+    <div size="45%" showcollapsebutton="true">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" id="btnReplaceUser" plain="true" iconcls="icon-edit" tooltip="请选择进行中环节">置换人员</a>
+                        <a class="mini-button" id="btnUrge" plain="true" iconcls="icon-edit" tooltip="请选择进行中环节">催办</a>
+                        <a class="mini-button" id="btnDoback" plain="true" iconcls="icon-edit" tooltip="请选择已完成环节">回退</a>
+                        <a class="mini-button" id="btnComplete" plain="true" iconcls="icon-edit" tooltip="请选择进行中环节">完成</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                    <td id="btnRight"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="myflow">
+                <div id="flowNode" style="display: none; position: absolute; background-color: #ddd"></div>
+            </div>
+
+        </div>
+    </div>
+    <div showcollapsebutton="true">
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="/MvcConfig/Workflow/Trace/GetFlowExecList" multiselect="true">
+                <div property="columns">
+                    <div field="StepName" width="100">
+                        环节名称
+                    </div>
+                    <div field="Type" width="60" align="center">
+                        任务类型
+                    </div>
+                    <div field="TaskUserDept" width="150">
+                        接收人部门
+                    </div>
+                    <div field="TaskUserName" width="60" align="center">
+                        接收人
+                    </div>
+                    <div field="ExecUserName" width="60" align="center">
+                        操作人
+                    </div>
+                    <div field="ExecRoutingName" width="100">
+                        操作
+                    </div>
+                    <div field="CreateTime" width="110" dateformat="yyyy-MM-dd HH:mm">
+                        接收时间
+                    </div>
+                    <div field="ExecTime" width="110" dateformat="yyyy-MM-dd HH:mm">
+                        操作时间
+                    </div>
+                    <div field="UseTime" width="100" align="center">
+                        操作耗时
+                    </div>
+                    <div field="ExecComment" width="*">
+                        操作意见
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var TaskExecType = [{ value: 'Normal', text: '普通' }, { value: 'Delegate', text: '委托' }, { value: 'Circulate', text: '传阅' }, { value: 'Ask', text: '加签' }];
+    addGridEnum('dataGrid', 'Type', 'TaskExecType');
+    addGridLink('dataGrid', 'TaskUserName', '/MvcConfig/Workflow/Trace/UserView?ID={ID}&UserID={TaskUserID}', { title: "人员信息", refresh: false, width: 600, height: 350 });
+    addGridLink('dataGrid', 'ExecUserName', '/MvcConfig/Workflow/Trace/UserView?ID={ID}&UserID={ExecUserID}', { title: "人员信息", refresh: false, width: 600, height: 350 });
+</script>
+<style type="text/css">
+    html, body {
+        height: 100%;
+        overflow: auto;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+        background-image: url(/Workflow/Scripts/Images/bg.png)!important;
+        background-size: auto!important;
+        background-repeat: repeat;
+    }
+
+    #silverlightControlHost {
+        height: 100%;
+        text-align: center;
+    }
+
+    .node {
+        width: 70px;
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid #fff;
+    }
+
+    .mover {
+        border: 1px solid #ddd;
+        background-color: #ddd;
+    }
+
+    .selected {
+        background-color: #ddd;
+    }
+
+    .state {
+    }
+
+    #myflow_props table {
+    }
+
+    #myflow_props th {
+        letter-spacing: 2px;
+        text-align: left;
+        padding: 6px;
+        background: #ddd;
+    }
+
+    #myflow_props td {
+        background: #fff;
+        padding: 6px;
+    }
+
+    #pointer {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #path {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #task {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #state {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    path[stroke="#c0c0c0"] {
+        stroke-dasharray: 6;
+    }
+</style>
+<script type="text/javascript">
+    //alert(getData("GetDefFlow"));
+    function getData(name) {
+        var result = "";
+        $.ajax({
+            url: "/MvcConfig/Workflow/Monitor/" + name + "?formInstanceID=" + getQueryString("ID"),
+            type: "post",
+            cache: false,
+            async: false,
+            success: function (text) {
+                //增加新版报错分支
+                if (text && typeof(text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                result = text;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var msg = getErrorFromHtml(jqXHR.responseText);
+                msgUI(msg);
+            }
+        });
+        return result;
+    }
+
+    $(function () {
+        $('#myflow').myflow($.extend(true, {
+            basePath: "",
+            restore: !getData("GetDefFlow") ? eval() : eval("(" + getData("GetDefFlow") + ")"),
+            editable: false
+        }, JSON.parse(getData("GetFlowTrace"))));
+    });
+
+
+    if (getQueryString("IsFinishedList") == "True") {
+        $("#btnReplaceUser").hide();
+        $("#btnUrge").hide();
+        $("#btnDoback").hide();
+        $("#btnComplete").hide();
+    }
+
+    function pageLoad() {
+        mini.get("btnReplaceUser").disable();
+        mini.get("btnUrge").disable();
+        mini.get("#btnDoback").disable();
+        mini.get("#btnComplete").disable();
+    }
+
+
+</script>

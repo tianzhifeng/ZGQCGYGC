@@ -1,0 +1,809 @@
+﻿<div class="mini-fit">
+    <form id="dataForm" method="post" url="GetRoutingProperty" autogetdata="false">
+        <input name="ID" class="mini-hidden" />
+        <div class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+            <div title="基本信息">
+                <table style="width: 100%">
+                    <tr class="hideRow">
+                        <td width="35%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            路由编号
+                        </td>
+                        <td>
+                            <input name="Code" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            路由名称
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            路由名称(英文)
+                        </td>
+                        <td>
+                            <input name="NameEN" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            路由标题
+                        </td>
+                        <td>
+                            <input name="Title" class="mini-textbox" style="width: 100%" onvaluechanged="setLineTile()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            类型
+                        </td>
+                        <td>
+                            <input name="Type" class="mini-combobox" style="width: 100%" required="true" data="RoutingType" onvaluechanged="onRoutingTypeChanged" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            变量设置
+                        </td>
+                        <td>
+                            <input name="VariableSet" textname="VariableSet" class="mini-buttonedit" style="width: 100%" onbuttonclick="onTextClick" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            默认意见
+                        </td>
+                        <td>
+                            <input name="DefaultComment" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            排序号
+                        </td>
+                        <td>
+                            <input name="SortIndex" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            签字类型
+                        </td>
+                        <td>
+                            <input name="SignatureType" class="mini-combobox" style="width: 100%" shownullitem="true" data="enumSignatureType" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="SaveForm" class="mini-checkbox" style="width: 100%">
+                                保存表单
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="AllowWithdraw" class="mini-checkbox" style="width: 100%">
+                                允许撤销
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="MustInputComment" class="mini-checkbox" style="width: 100%">
+                                必须输入意见
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" id="trDoBack" style="display: none;">
+                            <div name="AllowDoBack" class="mini-checkbox" style="width: 100%">
+                                允许驳回
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="OnlyDoBack" class="mini-checkbox" style="width: 100%">
+                                打回直送
+                            </div>
+                            &nbsp;&nbsp;
+                            <div name="SignatureUpdate" class="mini-checkbox" style="width: 100%">
+                                意见更新
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="DenyAutoPass" class="mini-checkbox" style="width: 100%">
+                                禁止自动通过
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="InputSignPwd" class="mini-checkbox" style="width: 100%">
+                                输入签字密码
+                            </div>
+                            &nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                            <br />
+                            变量设置：flag='1'
+                            <br />
+                            保存表单：提交流程时保存表单
+                            <br />
+                            直送驳回人：当后面的环节驳回到首环节时，首环节可以直接送驳回人
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="下一环节">
+                <fieldset style="border-width: 2px;">
+                    <legend style="font-weight: bold;">指定用户</legend>
+                    <table style="width: 100%">
+                        <tr class="hideRow">
+                            <td width="50%"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人为指定用户
+                            </td>
+                            <td>
+                                <input name="UserIDs" textname="UserNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自任务执行人
+                            </td>
+                            <td>
+                                <input name="UserIDsFromStepExec" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowStep" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自任务接收人
+                            </td>
+                            <td>
+                                <input name="UserIDsFromStep" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowStep" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自任务发起人
+                            </td>
+                            <td>
+                                <input name="UserIDsFromStepSender" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowStep" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人取自表单
+                            </td>
+                            <td>
+                                <input name="UserIDsFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人分组取自表单
+                            </td>
+                            <td>
+                                <input name="UserIDsGroupFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人取自Sql
+                            </td>
+                            <td>
+                                <input name="UserIDsFromSql" class="mini-textarea" style="width: 100%" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset style="border-width: 2px;">
+                    <legend style="font-weight: bold;">指定组织、角色</legend>
+                    <table style="width: 100%">
+                        <tr class="hideRow">
+                            <td width="50%"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人为指定角色
+                            </td>
+                            <td>
+                                <input name="RoleIDs" textname="RoleNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人角色取自表单
+                            </td>
+                            <td>
+                                <input name="RoleIDsFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人为指定组织
+                            </td>
+                            <td>
+                                <input name="OrgIDs" textname="OrgNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人组织取自表单
+                            </td>
+                            <td>
+                                <input name="OrgIDFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                执行人组织取自用户
+                            </td>
+                            <td>
+                                <input name="OrgIDFromUser" class="mini-combobox" style="width: 100%" shownullitem="true" data="UserType" allowinput="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                排除执行人
+                            </td>
+                            <td>
+                                <input name="ExcludeUser" class="mini-combobox" style="width: 100%" shownullitem="true" data="UserType" allowinput="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <table style="width: 100%">
+                    <tr class="hideRow">
+                        <td width="50%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            选择方式
+                        </td>
+                        <td>
+                            <input name="SelectMode" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowSelectUserMode" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="SelectAgain" class="mini-checkbox" style="width: 100%">
+                                重新选人
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                            <br />
+                            执行人组织取自表单：<br />
+                            &nbsp;&nbsp;公司的组织时，请直接填写字段名，<br />
+                            &nbsp;&nbsp;项目组织时，请填写格式如，{Field1}|{Field2}。<br />
+                            &nbsp;&nbsp;其中Field1保存项目ID，Field2保存专业编号<br />
+                            &nbsp;&nbsp;Field1也可以是地址栏参数
+                            <br />
+                            重新选人：打回的情况也需要重新选人
+                            <br />
+                            执行人组织取自用户：也可填写字段名，即表单上某用户的部门
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="权限过滤">
+                <fieldset style="border-width: 2px;">
+                    <legend style="font-weight: bold;">用户权限</legend>
+                    <table style="width: 100%">
+                        <tr>
+                            <td width="35%">
+                                目标用户
+                            </td>
+                            <td>
+                                <input name="AuthTargetUser" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                组织权限
+                            </td>
+                            <td>
+                                <input name="AuthOrgIDs" textname="AuthOrgNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                角色权限
+                            </td>
+                            <td>
+                                <input name="AuthRoleIDs" textname="AuthRoleNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                指定用户
+                            </td>
+                            <td>
+                                <input name="AuthUserIDs" textname="AuthUserNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset style="border-width: 2px;">
+                    <legend style="font-weight: bold;">其它权限</legend>
+                    <table style="width: 100%">
+                        <tr class="hideRow">
+                            <td width="35%"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                表达式权限
+                            </td>
+                            <td>
+                                <input name="AuthFormData" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                sql权限
+                            </td>
+                            <td>
+                                <input name="AuthFromSql" class="mini-textarea" style="width: 100%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                sql权限备注
+                            </td>
+                            <td>
+                                <input name="AuthFromSqlMeno" class="mini-textarea" style="width: 100%" />
+                            </td>
+                        </tr>
+                        @if (Config.Constant.IsOracleDb == false)
+                        {
+                            <tr>
+                                <td>
+                                    变量权限
+                                </td>
+                                <td>
+                                    <input name="AuthVariable" class="mini-textbox" style="width: 100%;" />
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </fieldset>
+                <table style="width: 100%">
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                            <br />
+                            目标用户：可以填写字段名称，为空表示当前用户。
+                            <br />
+                            组织权限：还可以填写字段名称
+                            <br />
+                            角色权限：当角色填写时，组织权限为空，则组织为当前人的当前部门
+                            <br />
+                            表达式权限：'{Field1}'='status1'&nbsp;或&nbsp;{Field1}>500.0
+                            <br />
+                            变量权限：flag='1'
+                            <br />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="字段控制">
+                <div class="mini-fit">
+                    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect="true" allowcelledit="true" showpager="false">
+                        <div property="columns">
+                            <div field="fieldCode" visible="false">
+                                字段名称
+                            </div>
+                            <div field="description">
+                                字段名称
+                            </div>
+                            <div type="checkboxcolumn" field="NotNullFields" truevalue="true" falsevalue="false" width="30">
+                                必填
+                            </div>
+                            <div type="checkboxcolumn" field="SignatureField" truevalue="true" falsevalue="false" width="30">
+                                签字
+                            </div>
+                            <div field="FormDataSet" width="120">
+                                字段值
+                                <input property="editor" class="mini-combobox" allowinput="true" shownullitem="true" style="width: 100%;" data="fieldValueEnum" onitemclick="commitEdit" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div title="消息">
+                <fieldset style="border-width: 2px;">
+                    <legend style="font-weight: bold;">指定用户</legend>
+                    <table style="width: 100%">
+                        <tr class="hideRow">
+                            <td width="42%"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                接收人为指定用户
+                            </td>
+                            <td>
+                                <input name="MsgUserIDs" textname="MsgUserNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自任务执行人
+                            </td>
+                            <td>
+                                <input name="MsgUserIDsFromStepExec" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowStep" multiselect="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自任务接收人
+                            </td>
+                            <td>
+                                <input name="MsgUserIDsFromStep" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowStep" multiselect="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自任务发起人
+                            </td>
+                            <td>
+                                <input name="MsgUserIDsFromStepSender" class="mini-combobox" style="width: 100%" shownullitem="true" data="FlowStep" multiselect="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                取自字段
+                            </td>
+                            <td>
+                                <input name="MsgUserIDsFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset style="border-width: 2px;">
+                    <legend style="font-weight: bold;">指定组织、角色</legend>
+                    <table style="width: 100%">
+                        <tr class="hideRow">
+                            <td width="42%"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                接收人为指定角色
+                            </td>
+                            <td>
+                                <input name="MsgRoleIDs" textname="MsgRoleNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                角色取自字段
+                            </td>
+                            <td>
+                                <input name="MsgRoleIDsFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                接收人为指定组织
+                            </td>
+                            <td>
+                                <input name="MsgOrgIDs" textname="MsgOrgNames" class="mini-buttonedit" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                接收人组织取自用户
+                            </td>
+                            <td>
+                                <input name="MsgOrgIDFromUser" class="mini-combobox" style="width: 100%" shownullitem="true" data="UserType" allowinput="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                组织取自字段
+                            </td>
+                            <td>
+                                <input name="MsgOrgIDsFromField" class="mini-textbox" style="width: 100%;" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <table style="width: 100%">
+                    <tr class="hideRow">
+                        <td width="42%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            消息类型
+                        </td>
+                        <td>
+                            <input name="MsgType" class="mini-combobox" style="width: 100%" shownullitem="true" data="MsgType" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            消息模板
+                        </td>
+                        <td>
+                            <input name="MsgTmpl" class="mini-textarea" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="MsgSendToTaskUser" class="mini-checkbox" style="width: 100%">
+                                给接收人发消息
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                            <br />
+                            <br />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="执行逻辑">
+                <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 100%;">
+                                <a class="mini-button" iconcls="icon-add" onclick="addRow({}, { 'gridId': 'ExecLogic' })" plain="true">增加</a>
+                                <a class="mini-button" iconcls="icon-remove" onclick="removeLogic();" plain="true">删除</a>
+                            </td>
+                            <td style="white-space: nowrap;"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mini-fit">
+                    <div id="ExecLogic" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+                         allowcelledit="true" allowcellselect="true" multiselect="true">
+                        <div property="columns">
+                            <div type="checkcolumn">
+                            </div>
+                            <div field="Name" width="100" headeralign="center" allowsort="false" vtype="required">
+                                名称<input property="editor" class="mini-textbox" style="width:100%;" />
+                            </div>
+                            <div type="comboboxcolumn" autoshowpopup="true" field="LogicType" width="100" headeralign="center"
+                                 allowsort="false" align="center" vtype="required">
+                                类型<input property="editor" class="mini-combobox" style="width:100%;" data="LogicType" />
+                            </div>
+                            <div field="Config" width="70" headeralign="center" allowsort="false"
+                                 align="center">
+                                详细设置
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    var UserType = [{ "text": "CurrentUser", "value": "CurrentUser" }, { "text": "SendTaskUser", "value": "SendTaskUser" }];
+    var LogicType = [
+        { text: "启动其他流程", value: "StartFlow" }
+        //,{ text: "操作数据表", value: "DBSet" }
+    ];
+
+
+
+    @Html.GetEnum(typeof(Workflow.Logic.RoutingType))
+    @Html.GetEnum(typeof(Workflow.Logic.FlowSelectUserMode))
+    @Html.ClearEnumCache("FlowStep", Request["defFlowID"])
+    @Html.GetEnum("FlowStep", "FlowStep", Request["defFlowID"])
+    @Html.GetEnum(typeof(Config.MsgType))
+</script>
+<script type="text/javascript">
+    addMultiOrgSelector("AuthOrgIDs", { title: "请选择组织" });
+    addMultiRoleSelector("AuthRoleIDs", { url: urlConstant.multiRole + "&IsWorkflowSetting=true", title: "请选择角色" });
+    addMultiUserSelector("AuthUserIDs", { title: "请选择用户" });
+
+    addMultiOrgSelector("OrgIDs", { title: "请选择组织" });
+    addMultiRoleSelector("RoleIDs", { url: urlConstant.multiRole + "&IsWorkflowSetting=true", title: "请选择角色" });
+    addMultiUserSelector("UserIDs", { title: "请选择用户" });
+
+    addMultiOrgSelector("MsgOrgIDs", { title: "请选择组织" });
+    addMultiRoleSelector("MsgRoleIDs", { url: urlConstant.multiRole + "&IsWorkflowSetting=true", title: "请选择角色" });
+    addMultiUserSelector("MsgUserIDs", { title: "请选择用户" });
+</script>
+<script type="text/javascript">
+    function onTextClick(e) {
+        var btn = e.sender;
+        var data = btn.getValue();
+        openWindow('SettingsTextArea', {
+            title: '表单数据设置', width: 350, height: 300, data: { Text: data }, onDestroy: function (s) {
+                if (s != "close") {
+                    var d = s.Text;
+                    btn.setValue(d);
+                    btn.setText(d);
+                }
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+</script>
+<script type="text/javascript">
+    var fieldValueEnum = [
+        { value: '\'{TaskUserID}\'', text: '\'{TaskUserID}\'' },
+        { value: '\'{TaskUserName}\'', text: '\'{TaskUserName}\'' },
+        { value: '\'{ExecUserID}\'', text: '\'{ExecUserID}\'' },
+        { value: '\'{ExecUserName}\'', text: '\'{ExecUserName}\'' },
+        { value: '\'{ExecTime}\'', text: '\'{ExecTime}\'' },
+        { value: '\'{ExecComment}\'', text: '\'{ExecComment}\'' },
+        { value: '\'{StepCode}\'', text: '\'{StepCode}\'' },
+        { value: '\'{StepName}\'', text: '\'{StepName}\'' },
+        { value: '\'{NextUserIDs}\'', text: '\'{NextUserIDs}\'' },
+        { value: '\'{NextUserNames}\'', text: '\'{NextUserNames}\'' },
+        { value: '\'{NextStepCode}\'', text: '\'{NextStepCode}\'' },
+        { value: '\'{NextStepName}\'', text: '\'{NextStepName}\'' }
+    ];
+
+    var enumSignatureType = [
+        { value: "Normal", text: "平台签字" },
+        { value: "JinGe", text: "金格签字" }
+    ];
+
+</script>
+<script type="text/javascript">
+
+    addGridButton("ExecLogic", "Config", {
+        linkText: '详细设置', onButtonClick: function (row) {
+            var url = "FlowLogicSettings";
+            if (!row.LogicType) { msgUI("请先选择类型再进行详细设置"); return; }
+            if (row.LogicType == "DBSet") {
+                url = "DBLogicSettings";
+            }
+            openWindow(url, {
+                refresh: false, title: "详细设置", width: "60%", height: "80%", data: row["Settings"],
+                onDestroy: function (data) {
+                    if (data && data != "close") {
+                        row["Settings"] = mini.encode(data);
+                    }
+                }
+            });
+        }
+    });
+
+    function onRoutingTypeChanged(e) {
+        if (e.value == "Normal" || e.value == "SingleBranch") {
+            $("#trDoBack").show();
+        }
+        else {
+            $("#trDoBack").hide();
+            mini.getbyName("AllowDoBack").setValue("0");
+            mini.getbyName("OnlyDoBack").setValue("0");
+        }
+    }
+</script>
+<script type="text/javascript">
+    var form = null;
+    var grid = null;
+    var logicGrid = null;
+    function getData(onlyChanged) {
+        var id = getQueryString("ID");
+        //dataGrid当前版本有BUG表格删除后不能记录为已变更，故此处先注释掉  2018-9-12 by Eric.Yang
+        //if (onlyChanged && form.isChanged() == false && grid.isChanged() == false && logicGrid.isChanged() == false) {
+        //    return null;
+        //}
+        var data = form.getData();
+        data["dataGrid"] = mini.encode(grid.getData());
+        logicGrid.commitEdit();
+        logicGrid.validate(); if (!logicGrid.isValid()) { return; }
+        data["ExecLogic"] = mini.encode(logicGrid.getData());
+        var result = {};
+        result["ID"] = id;
+        result["Data"] = data;
+        result["Type"] = "Routing";
+
+        return result;
+    }
+
+    function removeLogic() {
+        if (logicGrid) {
+            var rows = logicGrid.getSelecteds();
+            if (rows.length > 0) {
+                logicGrid.removeRows(rows, false);
+            }
+        }
+    }
+
+    function setLineTile() {
+        var id = getQueryString("ID");
+        if (window.parent.lines[id]) {
+            var data = form.getData();
+            var title = mini.getbyName("Title").getValue().replace("<", "＜").replace(">", "＞");
+            window.parent.lines[id].textContent = title;
+        }
+    }
+
+
+
+
+    $(function () {
+        var id = getQueryString("ID");
+        var data = window.parent.getData(id, "Routing");
+        if (!data["dataGrid"]) {
+            $.ajax({
+                url: "/Workflow/DefFlow/GetRoutingFieldList?ID=" + id,
+                type: "post",
+                cache: false,
+                async: false,
+                success: function (text) {
+                    //增加新版报错分支
+                    if (text && typeof (text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                        var fail = jQuery.parseJSON(text);
+                        var msg = getErrorFromHtml(fail.errmsg);
+                        msgUI(msg, 4);
+                        return;
+                    }
+                    data["dataGrid"] = text;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var msg = getErrorFromHtml(jqXHR.responseText);
+                    msgUI(msg);
+                }
+            });
+        }
+
+        if (form == null) {
+            form = new mini.Form("#dataForm");
+        }
+        if (grid == null) {
+            grid = mini.get("dataGrid");
+        }
+        if (logicGrid == null) {
+            logicGrid = mini.get("ExecLogic");
+        }
+        //设置表单数据
+        form.setData(data);
+        form.setChanged(false);
+
+        if (getQueryString("editable") != 1)
+            setFormDisabled();
+
+        //解决combobox的BUG
+        var fields = form.getFields();
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            if (field.type == "combobox") {
+                var v = field.getValue();
+                var t = field.getText();
+                if (t == "")
+                    field.setText(v);
+            }
+        }
+
+        //设置字段控制列表数据
+        grid.setData(mini.decode(data["dataGrid"]));
+
+        if (data.ExecLogic) {
+            logicGrid.setData(mini.decode(data["ExecLogic"]));
+        }
+
+        if (data.Type == "Normal" || data.Type == "SingleBranch")
+            $("#trDoBack").show();
+        else
+            $("#trDoBack").hide();
+
+        $(".mini-grid-vscroll").hide();
+        $(".mini-resizer-trigger").hide();
+    });
+</script>

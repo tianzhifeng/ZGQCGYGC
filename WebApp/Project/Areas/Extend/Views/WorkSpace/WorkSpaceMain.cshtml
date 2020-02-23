@@ -1,0 +1,171 @@
+﻿@{
+    ViewBag.Title = "项目设计工作区";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<div class="mini-layout" style="width: 100%; height: 100%;" splitsize='3'>
+    <div region="west" width="280" expanded="true" showspliticon="true" showheader="false" style="border-top: 0;
+        border-bottom: 0;">
+        <div class="mini-toolbar" style="border-left: 0; border-right: 0; border-top: 0;">
+            <table style="width: 100%">
+                <tr>
+                    <td width="80px">
+                        <input name="ShowType" class="mini-combobox" style="width: 80px;" textfield="text" valuefield="value"
+                            data="transForm" onvaluechanged="onValueChanged" value="Major" />
+                    </td>
+                    <td align="left">
+                        <input id="key" class="mini-buttonedit gw-searchbox" onenter="searchTree();" onbuttonclick="searchTree();"
+                            style="width: 150px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="mytree" class="mini-tree" url="" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name"
+                iconfield="WBSType" idfield="VirtualID" enablehottrack="false" parentfield="ParentID" resultastree="false"
+                expandonload="1" onnodeselect="onNodeSelect">
+            </ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top: 0; border-bottom: 0; border-right: 0;">
+        <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0;"
+            onactivechanged="clickTab">
+            <div title="设计文件" name="设计文件" url="../Product/List?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+            </div>
+            <div title="校审单" name="校审单" url="/Project/Form/Audit/List?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+            </div>
+            <div name="ExchangeFile" title="资料交换" name="资料交换">
+                <div class="mini-fit" style="padding-top: 0px;">
+                    <div id="subTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border;0;"
+                        onactivechanged="onactivechanged">
+                        <div title="提资任务" url="../CooperationExecute/CooperationPlanInList?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+                        </div>
+                        <div title="专业提资" url="../CooperationExecute/CooperationPlanOutList?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+                        </div>
+                        <div title="资料接收区" url="../CooperationReceive/CooperationReceiveList?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+                        </div>
+                        <div title="资料共享区" url="../CooperationShared/List?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div title="会审会签" url="/Project/Form/CoSign/List?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+            </div>
+            <div title="变更申请" url="/Project/Form/DesignChange/WorkSpaceList?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+            </div>
+            <div title="设计输入" url="../DesignInput/List?ProjectInfoID=@ViewBag.ProjectInfo.ID&SpaceCode=@ViewBag.SpaceCode">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+   var transForm = @Html.Raw(ViewBag.TransForm);
+   var defaultViewType ="@Html.Raw(ViewBag.DefaultViewType)";
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var spaceCode = getQueryString("SpaceCode");
+    var url = "GetTree?ProjectInfoID=" + projectInfoID + "&ViewType=Major";
+    $("#mytree").attr("url", url);
+
+    function loadingwbs(viewType) {
+        var tree = mini.get("mytree");
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        addExecuteParam("ViewType", viewType);
+        execute("GetTree", { refresh: false, onComplete: function (data) {
+            if (defaultViewType.indexOf(viewType) >= 0) {
+                tree.loadList(data, "ID", "ParentID");
+            }
+            else {
+                tree.loadList(data, "VirtualID", "ParentID");
+            }
+        }, validateForm: false
+        });
+    }
+
+    function onNodeSelect(e) {
+        var tabs = mini.get("mainTab");
+        if (e.node.ID) {
+            var isLeaf = e.sender.isLeaf(e.node);
+            var tab = tabs.getActiveTab();
+            if (tab.name == "ExchangeFile") {
+                var subTabs = mini.get("subTab");
+                var subTab = subTabs.getActiveTab();
+                if (!subTab.url) return;
+                var url = subTab.url.split('?')[0] + "?ProjectInfoID=" + projectInfoID + "&WBSID=" + e.node.ID + "&IsLeaf=" + isLeaf + "&SpaceCode=" + spaceCode;
+                if (e.node.MajorCode) {
+                    var majorValue = e.node.MajorCode.split('&')[2];
+                    url += "&WBSValue=" + majorValue;
+                }
+                subTabs.loadTab(url, subTab);
+            }
+            else {
+                if (!tab.url) return;
+                var url = tab.url.split('?')[0] + "?ProjectInfoID=" + projectInfoID + "&WBSID=" + e.node.ID + "&IsLeaf=" + isLeaf + "&SpaceCode=" + spaceCode;
+                if (tab) {
+                    if (e.node.MajorCode) {
+                        var majorValue = e.node.MajorCode.split('&')[2];
+                        url += "&WBSValue=" + majorValue;
+                    }
+                }
+                tabs.loadTab(url, tab);
+            }
+        }
+    }
+
+    function onValueChanged(e) {
+        loadingwbs(e.value);
+    }
+
+    function onactivechanged(e) {
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        var tabs = e.sender;
+        var tab = e.tab;
+        if (!node) return; if (!tab.url) return;
+        var isLeaf = tree.isLeaf(node);
+        var url = tab.url.split('?')[0] + "?ProjectInfoID=" + projectInfoID + "&WBSID=" + node.ID + "&IsLeaf=" + isLeaf + "&SpaceCode=" + spaceCode;
+        if (tab) {
+            if (node.MajorCode) {
+                var majorValue = node.MajorCode.split('&')[2];
+                url += "&WBSValue=" + majorValue;
+            }
+            //if (tab.loadedUrl != url)
+            tabs.loadTab(url, tab);
+        }
+    }
+
+    function clickTab(e) {
+        var tree = mini.get("mytree");
+        var node = tree.getSelectedNode();
+        var tab = e.tab;
+        var tabs = e.sender;
+        if (!node) return;
+        var isLeaf = tree.isLeaf(node);
+        if (!tab.url) return;
+        var url = tab.url.split('?')[0] + "?ProjectInfoID=" + projectInfoID + "&WBSID=" + node.ID + "&IsLeaf=" + isLeaf + "&SpaceCode=" + spaceCode;
+        if (node.MajorCode) {
+            var majorValue = node.MajorCode.split('&')[2];
+            url += "&WBSValue=" + majorValue;
+        }
+        //if (tab.loadedUrl != url)
+        tabs.loadTab(url, tab);
+    }
+
+    function searchTree() {
+        var tree = mini.get("mytree");
+        var key = mini.get("key").getValue();
+        tree.filter(function (node) {
+            if (node.Name.indexOf(key) != -1) return true;
+        });
+    }
+
+</script>
+<style type="text/css">
+    .mini-tabs-bodys
+    {
+        padding: 0 0 0 0;
+        border-bottom: 0px;
+        border-left: 0px;
+        border-right: 0px;
+    }
+</style>

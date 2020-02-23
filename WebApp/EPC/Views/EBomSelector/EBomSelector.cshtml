@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "EBomSelector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">导入</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="west" region="west" width="600" showheader="false" expanded="true" showspliticon="true">
+            <div class="mini-fit">
+                <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+                     borderstyle="border:0px" onselectionchanged="onSelectionChanged">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        @*<div field="Comparison" width="60" headeralign="center" align="center">
+                            对比差异
+                        </div>*@
+                        <div field="VersionName" width="120" headeralign="center" allowsort="false">
+                            版本名称
+                        </div>
+                        <div field="BomPhase" width="70" headeralign="center" allowsort="false" align="center">
+                            类型
+                        </div>
+                        <div field="MajorName" width="70" headeralign="center" allowsort="false" align="center">
+                            分类专业
+                        </div>
+                        <div field="VersionNumber" width="50" headeralign="center" allowsort="false" align="right">
+                            版本号
+                        </div>
+                        <div field="CreateUser" width="80" headeralign="center" allowsort="false" align="center">
+                            创建人
+                        </div>
+                        <div field="CreateDate" width="90" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false"
+                             align="center">
+                            创建日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center">
+            <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+                 url="" showtreeicon="true" allowcellwrap="true" oncellbeginedit="OnCellBeginEdit" onload="onload" multiselect="true" borderstyle="border:0px"
+                 treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType"
+                 allowresize="false" fitcolumns="false">
+                <div property="columns">
+                    <div type="indexcolumn"></div>
+                    <div name="Name" field="Name" displayfield="Name" width="230" headeralign="center">
+                        名称
+                    </div>
+                    <div field="Quantity" width="50" headeralign="center" align="right">
+                        数量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="Branding" width="100" headeralign="center">
+                        品牌<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div field="MajorCode" displayfield="MajorName" width="80" headeralign="center" align="center" autoshowpopup="true">
+                        专业分类<input property="editor" class="mini-combobox" style="width:100%;" data="BOMMajor" textfield="text" valuefield="value" />
+                    </div>
+                    <div field="Model" width="150" headeralign="center">
+                        规格/ 型号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    $("#dataGrid").attr("url", "GetList?EngineeringInfoID=" + engineeringInfoID);
+
+    addGridButton("dataGrid", "Comparison", {
+        linkText: "对比差异",
+        onButtonClick: function (row) {
+
+        }
+    });
+
+    function onSelectionChanged(e) {
+        var grid = e.sender;
+        var record = grid.getSelected();
+        if (record) {
+            var dataTree = mini.get("dataTree");
+            dataTree.setUrl("GetTreeList?VersionID=" + record.ID);
+        }
+    }
+
+    function returnValue() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一个BOM记录"); return;}
+        closeWindow(row);
+    }
+
+</script>

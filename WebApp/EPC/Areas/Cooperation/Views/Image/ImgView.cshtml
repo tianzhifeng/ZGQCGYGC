@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "查看图片";
+}
+
+<style>
+    #image-view {
+        width: 960px;
+        position: relative;
+    }
+
+    #image-box {
+        width: 800px;
+        height: 600px;
+        text-align: center;
+        overflow: hidden;
+        margin: 100 100;
+        border: 0px #ead4a3 solid;
+        position: relative;
+    }
+
+        #image-box img {
+            vertical-align: middle;
+        }
+
+    #image-view a.btn-left, #image-view a.btn-right {
+        display: block;
+        width: 50px;
+        height: 120px;
+        overflow: hidden;
+        position: absolute;
+        top: 250px;
+        text-indent: -999px;
+    }
+
+    a.btn-left {
+        background: url(/EPC/Scripts/Main/img/btn_left.png) no-repeat;
+        left: 25px;
+    }
+
+    a.btn-right {
+        background: url(/EPC/Scripts/Main/img/btn_right.png) no-repeat;
+        right: 25px;
+    }
+
+    #pic {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
+
+<script>
+
+    @{
+        var pics = "''";
+        var arr = ViewBag.FieldIDs.Split(',');
+        if (!string.IsNullOrEmpty(ViewBag.FieldIDs))
+        {
+            pics = string.Join("','", arr);
+            pics = string.Format("'{0}'", pics);
+        }
+    }
+
+    var picArr = new Array(@Html.Raw(pics));
+
+    var index=0;
+    function next(){
+        index++;
+        if(index==picArr.length){
+            index=0;
+        }
+        document.getElementById("pic").src = "/EPC/Cooperation/Image/GetPic?fieldId=" + picArr[index];
+    }
+    function pre(){
+        index--;
+        if(index<0){
+            index=picArr.length-1;
+        }
+        document.getElementById("pic").src = "/EPC/Cooperation/Image/GetPic?fieldId=" + picArr[index];
+    }
+
+</script>
+
+<center>
+    <div id="image-view">
+        <div id="image-box">
+            <img id="pic" src="/EPC/Cooperation/Image/GetPic?fieldId=@arr[ViewBag.DefaultIndex]">
+        </div>
+        <a class="btn-left" title="上一张" href="javascript:void(0)" onclick="pre()">上一张</a>
+        <a class="btn-right" title="下一张" href="javascript:void(0)" onclick="next()">下一张</a>
+    </div>
+
+</center>

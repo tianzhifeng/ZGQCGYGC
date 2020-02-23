@@ -1,0 +1,440 @@
+﻿@{
+    ViewBag.Title = "DBSMain";
+
+}
+<div class="mini-toolbar" style="padding: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="GatherDoc" plain="true">归集项目资料</a>
+                <a class="mini-button" iconcls="icon-setting" onclick="SynConfig" plain="true" id="btnSynConfig">更新目录</a>
+                <a class="mini-menubutton" iconcls="icon-goto" plain="true"  menu="#popupMenu">资料归档</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="west" showheader="false" region="west" width="450" expanded="true" showspliticon="false"
+            style="border-bottom: 0;">
+            <div class="mini-toolbar   gw-grid-toolbar" style="padding: 0px; border-bottom: 0; border-top: 0; border-left: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit gw-searchbox" emptytext="请输入名称" onenter="treeSearch"
+                                onbuttonclick="treeSearch" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataTree" class="mini-treegrid" style="width: 100%; height: 100%;" contextmenu="treeMenu"
+                    url="GetTree" showtreeicon="true" treecolumn="Name" idfield="ID" parentfield="ParentID"
+                    resultastree="false" expandonload="0" iconfield="DBSType" onnodeselect="onNodeSelected"
+                    allowresize="false" fitcolumns="true">
+                    <div property="columns">
+                        <div type="indexcolumn">
+                        </div>
+                        <div name="Name" field="Name" width="160" headeralign="center">
+                            资料名称
+                        </div>
+                        <div field="AllArchiveFileCount" width="40" align="right" headeralign="center">
+                            已归档
+                        </div>
+                        <div field="MaxVersionFileCount" width="40" align="right" headeralign="center">
+                            最新版本
+                        </div>
+                        <div field="AllFileCount" width="40" align="right" headeralign="center">
+                            所有版本
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center" style="border-bottom: 0; border-right: 0;">
+            <div class="mini-toolbar  gw-grid-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <a class="mini-button" iconcls="icon-add" onclick="addFile" plain="true">增加</a>
+                            <a class="mini-button" iconcls="icon-edit" onclick="editFile" plain="true">编辑</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="deleteFile()" plain="true">删除</a>
+                            <a class="mini-button" iconcls="icon-goto" onclick="archive" plain="true" id="BtnArchive">资料归档</a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <div id="showAll" name="showAll" class="mini-checkbox" value="true" readonly="false"
+                                text="显示所有文件" onvaluechanged="onShowAllValueChanged">
+                            </div>
+                            <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入名称或编号" onenter="quickSearch('Name,Code');"
+                                onbuttonclick="quickSearch('Name,Code');" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" url="" borderstyle="border-bottom:0;border-left:0;border-right:0;"
+                    class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+                    <div property="columns">
+                        <div type="checkcolumn">
+                        </div>
+                        <div field="ArchiveDate" width="100" dateformat="yyyy-MM-dd" headeralign="center"
+                            allowsort="true" align="center">
+                            归档日期
+                        </div>
+                        <div field="Name" width="300" headeralign="center" allowsort="true">
+                            文件名称
+                        </div>
+                        <div field="Code" width="120" headeralign="center" allowsort="true">
+                            编号
+                        </div>
+                        <div field="MainFiles" width="120" headeralign="center" allowsort="true" align="left">
+                            成果附件
+                        </div>
+                        <div field="Version" width="60" headeralign="center" allowsort="true" align="center">
+                            版本号
+                        </div>
+                        <div field="Catagory" width="150" headeralign="center" allowsort="true" align="center">
+                            分类
+                        </div>
+                        <div field="MajorValue" width="90" headeralign="center" allowsort="true " align="center">
+                            专业
+                        </div>
+                        <div field="CreateUser" headeralign="center" width="100" allowsort="true" align="center">
+                            创建人
+                        </div>
+                        <div field="CreateDate" width="120" headeralign="center" dateformat="yyyy-MM-dd"
+                            allowsort="true" align="center">
+                            创建日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li iconcls="icon-add" name="add" onclick="addFolder">新增目录</li>
+    <li iconcls="icon-edit" name="edit" onclick="editFolder">编辑目录</li>
+    <li iconcls="icon-remove" name="remove" onclick="deleteFolder">删除目录</li>
+    <li iconcls="icon-set" name="auth" onclick="setFolderAuth">编辑权限</li>
+</ul>
+<ul id="popupMenu" class="mini-menu" style="display: none;">
+    <li iconcls="icon-set" onclick="archiveAll(true)">所有文件</li>
+    <li iconcls="icon-set" onclick="archiveAll(false)">最新版文件</li>
+</ul>
+<script type="text/javascript">
+    @Html.GetEnum("Project.Major")
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    $(".gw-grid-toolbar .mini-button").hide();
+
+    addGridLink('dataGrid', 'Name', '/Project/Basic/Document/DocumentEdit?ID={ID}', { funcType: 'view', width: "50%", height: "60%" });
+    //20190509 成果和ios表单 改为 一个版本一条记录，所以此处链接已无意义
+    //addGridLink('dataGrid', 'Version', '/MvcConfig/UI/List/PageView?TmplCode=DocumentVersion&DocumentID={ID}', { funcType: 'view', width: "50%", height: "60%" });
+    addGridEnum("dataGrid", "MajorValue", "Major");
+
+    $("#dataGrid").attr("ondrawcell", "ondrawcell");
+    function ondrawcell(e) {
+        var field = e.field;
+        if ((field == "MainFiles" || field == "PDFFile" || field == "PlotFile" || field == "XrefFile" ||
+            field == "DwfFile" || field == "TiffFile" || field == "SignPdfFile") && e.value != "" && e.value != null) {
+            e.cellHtml = '<a href="javascrip:void(0)" onclick="DownloadFile(\'' + e.value + '\');">' + getMiniFileNames(e.value) + '</a>';
+        }
+    }
+
+    $("#dataTree").attr("url", "GetTree?ProjectInfoID=" + projectInfoID);
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+        if (node.DBSAuth != "FullControl" || node.DBSType == "Mapping" || node.DBSType == "OEMMapping" || node.DBSType == "Root") {
+            if (node.MappingType == "Product" && node.ConfigDBSID && node.ConfigDBSID.length >36)
+            {
+                //自动生成的成果映射目录可以弹出删除按钮
+            }
+            else
+            {
+                e.cancel = true;
+                return;
+            }
+        }
+        var menu = e.sender;
+        var addItem = mini.getbyName("add", menu);
+        var editItem = mini.getbyName("edit", menu);
+        var removeItem = mini.getbyName("remove", menu);
+        var authItem = mini.getbyName("auth", menu);
+        if (node.DBSType == "Root") {
+            addItem.hide()
+            editItem.hide();
+            removeItem.hide();
+            authItem.hide();
+        }
+        else if (node.ConfigDBSID && node.ConfigDBSID.length > 36)
+        {
+            addItem.hide()
+            editItem.hide();
+            removeItem.show();
+            authItem.hide();
+        }
+        else {
+            addItem.show()
+            editItem.show();
+            removeItem.show();
+            authItem.show();
+        }
+    }
+
+    function addFolder() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        var url = "DBSEdit?ParentID=" + node.ID + "&ParentID=" + node.ID + "&ParentDBSType=" + node.DBSType;
+        openWindow(url, {
+            title: "增加",
+            width: "50%", height: 250,
+            onDestroy: function (data) {
+                tree.load(tree.url);
+            }
+        });
+    }
+
+    function editFolder() {
+        var param = { url: "DBSEdit" }
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        var parentNode = tree.getNode(node.ParentID);
+        var dbsType = "";
+        if (parentNode)
+            dbsType = parentNode.DBSType
+        var url = "DBSEdit?ID=" + node.ID + "&ParentDBSType=" + dbsType;
+        openWindow(url, {
+            title: "编辑",
+            width: 550, height: 250,
+            onDestroy: function (data) {
+                if (data == "close") return;
+                tree.reload();
+            }
+        });
+    }
+
+    function deleteFolder() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) return;
+        addExecuteParam("DBSID", node.ID);
+        execute("Delete", {
+            onComplete: function () {
+                tree.removeNode(node);
+            }
+        });
+    }
+
+    function addFile() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个目录"); return; }
+        var url = "../Document/DocumentEdit?DBSID=" + node.ID;
+        openWindow(url, {
+            title: "增加", width: 700, height: 500,
+            onDestroy: function (data) {
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function treeSearch(e) {
+        var tree = mini.get("dataTree");
+        var key = e.sender.getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onDrawNode(e) {
+        var tree = e.sender;
+        var node = e.node;
+        e.nodeHtml = node.Name + "（文件：" + node.AllFileCount + "，已归档：" + node.AllArchiveFileCount + "）";
+    }
+
+    function deleteFile() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        addExecuteParam("Documents", mini.encode(rows));
+        execute("DeleteDocument", {
+            onComplete: function () {
+                dataGrid.reload();
+            }
+        });
+    }
+
+    function editFile() {
+        var setting = { url: "../Document/DocumentEdit", title: "编辑", width: 650, height: 400 };
+        edit(setting);
+    }
+
+    function setFolderAuth() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) { msgUI("请选择一个目录"); return; }
+        var url = "DBSAuthorization?DBSID=" + node.ID;
+        openWindow(url, {
+            width: 650, height: 400,
+            onDestroy: function (data) {
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function onShowAllValueChanged(e) {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) { return; }
+        var url = "GetList?DBSID=" + node.ID + "&ShowAll=" + e.value;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.load();
+    }
+
+    function onNodeSelected(e) {
+        var node = e.node;
+        if (node.DBSAuth == "ReadOnly")
+            $(".gw-grid-toolbar .mini-button").hide();
+        else
+            $(".gw-grid-toolbar .mini-button").show();
+        $("#BtnArchive").show();
+        var showAll = mini.getbyName("showAll").getValue();
+        var url = "GetList?DBSID=" + node.ID + "&ShowAll=" + showAll;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.load();
+    }
+
+    function archive() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        if (rows.length <= 0) {
+            msgUI("请至少选择一条数据");
+            return;
+        }
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].ArchiveDate != null && rows[i].ArchiveDate != "") {
+                msgUI("文件【" + rows[i].Name + "】已归档，请重新选择。");
+                return;
+            }
+        }
+        addExecuteParam("rowStr", mini.encode(rows));
+        execute("ProjectTheseArchiveFiles", {
+            showLoading: true, refresh: false, onComplete: function (dataRows) {
+                if (dataRows.length < rows.length) {
+                    msgUI("选中的文件中存在没有配置归档目录的文件。", 2, function (data) {
+                        if (data == "ok") {
+                            openWindow("/MvcConfig/UI/Form/PageView?TmplCode=DBSArchiveList&ArchiveFull=F&ProjectInfoID=" + projectInfoID,
+                            {
+                                title: "归档资料清单", height: "80%", width: "800px", data: { Files: dataRows }, onDestroy: function (res) {
+                                    mini.get("dataTree").reload();
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    openWindow("/MvcConfig/UI/Form/PageView?TmplCode=DBSArchiveList&ArchiveFull=F&ProjectInfoID=" + projectInfoID,
+                    {
+                        title: "归档资料清单", height: "80%", width: "800px", data: { Files: dataRows }, onDestroy: function (res) {
+                            mini.get("dataTree").reload();
+                        }
+                    });
+                }
+            }, validateForm: false
+        });
+    }
+
+    function archiveAll(isAll)
+    {
+        addExecuteParam("IsAll", isAll);
+        execute("ProjectUnArchiveFiles", {
+            showLoading: true, refresh: false, onComplete: function (dataRows) {
+                openWindow("/MvcConfig/UI/Form/PageView?TmplCode=DBSArchiveList&ArchiveFull=T&IsAll=" + isAll + "&ProjectInfoID=" + projectInfoID,
+                {
+                    title: "归档资料清单", height: "80%", width: "800px", data: { Files: dataRows }, onDestroy: function (res) {
+                        mini.get("dataTree").reload();
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function GatherDoc() {
+        addExecuteParam("ProjectInfoID", projectInfoID);
+        execute("GatherDoc", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                msgUI("资料收集完成");
+                mini.get("dataTree").reload();
+            }, validateForm: false
+        });
+    }
+
+    function SynConfig() {
+        msgUI("此操作将更新目录与权限，是否继续？", 2, function (result) {
+            if (result != "ok") { return; }
+            addExecuteParam("ProjectInfoID", projectInfoID);
+            execute("SynConfig", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    msgUI("更新成功");
+                    mini.get("dataTree").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+</script>
+<style type="text/css">
+.Root:before {
+    content: ""; 
+}
+    .mini-layout-region-body
+    {
+        overflow-y: hidden;
+    }
+
+    .Root
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .Folder
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+
+    .Mapping
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/folder.png) no-repeat;
+    }
+    .OEMMapping
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/volume.png) no-repeat;
+    }
+
+    .Cloud
+    {
+        background: url(/CommonWebResource/Theme/Default/MiniUI/icons/volume.png) no-repeat;
+    }
+</style>

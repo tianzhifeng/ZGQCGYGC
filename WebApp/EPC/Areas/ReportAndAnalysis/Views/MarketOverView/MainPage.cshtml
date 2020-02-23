@@ -1,0 +1,502 @@
+﻿@{
+    ViewBag.Title = "MainPage";
+}
+
+@Styles.Render("~/Scripts/MarketOverView/css/MainPageStyleRed.css")
+
+<script src="/EPC/Scripts/MarketOverView/js/jquery.min.js" type="text/javascript"></script>
+<script src="/EPC/Scripts/MarketOverView/js/jquery.nicescroll.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<script>
+    $("body").css("background-color", "");
+</script>
+<div class="containers">
+    <div class="container-top">
+        <div class="collections container-top-item border-blue">
+            <div>
+                <p class="title">收款</p>
+                @{
+                    var recepitBlock = ViewBag.RecepitBlock as EPC.Areas.ReportAndAnalysis.Controllers.ViewBlock;
+                    <div class="container-top-item-center">
+                        <div class="left section">
+                            <div class="section-top" style="height:62px;">
+                                <span class="int">
+                                    @if (String.IsNullOrEmpty(recepitBlock.MainUrl))
+                                    {
+                                        @recepitBlock.Main
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)" onclick="openWindow('@recepitBlock.MainUrl',{width:'90%',height:'90%'})">@recepitBlock.Main</a>
+                                    }
+                                </span>
+                                <span class="unit">万元</span>
+                                @if (recepitBlock.Sub > 0)
+                                {
+                                    <span class="abs" style="cursor:pointer" title="@recepitBlock.SubAreaTip"><img src="/EPC/Scripts/MarketOverView/img/icon-up.png" width="10" height="15">@Math.Abs(recepitBlock.Sub)%</span>
+                                }
+                                else
+                                {
+                                    <span class="abs" style="cursor:pointer" title="@recepitBlock.SubAreaTip"><img src="/EPC/Scripts/MarketOverView/img/icon-down.png" width="10" height="15">@Math.Abs(recepitBlock.Sub)%</span>
+                                }
+                                <p>今年已收款</p>
+                            </div>
+                            <div class="section-bottom" style="height:70px">
+                                <span class="time f-right">时间：@recepitBlock.progressSub %</span>
+                                <div class="process-wrap">
+                                    @{
+                                        var progress = Convert.ToDecimal(recepitBlock.progressMain) > 100 ? 100 : Convert.ToDecimal(recepitBlock.progressMain);
+                                    }
+                                    <div class="process border-blue" style="width: @progress%">
+                                    </div>
+                                </div>
+                                <div class="finish-number" style="padding-top:8px;">
+                                    <span>
+                                        完成率：@recepitBlock.progressMain %
+                                    </span>
+                                    <span class="f-right">年度目标：@recepitBlock.SubRight 万元</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right section">
+                            <ul>
+                                @{
+                                    var subList = recepitBlock.SubViewBlockList.OrderBy(d => d.SortIndex).ToList();
+                                    foreach (var subItem in subList)
+                                    {
+                                <li>
+                                    <span class="f-right">@subItem.Unit</span>
+                                    @if (String.IsNullOrEmpty(subItem.LinkUrl))
+                                            {
+                                            <span class="has-line f-right">@subItem.MainValue</span>
+                                            }
+                                            else
+                                            {
+
+                                            <a class="has-line f-right" href="javascript:void(0)" onclick="openWindow('@subItem.LinkUrl',{width:'90%',height:'90%'})">@subItem.MainValue</a>
+
+                                            }
+                                    <span>@subItem.Title</span>
+                                </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    var list = ViewBag.SubViewList as List<EPC.Areas.ReportAndAnalysis.Controllers.SubViewBlock>;
+                    var item = list[0];
+                    var item2 = list[1];
+                    <div class="item-bottom">
+                        <div class="f-left">
+                            @if (String.IsNullOrEmpty(item.LinkUrl))
+                            {
+                                <span class="has-line">@item.MainValue</span>
+                            }
+                            else
+                            {
+                                <a class="has-line" href="javascript:void(0)" onclick="openWindow('@item.LinkUrl', { width: '90%', height: '90%' })">@item.MainValue</a>
+                            }
+                            <span class="unit">@item.Unit</span>
+                            <p>@item.Title</p>
+                        </div>
+
+                        <div class="f-left">
+                            @if (String.IsNullOrEmpty(item2.LinkUrl))
+                            {
+                                <span class="has-line">@item2.MainValue</span>
+                            }
+                            else
+                            {
+                                <a class="has-line" href="javascript:void(0)" onclick="openWindow('@item2.LinkUrl', { width: '90%', height: '90%' })">@item2.MainValue</a>
+                            }
+                            <span class="unit">@item2.Unit</span>
+                            <p>@item2.Title</p>
+                        </div>
+                    </div>
+
+                }
+
+            </div>
+        </div>
+        <div class="container-top-item contract border-zs">
+            <div>
+                <p class="title">合同</p>
+                @{
+                    var contractBlock = ViewBag.ContractBlock as EPC.Areas.ReportAndAnalysis.Controllers.ViewBlock;
+                    var remain = contractBlock.SubRight - contractBlock.Main;
+                <div class="container-top-item-center" style="margin-bottom:0px;">
+                    <div class="left section">
+                        <div class="section-top" style="height:152px;">
+                            <div id="container" style="height: 152px; width: 152px; ">
+
+                            </div>
+                            @if (contractBlock.Sub > 0)
+                                {
+                                <span class="contract-abs" style="cursor:pointer" title="@contractBlock.SubAreaTip"><img src="/EPC/Scripts/MarketOverView/img/icon-up.png" width="10" height="15">@Math.Abs(contractBlock.Sub)%</span>
+                                }
+                                else
+                                {
+                                <span class="contract-abs" style="cursor:pointer" title="@contractBlock.SubAreaTip"><img src="/EPC/Scripts/MarketOverView/img/icon-down.png" width="10" height="15">@Math.Abs(contractBlock.Sub)%</span>
+                                }
+
+                            <div class="section-top" style="position:absolute; top:55px;left:20px">
+                                <span class="int">
+                                    @if (String.IsNullOrEmpty(contractBlock.MainUrl))
+                                        {
+                                        @contractBlock.Main
+                                        }
+                                        else
+                                        {
+                                        <a href="javascript:void(0)" onclick="openWindow('@contractBlock.MainUrl',{width:'90%',height:'90%'})">@contractBlock.Main</a>
+                                        }
+                                </span>
+                                <span class="unit">万元</span>
+                                <p>今年已签订</p>
+                            </div>
+                        </div>
+
+                        <div class="section-bottom">
+                            <div class="finish-number">
+                                <span>完成率：@contractBlock.progressMain%</span>
+                                <span class="f-right">年度目标：@contractBlock.SubRight 万元</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right section contract">
+                        <ul>
+                            @{
+                                    subList = contractBlock.SubViewBlockList.OrderBy(d => d.SortIndex).ToList();
+                                    foreach (var subItem in subList)
+                                    {
+                                <li>
+                                    <span class="f-right">@subItem.Unit</span>
+                                    @if (String.IsNullOrEmpty(subItem.LinkUrl))
+                                            {
+                                            <span class="has-line f-right">@subItem.MainValue</span>
+                                            }
+                                            else
+                                            {
+
+                                            <a class="has-line f-right" href="javascript:void(0)" onclick="openWindow('@subItem.LinkUrl',{width:'90%',height:'90%'})">@subItem.MainValue</a>
+
+                                            }
+                                    <span>@subItem.Title</span>
+                                </li>
+                                    }
+                            }
+                        </ul>
+                    </div>
+                </div>
+                    item = list[2];
+                    item2 = list[3];
+                <div class="item-bottom">
+                    <div class="f-left">
+                        @if (String.IsNullOrEmpty(item.LinkUrl))
+                            {
+                            <span class="has-line">@item.MainValue</span>
+                            }
+                            else
+                            {
+                            <a class="has-line" href="javascript:void(0)" onclick="openWindow('@item.LinkUrl', { width: '90%', height: '90%' })">@item.MainValue</a>
+                            }
+                        <span class="unit">@item.Unit</span>
+                        <p>@item.Title</p>
+                    </div>
+
+                    <div class="f-left">
+                        @if (String.IsNullOrEmpty(item2.LinkUrl))
+                            {
+                            <span class="has-line">@item2.MainValue</span>
+                            }
+                            else
+                            {
+                            <a class="has-line" href="javascript:void(0)" onclick="openWindow('@item2.LinkUrl', { width: '90%', height: '90%' })">@item2.MainValue</a>
+                            }
+                        <span class="unit">@item2.Unit</span>
+                        <p>@item2.Title</p>
+                    </div>
+                </div>
+                }
+                <script type="text/javascript">
+                    var chart = null;
+                    $(function () {
+                        $('#container').highcharts({
+                            chart: {
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                spacing: [-10, -10, -10, -10]
+                            },
+                            title: {
+                                floating: true,
+                                text: ''
+                            },
+                            tooltip: {
+                                enabled: false,
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            plotOptions: {
+                                series: {
+                                    enableMouseTracking: false
+                                },
+                                pie: {
+                                    lineWidth: 3,
+                                    allowPointSelect: false,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: false,
+                                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                        style: {
+                                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'red'
+                                        }
+                                    },
+                                    point: {
+                                    },
+                                }
+                            },
+                            series: [{
+                                type: 'pie',
+                                innerSize: '80%',
+                                name: '完成率',
+                                data: [
+                                    { name: '未完成',
+                                        color:"#ebe7e8",
+                                        y: @remain },
+                                    {
+                                        name: '已完成',
+                                        color:"#7f6594",
+                                        y: @contractBlock.Main, sliced: false, selected: false,
+                                    }
+                                ]
+                            }]
+                        }, function (c) {
+                            var centerY = c.series[0].center[1],
+                                titleHeight = parseInt(c.title.styles.fontSize);
+                            c.setTitle({
+                                y: centerY + titleHeight / 2
+                            });
+                            chart = c;
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="container-top-item project border-yellow">
+            <div class="title">收入</div>
+            @{
+                var projectBlock = ViewBag.ProductionBlock as EPC.Areas.ReportAndAnalysis.Controllers.ViewBlock;
+
+                <div class="pro-ul">
+                    <ul>
+                        <li>
+                            <p>
+                                <span>今年收入：</span>
+                                <span class="f-right unit">万元</span>
+                                <span class="f-right blue">
+                                    @if (String.IsNullOrEmpty(projectBlock.MainUrl))
+                                    {
+                                        @projectBlock.Main
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)" onclick="openWindow('@projectBlock.MainUrl',{width:'90%',height:'90%'})">@projectBlock.Main</a>
+                                    }
+                                </span>
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                <span>同比：</span>
+                                @if (projectBlock.Sub > 0)
+                                {
+                                    <span class="f-right blue" style="cursor:pointer" title="@projectBlock.SubAreaTip"><img src="/EPC/Scripts/MarketOverView/img/icon-up.png" width="10" height="15">@Math.Abs(projectBlock.Sub)%</span>
+                                }
+                                else
+                                {
+                                    <span class="f-right blue" style="cursor:pointer" title="@projectBlock.SubAreaTip"><img src="/EPC/Scripts/MarketOverView/img/icon-down.png" width="10" height="15">@Math.Abs(projectBlock.Sub)%</span>
+                                }
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                <span>完成率：</span>
+                                <span class="f-right unit"></span>
+                                <span class="f-right blue">@projectBlock.progressMain %</span>
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                <span>收入目标：</span>
+                                <span class="f-right unit">万元</span>
+                                <span class="f-right blue">@projectBlock.SubRight</span>
+                            </p>
+                        </li>
+
+                        @{
+                            subList = projectBlock.SubViewBlockList.OrderBy(d => d.SortIndex).ToList();
+                            var baseWidth = 100m / subList.Count;
+                            foreach (var subItem in subList)
+                            {
+                                <li>
+                                    <p>
+                                        <span>@subItem.Title：</span>
+                                        <span class="f-right unit">@subItem.Unit</span>
+                                        <span class="f-right blue">
+
+                                            @if (String.IsNullOrEmpty(subItem.LinkUrl))
+                                            {
+                                                @subItem.MainValue
+                                            }
+                                            else
+                                            {
+                                                <a href="javascript:void(0)" onclick="openWindow('@subItem.LinkUrl',{width:'90%',height:'90%'})">@subItem.MainValue</a>
+                                            }
+                                        </span>
+                                    </p>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="container-bottom border-green">
+        <div class="bar">
+            <span class="f-left active-prev">
+                <i class="glyphicon glyphicon-menu-left"></i>
+            </span>
+            <ul>
+                <li class="active">
+                    <div data-url="/EPC/ReportAndAnalysis/ContractAnalysis/ContractAnalysisView" iframeheight="600px" class="border-green">经营情况分析</div>
+                </li>               
+                <li>
+                    <div data-url="/EPC/ReportAndAnalysis/CustomerChart/CustomerAnalysis" iframeheight="700px" class="border-green">重点客户</div>
+                </li>
+                <li>
+                    <div data-url="/EPC/ReportAndAnalysis/ProjectAnalysis/ProjectAnalysisChart" iframeheight="700px" class="border-green">重点项目</div>
+                </li>
+                <li>
+                    <div data-url="/EPC/ReportAndAnalysis/ContractAnalysis/ContractAnalysisChart" iframeheight="700px" class="border-green">重点合同</div>
+                </li>
+                <li>
+                    <div data-url="/EPC/ReportAndAnalysis/CustomerDistribute/List" iframeheight="700px" class="border-green">区域分布图</div>
+                </li>
+                <li>
+                    <div data-url="/MvcConfig/UI/List/PageView?TmplCode=ProjectListView" iframeheight="700px" class="border-green">项目一览表</div>
+                </li>
+            </ul>
+            <span class="f-right active-next">
+                <i class="glyphicon glyphicon-menu-right"></i>
+            </span>
+        </div>
+        <div class="iframe-container">
+            <iframe src="/EPC/ReportAndAnalysis/ContractAnalysis/ContractAnalysisView" style="height:600px" id="win"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    $(document).ready(function () {
+        $(".container-bottom .bar li").on("click", function () {
+            if($(this).attr("class")=="active")return;
+            $(this).siblings().removeClass("active");
+            $(this).addClass("active");
+            var url = $(this).find("div").attr("data-url");
+            console.log(url);
+            var height = $(this).find("div").attr("iframeheight");
+            if (!height) height = "600px";
+            $(".iframe-container iframe").css("height", height);
+            $(".iframe-container iframe").attr("src", url);
+
+        });
+
+        $(".active-prev").on("click", function () {
+            console.log($(".container-bottom .bar .active").index() == "0")
+            if ($(".container-bottom .bar .active").index() == "0") {
+                return false;
+            }
+            $(".container-bottom .bar .active").removeClass("active").prev().trigger("click");
+
+
+        })
+
+        $(".active-next").on("click", function () {
+            if ($(".container-bottom .bar .active").index() == ($(".container-bottom .bar li").length - 1)) {
+                return;
+            }
+            $(".container-bottom .bar .active").removeClass("active").next().trigger("click");
+
+        })
+
+        //改变配色调用函数
+        function changeColor(colorName) {
+            $(".container-top-item").removeClass("border-blue border-zs border-green border-yellow").addClass(colorName);
+            $(".container-bottom").removeClass("border-blue border-zs border-green border-yellow").addClass(colorName);
+            $(".container-bottom .bar li div").removeClass("border-blue border-zs border-green border-yellow").addClass(colorName);
+            $(".section-bottom .process").removeClass("border-blue border-zs border-green border-yellow").addClass(colorName);
+        }
+        //设置为蓝色风格
+        //changeColor("border-blue");
+
+
+    });
+
+
+    //$(function () {
+    //    $('#container').highcharts({
+    //        chart: {
+    //            plotBackgroundColor: null,
+    //            plotBorderWidth: null,
+    //            plotShadow: false,
+    //            spacing: [0, 0, 0, 0]
+    //        },
+    //        title: {
+    //            text: ''
+    //        },
+    //        credits: {
+    //            enabled: false
+    //        },
+    //        tooltip: {
+    //            headerFormat: '{series.name}<br>',
+    //            pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+    //        },
+    //        plotOptions: {
+    //            pie: {
+    //                innerSize: 60,
+    //                allowPointSelect: true,
+    //                cursor: 'pointer',
+    //                dataLabels: {
+    //                    enabled: false,
+    //                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+    //                    style: {
+    //                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+    //                    }
+    //                }
+    //            }
+    //        },
+    //        series: [{
+    //            type: 'pie',
+    //            name: '完成率',
+    //            data: [
+    //                ['Firefox', 45.0],
+    //                {
+    //                    name: 'Chrome',
+    //                    y: 12.8,
+    //                    sliced: false,
+    //                    selected: true
+    //                }
+    //            ]
+    //        }]
+    //    });
+    //});
+
+
+</script>

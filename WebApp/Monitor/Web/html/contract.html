@@ -1,0 +1,85 @@
+<div class="head">
+		<button class="left" onclick="$monitor.goback(this)"><i class="glyphicon glyphicon-menu-left"></i></button>
+		<span class="title">合同明细</span>
+		<button class="right"></button>
+	</div>
+
+	<div class="content bindTitle">
+		<div class="contact-title">
+            <div class="name-div">
+                <span class="name" way-data="contractInfo.Name" onclick="ShowInfo(this)"></span>
+            </div>
+            <div class="right">
+                <div class="code" way-data="contractInfo.Code"></div>
+                <p>签订时间：<span way-data="contractInfo.StartDate"></span></p>
+                <!--<p>签订部门：<span way-data="contractInfo.SignDept"></span></p>-->
+                <p>经营责任人：<span way-data="contractInfo.HeadOfSalesName"></span></p>
+                <p>生产责任人：<span way-data="contractInfo.ProduceMasterName"></span></p>
+            </div>
+			<div class="left contract-m">
+				<div class="left-1">到款<span class="left-11">(万元)</span></div>
+				<div class="left-2">
+                    <span class="left-integer-2" way-data="contractInfo.SummaryReceiptValue"  way-transform="transform-integer-data"></span>
+                    <span class="left-decimal-2" way-data="contractInfo.SummaryReceiptValue" way-transform="transform-decimal-data"></span>
+                </div>
+                <!--way-data="contractInfo.rateValue"-->
+                <div class="title-bar">
+                    <div class="left-bar" way-data="contractInfo.receiptRate"></div>
+                    <div class="right-bar">总额:<span way-data="contractInfo.ContractRMBAmount"></span></div>
+                </div>
+				<div class="schedule-bar">
+                    <div class="basic-bar-cls"></div>
+                    <div class="complete-cls"></div>
+                </div>
+			</div>
+		</div>
+        <div class="contact-tab">
+            <div>
+                <button class="active" onclick="changeReceiptList(this,'ReceiptRecord')">到款记录</button>
+                <button onclick="changeReceiptList(this,'PlanReceipt')">收款计划</button>
+            </div>
+        </div>
+
+        <div class="scroll contact-scroll">
+            <div class="scroll-content">
+                <!-- 到款记录 -->
+                <ul class="contact-detail daokuan" way-scope-break="true">
+                    <li class="receiptRecord">
+                        <!--<div class="bishu">第<span way-data="keyIndex"></span>笔</div>-->
+                        <div class="receiptObject" way-default="未对账" way-data="Name" way-css="Css"></div>
+                        <div class="receipt-info-cls">
+                            <div class="shijian" way-data="ArrivedDate" way-transform="dateSpaceFormatter"></div>
+                            <div class="jine">
+                                <span class="left-middle-integer-2" way-data="ArrivedMoney" way-transform="transform-integer-data"></span>
+                                <span class="left-middle-decimal-2" way-data="ArrivedMoney" way-transform="transform-decimal-data"></span>
+                                <span class="wanyuan-cls">万元</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <!-- 收款计划 -->
+                <ul class="contact-detail shoukuan" way-scope-break="true">
+                    <li class="planReceipt">
+                        <div class="name" way-data="Name"></div>
+                        <div class="left">
+                            <div class="code" way-data="Code"></div>
+                            <span way-data="ID" class="rememberCls"/></span>
+                            <div class="input" way-css="Css"><div class="span-icon icon-time"><input type="text" way-data="PlanReceiptDate" way-transform="dateNewFormatter" readonly onchange="updatePlanReceiptDate(this)"/></div></div>
+                            <div><span class="span-icon icon-user" way-data="FirstDutyManName"></span></div>
+                        </div>
+                        <div class="right contract-m">
+                            <div class="ji-left-1">计划收款<span class="ji-span-1">(万元)</span></div>
+                            <div class="ji-left-2">
+                                <span class="left-middle-integer-2" way-data="PlanReceiptValue" way-transform="transform-integer-data"></span>
+                                <span class="left-middle-decimal-2" way-data="PlanReceiptValue" way-transform="transform-decimal-data"></span>
+                            </div>
+                            <p>到款
+                                <span class="receipt-value" way-data="FactReceiptValue" way-transform="transform-integer-data"></span>
+                                <span class="receipt-value receipt-decimal-value" way-data="FactReceiptValue" way-transform="transform-decimal-data"></span>
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+	</div>

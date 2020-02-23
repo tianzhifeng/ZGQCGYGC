@@ -1,0 +1,405 @@
+﻿
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.hidden {
+    display: none;
+}
+
+body, html {
+}
+
+p {
+    margin: 0px;
+}
+
+li {
+    list-style: none;
+}
+
+.containers {
+    padding: 20px 17px;
+    min-width: 1185px;
+}
+
+.container-top {
+}
+
+    .container-top:after {
+        clear: both;
+        content: '.';
+        display: block;
+        width: 0;
+        height: 0;
+        visibility: hidden;
+    }
+
+
+    /*配色*/
+    .container-top .border-blue, .containers > .border-blue {
+        border-top: 10px solid #4f749e;
+    }
+
+.container-top-item {
+    background-color: #fff;
+}
+
+    .container-top-item .container-top-item-center .section-bottom .border-blue {
+        background-color: #4f749e;
+    }
+
+.container-top .border-green, .containers > .border-green {
+    border-top: 10px solid #6a9eac;
+}
+
+.container-top-item .container-top-item-center .section-bottom .border-green {
+    background-color: #6a9eac;
+}
+
+.container-top .border-yellow, .containers > .border-yellow {
+    border-top: 10px solid #bdb14f;
+}
+
+.container-top-item .container-top-item-center .section-bottom .border-yellow {
+    background-color: #bdb14f;
+}
+
+.container-top .border-zs, .containers > .border-zs {
+    border-top: 10px solid #7f6594;
+}
+
+.container-top-item .container-top-item-center .section-bottom .border-zs {
+    background-color: #7f6594;
+}
+
+
+.collections {
+    /*flex:1;*/
+    width: calc((100% - 236px)/2 - 30px);
+}
+
+.contract {
+    width: calc((100% - 236px)/2 - 15px);
+}
+
+.containers .project {
+    width: 236px;
+    height: 275px;
+}
+
+a {
+    color: #444;
+    font-weight: bold;
+}
+
+.container-top-item {
+    border-radius: 8px;
+    padding: 0px !important;
+    /*width:421px;*/
+    box-shadow: 0px 4px 8px #c6c6c8;
+    overflow: hidden;
+    margin-right: 15px;
+    float: left;
+}
+
+    .container-top-item .title {
+        margin-top: 12px;
+        margin-left: 24px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+.collections .title {
+    margin-bottom: 36px;
+}
+
+.contract .title {
+    margin-bottom: 10px;
+}
+
+.project .title {
+    margin-bottom: 10px;
+}
+
+.container-top-item .container-top-item-center {
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+    .container-top-item .container-top-item-center .section {
+        float: left;
+    }
+
+    .container-top-item .container-top-item-center .left {
+        width: 50%;
+        padding: 0px 10px;
+        box-sizing: border-box;
+    }
+
+    .container-top-item .container-top-item-center .right {
+        width: 50%;
+        font-size: 13px;
+        padding-right: 23px;
+        box-sizing: border-box;
+        padding-left: 40px;
+    }
+
+    .container-top-item .container-top-item-center .contract {
+        margin-top: 23px;
+    }
+
+
+    .container-top-item .container-top-item-center .right ul li {
+        margin-bottom: 13px;
+    }
+
+        .container-top-item .container-top-item-center .right ul li span:first-child {
+            margin-left: 6px;
+        }
+
+    .container-top-item .container-top-item-center .section-top {
+        text-align: center;
+        position: relative;
+    }
+
+        .container-top-item .container-top-item-center .section-top .int, .container-top-item .container-top-item-center .section-top .flo {
+            color: #51678e;
+            font-weight: bold;
+        }
+
+        .container-top-item .container-top-item-center .section-top .int {
+            font-size: 21px;
+        }
+
+        .container-top-item .container-top-item-center .section-top .flo {
+            font-size: 16px;
+        }
+
+        .container-top-item .container-top-item-center .section-top .unit {
+            font-size: 12px;
+        }
+
+        .container-top-item .container-top-item-center .section-top .abs {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+
+.red {
+    color: #c96d6e;
+    font-weight: normal !important;
+}
+
+.green {
+    color: #629fb4;
+    font-weight: normal !important;
+}
+
+.container-top-item .container-top-item-center .section-top p {
+    margin-top: 7px;
+    font-size: 14px;
+}
+
+.container-top-item .container-top-item-center .section-bottom .time {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.container-top-item .container-top-item-center .section-bottom .process-wrap {
+    background: #ebe7e8;
+    clear: both;
+    height: 10px;
+}
+
+.container-top-item .container-top-item-center .section-bottom .process {
+}
+
+.container-top-item .container-top-item-center .section-bottom .finish-number span {
+    font-size: 12px;
+    line-height: 18px;
+    margin-top: 2px;
+    display: inline-block;
+}
+
+.container-top-item .item-bottom {
+    border-top: 1px solid #ababab;
+}
+
+    .container-top-item .item-bottom div:first-child {
+        border-right: 1px solid #ababab;
+    }
+
+    .container-top-item .item-bottom div {
+        padding: 10px 0px 7px 0px;
+        width: calc(50% - 1px);
+        text-align: center;
+        line-height: 20px;
+        font-size: 13px;
+    }
+
+    .container-top-item .item-bottom .unit {
+        font-size: 12px;
+    }
+
+.contract-finishNumber {
+    position: absolute;
+    top: 50px;
+}
+
+.contract-targetNumber {
+    position: absolute;
+    top: 60px;
+}
+
+.progress-linetext {
+    padding: 0 8px;
+    font-size: 12px;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.f-right {
+    float: right;
+}
+
+.f-left {
+    float: left;
+}
+
+.has-line {
+    text-decoration: underline;
+}
+
+.pro-ul li {
+    margin-bottom: 7px;
+}
+
+    .pro-ul li p {
+        padding: 0px 30px;
+    }
+
+        .pro-ul li p span {
+            font-size: 13px;
+        }
+
+        .pro-ul li p .blue {
+            color: #4a5960;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .pro-ul li p .unit {
+            margin-left: 7px;
+        }
+
+.container-bottom {
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px #c6c6c8;
+    overflow: hidden;
+    margin-right: 15px;
+    margin-top: 18px;
+    background-color: #fff;
+}
+
+    .container-bottom .bar ul {
+        overflow-x: visible;
+        margin-bottom: 0px;
+        width: calc(100% - 37px);
+        float: left;
+        height: 43px;
+        white-space: nowrap;
+    }
+
+    .container-bottom .bar {
+        border-bottom: 1px solid #c8c8c8;
+        padding: 0px 30px;
+        overflow: hidden;
+    }
+
+        .container-bottom .bar li {
+            display: inline-block;
+            width: calc(100%/6);
+            text-align: center;
+            position: relative;
+        }
+
+            .container-bottom .bar li div {
+                display: inline-block;
+            }
+
+                .container-bottom .bar li div:hover {
+                    cursor: pointer;
+                    color: #313131;
+                    border-bottom: 3px solid #816595;
+                }
+
+        .container-bottom .bar .active div {
+            color: #313131;
+            border-bottom: 3px solid #816595;
+        }
+
+        .container-bottom .bar li .border-blue:hover {
+            border-bottom: 7px solid #4f749e;
+        }
+
+        .container-bottom .bar li .border-green:hover {
+            border-bottom: 7px solid #6a9eac;
+        }
+
+        .container-bottom .bar li .border-yellow:hover {
+            border-bottom: 7px solid #bdb14f;
+        }
+
+        .container-bottom .bar li .border-zs:hover {
+            border-bottom: 7px solid #7f6594;
+        }
+
+        .container-bottom .bar .active .border-blue {
+            color: #313131;
+            border-bottom: 7px solid #4f749e;
+        }
+
+        .container-bottom .bar .active .border-green {
+            color: #313131;
+            border-bottom: 7px solid #6a9eac;
+        }
+
+        .container-bottom .bar .active .border-yellow {
+            color: #313131;
+            border-bottom: 7px solid #bdb14f;
+        }
+
+        .container-bottom .bar .active .border-zs {
+            color: #313131;
+            border-bottom: 7px solid #7f6594;
+        }
+
+        .container-bottom .bar li div {
+            line-height: 40px;
+            font-size: 13px;
+            color: #929292;
+        }
+
+    .container-bottom .iframe-container {
+    }
+
+    .container-bottom iframe {
+        width: 100%;
+        border: none;
+        overflow: auto;
+    }
+
+.bar i {
+    line-height: 43px;
+    font-size: 18px;
+    color: #929292;
+    cursor: pointer;
+}
+
+.contract-abs {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+}

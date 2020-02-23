@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" showheader="false" width="700" expanded="true" showspliticon="false" allowresize="false">
+        <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="add({width:'550px',height:'350px'});" plain="true">增加</a>
+                        <a class="mini-button" iconcls="icon-edit" onclick="edit({ width: '550px', height: '350px' });" plain="true">编辑</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del()" plain="true">删除</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称" style="width: 200px;" onenter="quickSearch('Name');"
+                               onbuttonclick="quickSearch('Name');" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" style="height: 100px;">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="false" sortfield="StartDate"
+                 onselectionchanged="onSelectionChanged"
+                 borderstyle="border-right:0px;">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="200" headeralign="center" allowsort="true">
+                        名称
+                    </div>
+                    <div field="StartDate" width="90" dateformat="yyyy-MM-dd" headeralign="center" allowsort="true">
+                        生效日期
+                    </div>
+                    <div field="CreateUser" width="90" headeralign="center" allowsort="true" align="center">
+                        创建人
+                    </div>
+                    <div field="CreateDate" dateformat="yyyy-MM-dd" headeralign="center" width="90" allowsort="true" align="center">
+                        创建日期
+                    </div>
+                    <div field="ModifyUser" headeralign="center" width="90" allowsort="true" align="center">
+                        修改人
+                    </div>
+                    <div field="ModifyDate" width="90" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                        修改日期
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="saveList" plain="true">保存</a>
+                        @Html.ExportButton("导出Excel", "", null, "detailGrid", false, "人员工时单价模板")
+                        <a class='mini-button' id='btnImportExcel' iconcls='icon-excel-import' onclick="importUnitPrice">Excel导入</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入用户名称" style="width: 200px;" onenter="quickSearch('UserName', { gridId: 'detailGrid' });"
+                               onbuttonclick="quickSearch('UserName', { gridId: 'detailGrid' });" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" style="height: 100px;">
+            <div id="detailGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                 editnextonenterkey="true" editnextrowcell="true"
+                 allowcelledit="true" allowcellselect="true">
+                <div property="columns">
+                    <div type="indexcolumn">
+                    </div>
+                    <div field="UserName" width="70" headeralign="center" allowsort="true" align="center">
+                        姓名
+                    </div>
+                    <div field="DeptName" width="100" headeralign="center" allowsort="true">
+                        部门
+                    </div>
+                    <div field="UserLevel" width="100" headeralign="center" allowsort="true">
+                        岗级<input property="editor" class="mini-textbox" style="width:100%;" />
+                    </div>
+                    <div field="UnitPrice" width="100" headeralign="center" allowsort="true" vtype="float" align="right">
+                        工时单价（元）<input property="editor" class="mini-textbox" style="width:100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+
+    function onSelectionChanged(e) {
+        var grid = e.sender;
+        var record = grid.getSelected();
+        if (record) {
+            var detialGrid = mini.get("detailGrid");
+            var url = "GetDetailList?CostInfoID=" + record.ID;
+            detialGrid.setUrl(url);
+            detialGrid.reload();
+        }
+    }
+
+    function saveList() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (row) {
+            var detailGrid = mini.get("detailGrid");
+            var rows = detailGrid.getChanges();
+            addExecuteParam("Data", mini.encode(rows));
+            addExecuteParam("MainID", row.ID);
+            execute("SaveUserPrice", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    msgUI("保存成功"); detailGrid.reload();
+                }, validateForm: true
+            });
+        }
+        else {
+            msgUI("请选中一个记录"); return;
+        }
+
+    }
+
+    function importUnitPrice() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选中一个记录"); return; }
+        ImportExcel('UserUnitPrice_Import', '/HR/WorkHour/UserUnitPrice/ValidateExcel?CostInfoID=' + row.ID, '/HR/WorkHour/UserUnitPrice/SaveExcel?CostInfoID=' + row.ID)
+    }
+
+
+</script>

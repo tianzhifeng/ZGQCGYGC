@@ -1,0 +1,188 @@
+﻿@{
+    ViewBag.Title = "Selector";
+}
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" onclick="returnValue()" plain="true"> 选择</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="" plain="true">取消</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+        <div title="east" region="east" width="350px" showheader="false" showclosebutton="true" showspliticon="false" allowresize="false">
+            <div class="mini-fit">
+                <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+                     borderstyle="border:0px">
+                    <div property="columns">
+                        <div type="indexcolumn">
+                        </div>
+                        <div field="remove" width="40" headeralign="center" align="center">
+                            移除
+                        </div>
+                        <div field="RoleName" width="150" headeralign="center" allowsort="true" align="center">
+                            角色
+                        </div>
+                        <div field="RoleType" width="*" headeralign="center" allowsort="true" align="center">
+                            类型
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="center" region="center">
+            <div class="mini-fit" style="padding-top: 5px;">
+                <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px">
+                    <div title="系统角色">
+                        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 100%;"></td>
+                                    <td style="white-space: nowrap;">
+                                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称或编号" style="width: 200px;" onenter="quickSearch('RoleName,RoleCode');"
+                                               onbuttonclick="quickSearch('RoleName,RoleCode');" />
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="mini-fit">
+                            <div id="sysRoleGrid" url="GetSysRoleList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                 sortfield="RoleName" borderstyle="border-left:0px;border-right:0px;border-bottom:0px">
+                                <div property="columns">
+                                    <div type="indexcolumn">
+                                    </div>
+                                    <div field="Add" width="40" headeralign="center" align="center">
+                                        增加
+                                    </div>
+                                    <div field="RoleCode" width="100" headeralign="center" allowsort="false">
+                                        角色编号
+                                    </div>
+                                    <div field="RoleName" width="120" headeralign="center" allowsort="false" align="center">
+                                        角色名称
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div title="项目角色">
+                        <div id="prjRoleGrid" url="GetPrjRoleList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                             borderstyle="border:0px" sortfield="SortIndex" sortorder="asc">
+                            <div property="columns">
+                                <div type="indexcolumn">
+                                </div>
+                                <div field="Add" width="40" headeralign="center" align="center">
+                                    增加
+                                </div>
+                                <div field="RoleCode" width="100" headeralign="center" allowsort="false">
+                                    角色编号
+                                </div>
+                                <div field="RoleName" width="120" headeralign="center" allowsort="false" align="center">
+                                    角色名称
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div title="外部单位">
+                        <div id="cooperationGrid" url="GetCooperationRoleList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                             borderstyle="border:0px" sortfield="SortIndex" sortorder="asc">
+                            <div property="columns">
+                                <div type="indexcolumn">
+                                </div>
+                                <div field="Add" width="40" headeralign="center" align="center">
+                                    增加
+                                </div>
+                                <div field="RoleCode" width="100" headeralign="center" allowsort="false">
+                                    角色编号
+                                </div>
+                                <div field="RoleName" width="120" headeralign="center" allowsort="false" align="center">
+                                    角色名称
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var roleType = [{ text: "项目角色", value: "ProjectRole" }, { text: "系统角色", value: "SysRole" },
+            { text: "外部协作方", value: "CooperationRole" }
+    ];
+
+    addGridEnum("dataGrid", "RoleType", "roleType");
+
+    var cooperationList = [{ RoleCode: "Customer", RoleName: "客户" },
+        { RoleCode: "EquipmentSupplier", RoleName: "设备供应商" },
+      { RoleCode: "Subcontractor", RoleName: "分包商" },
+      { RoleCode: "Supervisor", RoleName: "外部监理" }];
+
+    addGridButton("sysRoleGrid", "Add", {
+        linkText: "增加",
+        onButtonClick: function (row) {
+            var dataGrid = mini.get("dataGrid");
+            var existRow = dataGrid.findRow(function (roleRow) {
+                if (row.RoleCode == roleRow.RoleCode && roleRow.RoleType == "SysRole") {
+                    return true;
+                }
+            });
+            if (!existRow) {
+                var roleRow = { RoleCode: row.RoleCode, RoleName: row.RoleName, RoleType: "SysRole" };
+                dataGrid.addRow(roleRow);
+            }
+        }
+    });
+
+    addGridButton("prjRoleGrid", "Add", {
+        linkText: "增加",
+        onButtonClick: function (row) {
+            var dataGrid = mini.get("dataGrid");
+            var existRow = dataGrid.findRow(function (roleRow) {
+                if (row.RoleCode == roleRow.RoleCode && roleRow.RoleType == "SysRole") {
+                    return true;
+                }
+            });
+            if (!existRow) {
+                var roleRow = { RoleCode: row.RoleCode, RoleName: row.RoleName, RoleType: "ProjectRole" };
+                dataGrid.addRow(roleRow);
+            }
+        }
+    });
+
+    addGridButton("cooperationGrid", "Add", {
+        linkText: "增加",
+        onButtonClick: function (row) {
+            var dataGrid = mini.get("dataGrid");
+            var existRow = dataGrid.findRow(function (roleRow) {
+                if (row.RoleCode == roleRow.RoleCode && roleRow.RoleType == "SysRole") {
+                    return true;
+                }
+            });
+            if (!existRow) {
+                var roleRow = { RoleCode: row.RoleCode, RoleName: row.RoleName, RoleType: "CooperationRole" };
+                dataGrid.addRow(roleRow);
+            }
+        }
+    });
+
+    addGridButton("dataGrid", "remove", {
+        linkText: "移除",
+        onButtonClick: function (row) {
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.removeRow(row);
+        }
+    });
+
+    function returnValue() {
+        var dataGrid = mini.get("dataGrid");
+        var data = dataGrid.getData();
+        closeWindow(data);
+    }
+
+</script>

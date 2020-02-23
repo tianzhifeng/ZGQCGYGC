@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "CooperationTrack";
+}
+<link href="~/Scripts/Flag/Style.css" rel="stylesheet" type="text/css" />
+<style>
+    .fontnumber {
+        color: Red;
+    }
+</style>
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table>
+        <tr>
+            <td>
+                &nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="正常完成" src="~/Scripts/Flag/images/NormalFinish.png">
+                正常完成<font class="fontnumber" id="NormalFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="进行中" src="~/Scripts/Flag/images/NormalUndone.png">
+                正常进行中<font class="fontnumber" id="NormalUndone">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期完成" src="~/Scripts/Flag/images/DelayFinish.png">
+                延期完成<font class="fontnumber" id="DelayFinish">(0)</font>&nbsp;&nbsp;
+                <img width="16" height="16" align="absmiddle" border="0" alt="延期未完成" src="~/Scripts/Flag/images/DelayUndone.png">
+                延期未完成<font class="fontnumber" id="DelayUndone">(0)</font>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetCooperationTrackList" style="width: 100%; height: 100%;"
+         allowresize="false" idfield="id" allowcellvalid="true" showpager="false" allowcelledit="true" allowcellselect="true"
+         ondrawcell="onDrawingCell" borderstyle="border-left:0;border-right:0;border-bottom:0;" onload="setNumber" fitcolumns="false">
+        <div property="columns">
+            <div type="indexcolumn" >
+            </div>
+            <div field="Name" width="80px" headeralign="center" align="center">
+                专业
+            </div>
+            @{
+                var majors = ViewBag.SubProjectMajorEnum as List<Dictionary<string, object>>;
+                foreach (var major in majors)
+                {
+
+                    var field = major["value"].ToString() + "_FinishDate";
+                    <div field="@field" width="150px" headeralign="center" dateformat="yyyy-MM-dd">
+                            @major["text"].ToString()
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+</script>
+<script type="text/javascript">
+    var wbsID = getQueryString("WBSID");
+    if (wbsID == "")
+        wbsID = "@ViewBag.RootWBSID";
+
+    function onDrawingCell(e) {
+        var field = e.field; var record = e.record;
+        var readOnly = false;
+        if (field == "Name")
+            readOnly = true;
+        else if (!field) readOnly = true;
+        else {
+            if (field) {
+                var majorValue = field.split('_')[0];
+                if (!majorValue) readOnly = true;
+                if (majorValue == record.MajorValue) readOnly = true;
+                var value = record[field];
+                if (value) {
+                    var finishArray = value.split(',');
+                    var html = "";
+                    for (var i = 0; i < finishArray.length; i++) {
+                        var finishInfo = finishArray[i].split('_');
+                        var status = finishInfo[0];
+                        var mileStoneID = finishInfo[1];
+                        var date = finishInfo[2];
+                        if (status == "NormalFinish" || status == "DelayFinish") {
+                            html += "<div style='border-radius:6px;background-color:#d0f0c9;padding:5px;'><div class='ShowStatus " + status + "' style='float:left;color: blue; cursor: hand;'></div><div style='padding-left:20px;'>计划："
+                                + date;
+                            if (finishInfo.length > 3) {
+                                var finishDate = finishInfo[3];
+                                html += "<br/>实际：<a href=\"javascript:view('" + mileStoneID + "')\">" + finishDate + "</a></div></div>";
+                            }
+
+                        }
+                        else {
+                            html += "<div style='border-radius:6px;background-color:#facdc1;padding:5px;'><div class='ShowStatus " + status + "' style='float:left;color: blue; cursor: hand;'></div>计划：" + date + "</div>";
+                        }
+                    }
+                    e.cellHtml = html;
+                }
+            }
+        }
+        if (readOnly)
+            e.cellStyle = "background:#F0F0F0";
+    }
+
+    function view(mileStoneID) {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=CooperationExecuteInPlanList&MileStoneID=" + mileStoneID;
+        openWindow(url, {
+            refresh: false, title: "专业互提列表", width: "70%", height: "50%",
+            onDestroy: function (data) {
+
+            }
+        });
+    }
+
+    function setNumber(e) {
+        var data = e.result.ShowStatusCount;
+        for (var p in data) {
+            $("#" + p).text("(" + data[p] + ")");
+        }
+    }
+</script>

@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "员工单选";
+}
+<div class="mini-toolbar" id="btnDiv" style="border-top: 1px; border-left: 1px; border-right: 1px">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-ok" plain="true" onclick="returnValue()">选择</a>
+                <a class="mini-button" iconcls="icon-cancel" plain="true" onclick="closeWindow()">取消</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <div id="cbEmployeeState" class="mini-checkboxlist" style="width: 180px; float: left;
+                    padding-left: 5px;" repeatitems="3" multiselect="false" repeatlayout="flow" textfield="text"
+                    valuefield="value" data="employeeState" onvaluechanged="loadData(false);" value="0">
+                </div>
+            </td>
+            <td id="btnRight">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入员工工号或姓名" style="width: 200px;"
+                    onenter="loadData(false);" onbuttonclick="loadData(false);" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetEmployeeList" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" sortfield="Code" sortorder="asc" multiselect="@ViewBag.MultiSelect">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Code" width="80" headeralign="center" allowsort="true" align="center">
+                员工工号</div>
+            <div field="Name" width="80" headeralign="center" allowsort="true" align="center">
+                员工姓名</div>
+            <div field="Nation" width="60" headeralign="center" allowsort="true" align="center">
+                民族</div>
+            <div field="Sex" width="40" headeralign="center" allowsort="true" align="center">
+                性别</div>
+            <div field="Post" width="80" headeralign="center" allowsort="true" align="center">
+                岗位</div>
+            <div field="PositionalTitles" width="80" headeralign="center" allowsort="true" align="center">
+                职称</div>
+            <div field="JoinCompanyDate" width="80" headeralign="center" allowsort="true" align="center"
+                dateformat="yyyy-MM-dd">
+                入司时间</div>
+            <div field="Educational" width="80" headeralign="center" allowsort="true" align="center">
+                学历</div>
+            <div field="Political" width="60" headeralign="center" allowsort="true" align="center">
+                政治面貌</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 1000px;" showmodal="true"
+    allowresize="false" allowdrag="true" allowmovecolumn="false">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="15%" align="center">
+                    员工工号
+                </td>
+                <td width="35%" align="left">
+                    <input class="mini-textbox" name="$LK$Code" style="width: 85%;" />
+                </td>
+                <td width="15%" align="center">
+                    员工姓名
+                </td>
+                <td width="35%" align="left">
+                    <input class="mini-textbox" name="$LK$Name" style="width: 85%;" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    入司时间(起)
+                </td>
+                <td width="35%" align="left">
+                    <input name="$FR$JoinCompanyDate" class="mini-datepicker" style="width: 85%" />
+                </td>
+                <td width="15%" align="center">
+                    入司时间(止)
+                </td>
+                <td width="35%" align="left">
+                    <input name="$TO$JoinCompanyDate" class="mini-datepicker" style="width: 85%;" />
+                </td>
+            </tr>
+            <tr>
+                <td width="15%" align="center">
+                    职务
+                </td>
+                <td width="35%" align="left">
+                    <input class="mini-textbox" name="$LK$Post" style="width: 85%;" />
+                </td>
+                <td width="15%" align="center">
+                    职称
+                </td>
+                <td width="35%" align="left">
+                    <input class="mini-textbox" name="$LK$PositionalTitles" style="width: 85%;" />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="loadData(true)" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("System.Sex")
+    @Html.GetEnum("HR.PersonPost");
+
+    addGridEnum("dataGrid", "Sex", "Sex");
+    addGridEnum("dataGrid", "Post", "PersonPost");
+
+    //注册Grid链接列
+    addGridLink('dataGrid', 'Name', '/HR/AutoForm/EmployeeBase/Tab?ID={ID}', { funcType: 'view' ,width:'1000',height:'90%' });
+
+    var employeeState=[{ value: "All", text: "全部" }, { value: "1", text: "离退" }, { value: "0", text: "在职"}]
+    var quickSearchFields='Name,Code';
+    
+</script>
+<script type="text/javascript" language="javascript">
+    function pageLoad() {
+        loadData(false);
+    }
+
+    //加载数据
+    function loadData(IsComplex) {
+        var dataGrid = mini.get("dataGrid");
+
+        if (IsComplex) {
+            dataGrid.load({ queryFormData: mini.encode(getComplexQueryData()) });
+            hideWindow("queryWindow");
+        }
+        else
+            dataGrid.load({ queryFormData: mini.encode(getQuickQueryData(quickSearchFields)), EmployeeState: mini.get("cbEmployeeState").getValue() });
+    }
+
+    //获取快速查询框查询数据
+    function getQuickQueryData(quickSearchFields) {
+        var data = {};
+        var keyCo = mini.get("key");
+        var keys = quickSearchFields.split(',');
+        for (i = 0, len = keys.length; i < len; i++) {
+            data["$IL$" + keys[i]] = keyCo.getText();
+        }
+        data["IsOrRelation"] = "True"; //快速查询条件间为或关系
+        return data;
+    }
+
+    //获取复杂查询框查询数据
+    function getComplexQueryData() {
+        var data = {};
+        var list = $("#queryForm input");
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].name.indexOf("$") >= 0) {
+                data[list[i].name] = mini.getbyName(list[i].name).getValue();
+            }
+        }
+        data["IsOrRelation"] = "False";
+        return data;
+    }
+
+    function returnValue() {
+        var grid = mini.get("dataGrid");
+        closeWindow(grid.getSelecteds());
+    }
+</script>

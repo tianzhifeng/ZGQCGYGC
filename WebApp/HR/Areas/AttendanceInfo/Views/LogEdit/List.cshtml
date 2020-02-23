@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "修改日志查询";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                        @Html.ExportButton()
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入员工姓名" style="width: 200px;"
+                    onenter="quickSearch('WorkNo,UserName');" onbuttonclick="quickSearch('WorkNo,UserName');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" idfield="ID" url="GetList" style="width: 100%;
+        height: 100%;" allowmovecolumn="false" sortField="ID" sortOrder="desc">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="OrgName" width="100" headeralign="center" allowsort="true" align="center">
+                部门</div>     
+            <div field="UserName" width="100" headeralign="center" allowsort="true" align="center">
+                员工姓名</div>       
+            <div field="WorkNo" width="100" headeralign="center" allowsort="true" align="center" >
+                工号</div>                        
+            <div field="CheckDate" headeralign="center" width="100" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                考勤日期</div>
+            <div field="CheckDate" width="100"  align="center" headerAlign="center" dateformat="HH:mm">
+                原考勤时间</div>
+            <div field="LastModifyCheckDate" width="100"  align="center" headerAlign="center" dateformat="HH:mm">
+                修改后考勤时间</div>
+            <div field="CheckType" width="100" headeralign="center" allowsort="true" align="center">
+                考勤类型</div>
+           <div field="CreateUserName" width="60" headeralign="center" allowsort="true" align="center">
+                修改人</div>
+            <div field="CreateDate" headeralign="center" width="100" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                修改日期</div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 95%;"
+    showmodal="true" allowresize="false" allowdrag="true" allowmovecolumn="false">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="10%" align="center">
+                    员工姓名
+                </td>
+                <td width="23%" align="left">
+                    <input class="mini-textbox" name="$LK$UserName" style="width: 85%;"  />
+                </td>
+                <td width="10%" align="center">
+                    员工工号
+                </td>
+                <td width="23%" align="left">
+                    <input class="mini-textbox" name="$LK$WorkNo" style="width: 85%;"  />
+                </td>
+                <td width="10%" align="center">
+                  考勤类型
+                </td>
+                <td width="23%" align="left">
+                    <input name="$EQ$CheckType" class="mini-combobox" style="width: 85%"
+                     valuefield="value" textfield="text" data="CheckType" shownullitem="true" />
+                </td>                
+            </tr>
+             <tr>
+                <td width="10%" align="center">
+                    部门
+                </td>
+                <td width="23%" align="left">
+                    <input name="$EQ$OrgID" textname="OrgName" class="mini-buttonedit" style="width: 85%;" />
+                </td>
+                <td width="10%" align="center">
+                    考勤日期起
+                </td>
+                <td width="23%" align="left">
+                    <input name="$FR$CheckDate" class="mini-datepicker" style="width: 85%" />
+                </td>
+                <td width="10%" align="center">
+                  考勤日期止
+                </td>
+                <td width="23%" align="left">
+                    <input name="$TO$CheckDate" class="mini-datepicker" style="width: 85%;"/>
+                </td>                
+            </tr>
+            
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">
+                    清空</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    @Html.GetEnum("HR.CheckType")
+
+    addGridEnum("dataGrid", "CheckType", "CheckType");
+    addSingleOrgSelector("$EQ$OrgID"); //部门
+    //注册Grid链接列
+    addGridLink('dataGrid', 'UserName', "Edit?FuncType=View&ID={ID}", { width: '600', height: '450' });
+
+
+ 
+</script>
+
+<script type="text/javascript" language="javascript">
+
+</script>
+

@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "ContractAndCreditNoteReceiptSelector";
+}
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="north" showheader="false" region="north" height="300" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">选择</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow();" plain="true">取消</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入合同名称或合同编号" style="width: 240px;"
+                               onenter="quickSearch('Name,SerialNumber')" onbuttonclick="quickSearch('Name,SerialNumber')" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetContractList" class="mini-datagrid" style="width: 100%;
+                height: 100%;" idfield="ID" multiselect="false" borderstyle="border-bottom: 0; border-left: 0; border-right: 0;" onselectionchanged="onSelectionChanged">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="SerialNumber" width="80" allowsort="true" headeralign="center">
+                        合同编号
+                    </div>
+                    <div field="Name" width="150" allowsort="true" headeralign="center">
+                        合同名称
+                    </div>
+                    <div field="ContractRMBValue" datatype="currency" currencyunit="￥" allowsort="true"
+                         headeralign="center" align="right">
+                        合同金额
+                    </div>
+                    <div field="SumInvoiceValue" datatype="currency" allowsort="true" headeralign="center"
+                         align="right">
+                        已开票金额（元）
+                    </div>
+                    <div field="SumReceiptValue" datatype="currency" allowsort="true" headeralign="center"
+                         align="right">
+                        已经到款金额（元）
+                    </div>
+                    <div field="NoInvoiceAmount" datatype="currency" allowsort="true" headeralign="center"
+                         align="right">
+                        剩余可开票金额（元）
+                    </div>
+                    <div field="ProductionDeptName" allowsort="true" headeralign="center" align="center">
+                        生产负责部门
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-fit">
+            <div class="mini-splitter" style="width: 100%; height: 100%;border-top: 0; border-left: 0; border-right: 0;">
+                <div size="50%" showcollapsebutton="false">
+                    <div id='creditNoteInvoiceGrid' class='mini-datagrid' style='width: 100%; height: 100%;' url='' multiselect='true' allowalternating='false' treecolumn='SerialNumber' ondrawsummarycell='onDrawSummaryCell'>
+                        <div property='columns'>
+                            <div type='checkcolumn'></div>
+                            <div name='SerialNumber' visible='true' field='SerialNumber' header='发票编号' width='150' align='left' allowsort='true' header='发票编号'></div>
+                            <div name='InvoiceValue' visible='true' header='发票金额（元）' field='InvoiceValue' width='100' align='right' allowsort='true' allowmove='true' allowresize='true' datatype='currency' dateformat='yyyy-MM-dd' header='发票金额（元）'></div>
+                            <div name='CreditValue' visible='true' header='已红冲金额（元）' field='CreditValue' width='100' align='right' allowsort='true' allowmove='true' allowresize='true' datatype='currency' header='已红冲金额（元）'></div>
+                            <div name='RemainValue' visible='true' header='可红冲金额（元）' field='RemainValue' width='100' align='right' allowsort='true' allowmove='true' allowresize='true' datatype='currency' header='可红冲金额（元）'></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div showcollapsebutton="false">
+                    <div id="creditNoteReceiptGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+                         idfield="ID" multiselect="true" borderstyle="border:0" showpager="false">
+                        <div property="columns">
+                            <div type='checkcolumn'></div>
+                            <div name='Name' visible='true' field='Name' header='收款项名称' width='150' align='left' allowsort='true' header='收款项名称'></div>
+                            <div name='PlanFinishDate' visible='true' field='PlanFinishDate' header='收款日期' dateformat='yyyy-MM-dd' width='80' align='center' allowsort='true' header='收款日期'></div>
+                            <div name='RemainValue' visible='true' field='RemainValue' header='可红冲金额' width='100' align='right' allowsort='true' header='可红冲金额'></div>
+                            <div name='MinusRelationValue' visible='true' field='MinusRelationValue' header='已红冲金额' width='100' align='right' allowsort='true' header='已红冲金额'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+<script type="text/javascript">
+    function returnValue() {
+        var grid = mini.get("dataGrid");
+        var contract = grid.getSelected();
+        var plans = mini.get("creditNoteReceiptGrid").getSelecteds();
+        var invoices = mini.get("creditNoteInvoiceGrid").getSelecteds();
+        contract.PlanReceipt = plans;
+        contract.Invoices = invoices;
+        closeWindow(contract);
+    }
+
+    //合同选择发生改变时
+    function onSelectionChanged(e) {
+        var row = e.selected;
+        if (row != null) {
+            var contractInfoID = row.ID;
+            var url = "GetCreditNoteReceiptList?ContractInfoID=" + contractInfoID;
+            var creditNoteReceiptGrid = mini.get("creditNoteReceiptGrid");
+            creditNoteReceiptGrid.setUrl(url);
+            creditNoteReceiptGrid.reload();
+
+            var url2 = "GetCreditNoteInvoiceList?ContractInfoID=" + contractInfoID;
+            var creditNoteInvoiceGrid = mini.get("creditNoteInvoiceGrid");
+            creditNoteInvoiceGrid.setUrl(url2);
+            creditNoteInvoiceGrid.reload();
+        }
+    }
+</script>

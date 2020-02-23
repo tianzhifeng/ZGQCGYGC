@@ -1,0 +1,737 @@
+h1,h2,h3,h4,h5,h6,p{
+    margin:0px;
+}
+/*.mini-tree-selectedNode{
+    background-color:#2d89d6!important;
+}*/
+html{
+    font-size:14px;
+    width:250px;
+}
+body{
+    height:100%;
+    background-color: transparent;
+}
+ul{
+    padding:0px;
+}
+button{
+    outline: none!important;
+    border:none!important;
+}
+li{
+    list-style:none;
+}
+a{
+    text-decoration: none!important;
+    color:#2c2c2c;
+}
+#Index-container{
+    z-index:997;
+    padding:30px!important;
+    margin-top:50px;
+    background-color: rgba(0,0,0,0.7);
+}
+.Index-container-slider{
+    width:316px!important;
+    top:1px!important;
+    left:0%!important;
+}
+
+#Index-container,#tab-content-container{
+    height:calc(100% - 50px);
+    max-height:100%;
+    position: absolute;
+    width: 100%;
+}
+#tab-content-container{
+    top:0%;
+    z-index:1;
+    padding:0px;
+
+}
+#search{
+
+    display: table-cell;
+    vertical-align: middle;
+    margin-top:10px;
+    margin-bottom:0px!important
+}
+#search .form-control, #search .form-control:focus{
+    border-radius:20px;
+    width:5px;
+    outline:none!important;
+    border-color:#e1e2e6;
+}
+.navs  .has-feedback .form-control{
+    padding-right:21.5px;
+}
+#indexOne{
+    position:relative;
+    width:100%;
+    min-height:100%;
+    overflow:hidden;
+    height:100%;
+}
+
+.navs .btns,.tab-content-upload .btns{
+    padding:6px 20px!important;
+    margin-right:12px;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color:#ffffff;
+
+}
+.tab-content-upload .btns{
+    box-shadow: 0px 0px 0px black
+}
+.nav-sj{
+    position: relative;
+    display: inline-block;
+
+}
+.nav-all{
+    border-right:1px solid #cbcbcb;
+    margin-right:15px;
+}
+.nav-sj img{
+    display:none;
+}
+.nav-actives button,.nav-actives button:hover,.nav-actives button:active{
+    background-color:#1e9af2!important;
+    color:#ffffff;
+}
+.nav-actives img{
+    display:inline-block;
+}
+.nav-sj img{
+    position: absolute;
+    top:100%;
+    right:46%;
+}
+#todoList{
+    padding:15px;
+    background-color:#ffffff;
+    border-radius:7px;
+    height:100%;
+    position: relative;
+}
+.todoList-slider{
+    background-color:#eef3f6!important;
+    border-radius:0px 0px 7px 7px;
+}
+.mini-grid-column-splitter{
+    display:none;
+}
+.mini-grid-headerCell{
+    border:none;
+    padding:6px 0px;
+    background:none!important;
+    background-image:none!important;
+}
+.mini-grid-table{
+    border-collapse:collapse!important
+}
+.mini-grid-topRightCell{
+    background-color: none
+}
+.mini-panel-border tr,.mini-panel-border div,.mini-panel-border td,.mini-panel-border th{
+    /*background:none!important;*/
+    font-size:14px;
+}
+
+.mini-grid-border{
+    border:none;
+    border-top:1px solid #e1e2e4;
+}
+.mini-grid-topRightCell{
+    border-bottom:1px solid #e1e2e4;
+}
+.pager li>a, .pager li>span{
+    border-radius:6px;
+    color:black;
+    border:1px solid #9999b1;
+    cursor:pointer;
+}
+.pager li a:hover,.pager li .actives{
+    background-color:#1d99f3!important;
+    color:#ffffff;
+
+}
+
+#Index-container .mini-panel{
+    height:calc(100% - 50px);
+
+}
+.chose-page{
+    display:inline-block;
+}
+.mini-grid-rows-view{
+    height:calc(100% - 10px);
+}
+.mini-tree-folder{
+    display:none!important;
+}
+.mini-tree-collapse .mini-tree-node-ecicon,.mini-tree-expand .mini-tree-node-ecicon,.mini-tree-leaf{
+    padding-right:3px;
+    background-position-y:2px;
+}
+
+.mini-tree-node-ecicon {
+    background-image:url(/Project/Scripts/EngineeringSpace/images//kxy.png)!important;
+    background-repeat:no-repeat!important;
+    background-size: 78%!important;
+}
+#treegrid1 .mini-grid-row:hover{
+    cursor:pointer!important;
+    background-color:#eef3f6!important;
+}
+#treegrid1 .mini-grid-row>td{
+    padding:7px 0px!important;
+    font-size:14px;
+}
+/*.mini-grid-row{
+    background-color: rgba(32,45,64,0.9);
+}*/
+.mini-tree-nodes-td .mini-grid-row{
+    background-color:transparent;
+}
+.mini-tree-nodetext{
+    font-size:13px;
+    font-weight: bold;
+}
+.mini-grid-cell{
+    border-right:none;
+    text-align:left!important;
+    padding:7px!important;
+}
+.enter-arrow{
+    height:18px;
+    display:none;
+    cursor:pointer;
+}
+.mini-grid-row:hover .enter-arrow{
+    display:inline-block;
+}
+.page-set{
+    display:inline-block;
+    margin:20px 0px;
+}
+.direct-page,.show-page{
+    border-radius:3px;
+    outline:none;
+    borer:none
+}
+.direct-page{
+    width:40px;
+}
+.show-page{
+    padding:4px 0px
+}
+.mini-tabs-space div{
+    width:30px;
+}
+.mini-tab{
+    border-radius:5px 5px 0px 0px;
+    background-color: #f3f3f3;
+    background-image: none;
+    padding:8px 10px;
+}
+.mini-tabs-header td{
+    border-bottom:1px solid #ffffff;
+}
+.mini-tab-active{
+    background-color:#ffffff
+}
+.mini-tab-active span{
+    font-weight: bold;
+}
+.mini-tab-close{
+    margin-top:4px;
+}
+.main-nav{
+    box-shadow:0px  1px 3px #e4e4e4;
+    margin:0px -5px 0px -5px;
+    position:relative
+}
+.main-nav ul .main-nav-li{
+    float:left;
+}
+.main-nav ul .main-nav-li{
+    padding:14px 22px;
+}
+.main-nav ul .main-nav-li:hover{
+    background-color:#eef3f6;
+    cursor:pointer;
+
+}
+.main-nav-li-content{
+    display:none;
+}
+.main-nav ul .main-nav-li:hover .main-nav-li-content{
+    display:inline-block;
+}
+.main-nav ul .main-nav-li:hover .mini-tabs-item{
+
+    font-weight: bold;
+}
+.mini-tabs-body{
+    overflow: visible;
+}
+.mini-tabs-bodys{
+    width:100%!important;
+    border:none;
+    border-radius:5px;
+}
+.mini-tabs-firstSpace{
+    background-image: url(/Project/Scripts/EngineeringSpace/images//control.png);
+    background-size: 28px;
+    background-repeat: no-repeat;
+    background-position: center 3px;
+}
+.mini-tabs-firstSpace:hover{
+    cursor:pointer;
+}
+.main-nav-li-content{
+    position:absolute;
+    left:5px;
+    top:calc(100% + 1px);
+    padding-top:18px;
+    padding-bottom:18px;
+    background-color:#fdfdfd;
+    box-shadow:1px 1px 3px  #e3e3e3;
+}
+.main-nav-li-content h6{
+    font-weight: bold;
+    margin:0px;
+}
+.main-nav-li-content ul{
+    width:245px;
+
+}
+.main-nav-li-content ul li{
+    width:33.33%;
+    text-align:left;
+    float:left;
+    margin-top:15px;
+}
+.main-nav-li-content div div{
+    border-right:1px solid #d6d6d6;
+    margin-right:-1px;
+    margin-bottom:20px;
+}
+.main-nav-ul-container div{
+    float:left;
+    padding-left:40px
+}
+.nav-sm{
+    padding:10px 10px;
+    background-color: #eef3f6;
+    border-radius:4px;
+}
+.nav-slider{
+    background-color:transparent !important;
+    padding:5px 10px 10px 10px;
+    border-radius: 4px 4px 0px 0px;
+    position: relative;
+    z-index: 3;
+    margin-bottom: 8px;
+}
+.nav-slider .close-slider
+{
+    height:18px;
+}
+.nav-slider .close-slider:hover
+{
+    background-color:#ad2f28;
+    color:#fff;
+    border-radius:50%;
+    padding:2px 5px;
+    cursor:pointer;
+}
+.nav-slider a{
+    color:#259eed;
+}
+.nav-slider h6{
+    margin:0px;
+    color:#c6ddff;
+    font-size: 14px;
+}
+#slider-container .nav-slider .active-pro{
+    color:#ffffff;
+    padding:15px 10px;
+    background-color:#00afc0;
+    margin: 0px 13px;
+    border-radius:50%;
+}
+.nav-slider img{
+    margin-right:10px;
+    margin-top: -4px;
+}
+#Index-container .mini-panel-slider{
+    height:calc(100% + 59px)!important;
+}
+#treegrid1 .mini-grid-row-slider:hover{
+    background-color: #1e9af0!important
+}
+#treegrid1 .mini-grid-row-slider:hover td:first-child{
+    color:#ffffff;
+}
+#slider-container{
+    position:fixed;
+    width:100%;
+    z-index:99;
+    height:100%;
+    border-radius:7px;
+    padding:0px 0px;
+    left:0px;
+    background-color: rgba(55,69,95,0.9);
+}
+#slider-container span{
+    color:#fff;
+}
+
+#slider-container .title{
+    color:#fff;
+    font-size:13px;
+    font-weight: bold;
+}
+
+.mini-tree-collapse .mini-tree-node-ecicon,.mini-tree-collapse .mini-tree-node-ecicon-first,.mini-tree-collapse .mini-tree-node-ecicon{
+    background-image:url("/Project/Scripts/EngineeringSpace/images/pro-add.png")!important;
+    background-repeat: no-repeat;
+    background-size: 78%;
+}
+.mini-tree-expand .mini-tree-node-ecicon,.mini-tree-expand .mini-tree-node-ecicon-first,.mini-tree-expand .mini-tree-node-ecicon{
+    background-image:url("/Project/Scripts/EngineeringSpace/images/pro-mius.png")!important;
+    background-repeat: no-repeat!important;
+    background-size: 78%!important;
+}
+body .mini-tree-showArrows .mini-tree-expand .mini-tree-node-ecicon{
+    background:none;
+
+}
+#tree1{
+    padding:2px 0px;
+    color:#c8d8f9;
+    height:100%;
+    overflow: auto;
+}
+
+ .mini-tree-nowrap  .mini-tree-nodetext{
+    color:#c0d0f2;
+}
+
+#tree1 .mini-tree-node-hover .mini-tree-nodeshow,.mini-tree-selectedNode .mini-tree-nodeshow{
+    background:none!important;
+    border:none!important;
+}
+
+#dataTree .mini-grid-cell{
+    padding:7px!important;
+
+}
+
+.nav-url .nav-chose span{
+    line-height:30px;
+    font-size:13px;
+
+}
+.nav-url .nav-chose .drop-nav span{
+    line-height:35px;
+}
+.nav-url span{
+    color:black
+}
+
+
+.tab-content-title .left-img span{
+    display: table-cell;
+    vertical-align: middle;
+    color:#a5a8ad;
+    font-size:30px;
+
+}
+
+.tab-content-contents-left-publish ul li{
+    padding:11px 20px 11px 27px;
+    position: relative;
+}
+.tab-content-contents-left-publish ul li span{
+    color:#999999
+}
+.tab-content-contents-left-publish ul li a{
+    color:#2b87d4
+}
+.tab-content-contents-left-publish ul li p{
+    margin-bottom: 4px;
+
+}
+
+.forum-top div{
+    flex:1;
+    text-align:center;
+}
+.forum-top div:first-child{
+    border-right:1px solid #dfe2e7;
+    hight:108px;
+}
+
+.tab-content-contents-right ul li{
+    overflow: hidden;
+    border-bottom:1px solid #f8f8f8;
+}
+.tab-content-contents-right ul li:hover{
+    cursor:pointer;
+}
+
+
+.tab-content-contents-right ul li div{
+    padding:5px 13px;
+    background-color: #fff;
+    width:90%;
+    float:left;
+}
+.tab-content-contents-right ul li div span:last-child{
+    float:right;
+}
+.contact-title span{
+    color:#415462;
+    font-size:14px;
+    font-weight: bold;;
+}
+
+
+.tab-content-state .tips{
+    height:4px;
+    border-radius:4px 0px 0px 0px;
+    width:226px;
+}
+.tab-content-state .state-content{
+    padding:15px 20px;
+    background-color:#ffffff;
+    border-radius:0px 0px 7px 7px;
+    width:226px;
+    position:relative;
+    height:140px;
+}
+.tab-content-state .state-content em{
+    color:#969696;
+}
+.tab-content-state .state-content p{
+    margin-bottom:23px;
+}
+
+
+.tab-content-state .state-content .shade p{
+    margin-bottom:0px;
+}
+
+.tab-content-state .state-content .shade p span:first-child{
+    color:#fff
+}
+.tab-content-state .state-content .shade p span:last-child{
+    color:#9cbbda
+}
+.tab-content-state .state-content div span:first-child{
+    line-height:30px;
+}
+.tab-content-state .state-content div span:last-child{
+    padding:5px 8px;
+    float:right;
+    color:#bbd4fc;
+    border-radius:15px;
+}
+
+.tab-content-upload ul{
+    height:348px;
+    overflow: auto;
+}
+
+.tab-content-upload ul li{
+    padding:7px 14px;
+    border-bottom:1px solid #f4f5f9;
+    overflow: hidden;
+}
+.tab-content-upload ul li img{
+    margin-top: 5px;
+    height: 30px;
+    margin-right: 15px;
+}
+.tab-content-upload ul li img,.tab-content-upload ul li div{
+    float:left;
+}
+.tab-content-upload ul li div p{
+    margin-bottom:5px;
+}
+.tab-content-upload ul li div span{
+    color:#cccccc;
+    display: inline-block;
+    margin-right: 9px;
+}
+.control-search span{
+    position: absolute;
+    right:18px;
+    top:10px;
+}
+
+.chose-profess ul li{
+    float:left;
+    margin-right:7px;
+    margin-bottom:6px;
+}
+
+.chose-profess ul li div{
+    padding:0px 6px;
+    background-color: #82bf00;
+    color:#fff;
+    border-radius:50%;
+    border:3px solid transparent;
+}
+
+.forum-bottom div{
+    height:25px;
+}
+.forum-bottom div a{
+    padding:7px 4px;;
+    margin-left:9px;
+}
+
+.forum-bottom textarea{
+    width:100%;
+    padding:9px;
+    border-radius:7px;
+    border:1px solid #e1e2e4;
+    height:165px;
+    resize: none;
+    outline:none;
+}
+
+.forum-bottom button{
+    margin-top:5px;
+    float:right;
+}
+.forum-top div:hover{
+    color:#2d89d6;
+    cursor:pointer;
+}
+.forum-top div h3{
+    margin-top:10px;
+}
+.tab-content-contents-right ul {
+    margin-bottom:0px!important;
+    color:#979797;
+}
+
+.table>tbody>tr>td{
+    vertical-align: middle;
+}
+.slider-container-content{
+    height:calc(100% - 139px);
+    background-color: rgba(55,69,95,0.9);
+}
+.tab-content-state .addstate .state-content span{
+    line-height:110px;
+    color:#999997;
+}
+.mini-tree-nowrap .mini-grid-table{
+    table-layout: fixed!important;
+}
+.mini-tree-nowrap  .mini-tree-nodetext{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 150px;
+}
+.mini-grid .mini-grid-rows{
+    height:100%!important;
+
+}
+.mini-tree .mini-grid-viewport{
+    height:100%!important;
+}
+/*.mini-grid-row>.mini-grid-cell{*/
+    /*background-color: #202d40!important;*/
+/*}*/
+/*.mini-tree-nodes-tr .mini-grid-cell{*/
+    /*background-color: #37455f!important;*/
+/*}*/
+body .mini-tree-showArrows .mini-tree-collapse .mini-tree-node-ecicon{
+    background-image;none!important;
+}
+.mini-tree-nodes-tr .mini-grid-row:hover{
+    /*background-color:#2d89d6;*/
+    color:#fff!important;
+}
+
+.navs .nav-near{
+
+}
+.mini-tree .mini-tree-icon
+{
+    display:none;}
+.mini-tree-nodetext
+{
+    font-size:13px;
+    font-weight:normal!important;   
+}
+.mini-grid-cell:hover
+{
+    background-color: #000; 
+}
+.mini-grid-cell:hover .mini-tree-nodetext
+{
+    color:#fff!important;
+}
+.mini-grid-cell:hover .mini-tree-node-ecicon
+{
+    background-image:url(/Project/Scripts/EngineeringSpace/images/kxy-white.png)!important;    
+}
+.mini-grid-cell:hover  .mini-tree-expand .mini-tree-node-ecicon
+{
+    background-image:url(/Project/Scripts/EngineeringSpace/images/mius-white.png)!important;  
+}
+.mini-grid-cell:hover  .mini-tree-collapse .mini-tree-node-ecicon
+{
+    background-image:url(/Project/Scripts/EngineeringSpace/images/add-white.png)!important;  
+}
+.mini-tree-selectedNode .mini-tree-nodetitle .mini-tree-node-ecicon
+{
+    background-image:url(/Project/Scripts/EngineeringSpace/images/kxy-white.png)!important;      
+}
+.mini-tree-selectedNode .mini-tree-collapse .mini-tree-node-ecicon
+{
+    background-image:url(/Project/Scripts/EngineeringSpace/images/add-white.png)!important;      
+}
+.mini-tree-selectedNode .mini-tree-expand .mini-tree-node-ecicon
+{
+    background-image:url(/Project/Scripts/EngineeringSpace/images/mius-white.png)!important;      
+}
+.mini-tree-selectedNode .mini-tree-nodetext
+{
+    color:#fff!important;    
+} 
+.divsplit
+{
+    border-top:1px solid #777;
+    margin-left:3px;
+    margin-right: 3px;
+}
+

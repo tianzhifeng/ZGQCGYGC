@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>经营信息</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/date.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/prj-info.css">
+    <link rel="stylesheet" type="text/css" href="../css/search.css">
+    <link rel="stylesheet" type="text/css" href="../css/business.css">
+    <link rel="stylesheet" type="text/css" href="../css/business-info.css">
+    <link rel="stylesheet" type="text/css" href="../css/contact.css">
+</head>
+<body>
+    <!--菜单-->
+    <div class="page-menu">
+    </div>
+    <!--loading-->
+    <div class="loading">
+        <div>
+        </div>
+    </div>
+    <!--页面-->
+    <ul class="page-views page-move">
+        <li class="page">
+            <div class="page-view">
+                <div class="head">
+                    <button class="left">
+                        <a href="/mobile/close"><i class="glyphicon glyphicon-remove"></i></a>
+                    </button>
+                    <span class="title">经营信息总览</span>
+                    <button class="right" onclick='showSearchPage("contractSearch")'>
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </div>
+                <div class="content content-color scroll" way-scope="indexScope">
+                    <div class="scroll-content color-cls">
+                        <!--actual receipt-->
+                        <div class="first-row">
+                            <div class="row-title">
+                                当年实际收款</div>
+                            <div class="position-number">
+                                <div class="number">
+                                    <span>¥</span> <span class="big" way-data="Receipt.ActualValue" way-transform="transform-integer-data">
+                                    </span><span class="middle" way-data="Receipt.ActualValue" way-transform="transform-decimal-data">
+                                    </span><span>万元</span>
+                                </div>
+                                <div class="grow-rate receipt-color">
+                                    <span class="receiptRate span-up-icon" way-data="Receipt.GrowthRate"></span>
+                                </div>
+                            </div>
+                            <div class="rate-font">
+                                <div class="left">
+                                    <span>完成度:</span><span way-data="Receipt.FinishRate"></span>
+                                </div>
+                                <div class="right">
+                                    <span>当年目标:</span><span class="font-num" way-data="Receipt.GoalValue"></span><span>万元</span>
+                                </div>
+                            </div>
+                            <!--进度条-->
+                            <div class="index-schedule-bar">
+                                <div class="all">
+                                </div>
+                                <div class="receipt-percent">
+                                </div>
+                            </div>
+                            <div class="index-three-col">
+                                <div class="index-three-col-cls border-cls" onclick='showCurrentPage("CurrentQuarterActualReceipt")'>
+                                    <div class="col-content">
+                                        <span class="big-num" way-data="CurrentQuarterActualReceipt.TotalMoney" way-transform="transform-integer-data">
+                                        </span><span class="mid-num" way-data="CurrentQuarterActualReceipt.TotalMoney" way-transform="transform-decimal-data">
+                                        </span><span class="mid-num">万元</span>
+                                    </div>
+                                    <span class="col-content">当季实收款</span>
+                                </div>
+                                <div class="index-three-col-cls border-cls" onclick='showCurrentPage("CurrentMonthActualReceipt")'>
+                                    <div class="col-content">
+                                        <span class="big-num" way-data="CurrentMonthActualReceipt.TotalMoney" way-transform="transform-integer-data">
+                                        </span><span class="mid-num" way-data="CurrentMonthActualReceipt.TotalMoney" way-transform="transform-decimal-data">
+                                        </span><span class="mid-num">万元</span>
+                                    </div>
+                                    <span class="col-content">当月实收款</span>
+                                </div>
+                                <div class="index-three-col-cls" onclick='showCurrentPage("CurrentWeekActualReceipt")'>
+                                    <div class="col-content">
+                                        <span class="big-num" way-data="CurrentWeekActualReceipt.TotalMoney" way-transform="transform-integer-data">
+                                        </span><span class="mid-num" way-data="CurrentWeekActualReceipt.TotalMoney" way-transform="transform-decimal-data">
+                                        </span><span class="mid-num">万元</span>
+                                    </div>
+                                    <span class="col-content">当周实收款</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="first-space-second">
+                        </div>
+                        <!--value show-->
+                        <div class="second-row">
+                            <div class="second-div bottom-cls" onclick='showCurrentPage("CurrentAccountReceivable")'>
+                                <div class="icon-div">
+                                    <div class="circle-div color-ying">
+                                        <span class="inner-span inner-color-ying">应</span>
+                                    </div>
+                                </div>
+                                <div class="item-div">
+                                    当前应收款</div>
+                                <div class="money-div">
+                                    <span>¥</span> <span class="big" way-data="CurrentAccountReceivable.TotalMoney" way-transform="transform-integer-data">
+                                    </span><span class="middle" way-data="CurrentAccountReceivable.TotalMoney" way-transform="transform-decimal-data">
+                                    </span><span>万元</span>
+                                </div>
+                            </div>
+                            <div class="second-div bottom-cls" onclick='showCurrentPage("CurrentSurplusContract")'>
+                                <div class="icon-div">
+                                    <div class="circle-div color-yu">
+                                        <span class="inner-span inner-color-yu">余</span>
+                                    </div>
+                                </div>
+                                <div class="item-div">
+                                    当前合同余额</div>
+                                <div class="money-div">
+                                    <span>¥</span> <span class="big" way-data="CurrentSurplusContract.TotalMoney" way-transform="transform-integer-data">
+                                    </span><span class="middle" way-data="CurrentSurplusContract.TotalMoney" way-transform="transform-decimal-data">
+                                    </span><span>万元</span>
+                                </div>
+                            </div>
+                            <div class="second-div" onclick='showCurrentPage("CurrentYearPlanReceipt")'>
+                                <div class="icon-div">
+                                    <div class="circle-div color-ji">
+                                        <span class="inner-span inner-color-ji">计</span>
+                                    </div>
+                                </div>
+                                <div class="item-div">
+                                    当年计划收款</div>
+                                <div class="money-div">
+                                    <span>¥</span> <span class="big" way-data="CurrentYearPlanReceipt.TotalMoney" way-transform="transform-integer-data">
+                                    </span><span class="middle" way-data="CurrentYearPlanReceipt.TotalMoney" way-transform="transform-decimal-data">
+                                    </span><span>万元</span>
+                                </div>
+                            </div>
+                            <div class="plan-in-space">
+                            </div>
+                            <div class="plan-in">
+                                <div class="index-two-col border-cls" onclick='showCurrentPage("CurrentQuarterPlanReceipt")'>
+                                    <div class="col-content">
+                                        <span class="big-num" way-data="CurrentQuarterPlanReceipt.TotalMoney" way-transform="transform-integer-data">
+                                        </span><span class="mid-num" way-data="CurrentQuarterPlanReceipt.TotalMoney" way-transform="transform-decimal-data">
+                                        </span><span class="mid-num">万元</span>
+                                    </div>
+                                    <span class="col-content">当季计划收款</span>
+                                </div>
+                                <div class="index-two-col" onclick='showCurrentPage("CurrentMonthPlanReceipt")'>
+                                    <div class="col-content">
+                                        <span class="big-num" way-data="CurrentMonthPlanReceipt.TotalMoney" way-transform="transform-integer-data">
+                                        </span><span class="mid-num" way-data="CurrentMonthPlanReceipt.TotalMoney" way-transform="transform-decimal-data">
+                                        </span><span class="mid-num">万元</span>
+                                    </div>
+                                    <span class="col-content">当月计划收款</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="second-space-third">
+                        </div>
+                        <!--contract info-->
+                        <div class="third-row" onclick='showContract("showContract")'>
+                            <div class="row-title">
+                                当年已签合同额</div>
+                            <div class="position-number">
+                                <div class="number">
+                                    <span>¥</span> <span class="big" way-data="Contract.ActualValue" way-transform="transform-integer-data">
+                                    </span><span class="middle" way-data="Contract.ActualValue" way-transform="transform-decimal-data">
+                                    </span><span>万元</span>
+                                </div>
+                                <div class="grow-rate contract-color">
+                                    <span class="contractRate span-up-icon" way-data="Contract.GrowthRate"></span>
+                                </div>
+                            </div>
+                            <div class="rate-font">
+                                <div class="left">
+                                    <span>完成度:</span><span way-data="Contract.FinishRate"></span>
+                                </div>
+                                <div class="right">
+                                    <span>当年目标:</span><span class="font-num" way-data="Contract.GoalValue"></span><span>万元</span>
+                                </div>
+                            </div>
+                            <!--进度条-->
+                            <div class="index-schedule-bar">
+                                <div class="all">
+                                </div>
+                                <div class="contract-percent">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="first-space-second">
+                        </div>
+                        <div class="forth-row">
+                            <div class="second-div bottom-cls" onclick='showCurrentPage("CurrentUnSignContract")'>
+                                <div class="icon-div">
+                                    <div class="circle-div color-ying">
+                                        <span class="inner-span inner-color-ying">待</span>
+                                    </div>
+                                </div>
+                                <div class="item-div">
+                                    当前待签合同</div>
+                                <div class="money-div">
+                                    <span>¥</span> <span class="big" way-data="CurrentUnSignContract.TotalMoney" way-transform="transform-integer-data">
+                                    </span><span class="middle" way-data="CurrentUnSignContract.TotalMoney" way-transform="transform-decimal-data">
+                                    </span><span>万元</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</body>
+</html>
+<script src="../js/way.min.js"></script>
+<script src="../js/jquery-1.10.2.js"></script>
+<script src="../js/iscroll.js"></script>
+<script src="../js/core.js"></script>
+<script src="../js/echarts-all.js"></script>
+<script src="../js/date.min.js"></script>
+<script src="../js/businessCtrl.js"></script>
+<script src="../js/business-info.js"></script>
+<script src="../js/currentActualReceipt.js"></script>
+<script src="../js/contract.js"></script>
+<script src="../js/contractSearch.js"></script>

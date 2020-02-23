@@ -1,0 +1,67 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false" style="top: 30px; position: relative;">
+<div class="formDiv">
+    <fieldset>
+        <legend>基本属性</legend>
+        <div>
+            <table style="width: 100%;">
+                <tr class="hideRow">
+                    <td width="30%">
+                    </td>
+                    <td width="50%">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        过滤空格：
+                    </td>
+                    <td>
+                        <input name="Filter" class="mini-combobox" value="around" data="ExcelFilter" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        格式：
+                    </td>
+                    <td>
+                        <input name="Format" class="mini-combobox" value="yyyy-MM-dd" data="ExcelDateFormat" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    var yesNo = [{ "value": "true", "text": "是" }, { "value": "false", "text": "否"}];
+    var ExcelFilter = [{ "value": "around", "text": "前后" }, { "value": "middle", "text": "中间" }];
+    var ExcelDateFormat = [
+        { "value": "yyyy", "text": "yyyy" },
+        { "value": "yyyy-MM", "text": "yyyy-MM" },
+        { "value": "yyyy-MM-dd", "text": "yyyy-MM-dd" },
+        { "value": "yyyy-MM-dd HH", "text": "yyyy-MM-dd HH" },
+        { "value": "{0:g}", "text": "yyyy-MM-dd HH:mm" },
+        { "value": "{0:G}", "text": "yyyy-MM-dd HH:mm:ss" },
+        { "value": "yyyy/MM/dd", "text": "yyyy/MM/dd" },
+        { "value": "{0:D}", "text": "yyyy年MM月dd日" }
+    ];
+
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+        }
+    }
+   
+</script>

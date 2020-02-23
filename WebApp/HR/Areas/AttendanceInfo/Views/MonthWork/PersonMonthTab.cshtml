@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "PersonMonthTab";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-fit" id="fitDiv">
+    <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px">
+    </div>
+</div>
+
+<script type="text/javascript">
+    function cusTabSearch(tabData) {
+        var year = ""; var month = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var item = tabData[i];
+            if (item["queryfield"].indexOf("Year") >= 0)
+                year = item["value"];
+            else if (item["queryfield"].indexOf("Month") >= 0)
+                month = item["value"];
+        }
+        var maintab = mini.get("mainTab");
+        var tabs = [
+            { url: addUrlSearch("PersonMonthDetail?Year=" + year + "&Month=" + month), title: "员工月明细表", refreshOnClick: true },
+            { url: addUrlSearch("PersonMonthList?Year=" + year + "&Month=" + month), title: "员工月汇总表", refreshOnClick: true }
+        ];
+        maintab.setTabs(tabs);
+        maintab.activeTab(0);
+    }
+
+</script>

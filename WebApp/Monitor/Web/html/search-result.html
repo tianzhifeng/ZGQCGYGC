@@ -1,0 +1,32 @@
+<div class="head">
+        <button class="left" onclick="$monitor.goback(this)"><i class="glyphicon glyphicon-menu-left"></i></button>
+        <span class="title">搜索结果</span>
+        <button class="right"></button>
+    </div>
+
+<div class="filter search-result bindParentData liCls">
+      <span way-data="type"></span>：<span way-data="searchText"></span>
+</div>
+
+    <!-- 填写内容 -->
+    <div class="content has-filter search-result scroll">
+        <div class="scroll-content">
+            <ul>
+                <li onclick="showContractInfo(this)">
+                    <div class="rememberCls" way-data="ID"></div>
+                    <div class="model">
+                        <div class="title liCls" way-data="Name"><span way-data="contractList.Code"></span></div>
+                        <div class="floatCls">
+                            <span class="span-icon icon-user" way-data="HeadOfSalesName"></span>
+                            <span class="money">到款:<span way-data="SummaryReceiptValue"></span>万元</span>
+                        </div>
+                        <div class="floatCls">
+                            <span class="money">总额:<span class="red" way-data="ContractRMBAmount"></span>万元</span>
+                            <span class="money">剩余:<span way-data="SurplusReceipt"></span>万元</span>
+                        </div>
+                    </div>
+                    <i class="glyphicon glyphicon-menu-right"></i>
+                </li>
+            </ul>
+        </div>
+    </div>

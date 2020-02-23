@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "Log";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" showheader="false" width="220" expanded="true" showspliticon="false"
+         allowresize="false">
+        <div id="calendar" showdaysheader="true" showclearbutton="false" showweeknumber="false" showokbutton="false" class="mini-calendar"
+             showheader="true" maxDate="@DateTime.Now"
+             value="@DateTime.Now" ondrawdate="onDrawDate" ondateclick="onDateClick" width="220px">
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div id="subLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="0">
+            <div title="center" region="" style="border: 0px;">
+                <div id="detailLayout" class="mini-layout" style="width: 100%; height: 100%;">
+                    <div id="dataForm" class="dataForm">
+                        <iframe id="iFrameLog" src="/MvcConfig/UI/Form/PageView?TmplCode=TCMConstructionLog" width="100%" height="100%" style="border:0px;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    body .mini-calendar td {
+        line-height: 16px;
+    }
+
+    .mini-calendar-days td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 2px;
+        padding-left: 3px;
+        padding-right: 3px;
+        font-size: 9pt;
+        font-family: font-family: "微软雅黑",Arial,sans-serif;
+        cursor: pointer;
+    }
+</style>
+<script type="text/javascript">
+    var currentDate = "@Html.Raw(DateTime.Now.ToShortDateString())";
+    var holidays = @Html.Raw(ViewBag.Holiday);
+    var filledDate = "@Html.Raw(ViewBag.FilledDate)";
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        var date = new Date().format("yyyy-MM-dd");
+        setDataFormData(date);
+    })
+
+    function setDataFormData(date){
+        var engineeringInfoID= getQueryString("EngineeringInfoID");
+        var url = "/EPC/Construction/ConstructionLog/GetConstructionLog";
+        addExecuteParam("EngineeringInfoID", engineeringInfoID);
+        addExecuteParam("DateD", date);
+        execute(url, {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var src = "";
+                if(!data||data.length==0||data==null) {
+                    src = "/MvcConfig/UI/Form/PageView?TmplCode=TCMConstructionLog&EngineeringInfoID="+engineeringInfoID+"&DateD="+date;
+                }else{
+                    src="/MvcConfig/UI/Form/PageView?TmplCode=TCMConstructionLog&ID="+data.ID;
+                }
+                $("#iFrameLog").attr('src',src);
+            }, validateForm: false
+        });
+    }
+
+
+    function onDateClick(e) {
+        var date = e.date.format("yyyy-MM-dd");
+        setDataFormData(date);
+    }
+
+
+
+    function validateHoliday(time) {
+        var date = mini.parseDate(time);
+        var isHoliday = false;
+        var dayOfWeek = date.getDay();
+        if (dayOfWeek == 0 || dayOfWeek == 6) {
+            isHoliday = true;
+        }
+
+        for (var m = 0; m < holidays.length; m++) {
+            var holidayDefine = holidays[m];
+            var holiday = mini.formatDate(mini.parseDate(holidayDefine.Date), "yyyy-MM-dd");
+            if (holiday == mini.formatDate(date, "yyyy-MM-dd")) {
+                if (holidayDefine.IsHoliday == "0") {
+                    isHoliday = false; break;
+                }
+                else if (holidayDefine.IsHoliday == "1" || holidayDefine.IsHoliday == "2") {
+                    isHoliday = true; break;
+                }
+            }
+        }
+        return isHoliday;
+    }
+
+    function onDrawDate(e) {
+        if (validateHoliday(e.date)) {
+            e.dateStyle = "color:red";
+        }
+        else {
+            var dates = filledDate.split(',');
+            var flag = false;
+            for (var i = 0; i < dates.length; i++) {
+                var date = mini.formatDate(mini.parseDate(dates[i]), "yyyy-MM-dd");
+                var cDate = mini.formatDate(e.date, "yyyy-MM-dd");
+                if (cDate == date) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                e.dateStyle = "color:orange";
+            }
+            else {
+                e.dateStyle = "color:blue";
+            }
+        }
+        var month = e.date.getMonth() + 1;
+        if (month != new Date(currentDate).getMonth() + 1) {
+            e.dateStyle = "color:Gray";
+        }
+        if (e.date.getTime() > new Date(currentDate)) {
+            e.allowSelect = false;
+            e.dateStyle = "color:Gray";
+        }
+    }
+
+
+</script>
+

@@ -1,0 +1,596 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<body>
+    <div class="mini-splitter" vertical="true" style="width:100%;height:100%;">
+        <div size="30%" showCollapseButton="true">
+
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+                <table>
+                    <tr>
+                        <td style="white-space: nowrap; width: 100%;">
+                            <a class="mini-button" id="btnAdd" onclick="onAddFlow()" iconcls="icon-addnew" plain="true">
+                                合同登记审批
+                            </a>
+                            <a class="mini-button" id="btnAdd" onclick="onChangeFlow()" iconcls="icon-addnew" plain="true">
+                                合同变更审批
+                            </a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <input class="mini-buttonedit searchbox" id="key" emptytext="请输入顾客名称或合同号或项目号" style="width: 240px;" onenter="tabSearch()" onbuttonclick="quickSearch('CustomerName','ContractNo','ProjectCode')" />
+                            <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow')" plain="true">详细查询</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="mini-fit" id="GridArea">
+                <div id="dataGrid" class="mini-datagrid" multiselect="true" url="GetDataList" onselect="onSelectRow" onload="onLoad();" style="width: 100%; height: 100%">
+                    <div property="columns">
+                        <div type="checkcolumn" width="30">
+                        </div>
+                        <div type="indexcolumn" width="30">
+                        </div>
+                        <div field="FlowPhase" name="FlowPhase" width="100" headeralign="center" data="FlowPhase" allowsort="true" align="center">
+                            流程状态
+                        </div>
+                        <div field="StepName" name="StepName" width="100" headeralign="center" data="FlowStep" allowsort="true" align="center">
+                            当前环节
+                        </div>
+                        <div field="ChangeState" name="ChangeState" width="100" data="MK_ChangeState" headeralign="center" allowsort="true" align="center">
+                            合同变更
+                        </div>
+                        <div field="ContractNo" name="ContractNo" width="100" headeralign="center" allowsort="true" align="center">
+                            合同号
+                        </div>
+                        <div field="ContractManageUnit" name="ContractManageUnit" width="150" headeralign="center" allowsort="true" align="left">
+                            合同管理单位
+                        </div>
+                        <div field="ProjectCode" name="ProjectCode" width="100" headeralign="center" allowsort="true" align="center">
+                            项目号
+                        </div>
+                        <div field="ChargeOwnerName" name="ChargeOwnerName" width="100" headeralign="center" allowsort="true" align="center">
+                            收费责任人
+                        </div>
+                        <div field="BelongDeptName" name="BelongDeptName" width="150" headeralign="center" allowsort="true" align="left">
+                            归属部门
+                        </div>
+                        <div field="CustomerName" name="CustomerName" width="150" headeralign="center" allowsort="true" align="left">
+                            顾客名称
+                        </div>
+                        <div field="ProjectInfoName" name="ProjectInfoName" width="150" headeralign="center" allowsort="true" align="left">
+                            项目名称
+                        </div>
+                        <div field="ContractBackDate" name="ContractBackDate" width="100" dateformat="yyyy-MM-dd" headeralign="center" allowsort="true" align="center">
+                            合同返还日期
+                        </div>
+                        <div field="InputPersonName" name="InputPersonName" width="100" headeralign="center" allowsort="true" align="center">
+                            录入人
+                        </div>
+                        <div field="LeaderName" name="LeaderName" width="100" headeralign="center" allowsort="true" align="center">
+                            主管领导
+                        </div>
+                        <div field="PeopleContractName" name="PeopleContractName" width="100" headeralign="center" allowsort="true" align="center">
+                            合同签订人
+                        </div>
+                        <div field="ContractMoney" name="ContractMoney" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            合同金额(万元)
+                        </div>
+                        <div field="AllEstimateInvestmentMoney" name="AllEstimateInvestmentMoney" width=100" headeralign="center" allowsort="true" align="right">
+                            工程总投资
+                        </div>
+                        <div field="DesignManagerName" name="DesignManagerName" width="80" headeralign="center" allowsort="true" align="center">
+                            第一设总
+                        </div>
+                        <div field="ConstructionArea" name="ConstructionArea" width="80" headeralign="center" allowsort="true" align="right">
+                            建筑面积
+                        </div>
+                        <div field="ProductionManagerName" name="ProductionManagerName" width="80" headeralign="center" allowsort="true" align="center">
+                            项目经理
+                        </div>
+                        <div field="ForeignCurrencyType" name="ForeignCurrencyType" width="80" headeralign="center" allowsort="true" align="center">
+                            外币种类
+                        </div>
+                        <div field="ForeignCurrencyContractMoney" name="ForeignCurrencyContractMoney" width="100" headeralign="center" allowsort="true" align="right">
+                            外币合同额
+                        </div>
+                        <div field="HeadName" name="HeadName" width="80" headeralign="center" allowsort="true" align="center">
+                            主管院长
+                        </div>
+                        <div field="CBBXMZGName" name="CBBXMZGName" width="80" headeralign="center" allowsort="true" align="center">
+                            承包部项目主管
+                        </div>
+                        <div field="IsTechnologyContract" name="IsTechnologyContract" width="80" headeralign="center" allowsort="true" align="center">
+                            是否技术合同
+                        </div>
+                        <div field="SignDate" name="SignDate" width="80" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                            合同签订日期
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="queryWindow" class="mini-window" title="详细查询" style="width: 800px; display: none;" showmodal="true"
+                 allowresize="false" allowdrag="true">
+                <div class="queryDiv">
+                    <form id="queryForm" method="post">
+                        <table>
+                            <tr>
+                                <td width="10%" align="center">
+                                    流程状态
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$EQ$FlowPhase" class="mini-combobox" data="FlowPhase" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td width="10%" align="center">
+                                    当前环节
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$StepName" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                                <td width="10%" align="center">
+                                    合同变更
+                                </td>
+                                <td width="23%" align="left">
+                                    <input class="mini-combobox" name="$EQ$ChangeState" data="MK_ChangeState" textname="ProductionChargerUserName" style="width: 85%;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    合同号
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$ContractNo" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td align="center">
+                                    合同管理单位
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$ContractManageUnit" class="mini-textbox" style="width: 85%" vtype="maxLength:500" />
+                                </td>
+                                <td align="center">  项目号</td>
+                                <td align="left">   <input name="$LK$ProjectCode" class="mini-textbox" style="width: 85%" vtype="maxLength:500" /></td>
+                            </tr>
+                            <tr>
+                                <td width="10%" align="center">
+                                    收费责任人
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$ChargeOwnerName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td width="10%" align="center">
+                                    归属部门
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$BelongDeptName" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                                <td width="10%" align="center">
+                                    顾客名称
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$CustomerName" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    项目名称
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$ProjectInfoName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td align="center">
+                                    合同返还日期
+                                </td>
+                                <td align="left">
+                                    <input name="$FR$ContractBackDate" class="mini-datepicker" style='width:45%' />&nbsp;-&nbsp;<input name="$TO$ContractBackDate" class="mini-datepicker" style='width:45%' />
+                                </td>
+                                <td align="center">  录入人</td>
+                                <td align="left"> <input name="$LK$InputPersonName" class="mini-textbox" style="width: 85%" vtype="maxLength:500" /></td>
+                            </tr>
+                            <tr>
+                                <td width="10%" align="center">
+                                    主管院长
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$LeaderName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td width="10%" align="center">
+                                    合同签订人
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$PeopleContractName" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                                <td width="10%" align="center">
+                                    合同金额(万元)
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$ContractMoney" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    工程总投资
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$AllEstimateInvestmentMoney" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td align="center">
+                                    第一设总
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$DesignManagerName" class="mini-textbox" style="width: 85%" vtype="maxLength:500" />
+                                </td>
+                                <td align="center">  建筑面积</td>
+                                <td align="left"> <input name="$LK$ConstructionArea" class="mini-textbox" style="width: 85%" vtype="maxLength:500" /></td>
+                            </tr>
+                            <tr>
+                                <td width="10%" align="center">
+                                    项目经理
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$ProductionManagerName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td width="10%" align="center">
+                                    外币种类
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$EQ$ForeignCurrencyType" class="mini-combobox" data="" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                                <td width="10%" align="center">
+                                    外币合同额
+                                </td>
+                                <td width="23%" align="left">
+                                    <input name="$LK$ForeignCurrencyContractMoney" class="mini-textbox" style="width: 85%" vtype="maxLength:50" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    主管所长
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$HeadName" class="mini-textbox" style="width: 85%" vtype="maxLength:200" />
+                                </td>
+                                <td align="center">
+                                    承包部项目主管
+                                </td>
+                                <td align="left">
+                                    <input name="$LK$CBBXMZGName" class="mini-textbox" style="width: 85%" vtype="maxLength:500" />
+                                </td>
+                                <td align="center">  是否技术合同</td>
+                                <td align="left"> <input name="$EQ$IsTechnologyContract" class="mini-combobox" data='Bool' style="width: 85%" vtype="maxLength:500" /></td>
+                            </tr>
+                            <tr>
+                                <td width="10%" align="center">
+                                    合同签订日期
+                                </td>
+                                <td width="23%" nowrap="nowrap">
+                                    <input name="$FR$SignDate" class="mini-datepicker" style='width:45%' />&nbsp;-&nbsp;<input name="$TO$SignDate" class="mini-datepicker" style='width:45%' />
+                                </td>
+                                <td width="10%" align="center">
+                                </td>
+                                <td width="23%" align="left">
+                                </td>
+                                <td width="10%" align="center">
+                                </td>
+                                <td width="23%" align="left">
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td align="center"></td>
+                                <td></td>
+                                <td align="center"></td>
+                                <td></td>
+                                <td align="center"></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </form>
+                    <div>
+                        <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+                        <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div showCollapseButton="true">
+
+            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+                <table>
+                    <tr>
+                        <td style="white-space: nowrap; width: 100%;">
+                            <a class="mini-button" id="btnAddDetail" iconcls="icon-addnew" onclick="AddDetail()" plain="true">
+                                添加明细
+                            </a>
+                            <a class="mini-button" id="btnAddDetail" iconcls="icon-addnew" onclick="EditDetail()" plain="true">
+                                编辑明细
+                            </a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <a id='list-filter-btn' class='mini-button' onclick="filterSwitch();" iconcls='icon-filter'>筛选</a>
+                            @*<input class="mini-buttonedit searchbox" id="key1" emptytext="请输入客户名称或合同名称或合同编号" style="width: 240px;" />
+                                <a class="mini-button" iconcls="icon-find" plain="true">详细查询</a>*@
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit" id="GridDetail">
+                <div id="dataGridDetail" class="mini-datagrid" multiselect="true" url="GetDataListDetail" showFilterRow="false" style="width: 100%; height: 100%">
+                    <div property="columns">
+                        <div type="checkcolumn" width="30">
+                        </div>
+                        <div type="indexcolumn" width="30">
+                        </div>
+                        <div field="ContractDetailName" name="ContractDetailName" width="150" headeralign="center" allowsort="true" align="left">
+                            合同明细名称
+                            <input id='ContractDetailName' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","S");' />
+                        </div>
+                        <div field="SerialNumber" name="SerialNumber" width="100" headeralign="center" allowsort="true" align="center">
+                            合同明细号
+                            <input id='SerialNumber' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","S");' />
+                        </div>
+                        <div field="CustomerName" name="CustomerName" width="100" headeralign="center" allowsort="true" align="center">
+                            顾客名称
+                            <input id='CustomerName' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","S");' />
+                        </div>
+                        <div field="CustomerContractCode" name="CustomerContractCode" width="100" headeralign="center" allowsort="true" align="center">
+                            顾客合同号
+                            <input id='CustomerContractCode' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","S");' />
+                        </div>
+                        <div field="ContractSignDate" name="ContractSignDate" width="100" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                            合同签订时间
+                            <input id='ContractSignDate' property='filter' class='mini-filteredit' filterData='headerFilters' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"between","D");' />
+                        </div>
+                        <div field="ContractBackDate" name="ContractBackDate" width="100" headeralign="center" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                            合同返还时间
+                            <input id='ContractBackDate' property='filter' class='mini-filteredit' filterData='headerFilters' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"between","D");' />
+                        </div>
+                        <div field="KYFS" name="KYFS" width="100" headeralign="center" allowsort="true" align="right">
+                            可研份数
+                            <input id='KYFS' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="CBFS" name="CBFS" width="100" headeralign="center" allowsort="true" align="right">
+                            初步份数
+                            <input id='CBFS' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="SGTFS" name="SGTFS" width="100" headeralign="center" allowsort="true" align="right">
+                            施工图份数
+                            <input id='SGTFS' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like");' />
+                        </div>
+                        <div field="ContractSignStyle" name="ContractSignStyle" width="100" data="MK_ContractSignStyle" headeralign="center" allowsort="true" align="center">
+                            合同签订形式
+                            <input id='ContractSignStyle' property='filter' class='mini-filteredit' filterData='MK_ContractSignStyle.concat(headerDefault)' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"equal","S",MK_ContractSignStyle);' />
+                        </div>
+                        <div field="RegisterName" name="RegisterName" width="100" headeralign="center" allowsort="true" align="center">
+                            登记人
+                            <input id='RegisterName' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","S");' />
+                        </div>
+                        <div field="ContractRegistrationDate" name="ContractRegistrationDate" width="100" dateformat="yyyy-MM-dd" headeralign="center" allowsort="true" align="center">
+                            登记日期
+                            <input id='ContractRegistrationDate' property='filter' class='mini-filteredit' filterData='headerFilters' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"between","D");' />
+                        </div>
+                        <div field="ContractMoney" name="ContractMoney" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            合同金额
+                            <input id='ContractMoney' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="ContractReceivableMoney" name="ContractReceivableMoney" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="right" align="center">
+                            合同应收金额(元)
+                            <input id='ContractReceivableMoney' property='filter' class='mini-filteredit' filterData='ContractReceivableMoney.concat(headerDefault)' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="ContractDifferReason" name="ContractDifferReason" width="150" headeralign="center" allowsort="true" align="left">
+                            合同差额原因
+                            <input id='ContractDifferReason' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like");' />
+                        </div>
+                        <div field="ForeignCurrencyType" name="ForeignCurrencyType" width="100" headeralign="center" allowsort="true" align="center">
+                            外币种类
+                            <input id='ForeignCurrencyType' property='filter' class='mini-filteredit' filterData='MK_ForeignCurrencyType.concat(headerDefault)' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"equal","S",MK_ForeignCurrencyType);' />
+                        </div>
+                        <div field="ForeignCurrencyContractMoney" name="ForeignCurrencyContractMoney" datatype="currency" currencyunit="￥" width="100" headeralign="center" allowsort="true" align="right">
+                            外币合同额
+                            <input id='ForeignCurrencyContractMoney' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="DesignContractMoney" name="DesignContractMoney" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            设计合同额(元)
+                            <input id='DesignContractMoney' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="CBMoney" name="CBMoney" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            承包合同额(元)
+                            <input id='CBMoney' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="ProjectManageContractMoney" name="ProjectManageContractMoney" width="100" datatype="currency" currencyunit="￥" headeralign="right" allowsort="true" align="center">
+                            项目管理合同额(元)
+                            <input id='ProjectManageContractMoney' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like");' />
+                        </div>
+                        <div field="ReceiptLimitMoney" name="ReceiptLimitMoney" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            收据限额(元)
+                            <input id='ReceiptLimitMoney' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like",N);' />
+                        </div>
+                        <div field="HTBHSJY" name="HTBHSJY" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            合同不含税价(元)
+                            <input id='HTBHSJY' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                        <div field="HTXXSEY" name="HTXXSEY" width="100" datatype="currency" currencyunit="￥" headeralign="center" allowsort="true" align="right">
+                            合同销项税额(元)
+                            <input id='HTXXSEY' property='filter' class='mini-filteredit' filterData='headerDefault' style='width:100%;' showClose='true' onvaluechanged='gridFilter(this,"like","N");' />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        @Html.GetEnum("FlowPhase")
+        @Html.GetEnum("System.Bool")
+        @Html.GetEnum("Engineering.MK_ChangeState")
+        @Html.GetEnum("Engineering.MK_ForeignCurrencyType")
+        @Html.GetEnum("Engineering.MK_ContractSignStyle")
+
+        addGridEnum('dataGrid', 'FlowPhase', 'FlowPhase');
+        addGridEnum('dataGrid', 'ContractSignStyle', 'MK_ContractSignStyle');
+        addGridEnum('dataGridDetail', 'ForeignCurrencyType', 'MK_ForeignCurrencyType');
+        addGridEnum('dataGridDetail', 'ForeignCurrencyType', 'MK_ForeignCurrencyType');
+         addGridLink('dataGrid', 'ProjectInfoName', '/EPC/Contract/ContractInfo/PageView?TmplCode=MK_CO_ContractInfo&FlowCode=MK_CO_ContractInfo&ID={ID}', { "width": "80%", "height": "80%", "title": "合同登记审批", "true": "true" });
+        addGridLink('dataGrid', 'FlowPhase', '/MvcConfig/Workflow/Trace/Diagram?ID={ID}&FuncType=FlowTrace', { "width": "80%", "height": "80%", "title": "流程跟踪", "true": "true" });
+        function onAddFlow() {
+         openWindow("/EPC/Contract/ContractInfo/PageView?TmplCode=MK_CO_ContractInfo&FlowCode=MK_CO_ContractInfo",{ title: "合同登记审批", width: "80%", height: "90%" });
+        }
+
+        function onLoad() {
+            var _divGrid = mini.get("dataGridDetail");
+            var rows = mini.get("dataGrid").getSelecteds();
+            _divGrid.clearFilter();
+            for (var _field in _listFilter) {
+                mini.get(_field.split('$')[2]).setValue("");
+            }
+            _listFilter = {};
+            _divGrid.clearFilter();
+            _divGrid.setShowFilterRow(false);
+            $("#list-filter-btn").removeClass("hover");
+            var ContractInfoID = "";
+            if (rows.length > 0) {
+                ContractInfoID = rows[0].ID;
+            } else {
+                var dts = mini.get("dataGrid").getData();
+                if (dts.length > 0) {
+                    ContractInfoID = dts[0].ID;
+                }
+            }
+            mini.get("dataGridDetail").load({ T_M_ContractInfo: ContractInfoID });
+        }
+
+        function onSelectRow() {
+            onLoad();
+        }
+
+        function onChangeFlow() {
+            var rows = mini.get("dataGrid").getSelecteds();
+            if (rows.length != 1) {
+              return  msgUI("请选择一条需要变更的合同信息！");
+            }
+            var ContractInfoID = rows[0].ID;
+               openWindow("/EPC/Contract/ContractChange/PageView?TmplCode=MK_CO_ContractInfoChange&FlowCode=MK_CO_ContractInfoChange&ContractInfoID="+ContractInfoID,{ title: "合同变更审批", width: "80%", height: "90%" });
+        }
+        function AddDetail() {
+              var rows = mini.get("dataGrid").getSelecteds();
+            if (rows.length != 1) {
+              return  msgUI("请先选择一条主合同信息！");
+            }
+             var ContractInfoID = rows[0].ID;
+               openWindow("/MvcConfig/UI/Form/PageView?TmplCode=MK_CO_ContractInfoDetail&ContractInfoID="+ContractInfoID,{ title: "合同变更审批", width: "80%", height: "90%" });
+        }
+        function EditDetail() {
+              var rows = mini.get("dataGridDetail").getSelecteds();
+            if (rows.length != 1) {
+              return  msgUI("请选择要编辑的信息！");
+            }
+             var DetailID = rows[0].ID;
+               openWindow("/MvcConfig/UI/Form/PageView?TmplCode=MK_CO_ContractInfoDetail&ID="+DetailID,{ title: "合同变更审批", width: "80%", height: "90%" });
+
+        }
+
+          //列表表头筛选
+    function filterSwitch() {
+        var _divGrid = mini.get('dataGridDetail');
+        if (_divGrid.showFilterRow) {
+            onLoad();
+        }
+        else {
+            _divGrid.setShowFilterRow(true);
+            $("#list-filter-btn").addClass("hover");
+        }
+    }
+
+    var _listFilter = {};
+        function gridFilter(e, querymode, dataType, enumkey) {
+        var _mode = "";
+            var _value = e.value;
+        //校验输入格式
+        if (dataType == "N" && _value!="" && !isNumber(_value)) {
+            alert("请输入数字！");
+            return;
+        }
+        if (dataType == "D" && _value!="" && !isDate(_value)) {
+            alert("请输入正确的日期格式，如2018-1-31");
+            return;
+        }
+
+        var filter = e.getFilterValue();
+        if (filter != "") {
+            if (filter != ">=" && filter != "<=" && filter != "==" && filter != "isempty") {
+                //处理选择枚举过滤
+                _mode = "$EQ$";
+                _value = filter;
+                mini.get(e.id).setValue(getEnumTextFromValue(_value, enumkey));
+                e.setFilterValue("");
+            }
+            else if (filter == "isempty") {
+                //空
+                _mode = "$ISEMPTY$";
+                _value = "<空>";
+                mini.get(e.id).setValue(_value);
+                e.setFilterValue("");
+            }
+            else {
+                if (filter == ">=")
+                    _mode = "$FR$";
+                else if (filter == "<=")
+                    _mode = "$TO$";
+                else
+                    _mode = "$EQ$";
+            }
+        }
+        else {
+            if (querymode == "like")
+                _mode = "$LK$";
+            else
+                _mode = "$EQ$";
+
+            if (typeof (enumkey) != "undefined" && enumkey != null)
+                _value = getEnumValueFromText(e.value, enumkey);
+        }
+
+        delete _listFilter["$LK$" + e.id];
+        delete _listFilter["$FR$" + e.id];
+        delete _listFilter["$TO$" + e.id];
+        delete _listFilter["$EQ$" + e.id];
+        delete _listFilter["$ISEMPTY$" + e.id];
+
+        if (_value && _value != "") {
+            //特殊赋值：日期等于
+            if (dataType == "D" && _mode == "$EQ$") {
+                _listFilter["$FR$" + e.id] = _value;
+                _listFilter["$TO$" + e.id] = _value + " 23:59:59";
+            }
+            else
+                _listFilter[_mode + e.id] = _value;
+        }
+        var grid = mini.get("dataGridDetail");
+         var rows = mini.get("dataGrid").getSelecteds();
+            var ContractInfoID = "";
+            if (rows.length > 0) {
+                ContractInfoID = rows[0].ID;
+            } else {
+                var dts = mini.get("dataGrid").getData();
+                if (dts.length > 0) {
+                    ContractInfoID = dts[0].ID;
+                }
+        }
+        grid.load({ queryFormData: mini.encode(_listFilter),T_M_ContractInfo: ContractInfoID });
+    }
+      function getEnumTextFromValue(evalue, enumkey) {
+        if (typeof (enumkey) != "undefined" && enumkey != null) {
+            for (var p = 0; p < enumkey.length; p++) {
+                if (enumkey[p].value == evalue) {
+                    return enumkey[p].text;
+                }
+            }
+        }
+        return evalue;
+    }
+            var headerDefault = [{ text: '查询空', value: 'isempty' }];
+    var headerFilters = [{ text: '大于/等于', value: '>=' }, { text: '小于/等于', value: '<=' }, { text: '等于', value: '==' }, { text: '查询空', value: 'isempty' }];
+
+    </script>
+
+</body>

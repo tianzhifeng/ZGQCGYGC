@@ -1,0 +1,88 @@
+﻿<style>
+    .display {
+        display: none;
+    }
+</style>
+<script id="StandardPie" type="text/x-jquery-tmpl">
+    <div class="BIinfo-block ${Style}">
+        <div id="${ID}BIinfo-block-content" class="BIinfo-block-content" style="position: relative;">
+            <div class="title" style="position: relative;">
+                <i>|</i>${Title} {{if HasFilter=="true"}} <span id="${ID}FillterIcon" class="fa fa-filter" onclick="toggleFilterClass('${ID}');" style="cursor:pointer;position:absolute;right:7px;line-height: 33px;font-size:19px;color:black"></span>{{/if}}
+            </div>
+            {{if  HasFilter=="true"}}
+            <div id="${ID}Fillter" class="mini-toolbar display" style="padding: 0px; border-top: 0;padding-left:20px;padding-top:20px;position:absolute;height:auto;min-height:100px;right: 0px;z-index: 99;width: 100%;border: 1px solid #e0e0e0;">
+                <table style="width: 100%;height:100%" cellpadding="2" cellspacing="2">
+                    <tr>
+                        {{if HasFilter=="true"}}
+                        <td id="${ID}pcfilter" align="left" style="display: flex;position:relative">
+                            <div name="queryForm" style="display:block;">
+                                {{each FilterInfo}}
+                                <div style="width:auto;display:-webkit-inline-box;margin-bottom:5px;">
+                                    <div style="width:80px;"> ${$value.FieldName}</div>
+                                    {{if EnumData}}
+                                    <select name="${$value.Field}" class="select" style="margin-right:20px;margin-left:5px;width:180px;">
+                                        <option value="">全部</option>
+                                        {{each EnumData}}
+                                        {{if IsDefault=="true"}}
+                                        <option value="${$value.value}" selected>${$value.text}</option>
+                                        {{else}}
+                                        <option value="${$value.value}">${$value.text}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                    {{else}}
+                                    <input id="${$value.Field}" class="text" name="${$value.Field}" style="width:180px;display:table-cell;height:30px;margin-right:20px;margin-left:5px" />
+                                    {{/if}}
+                                </div>
+
+                                {{/each}}
+                            </div>
+                            <div id="${ID}Fillterbtns" style="position:absolute;right:60px;">
+                                <button id="${ID}FillterSearch" style="border-radius:5px;width:50px;height:30px;cursor:pointer;top:0px;background-color:#3a638f;color:white; display:table-cell;position:absolute" class="btn" onclick="reloadChart('${chartId}', '', true)"> 筛选</button>
+                                <button id="${ID}FillterClear" style="border-radius:5px;width:50px;height:30px;cursor:pointer;top:35px;background-color:white;color:#3a638f; display:table-cell;position:absolute" class="btn" onclick="clearfilter('${chartId}', '', true)"> 清除</button>
+                            </div>
+                        </td>
+                        <td id="${ID}mobilefilter" style="display:none;z-index:999;top:0px;height:100%;padding-bottom:120px;overflow:auto">
+                            <div id="${ID}filterbackload" style="z-index:999;position:fixed;top:0px;width:30%;opacity:0.5;background-color:black;height:100%" onclick="closefilter('${ID}')"></div>
+
+                            <div id="${ID}queryFormm" name="queryForm" style="background-color:white;z-index:999;height:100%;overflow:auto;position:fixed;width:70%;right:0;top:0px;border-bottom:1px solid;padding-bottom: 120px;">
+                                <div style="margin:10px ">筛选</div>
+                                {{each FilterInfo}}
+
+                                <div style="margin-bottom:5px;padding-left:10px;">
+                                    <div style="width:80px;padding-left:10px;margin-top:10px"> ${$value.FieldName}</div>
+                                    {{if EnumData}}
+                                    <select name="${$value.Field}" class="select" style="margin-left:10%;width:80%;">
+                                        <option value="">全部</option>
+                                        {{each EnumData}}
+                                        {{if IsDefault=="true"}}
+                                        <option value="${$value.value}" selected>${$value.text}</option>
+                                        {{else}}
+                                        <option value="${$value.value}">${$value.text}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                    {{else}}
+                                    <input id="${$value.Field}" name="${$value.Field}" class="text" style="border-radius: 5px;border: 1px solid #ccc;margin-left:10%;width:80%;height:30px;" />
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                            </div>
+                            <div id="${ID}Fillterbtnsm" style="background: white;height: 120px;position: fixed; bottom: 0px;right: 0px;z-index: 9999;width: 70%;">
+                                <button id="${ID}FillterSearchm" style="z-index:9999;border-radius:5px;width:30%;height:40px;border:0px;cursor:pointer;bottom:60px;background-color:#3A638F;color:white; display:table-cell;position:fixed;right:3%" class="btn" onclick="reloadChart('${chartId}', '', true)"> 筛选</button>
+                                <button id="${ID}FillterClearm" style="z-index:9999;border-radius:5px;width:30%;height:40px;cursor:pointer;bottom:60px;border:0px;background-color:#CCCCCC;color:white;position:fixed;right:37%" class="btn" onclick="clearfilter('${chartId}', '', true)"> 清除</button>
+                                <button id="${ID}FillterCannelm" style="z-index:9999;border-radius:5px;width:64%;height:40px;cursor:pointer;bottom:10px;border:0px;background-color:#BB2E2E;color:white; display:table-cell;position:fixed;right:3%" class="btn" onclick="closefilter('${ID}')"> 取消</button>
+
+                            </div>
+                        </td>
+                        {{/if}}
+                    </tr>
+                </table>
+            </div>
+            {{/if}}
+            <div id="${chartId}" style="height:${chartHeight};">
+            </div>
+        </div>
+    </div>
+</script>
+

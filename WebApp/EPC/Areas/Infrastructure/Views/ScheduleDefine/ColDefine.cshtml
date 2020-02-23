@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "ColDefine";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-save" onclick="save();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+         allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="fieldName" width="120" headeralign="center" allowsort="true">
+                字段名称
+            </div>
+            <div field="displayField" width="120" headeralign="center" allowsort="true">
+                显示字段<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="colName" width="120" headeralign="center" allowsort="true">
+                列名<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="checkboxcolumn" truevalue="true" falsevalue="false" field="treeCol" width="60" headeralign="center" allowsort="true" align="center">
+                树形列
+            </div>
+            <div type="comboboxcolumn" field="inputType" width="120" headeralign="center" allowsort="true" align="center">
+                编辑控件
+                <input property="editor" class="mini-combobox" shownullitem="true" style="width: 100%;" data="ItemType" onvaluechanged="itemTypeChanged" />
+            </div>
+            <div field="width" headeralign="center" width="60" allowsort="true" align="right">
+                列宽(px)<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="visible" type="checkboxcolumn" truevalue="true" falsevalue="false" headeralign="center" width="50" allowsort="true" align="center">
+                显示
+            </div>
+            <div field="editable" type="checkboxcolumn" headeralign="center" truevalue="true" falsevalue="false" width="50" allowsort="true" align="center">
+                编辑
+            </div>
+            <div type="comboboxcolumn" field="align" width="50" autoshowpopup="true" align="center">
+                对齐
+                <input property="editor" class="mini-combobox" style="width: 100%;" shownullitem="true" data="align"  />
+            </div>
+            <div field="settings" width="80">
+                详细设置
+            </div>
+            <div field="sortIndex" width="80">
+                排序<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+    var ID = getQueryString("ID");
+
+    $("#dataGrid").attr("url","GetColDefList?ID="+ID);
+    var align = [{ value: "left", text: "靠左" }, { value: "center", text: "居中" }, { value: "right", text: "靠右" }];
+    var ItemType = [
+    { value: 'textbox', text: '单行文本框' },
+    { value: 'textarea', text: '多行文本框' },
+    { value: 'ButtonEdit', text: '弹出选择框' },
+    { value: 'SingleFile', text: '单附件上传' },
+    { value: 'datepicker', text: '日期选择框' },
+    { value: 'combobox', text: '组合下拉框' }
+    ];
+
+    addGridButton("dataGrid", "settings", {
+        linkText: '详细', onButtonClick: function (row) {
+            var type = row["inputType"];
+            if (!type) { msgUI('请先选择控件类型!'); return; }
+            var url = "/Base/UI/Form/Settings" + type;
+            var width = 350;
+            openWindow(url, {
+                width: width, title: "详细设置", data: row["Settings"], onDestroy: function (data) {
+                    if (data != "close")
+                        row["Settings"] = mini.encode(data);
+                }
+            });
+        }
+    });
+
+    function itemTypeChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        row["Settings"] = "";
+        grid.updateRow(row);
+    }
+
+    function save() {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.commitEdit(); dataGrid.accept();
+        var data = dataGrid.getData();
+        addExecuteParam("ID", ID);
+        addExecuteParam("ListData", mini.encode(data));
+        execute("SaveColDefine", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+
+    }
+
+</script>
+
+
+

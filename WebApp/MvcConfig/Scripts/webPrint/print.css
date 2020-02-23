@@ -1,0 +1,294 @@
+﻿
+ 
+    .printbody {
+        width: 100%;
+    }
+    ul li {
+    list-style:none;
+    }
+.ctldisabled {
+    background-color:#fff !important;
+}
+.printbody .printheader {
+    border-bottom: 1px solid #ccc;
+    display: block;
+    margin-top: :-10px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    width: 98%;
+    position: relative;
+}
+
+        .printbody .printtitle {
+            font-size: 25px;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
+        .printbody .printheader span {
+            position: absolute;
+            font-size: 16px;
+            right: 0px;
+            bottom: 10px;
+        }
+    .c_checkboxlist label input{
+        display:inline;position:absolute;left:0px;top:0px;
+    }
+    .c_checkboxlist label {
+      position:relative;padding-left:40px;margin-left:0px;
+    }
+
+    .ctyfrm {
+        font-size: 12px;
+        margin-bottom: 50px;
+        padding-bottom: 20px;
+        /*   margin-left: 20px;
+    margin-right: 20px; */
+        margin-top: 20px;
+        width: 100%;
+    }
+
+        .ctyfrm .head .hdtitle {
+            color: #198fd9;
+            font-size: 16px;
+            line-height: 20px;
+        }
+
+            .ctyfrm .head .hdtitle img {
+                margin-right: 4px;
+                margin-top: -6px;
+            }
+
+    .c_control {
+        min-width: 60px;
+        padding: 1px;
+        min-height: 30px;
+        width: 100%;
+        padding: 3px 6px;
+        font-size: 12px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: none !important;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s
+    }
+
+    .frmblock {
+        position: relative;
+    }
+
+    .ctyformtable {
+        width: 100%;
+
+    }
+
+        .ctyformtable tr td {
+            padding: 3px;
+        }
+
+            .ctyformtable tr td .c_control, .ctyformtable tr td input, .ctyformtable tr td textarea {
+                padding: 3px;
+                width: 100%;
+            }
+
+        .ctyformtable > tbody > tr > td {
+            padding: 3px 10px 3px 10px;
+            width: 15%;
+            font-size: 12px;
+            position:relative;
+        }
+
+
+    .frmblock .frmheader {
+        line-height: 25px;
+        padding: 10px 0px 5px 0px;
+        font-size: 16px;
+        margin-bottom: 5px;
+        position: relative;
+    }
+
+        .frmblock .frmheader img {
+            position: absolute;
+            top: 15px;
+        }
+
+        .frmblock .frmheader .rbtn {
+            right: 40px;
+            top: 3px;
+            position: absolute;
+        }
+
+        .frmblock .frmheader span {
+            display: block;
+            width: 100%;
+            border-bottom: 1px solid #198fd9;
+            font-size: 14px;
+            color: #1296db;
+            margin-left: 40px;
+        }
+
+        .frmblock .frmheader .btn {
+            padding: 3px 10px;
+        }
+
+    .frmblock1 {
+        width: 100%;
+    }
+
+    .ctyfrm .ctyformtitle {
+        padding-top: 15px;
+        /*padding-bottom: 10px;*/
+        font-size: 18px;
+        text-align: center;
+        font-weight: bold
+    }
+
+    .ctyheadertitle {
+        padding: 5px;
+        font-weight: bold;
+    }
+
+
+    .ctyfrm .head {
+        line-height: 35px;
+        padding: 5px 15px;
+        position: relative;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+        .ctyfrm .head .optbar {
+            right: 40px;
+            top: 3px;
+            position: absolute;
+        }
+
+    .headcet {
+        line-height: 30px;
+        padding: 5px;
+        text-align: center;
+        background-color: #fff;
+        position: relative;
+    }
+
+        .headcet .hdtitle {
+            color: #333;
+            font-size: 20px;
+        }
+
+    .ctyfrm .blocktitle {
+        padding: 5px;
+        border-bottom: 1px dotted #ccc;
+    }
+
+    .ctyfrm .blocktable {
+        width: 575px;
+        margin: auto;
+        font-size: 14px;
+        margin-top: 15px;
+    }
+
+        .ctyfrm .blocktable td {
+            padding: 3px 0px;
+        }
+
+            .ctyfrm .blocktable td:nth-child(2n+1) {
+                min-width: 80px;
+                text-align: right;
+            }
+
+            .ctyfrm .blocktable td:nth-child(2n) {
+                min-width: 80px;
+            }
+
+    .editpjform {
+        background-color: #fff;
+        padding: 10px;
+    }
+
+    select {
+        appearance: none;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+    }
+
+
+        select::-ms-expand {
+            display: none;
+        }
+
+    .r_title {
+    position:absolute;right:12px; top:10px;
+    }
+
+    .c_renderpicker .c_rp_ul .c_rp_choice { margin-left:-50px ;
+    }
+
+    /*打印页面*/
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border-spacing: 0;
+        color: #000
+    }
+
+    .qkd-box {
+        margin: 0 auto;
+        font-size: 12px;
+    }
+
+    .qkd-hd {
+        text-align: center;
+    }
+
+        .qkd-hd h2 {
+            font-weight: normal;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .qkd-hd h3 {
+            font-size: 24px;
+        }
+
+    .qkd-infod li {
+        padding: 4px 0
+    }
+
+    .qkd-table {
+        border-bottom: 1px solid #000;
+        text-align: center;
+        font-size: 12px;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+
+        .qkd-table thead td {
+            font-weight: normal;
+            border-bottom: 1px solid #000;
+            padding: 5px 0
+        }
+
+        .qkd-table td {
+            font-weight: normal;
+            padding: 10px 0;
+        }
+
+    .qkd-sign tr td {
+        width: 16.66%
+    }
+
+        .qkd-sign tr td p {
+            border-top: 1px solid #333;
+            margin: 0 10%;
+            padding-top: 10px;
+            text-align: center;
+        }
+
+ 

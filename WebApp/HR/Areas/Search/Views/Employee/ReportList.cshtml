@@ -1,0 +1,234 @@
+﻿<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class='mini-button' onclick="exportExcel();" iconcls='icon-excel'>导出</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入姓名" onenter="quickSearch('Name');" onbuttonclick="quickSearch('Name');" />
+                <a class='mini-button' onclick="showSeacher();" iconcls='icon-setting'>报表查询</a>
+                <a class='mini-button' onclick="showSetting();" iconcls='icon-setting'>报表设置</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" multiselect="false" allowunselect="false" ondrawcell="ondrawcell">
+        <div property="columns">
+        </div>
+    </div>
+</div>
+<iframe id='excelIFrame' name='excelIFrame' style='display: none;'></iframe>
+<form id='excelForm' style='display: none;' action='ExportExcel' method='post' target='excelIFrame'>
+<input type='hidden' id='jsonColumns' name='jsonColumns' />
+<input type='hidden' id='reportSettings' name='reportSettings' />
+<input type='hidden' id='queryData' name='queryData' />
+</form>
+<script type="text/javascript">
+    $(function () {
+        reportSettings = get("reportSettings");
+        queryData = get("queryData");
+        var grid = mini.get("dataGrid");
+        grid.setUrl("GetReportList");
+        if (!reportSettings) {
+            reportSettings = defaultReportSettings;
+        }
+        setGridCol(reportSettings);
+        quickSearch();
+    });
+
+    function store(name, val) {
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem(pageKey + name, mini.encode(val));
+        } else {
+            //alert('Please use a modern browser to properly view this template!');
+        }
+    }
+    function get(name) {
+        if (typeof (Storage) !== "undefined") {
+            return mini.decode(localStorage.getItem(pageKey + name));
+        } else {
+            //alert('Please use a modern browser to properly view this template!');
+            return null;
+        }
+    }
+
+    var reportSettings;
+    var queryData;
+    function quickSearch() {
+        var quickSearchData = {};
+        var keyCo = mini.get("key");
+        if (keyCo.getValue()) {
+            var keys = "姓名".split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var grid = mini.get("dataGrid");
+
+        var settings = {};
+        settings.quickQueryFormData = mini.encode(quickSearchData);
+        if (reportSettings)
+            settings.reportSettings = mini.encode(reportSettings);
+        if (queryData) {
+            settings.queryData = mini.encode(queryData);
+        }
+        store("reportSettings", reportSettings);
+        store("queryData", queryData);
+        grid.load(settings);
+    }
+
+    function setGridCol(data) {
+        var grid = mini.get("dataGrid");
+
+        var columns = [];
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var col = {};
+            col.header = item.sumFieldTitle;
+            col.headerAlign = "center";
+            if (item.groupFieldCode && item.groupFieldValue) {
+                col.columns = [];
+                var arr = item.groupFieldText.split(',');
+
+                for (var j = 0; j < arr.length; j++) {
+                    var subCol = {};
+                    subCol.headerAlign = "center";
+                    subCol.header = arr[j];
+                    subCol.field = arr[j];
+                    if(item.enumKey)
+                        gridEnums["dataGrid." + subCol.field] = item.groupFieldEnumKey;
+                        //addGridEnum("dataGrid", subCol.field ,item.groupFieldEnumKey);
+                    col.columns.push(subCol);
+                }
+            }
+            else {
+                col.field = item.sumFieldName;
+                if(item.enumKey)
+                    gridEnums["dataGrid." + col.field] = item.enumKey;
+                    //addGridEnum("dataGrid",col.field ,item.enumKey);
+            }
+            columns.push(col);
+        }
+        grid.set({ columns: columns });
+
+    }
+
+    function showSetting() {
+        mini.open({
+            url: changeToFullUrl("ReportSettings"),
+            title: "报表设置",
+            showModal: true,
+            width: 1000,
+            height: 400,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+                iframe.contentWindow.setData(reportSettings);
+            },
+            ondestroy: function (data) {
+                if (data == "close") return;
+                reportSettings = data;
+                setGridCol(reportSettings);
+                quickSearch();
+            }
+        });
+    }
+
+    function showSeacher() {
+        mini.open({
+            url: changeToFullUrl("ReportSeacher"),
+            title: "报表查询",
+            showModal: true,
+            width: 800,
+            height: 400,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+                iframe.contentWindow.setData(queryData);
+            },
+            ondestroy: function (data) {
+                if (data == "close") return;
+                queryData = data;
+                quickSearch();
+            }
+        });
+    }
+
+    function getEnumText(en, enumValues) {
+        if (enumValues == null || enumValues == "")
+            return "";
+
+
+        var vals = [];
+        if (enumValues.split)
+            vals = enumValues.split(',');
+        else
+            vals[0] = enumValues.toString();
+
+        for (var i = 0; i < vals.length; i++) {
+            if (vals[i] == "")
+                continue;
+            for (var j = 0; j < en.length; j++) {
+                if (en[j]["value"] == vals[i]) {
+                    vals[i] = en[j]["text"];
+                    break;
+                }
+            }
+        }
+
+        return vals.join(',');
+    }
+</script>
+<script type="text/javascript">
+    function exportExcel() {
+        var grid = mini.get("dataGrid");
+        var columns = grid.getBottomColumns();
+
+        columns = columns.clone();
+        for (var i = columns.length - 1; i >= 0; i--) {
+            var column = columns[i];
+            if (!column.field || !column.header || column.header.trim() == '' || column.visible == false) {
+                columns.removeAt(i);
+            }
+            else {
+
+                var c = { ChineseName: column.header.trim(), FieldName: column.field, TableName: pageKey };
+                
+                if(gridEnums["dataGrid."+column.field])
+                {
+                    c.EnumKey = column.field;
+                    c.EnumDataSource = eval(gridEnums["dataGrid."+column.field]);
+                }
+                columns[i] = c;
+
+            }
+        }
+
+        var reportSettings = get("reportSettings");
+        var queryData = get("queryData");
+        if (reportSettings == null)
+            reportSettings = [];
+        if (queryData == null)
+            queryData = [];
+        
+        $("#jsonColumns").val(mini.encode(columns));
+        $("#reportSettings").val(mini.encode(reportSettings));
+        $("#queryData").val(mini.encode(queryData));
+        $("#excelForm").submit();
+    }
+    function ondrawcell(e) {
+        if(gridEnums[e.sender.id+"."+e.field])
+            e.cellHtml = getEnumText(eval(gridEnums[e.sender.id+"."+e.field]), e.value);
+    }
+    var sex = [{ value: "Male", text: "男" }, { value: "FeMale", text: "女"}];
+    var yesNo = [{ value: "1", text: "是" }, { value: "0", text: "否"}];
+
+    var pageKey = "T_Employee";
+
+    var defaultReportSettings = [{ "pid": "0", "table": "T_Employee", "sumFieldCode": "Name", "sumFieldName": "姓名", "sumFieldTitle": "姓名", "sumType": ""}];
+    
+</script>
+<script type="text/javascript">
+    @Html.Raw(ViewBag.EnumDataStr);
+    var treeData = @Html.Raw(ViewBag.TreeData);
+</script>

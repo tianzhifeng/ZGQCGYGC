@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "质量统计";
+}
+
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts.js" type="text/javascript"></script>
+<script src="/CommonWebResource/CoreLib/HighCharts/highcharts-3d.js" type="text/javascript"></script>
+<div class="mini-splitter" vertical="true" style="width: 100%; height: 100%;" allowresize="false">
+    <div size="50%" showcollapsebutton="false">
+        <div class="mini-toolbar" style="padding: 0px; color: white">
+            <table style="width: 100%; background-color: white">
+                <tr>
+                    <td style="width: 100px"><span style="font-size: 20px">项目质量分析</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="false">
+            <div size="40%" showcollapsebutton="false" style="padding: 5px;">
+                <div id="xyQualityContainer" class="mini-fit">
+                </div>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-toolbar" style="padding: 0px; color: white">
+                    <table style="width: 100%; height: 40px; background-color: white">
+                        <tr>
+                            <td style="width: 100px">
+                                <input name="qualityLastYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                   value="@ViewBag.CurrentYear" data="@ViewBag.Years" onvaluechanged="reloadQualityData()" />&nbsp; &nbsp;
+                            <input name="qualityMonth" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                value="@ViewBag.CurrentMonth" data="viewMonth" onvaluechanged="reloadQualityData()" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="girdQualityContainer" class="mini-fit">
+                    <div id="dataGridQuality" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                        multiselect="false" showpager="false" onload="onQualityGridLoad">
+                        <div property="columns">
+                            <div field="TypeName" width="120" headeralign="center">
+                                类型
+                            </div>
+                            <div headeralign="center">
+                                总问题数
+                            <div property="columns">
+                                <div field="QuestionCount" width="100" headeralign="center" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalQuestionCount" width="100" headeralign="center" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div headeralign="center">
+                                已关闭数
+                            <div property="columns">
+                                <div field="ClosedCount" headeralign="center" width="68" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalClosedCount" headeralign="center" width="68" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div field="For" headeralign="center" align="center">
+                                待关闭数
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <div class="mini-toolbar" style="padding: 0px; color: white">
+            <table style="width: 100%; background-color: white">
+                <tr>
+                    <td style="width: 100px"><span style="font-size: 20px">工程验收分析</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-splitter" style="width: 100%; height: 100%;" allowresize="false">
+            <div size="40%" showcollapsebutton="false" style="padding: 5px;">
+                <div id="xyCheckContainer" class="mini-fit">
+                </div>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-toolbar" style="padding: 0px; color: white">
+                    <table style="width: 100%; height: 40px; background-color: white">
+                        <tr>
+                            <td style="width: 100px">
+                                <input name="checkLastYear" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                   value="@ViewBag.CurrentYear" data="@ViewBag.Years" onvaluechanged="reloadCheckData()" />&nbsp; &nbsp;
+                            <input name="checkMonth" class="mini-combobox" style="width: 90px;" textfield="text" valuefield="value"
+                                value="@ViewBag.CurrentMonth" data="viewMonth" onvaluechanged="reloadCheckData()" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="girdCheckContainer" class="mini-fit">
+                    <div id="dataGridCheck" url="GetCheckList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+                        multiselect="false" showpager="false" onload="onCheckGridLoad">
+                        <div property="columns">
+                            <div field="TypeName" width="118" headeralign="center">
+                                类型
+                            </div>
+                            <div headeralign="center">
+                                验收数
+                            <div property="columns">
+                                <div field="MonthCheckCount" width="120" headeralign="center" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalCheckCount" width="120" headeralign="center" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div headeralign="center">
+                                合格数
+                            <div property="columns">
+                                <div field="MonthPassCount" headeralign="center" width="95" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalPassCount" headeralign="center" width="95" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div headeralign="center">
+                                不合格数
+                            <div property="columns">
+                                <div field="MonthNoPassCount" headeralign="center" width="95" align="center">
+                                    本月
+                                </div>
+                                <div field="TotalNoPassCount" headeralign="center" width="95" align="center">
+                                    累计
+                                </div>
+                            </div>
+                            </div>
+                            <div field="OneTimePassRate" headeralign="center" align="center">
+                                一次验收合格率
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+
+    var viewMonth = [
+         { text: "1月", value: "1" },
+         { text: "2月", value: "2" },
+         { text: "3月", value: "3" },
+         { text: "4月", value: "4" },
+         { text: "5月", value: "5" },
+         { text: "6月", value: "6" },
+         { text: "7月", value: "7" },
+         { text: "8月", value: "8" },
+         { text: "9月", value: "9" },
+         { text: "10月", value: "10" },
+         { text: "11月", value: "11" },
+         { text: "12月", value: "12" }
+    ];
+
+    function reloadQualityData() {
+        var selectYear = mini.getbyName("qualityLastYear").getText();//xxxx年
+        selectYear = selectYear.substr(0, selectYear.length - 1);
+        var month = mini.getbyName("qualityMonth").getValue();
+
+        var dataGrid = mini.get("dataGridQuality");
+        dataGrid.load({ Year: selectYear, Month: month });
+    }
+
+    function onQualityGridLoad(e) {
+        if (e.result) {
+            $("#xyQualityContainer").highcharts(e.result.chartData);
+        }
+    }
+
+    function reloadCheckData() {
+        var selectYear = mini.getbyName("checkLastYear").getText();//xxxx年
+        selectYear = selectYear.substr(0, selectYear.length - 1);
+        var month = mini.getbyName("checkMonth").getValue();
+
+        var dataGrid = mini.get("dataGridCheck");
+        dataGrid.load({ Year: selectYear, Month: month });
+    }
+
+    function onCheckGridLoad(e) {
+        if (e.result) {
+            $("#xyCheckContainer").highcharts(e.result.chartData);
+        }
+    }
+
+    $(function () {
+        $("#dataGridQuality").attr("url", "QualityStatistics/GetQualityList?engineeringInfoID=" + engineeringInfoID);
+        $("#dataGridCheck").attr("url", "QualityStatistics/GetCheckList?engineeringInfoID=" + engineeringInfoID);
+        reloadQualityData();
+        reloadCheckData();
+    })
+
+</script>

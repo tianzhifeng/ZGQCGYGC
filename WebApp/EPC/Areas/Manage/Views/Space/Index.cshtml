@@ -1,0 +1,645 @@
+﻿@{
+    ViewBag.Title = "MainIndex";
+    Layout = "";
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>工程空间</title>
+    <script type="text/javascript">
+        //GetBasicInfo参数分别为：当前用户信息、按钮字段权限、动态文件服务器地址和当前流程环节
+        //请根据具体需要调整true或false
+        @Html.GetBasicInfo(true, true, false, true)
+    </script>
+    <!--jQuery js-->
+    <script src="/EPC/Scripts/Manage/Space/js/jquery-3.2.1.js" type="text/javascript"></script>
+    <!--MiniUI-->
+    <link href="/EPC/Scripts/Manage/Space/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/EPC/Scripts/Manage/Space/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <script src="/EPC/Scripts/Manage/Space/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/EPC/Scripts/Manage/Space/js/jquery.nicescroll.js" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/miniui.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/customCtrl.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /MvcConfig/miniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")" type="text/javascript"></script>
+    <link href="/EPC/Scripts/Manage/Space/css/main.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+    <div id="indexOne">
+        @{
+
+            <div class="navs .has-feedback">
+                <div class="chose-room" onoff="false">
+                    <span>切换空间</span>
+                </div>
+                <div class="url-active">
+                    <span style=" padding: 1px;">当前：</span>
+                    <span id="wbsArea">
+                        @*<a href="javascript:void(0);" id="currentEngineering" class="now"></a>*@
+                    </span>
+                    <span id="functionMenu" class="now"></span>
+                    <div id="menuArea">
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div id="Index-container">
+            <section id="todoList">
+                <div class="todoListtop">
+                    <ul>
+                        <li id="myProject">最近</li>
+                        <li id="allProject" class="active">全部项目</li>
+                    </ul>
+                    <div class="search-input">
+                        <input id="key" type="text" placeholder="按项目关键字搜索" />
+                        <span class="icon-search icon"></span>
+                    </div>
+                </div>
+                <div id="treewrap" style="width:100%;height:calc(100% - 121px)">
+                    <div id="treegrid" class="mini-treegrid engTree" url="" onload='onTreeGridLoad' autoload="false"
+                         showtreeicon="true" treecolumn="taskname" idfield="ID" parentfield="ParentID" expandonload="false" showcelltip="true"
+                         allowresize="false" allowcelledit="false" allowcellselect="false" expandonnodeclick="true" resultastree="false">
+                        <div property="columns">
+                            <div name="taskname" field="Name" width="*" headeralign="center" allowsort="false">名称</div>
+                            <div field="Code" width="200" headeralign="center" align="left" allowsort="false">编号</div>
+                            @*<div field="ProjectClass" width="150" align="center" headeralign="center" allowsort="true">项目类型</div>*@
+                            <div field="ChargerUserName" width="150" align="center" headeralign="center" allowsort="false">项目经理</div>
+                            <div field="CreateDate" width="120" align="center" dateformat="yyyy-MM-dd" headeralign="center" allowsort="false">创建日期</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagebar" class="page-set pull-right">
+                    <span>当前</span>
+                    <span>第<span class="blod" id="pageIndex"></span>页/共<span class="blod" id="pagerTotal"></span>页</span>
+                    <span>每页显示</span>
+                    <select name="" id="pSize" class="show-page">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span>转到</span>
+                    <input id="goToPager" type="text" class="direct-page" />
+                    <span>页</span>
+                </div>
+                <nav id="pagePre" aria-label="..." class="chose-page  visible-md-inline-block visible-lg-inline-block">
+                    <ul class="pager">
+                        <li><a href="javascript:void(0)" class="first-page">首页</a></li>
+                        <li><a href="javascript:void(0)" class="prev-page">上一页</a></li>
+                        <li class="pages-btn-group">
+                            <ul class="pager pages-container" style="display:inline-block;margin:0px"></ul>
+                        </li>
+                        <li><a href="javascript:void(0)" class="next-page">下一页</a></li>
+                        <li><a href="javascript:void(0)" class="last-page">尾页</a></li>
+                    </ul>
+                </nav>
+                @*<iframe id="gisMapIframe" src="/EPC/Manage/GisMap/Index?FuncType=ViewAll" scrolling="no" style="border:hidden;height:93%;"></iframe>*@
+            </section>
+            <div class="up-sj"><img src="/EPC/Scripts/Manage/Space/images/list-close.png"></div>
+        </div>
+        <div id="iframe-container">
+        </div>
+        <div class="control-img">
+            <img src="/EPC/Scripts/Manage/Space/images/control.png" alt="">
+        </div>
+    </div>
+    <script type="text/javascript">
+        var defaultEnterID = "@Html.Raw(ViewBag.DefaultEnterID)";
+        var defaultTitle = "@Html.Raw(ViewBag.DefaultTitle)";
+        var defaultEngieeringID = "@Html.Raw(ViewBag.DefaultEngineeringInfoD)";
+        var allEngineeringUrl = "GetTreeList";
+        var myProjectUrl = "GetMyList";
+        var isOpenForm = "@Html.Raw(ViewBag.IsOpenForm)";
+        var navNodeType = "@Html.Raw(ViewBag.NavNodeType)";
+    </script>
+    <script type="text/javascript">
+        if (isOpenForm == "True") {
+            var bg = localStorage.getItem("background-image");
+            if (!bg)
+                bg = "/PortalLTE/Images/bgImage/bgRW.jpg";
+            $("body").css("background-image", "url(" + bg + ")");
+        }
+        var pagerInfo = { pageIndex: 0, pageSize: 10, lastPageIndex: 0 };
+        var searchFields = "Name,Code";
+        var currentWBSID = "";
+        var currentEngineeringInfoID = "";
+        var todoListtopType = "allEngineeringUrl";
+        var iframeMsg;
+        $(".nav-chose .home span").on("click", function () {
+            $(".nav-pills li").eq(0).trigger("click")
+        });
+
+        $("#pSize").change(function () {
+            var size = Number($(this).children('option:selected').val());
+            pagerInfo.pageSize = size;
+            pagerInfo.pageIndex = 0;
+            searchTree(todoListtopType);
+        });
+
+        $("#key").on("keyup", function (e) {
+            if (e.keyCode == 13) {
+                searchTree(todoListtopType);
+            }
+        });
+
+
+        $(".icon-search").on("click", function () {
+            searchTree(todoListtopType);
+        });
+
+        $("#goToPager").on("keyup", function (e) {
+            if (e.keyCode == 13) {
+                var index = Number($(this).val());
+                if (isNaN(index) || index <= 0) index = pagerInfo.pageIndex;
+                else index = index - 1;
+                if (pagerInfo.lastPageIndex < index) {
+                    index = pagerInfo.lastPageIndex;
+                }
+                else
+                    pagerInfo.pageIndex = index;
+                searchTree(todoListtopType);
+            }
+        });
+
+        //首页点击事件
+        $(".first-page").on("click", function () {
+            pagerInfo.pageIndex = 0;
+            searchTree(todoListtopType);
+        });
+
+        //尾页点击事件
+        $(".last-page").on("click", function () {
+            pagerInfo.pageIndex = pagerInfo.lastPageIndex;
+            searchTree(todoListtopType);
+        });
+
+        //下一页点击事件
+        $(".next-page").on("click", function () {
+            if (pagerInfo.pageIndex < pagerInfo.lastPageIndex) {
+                pagerInfo.pageIndex = pagerInfo.pageIndex + 1;
+            }
+            else {
+                pagerInfo.pageIndex = pagerInfo.lastPageIndex
+            }
+            searchTree(todoListtopType);
+        });
+
+        //上一页点击事件
+        $(".prev-page").on("click", function () {
+            if (pagerInfo.pageIndex > 0) {
+                pagerInfo.pageIndex = pagerInfo.pageIndex - 1;
+            }
+            else
+                pagerInfo.pageIndex = 0;
+            searchTree(todoListtopType);
+        });
+
+        mini.parse();
+        var treegrid = mini.get("treegrid");
+
+        $(document).ready(function () {
+            $("#treewrap").niceScroll({ railoffset: true });
+            var scroll = $("#treewrap").getNiceScroll()[0];
+            scroll.mousewheel($("#treewrap")[0], scroll.onmousewheel);
+        });
+
+
+        treegrid.on("collapse", function (e) {
+            $("#treewrap").getNiceScroll().resize();
+        });
+
+        treegrid.on("expand", function (e) {
+            $("#treewrap").getNiceScroll().resize();
+        });
+
+        //树形列表描单元格，拼HTML链接
+        treegrid.on("drawcell", function (e) {
+            var record = e.record,
+                column = e.column,
+                field = e.field,
+                value = e.value;
+            if (field == "Name") {
+                e.cellHtml = "<a href='javascript:moves(\"" + record.ID + "\",\"" + record.Name + "\",\"" + record.EngineeringInfoID + "\")'>" + e.value + "</a>";
+            }
+            //else if (field == "Code") {
+            //    e.cellHtml = "<div  class='enter-arrow pull-left' onclick='moves(\"" + record.EngineeringInfoID + "\",\"" + record.Name + "\",\"" + record.ID + "\")'><span>进入</span><span class='icon icon-arrow-right'></span></div>" + e.cellHtml
+            //}
+        });
+
+        //默认进入上次进入的空间
+        if (defaultEnterID) {
+            moves(defaultEnterID, defaultTitle, defaultEngieeringID);
+        }
+        else {
+            $("#Index-container").animate({ "right": "0%" }, 300);
+            $(".chose-room").attr("onoff", "true");
+            searchTree(todoListtopType);
+        }
+
+
+        //设置右边IframeURL
+        function setRightUrl(url) {
+            $(".item-content:visible").find("iframe")[0].src = url;
+        }
+
+        //设置左边IframeURL
+        function setLeftUrl(url) {
+            $(".item-slider").find("iframe")[0].src = url;
+        }
+
+        //当前工程按钮点击出发
+        $("#currentEngineering").on("click", function () {
+            // moves(currentWBSID, $(this).text(), currentMarketEngineeringID);
+        });
+
+        //设置功能菜单导航的标题
+        function setFuncMenuText(text) {
+            if (text)
+                $("#functionMenu").text("> " + text);
+            else
+                $("#functionMenu").text("");
+        }
+
+
+
+        $(".control-img").on("click", function () {
+            for (var i = 0; i < $("#iframe-container .iframe-item").length; i++) {
+                if ($("#iframe-container .iframe-item").eq(i).css("display") == "block") {
+                    $(".control-img").hide();
+                    $("#iframe-container .iframe-item").eq(i).find(".item-content").animate({
+                        "padding-left": "259px"
+                    }, 300);
+                    $("#iframe-container .iframe-item").eq(i).find(".item-slider").animate({
+                        left: "0px"
+                    }, 300);
+                }
+            }
+        })
+
+        $("#search .form-control").on("mouseover", function () {
+            $(this).stop();
+            $(this).animate({ width: "259px" }, 500)
+        }).on("mouseout", function () {
+            if ($(this).is(":focus")) {
+                return;
+            }
+            $(this).stop();
+            $(this).animate({ width: "0px" }, 500)
+        }).on("blur", function () {
+            $(this).stop();
+            $(this).animate({ width: "0px" }, 500)
+        })
+
+        $(".mini-tabs-firstSpace").on("click", function () {
+            $("#slider-container").show();
+        });
+
+        $(".up-sj").on("click", function (event) {
+            $(".chose-room").attr("onoff", "false");
+            $("#Index-container").animate({ "right": "100%" }, 300);
+        });
+
+        var treeLoad = false;
+        //切换工程按钮点击事件
+        $(".chose-room").on("click", function (event) {
+            todoListtopType = $("#todoList .todoListtop .active").attr("id");
+            if ($(this).attr("onoff") == "false") {
+                $("#Index-container").animate({ "right": "0%" }, 300);
+                if (!treeLoad) {
+                    searchTree(todoListtopType);
+                }
+                $(this).attr("onoff", "true");
+            } else {
+                $("#Index-container").animate({ "right": "100%" }, 300);
+                $(this).attr("onoff", "false");
+            }
+            event.stopPropagation();
+            if (todoListtopType == "myProject") {
+                $("#pagebar").hide();
+                $("#pagePre .pager").hide();
+                $(".search-input").hide();
+                $("#treewrap").show();
+                $("#gisMapIframe").hide();
+            }
+            else {
+                $("#pagebar").show();
+                $("#pagePre .pager").show();
+                $(".search-input").show();
+                $("#treewrap").show();
+                $("#gisMapIframe").hide();
+            }
+        })
+
+        $(".chose-rooml").on("click", function (event) {
+            $(".chose-room").trigger("click");
+        });
+
+        $(".show-prosess").on("click", function () {
+            if ($(".chose-profess").attr("off") == "false") {
+                $(".chose-profess").show();
+                $(".chose-profess").attr("off", "true");
+            } else {
+                $(".tab-content-right").css("margin-left", "308px");
+                $(".tab-content-right").css("left", "0px")
+                $(".chose-profess").hide();
+                $(".chose-profess").attr("off", "false")
+            }
+        })
+
+        $(".chose-profess ul li").on("click", function () {
+            $(".active-pro").text($(this).text()).css("background-color", $(this).find("div").css("background-color"));
+            $(this).siblings().find("div").removeClass("active");
+            $(this).find("div").addClass("active");
+
+        });
+
+        //收起项目工程TAB区域按钮事件
+        $(".drop-nav").on("click", function () {
+            if ($("#Index-container").css("bottom") == "0px") {
+                return false;
+            }
+            if ($(".drop-nav").attr("onoff") == "true") {
+                $(this).css({ "background-color": "transparent" });
+                $(this).find("span").css({ "color": "#fff" });
+
+                $("#navss").animate({ "top": "-2px" });
+                $("#navss").hide();
+                $(".drop-nav").attr("onoff", "false").find("span").addClass("icon-double-angle-down").removeClass("icon-double-angle-up");
+                $("#iframe-container").animate({
+                    "margin-top": "-42px",
+                    "height": $("#iframe-container").height() + 42 + "px"
+                });
+                $(".control-img").animate({
+                    top: "44px"
+                });
+
+            } else {
+                $(this).css({ "background-color": "transparent" });
+                $(this).find("span").css({ "color": "black" });
+
+                $("#navss").animate({ "top": "41px" }, "fast", function () {
+                    $("#navss").show();
+                });
+                $(".drop-nav").attr("onoff", "true").find("span").addClass("icon-double-angle-up").removeClass("icon-double-angle-down");
+                $("#iframe-container").animate({
+                    "margin-top": "0px",
+                    "height": "100%"
+                });
+                $(".control-img").animate({
+                    top: "84px"
+                });
+            }
+        });
+
+        //常用或者全部TAB切换事件
+        $(".todoListtop ul li").on("click", function () {
+            $(this).addClass("active").siblings().removeClass("active");
+            if (todoListtopType == $(this).attr("id")) return;
+            todoListtopType = $(this).attr("id");
+            if (todoListtopType == "myProject") {
+                $("#pagebar").hide();
+                $("#pagePre .pager").hide();
+                $(".search-input").hide();
+                $("#treewrap").show();
+                $("#gisMapIframe").hide();
+            }
+            else if (todoListtopType == "gisMap") {
+                $("#treewrap").hide();
+                $("#pagebar").hide();
+                $("#pagePre .pager").hide();
+                $(".search-input").hide();
+            }
+            else {
+                $("#pagebar").show();
+                $("#pagePre .pager").show();
+                $(".search-input").show();
+                $("#treewrap").show();
+            }
+            pagerInfo.pageIndex = 0;
+            pagerInfo.pageSize = 10;
+            searchTree(todoListtopType);
+        });
+
+        function onTreeGridLoad(e) {
+            if (e.text) {
+                var resultData = mini.decode(e.text);
+                e.result = resultData;
+                if (e.result && e.result.data) {
+                    e.sender.loadList(e.result.data);
+                    updatePagerInfo(pagerInfo.pageIndex, pagerInfo.pageSize, e.result.total);
+                }
+            }
+        }
+
+        //取项目或工程数据
+        function searchTree(type) {
+            var url = allEngineeringUrl;
+            if (type == "myProject") {
+                url = myProjectUrl;
+            }
+            else if (type == "allEngineering") {
+                url = allEngineeringUrl;
+            }
+
+            treegrid.setPageIndex(pagerInfo.pageIndex);
+            treegrid.setPageSize(pagerInfo.pageSize);
+            //treegrid.setUrl(url);
+            var keyValue = $("#key").val();
+            var pageIndex = pagerInfo.pageIndex, pageSize = pagerInfo.pageSize;
+            var keys = searchFields.split(',');
+            var quickSearchData = {};
+            if (type != "myProject") {
+                for (i = 0, len = keys.length; i < len; i++) {
+                    quickSearchData["$IL$" + keys[i]] = keyValue;
+                }
+            }
+            var data = {};
+            addExecuteParam("quickQueryFormData", mini.encode(quickSearchData));
+            addExecuteParam("queryFormData", mini.encode(data));
+            addExecuteParam("pageIndex", pageIndex);
+            addExecuteParam("pageSize", pageSize);
+            execute(url, {
+                async: false,
+                showLoading: true, loadingInterval: 0, refresh: false, onComplete: function (data) {
+                    treegrid.loadList(data.data, "ID", "ParentID");
+                    updatePagerInfo(pagerInfo.pageIndex, pagerInfo.pageSize, data.total);
+                    treeLoad = true;
+                    //$("#treewrap").getNiceScroll().resize();
+                    //var scroll = $("#treewrap").getNiceScroll()[0];
+                    //if (scroll)
+                    //    scroll.mousewheel($("#treewrap")[0], scroll.onmousewheel);
+                }, validateForm: false
+            });
+        }
+
+        function updatePagerInfo(pageIndex, pageSize, total) {
+            $("#pageIndex").text(pageIndex + 1);
+            var pageTotal = parseInt(total / pageSize);
+            if (total > 0 && total < pageSize) pageTotal = 1;
+            else if (total % pageSize > 0) pageTotal = pageTotal + 1;
+            pagerInfo.lastPageIndex = pageTotal - 1;
+            $("#pagerTotal").text(pageTotal);
+            $("#goToPager").val(pageIndex + 1);
+            $(".pager .pages-container").empty();
+            if (pageIndex > 9 && pageIndex <= pageTotal) {
+                var mode = parseInt((pageIndex + 1) / 10);
+                var start = 0;
+                if ((pageIndex + 1) % 10 == 0) {
+                    start = (mode - 1) * 10 + 1;
+                }
+                else {
+                    start = mode * 10 + 1;
+                }
+                var len = 10;
+                if ((pageTotal + 1 - start) < 10)
+                    len = pageTotal - start + 1;
+                for (var i = 0; i < len; i++) {
+                    var index = start + i;
+                    var $li = $('<li><a href="javascript:void(0)" onclick="pagerLoad(' + (index - 1) + ')">' + index + '</a></li>');
+                    if (index == pageIndex + 1)
+                        $li.find("a").addClass("actives");
+                    $(".pager .pages-container").append($li);
+                }
+            }
+            else {
+                var len = 10;
+                if (pageTotal < 10) len = pageTotal;
+                for (var i = 1; i <= len; i++) {
+                    var $li = $('<li><a href="javascript:void(0)" onclick="pagerLoad(' + (i - 1) + ')">' + i + '</a></li>');
+                    if (i == pageIndex + 1)
+                        $li.find("a").addClass("actives");
+                    $(".pager .pages-container").append($li);
+                }
+            }
+        }
+
+        function pagerLoad(index) {
+            $(".pager .pages-container").find("a").removeClass("actives");
+            $(this).addClass("actives");
+            pagerInfo.pageIndex = index;
+            searchTree(todoListtopType);
+        }
+
+        var wbsNodes = [];
+        //打开工程TAB页
+        function moves(wbsID, title, engineeringInfoID) {
+            setFuncMenuText("");
+            $("#wbsMenu").hide();
+            if ($("#link_" + wbsID).hasClass("select-on") || $("#link_" + wbsID).hasClass("select")) {
+                $("#link_" + wbsID).removeClass("select-on").addClass("select");
+            }
+            var sliderUrl = "SubMenu?ShowShadow=False&EngineeringInfoID=" + engineeringInfoID + "&WBSID=" + wbsID + "&ProjectInfoID=" + wbsID;
+            var contentUrl = "";
+            var leftDisplay = ""; var rightDisplay = "";
+            var $iframes = $('<div data-id="' + wbsID + '" class="iframe-item" >\
+                                <div class="item-slider" style="' + leftDisplay + '" >\
+                                    <iframe src="' + sliderUrl + '" id="engSliderFrame" frameborder="0"></iframe>\
+                                </div>\
+                                <div class="item-content" style="' + rightDisplay + '">\
+                                    <iframe src="' + contentUrl + '" id="engContentFrame" frameborder="0"></iframe>\
+                                </div>\
+                            </div>');
+            addExecuteParam("WBSID", wbsID);
+            execute("GetWBSPath", {
+                showLoading: true, loadingInterval: 0, refresh: false, onComplete: function (data) {
+                    //避免重复点击重复加载，此处要做判定 ，然后创建
+                    if (wbsID != currentWBSID) {
+                        $("#iframe-container").empty().append($iframes);
+                    }
+                    $("#Index-container").animate({ "right": "100%" }, 300, function () {
+                    });
+                    $(".chose-room").attr("onoff", "false");
+                    $("#wbsArea").empty(); $("#menuArea").empty();
+                    var pathData = data.pathData;
+                    wbsNodes = data.wbsData;
+
+                    for (var i = 0; i < pathData.length; i++) {
+                        var item = pathData[i];
+                        var $li = $('<span><a href="javascript:void(0);" id="link_' + item.ID + '" class="select" onblur="onLiBlur(this)" onclick="showWBSNav(\''
+                            + item.ID + '\',\'' + item.ParentID + '\',  \'' + item.NodeType + '\')">' + item.Name + '</a></span>');
+
+                        if (navNodeType.indexOf(item.NodeType) < 0 || item.NodeType == "Root") {
+                            $li = $('<span><a href="javascript:void(0);" id="link_' + item.ID + '" class="now" onclick="moves(\''
+                                + item.ID + '\',\'' + item.Name + '\',\'' + engineeringInfoID + '\')">' + item.Name + '</a></span>');
+                        }
+                        $("#wbsArea").append($li);
+                        if (navNodeType.indexOf(item.NodeType) >= 0 && item.NodeType != "Root") {
+                            var nodes = $.grep(wbsNodes, function (node, index) {
+                                if (node.NodeType == item.NodeType && node.ParentID == item.ParentID) return true;
+                                else return false;
+                            });
+                            var $menu = $('<div id="wbsMenu_' + item.ID + '" class="menus" style="display:none"></div>');
+                            var $menuUl = $('<ul></ul>');
+                            $menu.append($menuUl);
+                            for (var m = 0; m < nodes.length; m++) {
+                                var wbsItem = nodes[m];
+                                var $li = $('<li id="' + wbsItem.ID + '" onmousedown="moves(\'' + wbsItem.ID + '\',\'' + wbsItem.Name + '\',\'' + currentEngineeringInfoID + '\')">' + wbsItem.Name + '</li>');
+                                $menuUl.append($li);
+                            }
+                            if (nodes.length > 20) {
+                                if (nodes.length <= 40) {
+                                    $menu.width(430);
+                                }
+                                else if (nodes.length <= 60)
+                                    $menu.width(660);
+                                else
+                                    $menu.width(880);
+                                $menu.removeClass("menus").addClass("menu");
+
+                            }
+                            else {
+                                var height = nodes.length * 32 + 30;
+                                var srcollHeight = $(window).height() - 40;
+                                if (srcollHeight < height) {
+                                    $menu.height(srcollHeight);
+                                }
+                                else {
+                                    $menu.height(height);
+                                }
+                            }
+                            $("#menuArea").append($menu);
+                        }
+                        if (i != pathData.length - 1) {
+                            var $separator = $('<span>&gt;</span>');
+                            $("#wbsArea").append($separator);
+                        }
+                    }
+                    currentWBSID = wbsID;
+                    currentEngineeringInfoID = engineeringInfoID;
+                }, validateForm: false
+            });
+        }
+
+        function onLiBlur(ele) {
+            if (ele.id.split('_').length < 2) return;
+            var wbsid = ele.id.split('_')[1];
+            $(ele).removeClass("select-on").addClass("select");
+            $("#wbsMenu_" + wbsid).hide();
+        }
+
+        function showWBSNav(wbsID, ParentID, nodeType) {
+            if ($("#link_" + wbsID).hasClass("select-on")) {
+                $("#link_" + wbsID).removeClass("select-on").addClass("select");
+                $("#wbsMenu_" + wbsID).hide();
+            }
+            else {
+                $("#menuArea div").hide();
+                $(".select-on").removeClass("select-on").addClass("select");
+                $("#link_" + wbsID).removeClass("select").addClass("select-on");
+                var left = $("#link_" + wbsID).position().left;
+                if ($("#wbsMenu_" + wbsID).hasClass("menu")) {
+                    $("#wbsMenu_" + wbsID).css("left", left - 50);
+                }
+                else {
+                    $("#wbsMenu_" + wbsID).css("left", left);
+                }
+                $("#" + wbsID).addClass("nowselect");
+                $("#wbsMenu_" + wbsID).show();
+            }
+        }
+
+    </script>
+</body>
+</html>

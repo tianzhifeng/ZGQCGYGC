@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "ManagerList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addProjectUser" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delProjectUser" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveAptitude();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入员工姓名"  style="width: 200px;" onenter="tabSearch();"
+                       onbuttonclick="tabSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitTab" class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetProjectAptitudeList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" sortfield="UserName">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="UserName" width="70" headeralign="center" allowsort="true" align="center">
+                人员姓名
+            </div>
+            <div field="DeptName" width="100" headeralign="center" allowsort="true" align="center">
+                所属部门
+            </div>
+            <div field="ProjectClass" width="100" headeralign="center" allowsort="true" align="center">
+                业务类型
+            </div>
+            @{
+
+                var columnDt = ViewBag.ColumnTable as System.Data.DataTable;
+                foreach (System.Data.DataRow row in columnDt.Rows)
+                {
+                    var field = row["value"].ToString();
+                    var title = row["text"].ToString();
+                    <div field="@field" type="comboboxcolumn" autoshowpopup="true" headeralign="center" width="100" allowsort="true" align="center">
+                        @title <input property="editor" class="mini-combobox" valuefield="value" shownullitem="true"
+                                      textfield="text" style="width:100%;" data="AptitudeLevel" />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 700px; " showmodal="true"
+     allowresize="false" allowdrag="true">
+    <div class="queryDiv">
+        <form id="queryform" method="post">
+            <table>
+                <tr>
+                    <td width="10%" align="center"></td>
+                    <td width="23%" align="left"></td>
+                    <td width="10%" align="center"></td>
+                    <td width="23%" align="left"></td>
+                    <td width="10%" align="center"></td>
+                    <td width="23%" align="left"></td>
+                </tr>
+                <tr>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                    <td align="center"></td>
+                    <td align="left"></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("System.AptitudeLevel");
+</script>
+<script type="text/javascript">
+    normalParamSettings.searchFields = "UserName";
+    addGridEnum("dataGrid", "FieldName", "EnumKey");
+    addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+    function addProjectUser() {
+        openWindow("/MvcConfig/Auth/User/MultiSelector?RootFullID=", {
+            refresh: false, title: "增加人员", width: 700, height: 600,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                var tabData = GetTabsData();
+                var projectClass = "";
+                for (var i = 0; i < tabData.length; i++) {
+                    var tabDataInfo = tabData[i];
+                    if (tabDataInfo.queryfield == "ProjectClass")
+                        projectClass = tabDataInfo.value;
+                }
+                addExecuteParam("UserInfo", mini.encode(data));
+                addExecuteParam("ProjectClass", projectClass);
+                execute("AddProjectUser", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        mini.get("dataGrid").reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function delProjectUser() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+
+        var tabData = GetTabsData();
+        var projectClass = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "ProjectClass")
+                projectClass = tabDataInfo.value;
+        }
+
+        addExecuteParam("ListData", mini.encode(rows));
+        addExecuteParam("ProjectClass", projectClass);
+        execute("DeleteProjectUser", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+
+    }
+
+    function saveAptitude() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getChanges();
+
+        var tabData = GetTabsData();
+        var projectClass = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "ProjectClass")
+                projectClass = tabDataInfo.value;
+        }
+
+        addExecuteParam("ListData", mini.encode(rows));
+        addExecuteParam("ProjectClass", projectClass);
+        execute("SaveProjectAptitude", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+</script>

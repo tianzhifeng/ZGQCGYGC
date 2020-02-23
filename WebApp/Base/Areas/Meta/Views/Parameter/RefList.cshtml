@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "RefList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0; border-top: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({ url: 'Edit?ParamType=InputArg', height: '60%', width: '60%' });" plain="true">增加输入参数</a>
+                <a class="mini-button" iconcls="icon-add" onclick="add({ url: 'Edit?ParamType=RefArg', height: '60%', width: '60%' });" plain="true">增加取值参数</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="edit({ height: '60%', width: '60%' });" plain="true">编辑</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="removeParam()" plain="true">删除</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称或者编号" style="width: 200px;" onenter="quickSearch('Name,Code');"
+                       onbuttonclick="quickSearch('Name,Code');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="GetRefList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="120" headeralign="center" allowsort="true">
+                名称
+            </div>
+            <div field="Code" width="200" headeralign="center" allowsort="true">
+                编码
+            </div>
+            <div field="ParamType" width="100" headeralign="center" allowsort="true" align="center">
+                类型
+            </div>
+            <div field="UseParam" width="70" headeralign="center" allowsort="true" align="right">
+                使用次数
+            </div>
+            <div field="Remark" width="400" headeralign="center" allowsort="true" align="center">
+                备注
+            </div>
+            <div field="ModifyUser" headeralign="center" width="80" allowsort="true" align="center">
+                最后修改人
+            </div>
+            <div field="ModifyDate" width="150" headeralign="center" dateformat="yyyy-MM-dd hh:mm:ss" allowsort="true" align="center">
+                最后修改日期
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.ArgumentType))
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "ParamType", "ArgumentType");
+    addGridLink("dataGrid", "UseParam", "ParamUserList?Code={Code}", { funcType: "view", height: "70%", width: "80%" });
+    addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+
+
+    function removeParam() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一条记录"); return;
+        }
+        msgUI("您确定要删除选中的参数吗？", 2, function (result) {
+            if (result != "ok") return;
+            var listIDs = "";
+            for (var i = 0; i < rows.length; i++) {
+
+                if (i == rows.length - 1) {
+                    listIDs += rows[i].ID;
+                }
+                else {
+                    listIDs += rows[i].ID + ",";
+                }
+            }
+            addExecuteParam("ListIDs", listIDs);
+            execute("RemoveParam", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+</script>

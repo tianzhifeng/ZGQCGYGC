@@ -1,0 +1,259 @@
+﻿@{
+    ViewBag.Title = "成果列表";
+}
+<div class="mini-toolbar" style="padding: 0px; border: 0">
+    <table>
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addlist();">批量增加</a> <a class="mini-button"
+                    iconcls="icon-add" onclick="addProduct()">增加</a> @*<a class="mini-button" iconcls="icon-edit"
+                        onclick="editProduct()">编辑</a>*@ <a class="mini-button" iconcls="icon-remove" onclick="delProduct()">
+                            删除</a> <a class="mini-button" iconcls="icon-download" onclick="doDownload">下载</a><br />
+                <a class="mini-button" iconcls="icon-goto" onclick="startFlow">送校审</a> <a class="mini-button"
+                    iconcls="icon-goto" onclick="startCoSignFlow">发起会签</a> <a class="mini-button" iconcls="icon-goto"
+                        onclick="startPublish">出图申请</a> <a class="mini-button" iconcls="icon-goto" onclick="startChange">
+                            变更申请</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入编号或名称" onenter="quickSearch('Code,Name');"
+                    onbuttonclick="quickSearch('Code,Name');" />
+                <a id="searchBtn" class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find"
+                    plain="true">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList"
+        multiselect="true" borderstyle="border-left:0;border-right:0;">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Edit" width="40" align="center">
+                编辑</div>
+            <div field="UpVersion" width="40" align="center">
+                升版</div>
+            <div field="Code" width="100" allowsort="true" align="left">
+                编号</div>
+            <div field="Name" width="*" allowsort="true" align="left">
+                名称</div>
+            <div field="FileType" width="60" allowsort="true" align="center">
+                类型</div>
+            <div field="ToA1" width="60" allowsort="true" align="center">
+                折合A1</div>
+            <div field="Version" width="60" allowsort="true" align="center">
+                版本号</div>
+            <div field="AuditState" width="80" allowsort="true" allowsort="true" align="center">
+                校审状态</div>
+            <div field="CreateUser" width="80" allowsort="true" align="center">
+                提交人</div>
+            <div field="SubmitDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                提交日期
+            </div>
+        </div>
+    </div>
+</div>
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px; height: 185px;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+        <table>
+            <tr>
+                <td width="15%">
+                    编号
+                </td>
+                <td width="35%">
+                    <input name="$LK$Code" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="10%">
+                    名称
+                </td>
+                <td width="35%">
+                    <input name="$LK$Name" class="mini-textbox" style="width: 100%;" />
+                </td>
+                <td width="5%" />
+            </tr>
+            <tr>
+                <td>
+                    提交日期
+                </td>
+                <td>
+                    <input name="$FR$SubmitDate" class="mini-datepicker" style="width: 100%" />
+                </td>
+                <td>
+                    至
+                </td>
+                <td>
+                    <input name="$TO$SubmitDate" class="mini-datepicker" style="width: 100%" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    提交人
+                </td>
+                <td>
+                    <input name="$EQ$CreateUserID" textname="CreateUser" style="width: 100%" class="mini-buttonedit" />
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">
+                查询</a> <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+      @Html.GetEnum("Project.ProductFileType");
+      @Html.GetEnum(typeof(Project.Logic.AuditState));
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var wbsID = getQueryString("WBSID");
+    var showBtn = getQueryString("IsLeaf");
+    addSingleUserSelector("$EQ$CreateUserID");
+    addGridEnum("dataGrid", "FileType", "ProductFileType");
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    addGridLink('dataGrid', 'Name', 'Edit?ID={ID}', { funcType: 'view', height: 380, width: 700 });
+    addGridButton('dataGrid', 'Edit', { linkText: '编辑', onButtonClick: function (row, settings) {
+        editProduct(row, settings)
+    }
+    });
+    addGridButton('dataGrid', 'UpVersion', { linkText: '升版', onButtonClick: function (row, settings) {
+        UpVersion(row, settings)
+    }
+    });
+    if (showBtn == "true")
+        $(".mini-button").show();
+    else
+        $(".mini-button").hide();
+
+    $("#searchBtn").show();
+
+    function addProduct() {
+        add({ height: 400 });
+    }
+
+    function editProduct(row, settings) {
+
+        if (row.AuditState != "Create" && row.AuditState != "Design") {
+            msgUI("已经发起校审的成果不能编辑。"); return;
+        }
+
+        openWindow("Edit?ID={ID}", { height: 380, width: 700, currentRow: row });
+
+    }
+
+    function delProduct() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        var editFlag = true;
+        $.each(rows, function (i, e) {
+            if (e.AuditState != "Create" && e.AuditState != "Design")
+                editFlag = false;
+        })
+        if (editFlag)
+            del();
+        else
+        { msgUI("已经发起校审的成果不能删除。"); return; }
+    }
+
+    function startFlow() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请至少选择一个成果。"); return; }
+
+        var ProductIDs = "";
+        var editFlag = true;
+        $.each(rows, function (i, e) {
+            ProductIDs += e.ID + ",";
+            if (e.AuditState != "Create")
+                editFlag = false;
+        })
+        ProductIDs = ProductIDs.substring(0, ProductIDs.length - 1);
+
+        if (editFlag) {
+            addExecuteParam("ProductIDs", ProductIDs);
+            addExecuteParam("WBSID", wbsID);
+            addExecuteParam("ProjectInfoID", projectInfoID);
+            execute("StartAuditFlow", {
+                refresh: false, showLoading: true, validateForm: false,
+                onComplete: function (data) {
+                    msgUI("送校审成功。");
+                    dataGrid.reload();
+                }
+            });
+        }
+        else
+        { msgUI("您选中的成果中，存在已经发起校审的成果，请重新选择。"); return; }
+    }
+
+    function UpVersion(row, settings) {
+        if (row.AuditState != "Pass") {
+            msgUI("请选择校审通过的图纸进行升版操作。");
+            return;
+        }
+
+        var url = "UpVersionProduct?VersionID=" + row.ID;
+        openWindow(url, { title: "成果升版", height: 380, width: 700, onDestroy: function (data) {
+            mini.get("dataGrid").reload();
+        }
+        });
+    }
+    function addlist() {
+        var url = "BatchAdd?ProjectInfoID=" + projectInfoID + "&WBSID=" + wbsID;
+        openWindow(url, { refresh: true, title: "批量增加", width: 750, height: 450,
+            onDestroy: function (data) {
+                if (data != "close")
+                    mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function HasSubChanged() {
+        var hasSub = mini.getbyName("HasSub").getValue();
+        var grid = mini.get("dataGrid");
+        var url = addSearch(addUrlSearch(grid.getUrl().split('?')[0]), "HasSub", hasSub);
+        grid.setUrl(url);
+        grid.load();
+    }
+
+    function startCoSignFlow() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请至少选择一个成果。");
+            return;
+        }
+        var ProductIDs = "";
+        $.each(rows, function (i, e) {
+            ProductIDs += e.ID + ",";
+        })
+        ProductIDs = ProductIDs.substring(0, ProductIDs.length - 1);
+        var url = "/Project/Form/CoSign/Edit?ProductIDs=" + ProductIDs;
+        flowAdd("CoSign", { url: url });
+    }
+
+    function startPublish() {
+        msgUI("功能开发中。。。");
+    }
+
+    function startChange() {
+        msgUI("功能开发中。。。");
+    }
+
+    function doDownload() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        var fileIDs = "";
+        $.each(rows, function (i, e) {
+            if (e.MainFile != "" && e.MainFile != null && e.MainFile != undefined) {
+                fileIDs += e.MainFile.split('_')[0] + ",";
+            }
+
+        });
+        fileIDs = fileIDs.substring(0, fileIDs.length - 1);
+
+        DownloadFile(fileIDs);
+
+    }
+</script>

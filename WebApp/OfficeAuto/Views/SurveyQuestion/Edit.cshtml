@@ -1,0 +1,77 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="save();">
+                    保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">
+                    取消</a>
+            </td>
+            <td id="btnRight">
+              @*  <a class="mini-button" onclick="showHelp()" iconcls="icon-help" plain="true">帮助</a>*@
+            </td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<input name="ATYPE" class="mini-hidden" />
+<div class="basediv">
+    <fieldset>
+        <legend>基本信息</legend>
+        <table width="100%">
+            <tr style="height: 0px">
+                <td width="25%">
+                </td>
+                <td width="75%">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    问题名称
+                </td>
+                <td>
+                    <input name="QuestionName" class="mini-textbox" 
+                     style="width: 100%" required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    问题类型
+                </td>
+                <td>
+                    <input name="QuestionType" class="mini-combobox" style="width: 100%" required="true"
+                     valuefield="value" textfield="text" data="QuestionType" />
+                </td>               
+            </tr> 
+            <tr>
+                <td>
+                    是否必须回复
+                </td>
+                <td>
+                    <input name="IsMustAnswer" class="mini-checkboxlist" style="width: 100%" required="true"
+                     valuefield="value" textfield="text" data="TrueOrFalse" multiSelect="false"/>
+                </td>               
+            </tr>    
+            <tr>
+                <td>
+                    是否需要评论
+                </td>
+                <td>
+                    <input name="IsComment" class="mini-checkboxlist" style="width: 100%" required="true"
+                     valuefield="value" textfield="text" data="TrueOrFalse" multiSelect="false"/>
+                </td>               
+            </tr>        
+        </table>
+    </fieldset>
+</div>
+</form>
+
+<script language="javascript" type="text/javascript">
+    @Html.GetEnum("System.TrueOrFalse")
+    @Html.GetEnum("OA.QuestionType")
+</script>
+<script language="javascript" type="text/javascript">
+    addMultiUserSelector("QueryUserIDs");
+    addMultiUserSelector("StatisticsUserIDs");
+</script>

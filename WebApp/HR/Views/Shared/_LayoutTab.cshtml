@@ -1,0 +1,243 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script type="text/javascript">
+        //GetBasicInfo参数分别为：当前用户信息、按钮字段权限、动态文件服务器地址和当前流程环节
+        //请根据具体需要调整true或false
+        @Html.GetBasicInfo(false, false, false, false)
+    </script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/miniui.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/customCtrl.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/MvcConfig/miniuiExt.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/CommonWebResource/Theme/Default/Tab/images/style.css")" rel="stylesheet" type="text/css" />
+</head>
+<body style="overflow: hidden;background-color:#fff; ">
+    <div id="divTabs" class="DivTab" style="width: 100%; overflow: none">
+        @{
+            if (ViewBag.Tab != null)
+            {
+                var tab = ViewBag.Tab as Formula.Tab;
+                var style = ""; var moreTabClass = "tab_menu_img_up";
+                if (!tab.IsDisplay)
+                {
+                    style = "display: none";
+                    moreTabClass = "tab_menu_img_down";
+                }
+                foreach (var category in tab.Categories)
+                {
+                    var radio = "";
+                    if (!category.Multi)
+                    {
+                        radio = "T";
+                    }
+                    <div class="tab_menu_bg" style="@style" ;=;>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="tab_menu_left_w" valign="top">
+                                    <span class="tab_menu_left">@category.Name：</span>
+                                </td>
+                                <td>
+                                    <ul class="tab_menu_top" queryfield="@category.QueryField" querymethod="@category.Method">
+                                        @{
+                                            foreach (var item in category.Items)
+                                            {
+                                                if (item.IsDefault)
+                                                {
+                                                    var className = "current";
+                                                    if (item.Value == "All")
+                                                    {
+                                                        className = "currentall";
+                                                    }
+                                                    <li>
+                                                        <a class="@className" onclick="menuCheckd('@radio');" href="javascript:void(0);" value="@item.Value"><span></span>@item.Name</a>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a onclick="menuCheckd('@radio');" href="javascript:void(0);" value="@item.Value"><span></span>@item.Name</a>
+                                                    </li>
+                                                }
+
+                                            }
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                }
+                <div id="divMoreTabs" class="menu_indent" style="cursor: hand;">
+                    <div onclick="ShowHideMoreTabs()" class="@moreTabClass">
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    @RenderBody()
+    @RenderSection("scripts", required: false)
+    <style type="text/css">
+        .DivTab {
+            border-right: 1px;
+            border-left: 1px;
+            border-top: 1px;
+            border-left-color: #909aa6;
+            border-top-color: #909aa6;
+            border-right-color: #909aa6;
+            border-top-style: solid;
+            border-left-style: solid;
+            border-right-style: solid;
+        }
+    </style>
+    <script type="text/javascript">
+        $(window).resize(function () {
+            SetGridHeight();
+        });
+        preInit();
+        function pageLoad() {
+            tabSearch();
+            if (typeof (onTabPageLoad) != undefined && typeof (onTabPageLoad) != "undefined") {
+                onTabPageLoad();
+            }
+        }
+
+        //菜单选中取消
+        function menuCheckd(radio) {
+            var theEvent = window.event || arguments.callee.caller.arguments[0];
+            var srcElement = theEvent.srcElement || theEvent.target;
+            var $a = $(srcElement);
+            if ($a[0] && $a[0].nodeName.toLocaleLowerCase() == "span")
+                $a = $a.parent();
+            var $tab_menu = $a.parent().parent();
+            if ($a.attr("value") == "All") {
+                if (!($a.hasClass("currentall"))) {
+                    //'全部'选中
+                    $tab_menu.find("a[value='All']").addClass("currentall");
+                    $tab_menu.find("a[value!='All']").removeClass("current");
+                }
+            }
+            else {
+                if ($a.hasClass("current")) {
+                    //取消
+                    if (radio == "T") { return; }
+                    $a.removeClass("current");
+                    //如果都取消，则'全部'选中
+                    if ($tab_menu.find("a.current").length == 0) {
+                        if ($tab_menu.find("a[value='_all']").length > 0) {
+                            $tab_menu.find("a[value='_all']").addClass("currentall");
+                        }
+                        else {
+                            $a.addClass("current");
+                        }
+                    }
+                }
+                else {
+                    //单选则先取消所有
+                    if (radio == "T") {
+                        $tab_menu.find("a[value!='All']").removeClass("current");
+                    }
+                    //选中
+                    $a.addClass("current");
+                    //取消'全部'
+                    $tab_menu.find("a[value='All']").removeClass("currentall");
+                }
+            }
+            tabSearch();
+        }
+
+        function ShowHideMoreTabs() {
+            var img = $("#divMoreTabs").find("div");
+            var arrMoretabs = $("#divTabs").find("div.tab_menu_bg");
+            if ($(img).hasClass("tab_menu_img_down")) {
+                $(img).removeClass("tab_menu_img_down").addClass("tab_menu_img_up");
+                arrMoretabs.each(function (i) {
+                    if (i >= 0)
+                        $(this).show();
+                });
+            }
+            else {
+                $(img).removeClass("tab_menu_img_up").addClass("tab_menu_img_down");
+                arrMoretabs.each(function (i) {
+                    if (i >= 0)
+                        $(this).hide();
+                });
+            }
+            SetGridHeight();
+        }
+
+        function SetGridHeight() {
+            $(".mini-fit").each(function () {
+                var layout = mini.get("#" + $(this).attr("id"));
+                if (layout)
+                    layout.doLayout();
+            });
+        }
+
+        //获取标签数据
+        function GetTabsData() {
+            var data = [];
+            $.each($("#divTabs").find("ul.tab_menu_top"), function (i, ulTab) {
+                if ($(ulTab).find("a.currentall").length == 0) {
+                    var tabData = {};
+                    tabData.queryfield = $(ulTab).attr("queryfield");
+                    tabData.querymethod = $(ulTab).attr("querymethod");
+                    var vals = [];
+                    $(ulTab).find("a.current").each(function (i) {
+                        vals.push($(this).attr("value"));
+                    });
+                    tabData.value = vals.join(',');
+                    data.push(tabData);
+                }
+            });
+            return data;
+        }
+
+        function tabSearch(normalSettings) {
+            var tabData = GetTabsData();
+            if (typeof (cusTabSearch) != "undefined") {
+                cusTabSearch(tabData, normalSettings);
+                return;
+            }
+            var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+            var quickSearchData = {};
+            var keyCo = mini.get(settings.queryBoxId);
+            if (keyCo && settings.searchFields) {
+                var keys = settings.searchFields.split(',');
+                for (i = 0, len = keys.length; i < len; i++) {
+                    quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+                }
+            }
+
+            var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+            var data = {};
+            if (_formId) {
+                var form = new mini.Form("#" + _formId);
+                form.validate(); if (form.isValid() == false) return;
+                data = form.getData();
+            }
+            for (var i = 0; i < tabData.length; i++) {
+                var tabDataInfo = tabData[i];
+                var key = "$IL$" + tabDataInfo.queryfield;
+                data[key] = tabDataInfo.value;
+            }
+
+            var grid = mini.get("#" + settings.gridId);
+            if (grid != undefined)
+                grid.load({
+                    queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                    quickQueryFormData: mini.encode(quickSearchData)
+                });
+            var searchWindow = mini.get("#" + settings.queryWindowId);
+            if (searchWindow)
+                hideWindow(settings.queryWindowId);
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+﻿<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>miniList</Title>
+    <Author>dingx_new</Author>
+    <Shortcut>miniList</Shortcut>
+    <Description>miniUI列表</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>Name</ID>
+        <Default>Name</Default>
+      </Literal>
+    </Declarations>
+    <Code Language="HTML">
+      <![CDATA[
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn"></div>           
+            <div field="Code" width="200" allowSort="true">编号</div>            
+        </div>
+    </div>
+</div>
+]]>
+    </Code>
+  </Snippet>
+</CodeSnippet>

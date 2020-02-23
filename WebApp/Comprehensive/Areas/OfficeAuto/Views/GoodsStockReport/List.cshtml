@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "行政物品统计";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class='mini-button' id='btnAdd' iconcls='icon-add' text='生成本期报表' enabled='true'
+                    visible='true' onclick='validateReportExist'></a><a class='mini-button' id='btnModify'
+                        iconcls='icon-edit' text='数据调整' enabled='true' visible='true' onclick='editRecord'>
+                    </a>
+                @Html.ExportButton("导出Excel")
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入办公用品名称" onenter="tabSearch({searchFields:'Name',IsOrRelation:'false'})"
+                    onbuttonclick="tabSearch({searchFields:'Name',IsOrRelation:'false'})" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitDiv" class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetList" showtreeicon="true" idfield="ID"
+        pagesize="50" sizelist="[25,50,100,200,300,500]" ondrawsummarycell="onDrawSummaryCell"
+        style="width: 100%; height: 100%;" showsummaryrow="true" sortfield="GoodsID"
+        sortorder="asc">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" headeralign="center" width="200" allowsort="true" align="left">
+                办公用品名称
+            </div>
+            <div field="Model" headeralign="center" width="120" allowsort="true" align="left">
+                型号
+            </div>
+            <div field="InitialCount" width="60" headeralign="center" allowsort="true" align="right"
+                summarytype="sum">
+                期初数
+            </div>
+            <div field="Unit" width="60" headeralign="center" allowsort="true" align="center">
+                单位
+            </div>
+            <div header="领用数量" headeralign="center">
+                <div property="columns">
+                    @{
+                        var list = ViewBag.DeptOrg as List<Formula.Helper.EnumItemInfo>;
+                        foreach (var item in list)
+                        {
+                            var field = item.Code + "Quantity";
+                        <div field="@field" width="70" headeralign="center" allowsort="true" align="right"
+                                 summarytype="sum" datatype="int">
+                            @item.Name
+                        </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div field="StockCount" width="60" headeralign="center" allowsort="true" align="right"
+                summarytype="sum">
+                库存数
+            </div>
+            <div field="Remark" width="200" headeralign="center" allowsort="true" align="left">
+                备注
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var belongYear = "";
+    var belongMonth = "";
+
+    function validateReportExist() {
+        addExecuteParam("belongYear", belongYear);
+        addExecuteParam("belongMonth", belongMonth);
+        execute("ValidateReportExist", { onComplete: function (res) {
+            if (res) {
+                msgUI(belongYear + "年" + belongMonth + "月的报表已存在，是否要重新生成并覆盖已存在的报表？", 2, function (action) {
+                    if (action == "ok") {
+                        createNewReport("T");
+                    }
+                });
+            }
+            else {
+                createNewReport("F");
+            }
+        }
+        })
+    }
+
+    function createNewReport(isReset) {
+        addExecuteParam("isReset", isReset);
+        addExecuteParam("belongYear", belongYear);
+        addExecuteParam("belongMonth", belongMonth);
+        execute("CreateNewReport", {
+            onComplete: function (data) {
+                var dataGrid = mini.get("dataGrid");
+                dataGrid.load({ "BelongYear": belongYear, "BelongMonth": belongMonth });
+            }
+        })
+    }
+
+    function editRecord() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("需要选择一条操作记录，请重新确认！", 1); return; }
+        if (row.ID)
+            openWindow("/MvcConfig/UI/Form/PageView?TmplCode=Fun_Goods_GoodsReport&ID={ID}", { "width": "800px", "height": "80%", "title": "数据调整", "mustSelectOneRow": "true" });
+        else
+            msgUI(belongYear + "年" + belongMonth + "月的报表尚未生成，请生成报表或刷新后重试！", 1);
+    }
+
+    function cusTabSearch(tabData, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+
+        var _formId = $("#" + settings.queryWindowId).find("form").attr("id");
+        var data = {};
+        if (_formId) {
+            var form = new mini.Form("#" + _formId);
+            form.validate(); if (form.isValid() == false) return;
+            data = form.getData();
+        }
+        belongYear = "";
+        belongMonth = "";
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            if (tabDataInfo.queryfield == "BelongYear") {
+                belongYear = tabDataInfo.value;
+                //                continue;
+            }
+            else if (tabDataInfo.queryfield == "BelongMonth") {
+                belongMonth = tabDataInfo.value;
+                //                continue;
+            }
+            var key = "$IL$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var grid = mini.get("#" + settings.gridId);
+        if (grid != undefined)
+            grid.load({
+                queryTabData: mini.encode(tabData), queryFormData: mini.encode(data),
+                quickQueryFormData: mini.encode(quickSearchData)
+            });
+        var searchWindow = mini.get("#" + settings.queryWindowId);
+        if (searchWindow)
+            hideWindow(settings.queryWindowId);
+    }
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        if (e.field == "Name") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+
+        if (e.column.decimalPlaces != undefined && e.column.decimalPlaces == "1")
+            e.cellHtml = parseInt(e.value).toFixed(1);
+    }
+</script>

@@ -1,0 +1,348 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<link href="~/Scripts/WBS/WBSIcon.css" rel="stylesheet" type="text/css" />
+<div id="mainlayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="3">
+    <div title="west" showheader="false" region="west" width="500" expanded="true" showspliticon="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 1px; border-top: 0; border-left: 0; border-right: 0;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="addStruct()">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="del();">删除</a>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveList();">保存</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 50%;"
+                 allowresize="false" idfield="id" multiselect="true" allowcelledit="true" allowcellselect="true" oncellendedit="onCellEndEdit"
+                 showpager="false" onselectionchanged="onSelectionchange" borderstyle="border-left:0px;border-right:0px;border-bottom:0px" onload="onGridLoad">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="Name" width="80" headeralign="center" allowsort="true" align="center">
+                        节点名称<input property="editor" class="mini-textbox" style="width:100%" />
+                    </div>
+                    <div field="ChildCode" displayfield="ChildName" width="200" headeralign="center" align="left">
+                        子节点类别
+                        <input property="editor" id="childCode" class="mini-lookup" style="width: 100%;"
+                               textfield="Name" valuefield="Code" popupwidth="auto" popup="#gridPanel" grid="#wbsTypeGrid"
+                               multiselect="true" onshowpopup="onShowPopup" />
+                    </div>
+                    <div field="CodeDefine" width="200" headeralign="center" allowsort="true" align="left">
+                        编号规则定义<input property="editor" class="mini-textbox" style="width:100%" />
+                    </div>
+                    <div field="PadLength" width="60" headeralign="center" allowsort="true" align="center" vtype="int;range:0,100">
+                        编号长度<input property="editor" class="mini-textbox" style="width:100%" />
+                    </div>
+                    <div field="PadChar" width="60" headeralign="center" allowsort="true" align="center" vtype="rangeChar:0,1"/>
+                        补长字符 <input property="editor" class="mini-textbox" style="width:100%">
+                    </div>
+                    <div field="PadType" type="comboboxcolumn" autoShowPopup="true" width="60" 
+                        allowSort="true"  align="center" headerAlign="center">
+                        补长方式<input property="editor" class="mini-combobox" style="width:100%;" textfield="text" valuefield="value" 
+                            allowInput="false" showNullItem="true" data="[{'value':'left','text':'前补'},{'value':'right','text':'后补'}]" />                
+                    </div>
+                    <div field="CodeDefaultValue" width="70">编号默认值</div>
+                    @*<div field="CanTransform" type="checkboxcolumn" width="60" headeralign="center" truevalue="True"
+                     falsevalue="False" align="center">
+                    切换视角
+                </div>*@
+                </div>
+            </div>
+            <div id="preViewTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 50%;" plain="false" borderstyle="border:0;">
+                <div title="WBS结构预览">
+                    <ul id="preViewTree" class="mini-tree" style="width: 100%; height: 100%; padding-left: 20px"
+                        showtreeicon="true" textfield="Name" iconfield="Type" idfield="ID" enablehottrack="false"
+                        expandonload="true"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 1px; border-top: 0; border-left: 0; border-right: 0;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="addRole();">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delRole();">删除</a>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveRoleInfo();">保存</a>
+                        <a class="mini-button" iconcls="icon-upload" onclick="Move('Up')">上移</a>
+                        <a class="mini-button" iconcls="icon-download" onclick="Move('Down')">下移</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="roleGrid" url="" showpager="false" class="mini-datagrid" style="width: 100%; height: 100%;"
+                 allowresize="false" idfield="id" multiselect="true" showpager="false"
+                 allowcelledit="true" allowcellselect="true" borderstyle="border-left:0px;border-right:0px;border-bottom:0px">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div field="RoleName" width="*" headeralign="center" allowsort="true" align="left">
+                        角色名称
+                    </div>
+                    <div field="RoleCode" width="110" headeralign="center" allowsort="true" align="left">
+                        角色编号
+                    </div>
+                    <div type="checkboxcolumn" field="SychWBS" truevalue="True" falsevalue="False" width="60"
+                         headeralign="center" align="center">
+                        同步WBS
+                    </div>
+                    <div field="SychWBSField" width="100" headeralign="center" allowsort="true" align="center">
+                        WBS字段<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                    <div type="checkboxcolumn" field="SychProject" truevalue="True" falsevalue="False"
+                         width="60" headeralign="center" align="center">
+                        同步项目
+                    </div>
+                    <div field="SychProjectField" width="100" headeralign="center" allowsort="true" align="center">
+                        项目字段<input property="editor" class="mini-textbox" style="width: 100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="gridPanel" class="mini-panel" style="width: 400px; height: 300px;" visible="false"
+     showtoolbar="true" showclosebutton="true" showheader="true" bodystyle="padding:0"
+     borderstyle="border:0">
+    <div property="toolbar">
+        <a class="mini-button" iconcls="icon-clear" onclick="onClearClick">清空</a>
+    </div>
+    <div id="wbsTypeGrid" showpager="false" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+         allowresize="false" idfield="id" multiselect="true" borderstyle="border:0;">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Name" width="*" headeralign="center" allowsort="true" align="left">
+                名称
+            </div>
+            <div field="Code" width="100" headeralign="center" allowsort="true" align="left">
+                编号
+            </div>
+        </div>
+    </div>
+</div>
+<div id="windowCodeDefaultValue" class="mini-window" title="设置" style="width: 380px; height: 420px;display: none;"
+    showmodal="true" allowresize="false" allowdrag="true">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 1px; border-top: 0; border-left: 0; border-right: 0;">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-save" onclick="SaveCodeDefaultValue();">确认</a>
+                        <a class="mini-button" iconcls="icon-cancel" onclick="hideWindow('windowCodeDefaultValue');">取消</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>生成WBS节点时，会对下列字段赋默认值；主要用于配合编号规则的定义</td>
+                </tr>
+            </table>
+        </div>
+    <div id="gridCodeDefaultValue" showpager="false" url="" class="mini-datagrid" style="width: 100%; height: 350"
+         allowresize="false" idfield="id" allowcelledit="true" allowcellselect="true" >
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Field" name="Field" width="60%" headeralign="center" allowsort="true" align="left">
+                字段
+            </div>
+            <div field="Value" name="Value" width="40%" headeralign="center" allowsort="true" align="left">
+                默认值<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    
+    addGridButton("dataGrid", "CodeDefaultValue", {linkText:"设置",
+        onButtonClick: function (row) {
+            showWindow('windowCodeDefaultValue');
+            $("#windowCodeDefaultValue").attr("data-id", row["ID"]);
+            if (row.DefaultValueJson) {
+                var data = mini.decode(row.DefaultValueJson);
+                var grid = mini.get("gridCodeDefaultValue");
+                grid.setData(data);
+            }
+            else {
+                var fields = ["AreaCode", "DeviceCode", "PhaseCode", "SubProjectCode", "MajorCode", "EntityCode", "WorkCode", "ExtField4"];
+                var defaultData = [];
+                $.each(fields, function (index, item) {
+                    var di = { "Field": item, "Value": "" };
+                    defaultData.push(di)
+                });
+                var grid = mini.get("gridCodeDefaultValue");
+                grid.setData(defaultData);
+            }
+        }
+    });
+
+    function SaveCodeDefaultValue() {
+        var rowID = $("#windowCodeDefaultValue").attr("data-id");
+        if (rowID)
+        {
+            var grid = mini.get("dataGrid");
+            var row = grid.findRow(function(row) {
+                return row.ID==rowID;
+            });
+            if (row) {
+                var data = mini.get("gridCodeDefaultValue").getData();
+                var json = mini.encode(data);
+                grid.updateRow(row, { DefaultValueJson: json });
+                msgUI("操作成功，请保存节点数据！");
+                hideWindow('windowCodeDefaultValue');
+            }
+        }
+    }
+
+    var modeID = getQueryString("ModeID");
+    function onButtonEdit(e) {
+
+    }
+
+    function onCellEndEdit(e) {
+        if (e.field == "ChildCode")
+            builderPreTreeData();
+    }
+
+    function onGridLoad() {
+        builderPreTreeData();
+    }
+
+    function builderPreTreeData() {
+        var list = mini.get("dataGrid").getData();
+        var projectRow = $.grep(list, function (item, index) {
+            return item.Code == 'Project';
+        })[0];// list.find(function (row) { if (row.Code == 'Project') return true; });
+        var projectNode = { Name: projectRow["Name"], Type: projectRow["Code"], children: [] };
+        var result = [];
+        buildChild(list, result, projectNode, projectRow);
+        result.push(projectNode);
+        mini.get("preViewTree").setData(result);
+    }
+
+    function buildChild(list, result, parent, parentRow) {
+        if (parentRow["ChildCode"]) {
+            var childrenCode = parentRow["ChildCode"].split(",");
+            var childrenName = parentRow["ChildName"].split(",");
+            if (childrenCode.length > 0) {
+                for (var i = 0; i < childrenCode.length; i++) {
+                    var node = { Name: childrenName[i], Type: childrenCode[i], children: [] };
+                    parent.children.push(node);
+                    var thisNode = $.grep(list, function (item, index) {
+                        return item.Code == childrenCode[i];
+                    })[0];//list.find(function (row) { if (row.Code == childrenCode[i]) return true; })
+                    buildChild(list, result, node, thisNode);
+                }
+            }
+        }
+    }
+
+    function onShowPopup(e) {
+        var grid = mini.get("wbsTypeGrid");
+        var url = changeToFullUrl("GetWBSNodeList");
+        var requestUrl = url.split('?')[0] + "?ModeID=" + modeID;
+        grid.setUrl(requestUrl);
+        grid.load();
+    }
+
+    function onSelectionchange(e) {
+        var roleGrid = mini.get("roleGrid");
+        if (e.selected) {
+            var url = changeToFullUrl("GetRoleStructList");
+            var requestUrl = url.split('?')[0] + "?WBSStructInfoID=" + e.selected.ID;
+            roleGrid.setUrl(requestUrl);
+            roleGrid.load();
+        }
+    }
+
+    function onClearClick(e) {
+        var lookup = mini.get('childCode');
+        lookup.deselectAll();
+    }
+
+    function Move(Direction) {
+        var grid = mini.get("roleGrid");
+        var row = grid.getSelected();
+        if (!row) return;
+        addExecuteParam("roleInfoID", row.ID);
+        addExecuteParam("Direction", Direction);
+        execute("Move", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var index = grid.indexOf(row);
+                if (Direction.toLowerCase() == "up")
+                { grid.moveRow(row, index - 1); }
+                else {
+                    grid.moveRow(row, index + 2);
+                }
+            }
+        });
+    }
+
+    function saveRoleInfo() {
+        var grid = mini.get("roleGrid");
+        var rows = grid.getChanges();
+        if (rows.length == 0) return;
+        addExecuteParam("RoleInfo", mini.encode(rows));
+        execute("SaveRoleInfo", {
+            onComplete: function (data) {
+                msgUI("保存成功。");
+                grid.reload();
+            }
+        });
+    }
+
+    function addRole() {
+        var url = "/Project/BaseData/Role/SelectList";
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected(); if (!row) { msgUI("请选择一个WBS结构定义记录"); return; }
+        openWindow(url, {
+            refresh: false, width: 700, height: 450, onDestroy: function (data) {
+                if (!data || data == "close" || data == "") return;
+                addExecuteParam("RoleInfo", mini.encode(data));
+                addExecuteParam("WBSStructInfoID", row.ID);
+                execute("AddRoleInfo", {
+                    refresh: false, onComplete: function (data) {
+                        mini.get("roleGrid").reload();
+                    }
+                });
+            }
+        });
+    }
+
+    function delRole() {
+        var grid = mini.get("roleGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) msgUI("当前没有选择要操作的记录，请重新确认！", 1)
+        else {
+            msgUI("您确定需要删除吗？", 2, function (data) {
+                if (data != "ok") return;
+                addExecuteParam("RoleInfo", mini.encode(rows));
+                execute("DeleteRoleInfo", {
+                    onComplete: function (data) {
+                        grid.reload();
+                    }
+                });
+            });
+        }
+    }
+
+    function addStruct() {
+        var url = "WBSNodeTypeSelect";
+        openWindow(url, {
+            title: "增加WBS节点", width: 400, height: 350, onDestroy: function (data) {
+                if (!data || data == "close" || data == "") return;
+                addExecuteParam("WBSNodeInfo", mini.encode(data));
+                addExecuteParam("ModeID", getQueryString("ModeID"));
+                execute("AddWBSStruct", {
+                    onComplete: function (data) {
+                        mini.get("dataGrid").reload();
+                    }
+                });
+            }
+        });
+    }
+</script>

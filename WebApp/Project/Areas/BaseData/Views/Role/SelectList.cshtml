@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "SelectList";
+}
+<div class="mini-toolbar gw-grid-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="returnValue();">选择</a>
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入岗位编号或名称" onenter="quickSearch('Code,Name');"
+                    onbuttonclick="quickSearch('Code,Name');" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetList" multiselect="true"
+        onload="onLoadComplete">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="RoleName" width="150" allowsort="true" align="left">
+                岗位名称</div>
+            <div field="RoleCode" width="200" allowsort="true" align="left">
+                岗位编码</div>
+            <div field="RoleType" width="100" allowsort="true" align="center">
+                岗位类别</div>
+            <div field="Description" width="*" allowsort="true">
+                描述</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.RoleType));     
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "RoleType", "RoleType");
+    function returnValue() {
+        var dataGrid = mini.get("dataGrid");
+        var result = dataGrid.getSelecteds();
+        closeWindow(result);
+    }
+
+    function onLoadComplete() {
+        var roles = getQueryString("Roles");
+        if (roles) {
+            var rolelist = roles.split(',');
+            for (var i = 0; i < rolelist.length; i++) {
+                var row = mini.get("dataGrid").findRow(function (row) {
+                    if (row.RoleCode == rolelist[i]) return true;
+                })
+                mini.get("dataGrid").select(row);
+            }
+        }
+    }
+</script>

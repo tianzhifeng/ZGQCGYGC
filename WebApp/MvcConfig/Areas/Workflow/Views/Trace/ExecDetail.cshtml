@@ -1,0 +1,136 @@
+﻿<script src="@Url.Content("/Workflow/Scripts/raphael-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/flow.js")" type="text/javascript"></script>
+<script src="@Url.Content("/Workflow/Scripts/flow.jpdl.js")" type="text/javascript"></script>
+
+<div class="mini-splitter" style="width: 100%; height: 100%;" vertical="true" id="divSplitter">
+    <div size="45%" showcollapsebutton="true">
+        <div class="mini-fit">
+            <div id="myflow">
+                <a class="mini-button" id="btnReplaceUser" plain="true" style="display: none;" iconcls="icon-edit"></a>
+                @*      <a class="mini-button" id="btnUrge" plain="true" iconcls="icon-edit">催办</a>*@
+                <div id="flowNode" style="display: none; position: absolute; background-color: #ddd"></div>
+            </div>
+        </div>
+    </div>
+    <div showcollapsebutton="true">
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetFlowExecList" multiselect="true" onload="onload" ondrawcell="onDrawCell" allowcellwrap="true">
+                <div property="columns">
+                    <div field="StepName" width="100">
+                        环节名称
+                    </div>
+                    <div field="Type" width="60" align="center">
+                        任务类型
+                    </div>
+                    <div field="TaskUserDept" width="150">
+                        接收人部门
+                    </div>
+                    <div field="TaskUserName" width="60" align="center">
+                        接收人
+                    </div>
+                    <div field="ExecUserName" width="60" align="center">
+                        操作人
+                    </div>
+                    <div field="ExecRoutingName" width="100">
+                        操作
+                    </div>
+                    <div field="CreateTime" width="110" dateformat="yyyy-MM-dd HH:mm">
+                        接收时间
+                    </div>
+                    <div field="ExecTime" width="110" dateformat="yyyy-MM-dd HH:mm">
+                        操作时间
+                    </div>
+                    <div field="ApprovalInMobile" width="60" align="center">
+                        审批来源
+                    </div>
+                    <div field="UseTime" width="100" align="center">
+                        操作耗时
+                    </div>
+                    <div field="ExecComment" width="*">
+                        操作意见
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var TaskExecType = [{ value: 'Normal', text: '普通' }, { value: 'Delegate', text: '委托' }, { value: 'Circulate', text: '传阅' }, { value: 'Ask', text: '加签' }];
+    addGridEnum('dataGrid', 'Type', 'TaskExecType');
+    addGridLink('dataGrid', 'TaskUserName', '/MvcConfig/Workflow/Trace/UserView?ID={ID}&UserID={TaskUserID}', { title: "人员信息", refresh: false, weight: 300, height: 230 });
+    addGridLink('dataGrid', 'ExecUserName', '/MvcConfig/Workflow/Trace/UserView?ID={ID}&UserID={ExecUserID}', { title: "人员信息", refresh: false, weight: 300, height: 230 });
+</script>
+<script type="text/javascript">
+    function onDrawCell(e) {
+        if (e.field != "ExecRoutingName" || !e.value)
+            return;
+        if (e.value.indexOf("驳回") == 0 || e.value.indexOf("打回") == 0)
+            e.cellStyle = "color:Red;";
+    }
+</script>
+<style type="text/css">
+    html, body {
+        height: 100%;
+        overflow: auto;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+        background-image: url(/Workflow/Scripts/Images/bg.png)!important;
+        background-size: auto!important;
+        background-repeat: repeat;
+    }
+
+    #silverlightControlHost {
+        height: 100%;
+        text-align: center;
+    }
+    path[stroke="#c0c0c0"] {
+       stroke-dasharray:6;
+    }
+</style>
+<script type="text/javascript">
+    function getData(name) {
+        var result = "";
+        $.ajax({
+            url: "/MvcConfig/Workflow/Monitor/" + name + "?formInstanceID=" + getQueryString("ID"),
+            type: "post",
+            cache: false,
+            async: false,
+            success: function (text) {
+                //增加新版报错分支
+                if (text && typeof(text) == "string" && text.indexOf("{\"errcode\"") == 0) {
+                    var fail = jQuery.parseJSON(text);
+                    var msg = getErrorFromHtml(fail.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                result = text;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var msg = getErrorFromHtml(jqXHR.responseText);
+                msgUI(msg);
+            }
+        });
+        return result;
+    }
+
+    $(function () {
+        $('#myflow').myflow($.extend(true, {
+            basePath: "",
+            restore: !getData("GetDefFlow") ? eval() : eval("(" + getData("GetDefFlow") + ")"),
+            editable: false
+        }, JSON.parse(getData("GetFlowTrace"))));
+    });
+
+
+    function onload(e) {
+        var grid = mini.get("dataGrid");
+        var rows = grid.findRows(function (row) {
+            if (!row.ExecTime) return true;
+        });
+        grid.selects(rows);
+    }
+
+</script>

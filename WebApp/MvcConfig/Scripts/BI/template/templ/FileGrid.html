@@ -1,0 +1,419 @@
+﻿<style>
+    .group-filegrid {
+        margin: 5px;
+    }
+
+        .group-filegrid .list-group {
+            padding-left: 0;
+            display: none;
+        }
+
+        .group-filegrid .list-item-task {
+            border: none;
+            margin-bottom: 2px;
+            padding: 5px 8px 5px 10px !important;
+            height: 36px;
+        }
+
+        .group-filegrid .tasktitle {
+            font-size: 13px;
+            font-weight: normal;
+            color: #123e58;
+            float: left;
+            position: absolute;
+            left: 10px;
+            right: 100px;
+            height: 40px;
+            line-height: 40px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .group-filegrid .taskcontent {
+            font-size: 12px;
+            font-weight: normal;
+            color: #999;
+            float: left;
+            position: absolute;
+            top: 26px;
+            left: 10px;
+            right: 10px;
+            height: 40px;
+            line-height: 40px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .group-filegrid .photo {
+            width: 50px;
+            height: 50px;
+            float: left;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .group-filegrid .date {
+            background: url(../img/line-icon2.png) no-repeat left #f7f7f7;
+            font-size: 12px;
+            color: #666;
+            font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+            height: 20px;
+            line-height: 20px;
+            margin: 10px 10px 0 0;
+            border-radius: 5px;
+            float: right;
+            padding-left: 18px;
+            display: inline-block;
+        }
+
+        .group-filegrid .list-item {
+            position: relative;
+            border-bottom: 1px solid #e6e7e9;
+            font-size: 13px;
+            display: list-item;
+            text-align: -webkit-match-parent;
+            margin-bottom: 3px;
+            cursor: pointer;
+            overflow: hidden;
+            height: 70px;
+        }
+
+        .group-filegrid .groupname {
+        }
+
+        .group-filegrid .grouptag {
+            float: right;
+        }
+
+        .group-filegrid .groupbottom {
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            background-color: #ddd;
+            cursor: pointer;
+        }
+
+    .group-filegrid-photo {
+        margin: 5px;
+    }
+
+        .group-filegrid-photo .list-group {
+            padding-left: 0;
+            display: none;
+        }
+
+        .group-filegrid-photo .list-item-task {
+            border: none;
+            margin-bottom: 2px;
+            padding: 5px 8px 5px 10px !important;
+            height: 36px;
+        }
+
+        .group-filegrid-photo .tasktitle {
+            font-size: 13px;
+            font-weight: normal;
+            color: #123e58;
+            float: left;
+            position: absolute;
+            left: 60px;
+            right: 100px;
+            height: 40px;
+            line-height: 40px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .group-filegrid-photo .taskcontent {
+            font-size: 12px;
+            font-weight: normal;
+            color: #999;
+            float: left;
+            position: absolute;
+            top: 26px;
+            left: 60px;
+            right: 10px;
+            height: 40px;
+            line-height: 40px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .group-filegrid-photo .photo {
+            width: 50px;
+            height: 50px;
+            float: left;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .group-filegrid-photo .date {
+            background: url(../img/line-icon2.png) no-repeat left #f7f7f7;
+            font-size: 12px;
+            color: #666;
+            font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+            height: 20px;
+            line-height: 20px;
+            margin: 10px 10px 0 0;
+            border-radius: 5px;
+            float: right;
+            padding: 0 5px;
+            display: inline-block;
+        }
+
+        .group-filegrid-photo .list-item {
+            position: relative;
+            border-bottom: 1px solid #e6e7e9;
+            font-size: 13px;
+            display: list-item;
+            text-align: -webkit-match-parent;
+            margin-bottom: 3px;
+            cursor: pointer;
+            overflow: hidden;
+            height: 70px;
+        }
+
+        .group-filegrid-photo .groupname {
+            font-weight: bold;
+            color: #0e4769;
+        }
+
+        .group-filegrid-photo .grouptag {
+            float: right;
+        }
+
+        .group-filegrid-photo .groupbottom {
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            background-color: #ddd;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+    .BIinfo-box-titlen {
+        color: #1b8fda;
+        font-size: 14px;
+        font-weight: bold;
+        border-bottom: 0px solid #e6e7e9;
+        height: 43px;
+        line-height: 43px;
+        width: 100%;
+        display: block;
+        padding: 0px 10px 5px 10px;
+    }
+
+    .BIpadding5 {
+        padding: 0px;
+    }
+</style>
+<script id="FileGrid" type="text/x-jquery-tmpl">
+    <div class="BIinfo-box-titlen">
+        {{if GroupFilters}}
+        <span style="color:#999;">分组:</span>
+        <select class="select" onchange="groupSelect('${chartId}', this)">
+            {{each GroupFilters}}
+            {{if IsDefault=="true"}}
+            <option value="${$value.value}" selected>${$value.text}</option>
+            {{else}}
+            <option value="${$value.value}">${$value.text}</option>
+            {{/if}}
+            {{/each}}
+        </select>
+        {{else}}
+        <i>|</i>${Title}
+        {{/if}}
+        {{if showmore}}
+        <span class="more" onclick="openUrl('${moreUrl}','更多${Title}')">更多</span>
+        {{/if}}
+    </div>
+    {{if hasdata==1 }}
+    {{if GroupData}}
+    {{if hasimg==1}}
+    <div class="group-filegrid-photo">
+        <ul>
+            {{each GroupData}}
+            <li style="padding-top:5px;">
+                <div style="padding: 12px 10px 12px; background-color: #f7f7f7;  border-radius: 5px;"><span class="groupname">${$value.GroupName}</span><span class="grouptag">${$value.GroupTag}</span></div>
+                <ul class="list-group">
+                    {{each $value.GroupDataList}}
+                    <li class="list-item" onclick="${$value.onclick}">
+                        <div class="item-head">
+                            {{if $value.IMG}}
+                            <div class="photo"><img src="${$value.IMG}" width="44" height="44"></div>
+                            {{/if}}
+                            {{if $value.Title}}
+                            <div class="tasktitle" title="${$value.Title}">
+                                <a href="javascript:void(0)">${$value.Title}</a>
+                            </div>
+                            {{/if}}
+                            {{if $value.SubTitle}}
+                            {{if $value.Title}}
+                            <div class="date">
+                                ${$value.SubTitle}
+                            </div>
+                            {{else}}
+                            <div style="font-size: 12px;color: #666;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;height: 50px;line-height: 50px;margin: 10px 10px 0 0;border-radius: 5px;float: right;padding-left: 18px;display: inline-block;">
+                                ${$value.SubTitle}
+                            </div>
+                            {{/if}}
+                            {{/if}}
+                            {{if $value.Title}}
+                            <div class="taskcontent">
+                                ${$value.Content}
+                            </div>
+                            {{else}}
+                            <div class="taskcontent" style="top:0px;height:50px;line-height:50px;">
+                                ${$value.Content}
+                            </div>
+                            {{/if}}
+
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+                <div class="groupbottom" value="0" onclick="groupUpAndDown(${$value.GroupCount}, this)"><i class="fa fa-fw fa-caret-down"></i>查看${$value.GroupCount}条信息</div>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+    {{else}}
+    <div class="group-filegrid">
+        <ul>
+            {{each GroupData}}
+            <li>
+                <div style="padding:8px 0px 8px;"><span class="groupname">${$value.GroupName}</span><span class="grouptag">${$value.GroupTag}</span></div>
+                <ul class="list-group">
+                    {{each $value.GroupDataList}}
+                    <li class="list-item" onclick="${$value.onclick}">
+                        <div class="item-head">
+                            {{if $value.IMG}}
+                            <div class="photo"><img src="${$value.IMG}" width="44" height="44"></div>
+                            {{/if}}
+                            {{if $value.Title}}
+                            <div class="tasktitle" title="${$value.Title}">
+                                <a href="javascript:void(0)">${$value.Title}</a>
+                            </div>
+                            {{/if}}
+                            {{if $value.SubTitle}}
+                            {{if $value.Title}}
+                            <div class="date">
+                                ${$value.SubTitle}
+                            </div>
+                            {{else}}
+                            <div style="font-size: 12px;color: #666;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;height: 50px;line-height: 50px;margin: 10px 10px 0 0;border-radius: 5px;float: right;padding-left: 18px;display: inline-block;">
+                                ${$value.SubTitle}
+                            </div>
+                            {{/if}}
+                            {{/if}}
+                            {{if $value.Title}}
+                            <div class="taskcontent">
+                                ${$value.Content}
+                            </div>
+                            {{else}}
+                            <div class="taskcontent" style="top:0px;height:50px;line-height:50px;">
+                                ${$value.Content}
+                            </div>
+                            {{/if}}
+
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+                <div class="groupbottom" value="0" onclick="groupUpAndDown(${$value.GroupCount}, this)"><i class="fa fa-fw fa-caret-down"></i>查看${$value.GroupCount}条信息</div>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+    {{/if}}
+    {{else}}
+    <div class="BIinfo-box-list" style="${Style}">
+        {{if hasimg==1}}
+        <div class="xnflow-newsphoto">
+            <ul class="list-group">
+                {{each List}}
+                <li class="list-item" onclick="${$value.onclick}">
+                    <div class="item-head">
+                        <div class="photo"><img src="${$value.IMG}" width="44" height="44"></div>
+                        {{if $value.Title}}
+                        <div class="tasktitle" title="${$value.Title}">
+                            <a href="javascript:void(0)">${$value.Title}</a>
+                        </div>
+                        {{/if}}
+                        {{if $value.SubTitle}}
+                        {{if $value.Title}}
+                        <div class="date">
+                            ${$value.SubTitle}
+                        </div>
+                        {{else}}
+                        <div style="font-size: 12px;color: #666;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;height: 50px;line-height: 50px;margin: 0px 10px 0 0;border-radius: 5px;float: right;padding-left: 18px;display: inline-block;">
+                            ${$value.SubTitle}
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                        {{if $value.Title}}
+                        <div class="taskcontent">
+                            ${$value.Content}
+                        </div>
+                        {{else}}
+                        <div class="taskcontent" style="top:0px;height:50px;line-height:50px;">
+                            ${$value.Content}
+                        </div>
+                        {{/if}}
+
+                    </div>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{else}}
+        <div class="xnflow-news">
+            <ul class="list-group">
+                {{each List}}
+                <li class="list-item" onclick="${$value.onclick}">
+                    <div class="item-head">
+                        {{if $value.Title}}
+                        <div class="tasktitle" title="${$value.Title}">
+                            <a href="javascript:void(0)">${$value.Title}</a>
+                        </div>
+                        {{/if}}
+                        {{if $value.SubTitle}}
+                        {{if $value.Title}}
+                        <div class="date">
+                            ${$value.SubTitle}
+                        </div>
+                        {{else}}
+                        <div style="font-size: 12px;color: #666;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;height: 50px;line-height: 50px;margin: 0px 10px 0 0;border-radius: 5px;float: right;padding-left: 18px;display: inline-block;">
+                            ${$value.SubTitle}
+                        </div>
+                        {{/if}}
+                        {{/if}}
+                        {{if $value.Title}}
+                        <div class="taskcontent">
+                            ${$value.Content}
+                        </div>
+                        {{else}}
+                        <div class="taskcontent" style="top:0px;margin-top:10px;height:50px;line-height:50px;">
+                            ${$value.Content}
+                        </div>
+                        {{/if}}
+                    </div>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+    {{else}}
+    <div class="BIinfo-box-list">
+        <div class="xnflow-news">
+            <h2 style='color: #cdced2; font-size: 16px; text-align: center;'>暂无内容</h2>
+        </div>
+    </div>
+    {{/if}}
+</script>
+

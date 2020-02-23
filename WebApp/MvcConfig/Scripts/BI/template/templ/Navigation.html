@@ -1,0 +1,71 @@
+﻿<script id="Navigation" type="text/x-jquery-tmpl">
+    <div id="${ID}datadiv">
+        <div style='min-width:${minWidth}'>
+            <div class="BIflow-title">
+                {{each Tag}}
+                <div class="BIflowth c" style="float:left; width: ${$value.width};">
+                    ${$value.Title}
+                    {{if $value.IsLast=="0"}}
+                    <div class="arrow"></div>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+            <div class="BIflow-mian">
+                <table>
+                    <tr>
+                        {{each Tag}}
+                        {{if $value.IsLast=="0"}}
+                        <td valign="top" class="BIflowbr" style="width: ${$value.width};">
+                            {{each $value.Columns}}
+                            <ul class="BIflowbt" style="float:left; width: ${$value.width};">
+                                {{each $value.Items}}
+                                {{if $value.State=="0"}}
+                                <li>
+                                    <div class="wait">
+                                        <div>${$value.Name}</div>
+                                    </div>
+                                </li>
+                                {{else}}
+                                <li>
+                                    <div class="over" style="cursor:pointer" onclick="${$value.LinkUrl};">
+                                        <div>${$value.Name}</div>
+                                        <span>${$value.Date}</span>
+                                    </div>
+                                </li>
+                                {{/if}}
+                                {{/each}}
+                            </ul>
+                            {{/each}}
+                        </td>
+                        {{else}}
+                        <td valign="top" class="" style="width: ${$value.width};min-width:150px">
+                            {{each $value.Columns}}
+                            <ul class="BIflowbt" style="float:left; width: ${$value.width};min-width:150px">
+                                {{each $value.Items}}
+                                {{if $value.State=="0"}}
+                                <li>
+                                    <div class="wait">
+                                        <div>${$value.Name}</div>
+                                    </div>
+                                </li>
+                                {{else}}
+                                <li>
+                                    <div class="over" style="cursor:pointer" onclick="${$value.LinkUrl};">
+                                        <div>${$value.Name}</div>
+                                        <span>${$value.Date}</span>
+                                    </div>
+                                </li>
+                                {{/if}}
+                                {{/each}}
+                            </ul>
+                            {{/each}}
+                        </td>
+                        {{/if}}
+                        {{/each}}
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>

@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "AttrPageView";
+}
+
+<form id="dataForm" method="post" align="center" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    <div class="formDiv" style="background-color: #fff;">
+        @Html.Raw(ViewBag.AttrHtml)
+    </div>
+</form>
+<script type="text/javascript">
+    var formData=@Html.Raw(ViewBag.FormData);
+    @Html.Raw(ViewBag.Script)
+    @Html.Raw(ViewBag.AttrScript)
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = new mini.Form("dataForm");
+        form.setData(formData);
+        form.setChanged(false);
+
+        //将地址栏参数赋值给form的空值隐藏控件
+        $("form .mini-hidden").each(function () {
+            var name = $(this).attr("name");
+            if (hasQueryString(name)) {
+                var field = mini.getbyName(name);
+                if (field.getValue() == "")
+                    field.setValue(getQueryString(name));
+            }
+        });
+
+        //调用界面上的onFormSetValue方法
+        if (typeof (onFormSetData) != "undefined")
+            onFormSetData(formData);
+
+    });
+
+</script>

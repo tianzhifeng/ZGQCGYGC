@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "MainTab";
+}
+
+<div id="MainTabs" class="mini-tabs" activeindex="0" style="width:100%;height:100%;"  borderstyle="border:0px" >
+</div>
+<script type="text/javascript">
+
+    var FuncType = getQueryString("FuncType");
+    function pageLoad() {
+        var maintab = mini.get("MainTabs");
+        var ProjectInfoID = getQueryString("ProjectInfoID");
+        var tabsary = [
+            { title: "按工作目录查看", url: "List?ProjectInfoID=" + ProjectInfoID, refreshOnClick: true },
+            { title: "按归档目录查看", url: "DBSViewList?ProjectInfoID=" + ProjectInfoID, refreshOnClick: true },
+        ];
+        for (var i = 0; i < tabsary.length; i++) {
+            tabdata = tabsary[i];
+            if (tabdata.url.indexOf("FuncType") < 0)
+                tabdata.url += ((tabdata.url.indexOf('?') > -1) ? "&" : "?") + "FuncType=" + FuncType;
+            tabdata.url = addUrlSearch(tabdata.url);
+        }
+        maintab.setTabs(tabsary);
+        maintab.activeTab(tabsary[0]);
+    }
+
+
+</script>

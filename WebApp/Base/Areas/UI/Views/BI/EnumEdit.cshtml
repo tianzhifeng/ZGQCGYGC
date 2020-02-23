@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "EnumEdit";
+}
+
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="addRow({value:'',text:''},{isLast:true});">添加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delRow();">移除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="returnData();">确定</a>
+                <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div field="value" width="50%" vtype="required;">
+                枚举值
+                <input property="editor" class="mini-textbox" style="width: 100%;" onvaluechanged="onEnumValueChanged" />
+            </div>
+            <div field="text" width="50%" vtype="required;">
+                枚举文本
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="checkboxcolumn" field="IsDefault" truevalue="true" falsevalue="false" width="60" headeralign="center">默认选中</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function setData(data) {
+        if (data) {
+            var grid = mini.get("dataGrid");
+            try {
+                grid.setData(mini.decode(data));
+            } catch (e) { }
+        }
+    }
+    function returnData() {
+        var grid = mini.get("dataGrid");
+        var data = grid.getData();
+        closeWindow(data);
+    }
+
+    function returnEnumKey() {
+        var grid = mini.get("enumGrid");
+        var row = grid.getSelected();
+        if (row)
+            closeWindow(row["Code"]);
+        else
+            closeWindow("");
+    }
+</script>
+<script type="text/javascript">
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+</script>
+<script type="text/javascript">
+
+    function onEnumValueChanged(e) {
+        var grid = mini.get("dataGrid");
+        var row = grid.getEditorOwnerRow(e.sender);
+        if (row["Text"] == "") {
+            row["Text"] = e.sender.getValue();
+        }
+        grid.updateRow(row);
+    }
+</script>

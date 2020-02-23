@@ -1,0 +1,707 @@
+﻿@{
+    ViewBag.Title = "Folder";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="300" expanded="true" showheader="false" showspliticon="false" allowresize="false" style="border-top:0px;">
+        <div class="mini-toolbar" style="padding: 0px; ">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入目录名" style="width: 200px;" onenter="search();"
+                               onbuttonclick="search();" />
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <a class="mini-button" iconcls="icon-add" onclick="sychorTemplate();" plain="true">同步模板</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+                enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="@ViewBag.DisplayLevel" onnodeselect="onnodeselect"
+                allowdrag="true" allowdrop="true"
+                onbeforedrop="onNodeDrop" ongivefeedback="onGiveFeedback"></ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top:0px;">
+        <div class="mini-fit" style="padding-top: 5px;">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px;">
+                <div title="子目录">
+                    <div id="subLayout" class="mini-layout" style="width: 100%; height: 100%; ">
+                        <div title="south" region="south" showsplit="false" showheader="false" height="300" showspliticon="false" allowresize="false">
+                            <div class="mini-fit" style="padding-top: 5px;">
+                                <div id="subFolderTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px">
+                                    <div title="权限">
+                                        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                            <table style="width: 100%;">
+                                                <tr>
+                                                    <td id="changeAuth" style="white-space: nowrap;">
+                                                        <a class="mini-button" iconcls="icon-edit" onclick="ChangeAuth" plain="true">编辑权限</a>
+                                                    </td>
+                                                    <td id="modifyAuth" style="width: 100%;">
+                                                        <a class="mini-button" iconcls="icon-download" onclick="intertParentAuth" plain="true">继承父目录</a>
+                                                        <a class="mini-button" iconcls="icon-add" onclick="addRole" plain="true">增加角色</a>
+                                                        <a class="mini-button" iconcls="icon-add" onclick="addUser" plain="true">增加用户</a>
+                                                        <a class="mini-button" iconcls="icon-save" onclick="saveAuth" plain="true">保存</a>
+                                                    </td>
+                                                    <td style="white-space: nowrap;"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="mini-fit">
+                                            <div id="authGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                                 allowcelledit="true" allowcellselect="true"
+                                                 showpager="false" borderstyle="border-left:0px;">
+                                                <div property="columns">
+                                                    <div type="checkcolumn">
+                                                    </div>
+                                                    <div field="Remove" width="50" headeralign="center" align="center">
+                                                        删除
+                                                    </div>
+                                                    <div field="AuthRelateType" width="*" headeralign="center" allowsort="true" align="center">
+                                                        类别
+                                                    </div>
+                                                    <div field="RelateName" width="300" headeralign="center" allowsort="true" align="center">
+                                                        名称
+                                                    </div>
+                                                    <div field="WriteAuth" truevalue="1" type="checkboxcolumn" falsevalue="0" width="120" headeralign="center" allowsort="true" align="center">
+                                                        读写
+                                                    </div>
+                                                    <div field="BrowseAuth" truevalue="1" type="checkboxcolumn" falsevalue="0" headeralign="center" width="120" allowsort="true" align="center">
+                                                        浏览
+                                                    </div>
+                                                    <div field="DownLoadAuth" truevalue="1" type="checkboxcolumn" falsevalue="0" headeralign="center" width="120" allowsort="true" align="center">
+                                                        下载
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div title="自定义属性">
+                                        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                            <table style="width: 100%;">
+                                                <tr>
+                                                    <td style="width: 100%;">
+                                                        <a class="mini-button" iconcls="icon-add" onclick="addAttr" plain="true">增加</a>
+                                                        <a class="mini-button" iconcls="icon-save" onclick="saveAttr" plain="true">保存</a>
+                                                    </td>
+                                                    <td style="white-space: nowrap;"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="mini-fit">
+                                            <div id="attrGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                                 allowcellselect="true" allowcelledit="true" showpager="false" borderstyle="border-left:0px;">
+                                                <div property="columns">
+                                                    <div type="indexcolumn">
+                                                    </div>
+                                                    <div field="Remove" width="60" headeralign="center" align="center">
+                                                        删除
+                                                    </div>
+                                                    <div type="comboboxcolumn" autoshowpopup="true" field="ItemType" width="120" headeralign="center" align="center" vtype="required">
+                                                        控件类型<input property="editor" class="mini-combobox" style="width: 100%;" data="DataType" />
+                                                    </div>
+                                                    <div field="Settings" width="80">
+                                                        详细设置
+                                                    </div>
+                                                    <div field="Name" width="*" headeralign="center" align="center" vtype="required">
+                                                        属性名<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                    </div>
+                                                    <div field="Code" width="120" headeralign="center" align="center" vtype="required">
+                                                        属性字段<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                    </div>
+                                                    <div type="checkboxcolumn" truevalue="True" falsevalue="False" field="Enable" width="120" headeralign="center" align="center">
+                                                        是否可用
+                                                    </div>
+                                                    <div type="checkboxcolumn" truevalue="True" falsevalue="False" field="Visible" headeralign="center" width="120" align="center">
+                                                        是否显示
+                                                    </div>
+                                                    <div field="SortIndex" headeralign="center" width="120" align="center" vtype="int;required">
+                                                        排序号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div title="映射配置">
+                                        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                            <table style="width: 100%;">
+                                                <tr>
+                                                    <td style="width: 100%;">
+                                                        <a class="mini-button" iconcls="icon-add" onclick="addMapping" plain="true">增加</a>
+                                                        <a class="mini-button" iconcls="icon-save" onclick="saveMapping" plain="true">保存</a>
+                                                    </td>
+                                                    <td style="white-space: nowrap;"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="mini-fit">
+                                            <div id="mappingGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                                 allowcellselect="true" allowcelledit="true" showpager="false" borderstyle="border-left:0px;">
+                                                <div property="columns">
+                                                    <div type="indexcolumn">
+                                                    </div>
+                                                    <div field="Remove" width="60" headeralign="center" align="center">
+                                                        删除
+                                                    </div>
+                                                    <div field="Settings" width="80">
+                                                        详细设置
+                                                    </div>
+                                                    <div type="comboboxcolumn" autoshowpopup="true" field="TableName" width="120" headeralign="center" align="center">
+                                                        数据表<input property="editor" class="mini-combobox" style="width: 100%;" url="GetTable" />
+                                                    </div>
+                                                    <div type="comboboxcolumn" autoshowpopup="true" field="MappingType" width="120" headeralign="center" align="center">
+                                                        映射类型<input property="editor" class="mini-combobox" style="width: 100%;" data="MappingType" />
+                                                    </div>
+                                                    <div field="WordTemplateCode" width="*" headeralign="center" align="center">
+                                                        Word模板编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                    </div>
+                                                    <div field="MainFileField" width="150" headeralign="center" align="center">
+                                                        文件字段<input property="editor" class="mini-textbox" style="width: 100%;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div title="目录属性">
+                                        <div id="folderForm">
+                                            <input name="ID" class="mini-hidden" />
+                                            <div style="padding-left: 20px; padding-top: 10px;">
+                                                <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                                                    <tr>
+                                                        <td width="15%">名称</td>
+                                                        <td width="35%;" style="padding-right: 40px;">
+                                                            <input name="Name" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                                                        </td>
+                                                        <td width="15%">编号</td>
+                                                        <td width="35%;" style="padding-right: 40px;">
+                                                            <input name="Code" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>目录类型</td>
+                                                        <td style="padding-right: 40px;">
+                                                            <input name="FolderType" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                                                   data="FolderType" allowinput="false" />
+                                                        </td>
+                                                        <td>目录Key</td>
+                                                        <td style="padding-right: 40px;">
+                                                            <input name="FolderKey" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>备注</td>
+                                                        <td colspan="3" style="padding-right: 40px;">
+                                                            <input name="Remark" class="mini-textarea" style="width: 100%;height:100px;" vtype="maxLength:100" />
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div title="center" region="center" style="border-top: 0px; border-left: 0px; border-right: 0px; ">
+                            <div class="mini-toolbar" style="padding: 0px; ">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <a class="mini-button" iconcls="icon-add" onclick="addSubNode" plain="true">增加</a>
+                                            <a class="mini-button" iconcls="icon-save" onclick="saveFolders" plain="true">保存</a>
+                                        </td>
+                                        <td style="white-space: nowrap;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="mini-fit">
+                                <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+                                     allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" showpager="false"
+                                     onselectionchanged="onSelectionChanged"
+                                     borderstyle="border-left:0px;border-right:0px;border-bottom:0px">
+                                    <div property="columns">
+                                        <div type="indexcolumn">
+                                        </div>
+                                        <div field="Remove" width="50" headeralign="center" align="center">
+                                            删除
+                                        </div>
+                                        <div name="Code" field="Code" width="120" headeralign="center" align="center">
+                                            编号<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                        <div name="Name" field="Name" width="*" headeralign="center" vtype="required">
+                                            名称<input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                        <div type="comboboxcolumn" autoshowpopup="true" name="FolderType" field="FolderType" width="120" align="center"
+                                             headeralign="center" vtype="required">
+                                            目录类型<input property="editor" class="mini-combobox" style="width:100%;" data="FolderType" />
+                                        </div>
+                                        <div field="ModifyUser" headeralign="center" width="120" align="center">
+                                            修改人
+                                        </div>
+                                        <div field="ModifyDate" width="150" headeralign="center" dateformat="yyyy-MM-dd HH:mm:ss" align="center">
+                                            修改日期
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div title="目录属性">
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(EPC.Logic.FolderType));
+    var roleType = [{ text: "项目角色", value: "ProjectRole" }, { text: "系统角色", value: "SysRole" }, { text: "用户", value: "User" },
+          { text: "外部协作方", value: "CooperationRole" }
+    ];
+    var DataType = [{ "id": "TextBox", "value": "TextBox", "text": "单行文本框", "Category": "", "SubCategory": "" },
+        { "id": "TextArea", "value": "TextArea", "text": "多行文本框", "Category": "", "SubCategory": "" },
+        { "id": "DatePicker", "value": "DatePicker", "text": "日期选择框", "Category": "", "SubCategory": "" },
+        { "id": "ComboBox", "value": "ComboBox", "text": "组合下拉框", "Category": "", "SubCategory": "" },
+        { "id": "ButtonEdit", "value": "ButtonEdit", "text": "弹出选择框", "Category": "", "SubCategory": "" }];
+
+    var MappingType = [{ "text": "数据生成文件", "value": "Data" }, { "text": "文件直接导入", "value": "File" }];
+
+
+</script>
+<script type="text/javascript">
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    var url = "GetTree?EngineeringInfoID=" + engineeringInfoID;
+    $("#dataTree").attr("url", url);
+    $("#folderForm input").attr("onvaluechanged", "onFormValueChanged");
+
+    $("#modifyAuth").hide();
+
+    addGridEnum("authGrid", "AuthRelateType", "roleType");
+
+    addGridButton("authGrid", "Remove", {
+        linkText: "删除",
+        onButtonClick: function (authGridrow) {
+            var folderRow = mini.get("dataGrid").getSelected();
+            if (!folderRow) return;
+            if (folderRow.InhertAuth == "True") { msgUI("继承权限不能进行删除操作"); return; }
+            msgUI("您确定要删除吗？", 2, function (result) {
+                if (result != "ok") return;
+                addExecuteParam("ID", authGridrow.ID);
+                execute("RemoveAuth", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        mini.get("authGrid").removeRow(authGridrow);
+                    }, validateForm: false
+                });
+            });
+        }
+    });
+
+    addGridButton("dataGrid", "Remove", {
+        linkText: "删除",
+        onButtonClick: function (row) {
+            msgUI("您确定要删除吗？", 2, function (result) {
+                if (result != "ok") return;
+                var tree = mini.get("dataTree");
+                var parentNode = tree.getSelectedNode();
+                if (!parentNode) {
+                    msgUI("请先选择一个目录"); return;
+                }
+                var dataGrid = mini.get("dataGrid");
+                var rows = [];
+                rows.push(row);
+                addExecuteParam("ListData", mini.encode(rows));
+                execute("DeleteFolders", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataGrid.removeRows(rows);
+                        for (var i = 0; i < rows.length; i++) {
+                            var treeNode = rows[i];
+                            if (!treeNode.ID) continue;
+                            var nodes = tree.findNodes(function (node) {
+                                if (node.ID == treeNode.ID) return true;
+                            });
+                            if (nodes && nodes.length > 0) {
+                                tree.removeNodes(nodes);
+                            }
+                        }
+                    }, validateForm: false
+                });
+            });
+        }
+    });
+
+    function search() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    addGridButton("attrGrid", "Settings", {
+        linkText: '详细', onButtonClick: function (row) {
+            var type = row["ItemType"];
+            if (!type) { msgUI('请先选择控件类型!'); return; }
+            var url = "/Base/UI/Form/Settings" + type;
+            var title = "详细设置";
+            var width = 350;
+            openWindow(url, {
+                width: width, title: title, data: row["Settings"], onDestroy: function (data) {
+                    if (data != "close") {
+                        mini.get("attrGrid").updateRow(row, { Settings: mini.encode(data) });
+                    }
+                }
+            });
+        }
+    });
+
+    addGridButton("mappingGrid", "Settings", {
+        linkText: '详细', onButtonClick: function (row) {
+            var url = "";
+            var title = "详细设置";
+            var width = 800;
+            var height = 600;
+            if (row["MappingType"] == "Data") {
+                width = 500;
+                title = "映射字段设置"
+                url = "/EPC/Infrastructure/FolderTemplate/MappingFieldConfig?TableName=" + row["TableName"];
+            }
+
+            if (url == "")
+                return;
+
+            openWindow(url, {
+                refresh: false, title: title, width: width, height: height, data: row["Settings"],
+                onDestroy: function (data) {
+                    if (data != "close") {
+                        mini.get("mappingGrid").updateRow(row, { Settings: mini.encode(data) });
+                    }
+                }
+            });
+        }
+    });
+
+
+    addGridButton("mappingGrid", "Remove", {
+        linkText: "删除",
+        onButtonClick: function (row) {
+            var dataGrid = mini.get("mappingGrid");
+            dataGrid.removeRow(row);
+        }
+    });
+
+    addGridButton("attrGrid", "Remove", {
+        linkText: '删除', onButtonClick: function (row) {
+            var dataGrid = mini.get("attrGrid");
+            dataGrid.removeRow(row);
+        }
+    });
+
+
+
+    function addSubNode() {
+        var tree = mini.get("dataTree");
+        var parentNode = tree.getSelectedNode();
+        if (!parentNode) {
+            msgUI("请先选择一个目录"); return;
+        }
+        var newRow = { ParentID: parentNode.ID, FolderType: "Folder" };
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.addRow(newRow);
+        dataGrid.beginEditCell(newRow, "Name");
+    }
+
+    function onnodeselect(e) {
+        if (e.node) {
+            var url = "GetSubFolderList?ParentID=" + e.node.ID;
+            var dataGrid = mini.get("dataGrid");
+            dataGrid.setUrl(url);
+            dataGrid.load();
+
+            //清空grid
+            mini.get("authGrid").clearRows();
+            mini.get("attrGrid").clearRows();
+            mini.get("mappingGrid").clearRows();
+            var form = new mini.Form("folderForm");
+            form.setData();
+        }
+    }
+
+    function onFormValueChanged(e) {
+        var form = new mini.Form("folderForm");
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (row) {
+            var dataForm = form.getData();
+            dataGrid.updateRow(row, dataForm);
+        }
+    }
+
+    function onSelectionChanged(e) {
+        if (e.selected) {
+            var form = new mini.Form("folderForm");
+            form.setData(e.selected);
+            var authGrid = mini.get("authGrid");
+            if (e.selected.ID) {
+                if (e.selected.InhertAuth == "True") {
+                    $("#modifyAuth").hide();
+                    $("#changeAuth").show();
+                }
+                else {
+                    $("#modifyAuth").show();
+                    $("#changeAuth").hide();
+                }
+                authGrid.setUrl("GetFolderAuthList?FolderID=" + e.selected.ID);
+                authGrid.load();
+            }
+            if (e.selected.AttrDefine) {
+                var attrGrid = mini.get("attrGrid");
+                attrGrid.setData(mini.decode(e.selected.AttrDefine));
+            }
+            else {
+                var attrGrid = mini.get("attrGrid");
+                attrGrid.clearRows();
+            }
+            if (e.selected.MappingDefine) {
+                var mappingGrid = mini.get("mappingGrid");
+                mappingGrid.setData(mini.decode(e.selected.MappingDefine));
+            }
+            else {
+                var mappingGrid = mini.get("mappingGrid");
+                mappingGrid.clearRows();
+            }
+        }
+    }
+
+    function addMapping() {
+        var mappingGrid = mini.get("mappingGrid");
+        var newRow = {};
+        mappingGrid.addRow(newRow);
+    }
+
+    function saveMapping() {
+        var mappingGrid = mini.get("mappingGrid");
+        mappingGrid.commitEdit();
+        var dataGrid = mini.get("dataGrid");
+        var row = mini.get("dataGrid").getSelected();
+        if (!row) { msgUI("请选择一个子目录数据"); return; }
+        var mappingData = mappingGrid.getData();
+        dataGrid.updateRow(row, { MappingDefine: mappingData });
+        msgUI("保存成功");
+    }
+
+    function addAttr() {
+        var attrGrid = mini.get("attrGrid");
+        var newRow = { DataType: "TextBox", Enable: "True", Visible: "True" };
+        attrGrid.addRow(newRow);
+    }
+
+    function saveAttr() {
+        var attrGrid = mini.get("attrGrid");
+        attrGrid.commitEdit();
+        attrGrid.validate();
+        if (attrGrid.isValid() == false) {
+            var error = attrGrid.getCellErrors()[0];
+            attrGrid.beginEditCell(error.record, error.column);
+            msgUI("数据校验不通过，请确认数据是否填写完整");
+            return;
+        }
+        var dataGrid = mini.get("dataGrid");
+        var row = mini.get("dataGrid").getSelected();
+        if (!row) { msgUI("请选择一个子目录数据"); return; }
+        var attrData = attrGrid.getData();
+        dataGrid.updateRow(row, { AttrDefine: attrData });
+        saveFolders();
+        msgUI("保存成功");
+    }
+
+    function saveFolders() {
+        var tree = mini.get("dataTree");
+        var parentNode = tree.getSelectedNode();
+        if (!parentNode) {
+            msgUI("请先选择一个目录"); return;
+        }
+
+
+        var attrGrid = mini.get("attrGrid");
+        attrGrid.commitEdit();
+        attrGrid.validate();
+        if (attrGrid.isValid() == false) {
+            var error = attrGrid.getCellErrors()[0];
+            attrGrid.beginEditCell(error.record, error.column);
+            msgUI("数据校验不通过，请确认数据是否填写完整");
+            return;
+        }
+
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.commitEdit();
+        dataGrid.validate()
+
+        var row = mini.get("dataGrid").getSelected();
+        var attrData = attrGrid.getData();
+        dataGrid.updateRow(row, { AttrDefine: attrData });
+
+        var rows = dataGrid.getData();
+        if (dataGrid.isValid() == false) {
+            var error = dataGrid.getCellErrors()[0];
+            var txt = error.errorText;
+            if (error.column.header)
+                txt = error.column.header + "：" + txt;
+            var s = "<div style='text-align:left'>" + txt + "</div>";
+            msgUI(s);
+            return;
+        }
+        addExecuteParam("ListData", mini.encode(rows));
+        addExecuteParam("ParentID", parentNode.ID);
+        execute("SaveChildFolder", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+                for (var i = 0; i < data.length; i++) {
+                    var treeNode = data[i];
+                    var nodes = tree.findNodes(function (node) {
+                        if (node.ID == treeNode.ID) return true;
+                    });
+                    if (nodes && nodes.length > 0) {
+                        var node = nodes[0];
+                        tree.updateNode(node, treeNode);
+                    }
+                    else {
+                        tree.addNode(treeNode, "add", parentNode);
+                    }
+                }
+            }, validateForm: false
+        });
+    }
+
+    var includeAuth = "true";
+    function sychorTemplate() {
+        msgUI("您确定要从目录模板同步吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            addExecuteParam("IncludeAuth", includeAuth);
+            execute("SychorFromTemplate", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    msgUI("同步成功");
+                    mini.get("dataTree").reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+
+    function ChangeAuth() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (row) {
+            addExecuteParam("FolderID", row.ID);
+            execute("ChangeAuth", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    $("#modifyAuth").show();
+                    $("#changeAuth").hide();
+                    mini.get("authGrid").reload();
+                    dataGrid.updateRow(row, { InhertAuth: "False" });
+                }, validateForm: false
+            });
+        }
+    }
+
+    function intertParentAuth() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (row) {
+            addExecuteParam("FolderID", row.ID);
+            execute("IntertParentAuth", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    $("#modifyAuth").hide();
+                    $("#changeAuth").show();
+                    dataGrid.updateRow(row, { InhertAuth: "True" });
+                    mini.get("authGrid").reload();
+                }, validateForm: false
+            });
+
+        }
+    }
+
+    function addRole() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一条记录"); return; }
+        var url = "/EPC/RoleSelector/Selector";
+        openWindow(url, {
+            refresh: false, title: "角色选择", width: 750, height: 600,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("FolderID", row.ID);
+                execute("AddRoleAuth", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        var authGrid = mini.get("authGrid");
+                        authGrid.reload();
+                    }, validateForm: false
+                });
+
+            }
+        });
+    }
+
+    function saveAuth() {
+        var dataGrid = mini.get("authGrid");
+        dataGrid.commitEdit();
+        var data = dataGrid.getData();
+        addExecuteParam("ListData", mini.encode(data));
+        execute("SaveAuth", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+
+    }
+
+    function addUser() {
+        var dataGrid = mini.get("dataGrid");
+        var row = dataGrid.getSelected();
+        if (!row) { msgUI("请选择一条记录"); return; }
+        var url = "/MvcConfig/Auth/User/MultiSelector";
+        openWindow(url, {
+            refresh: false, title: "人员选择", width: 750, height: 600,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                addExecuteParam("ListData", mini.encode(data));
+                addExecuteParam("FolderID", row.ID);
+                execute("AddUserAuth", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        var authGrid = mini.get("authGrid");
+                        authGrid.reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function onGiveFeedback(e) {
+
+    }
+
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateRow(e.dragNode, { SortIndex: data.SortIndex });
+                tree.acceptRecord(e.dragNode)
+            }, validateForm: false
+        });
+    }
+
+</script>

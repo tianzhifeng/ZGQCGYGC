@@ -1,0 +1,252 @@
+﻿<div>
+    <form id="dataForm" method="post" url="GetDefProperty" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    <div class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        <div title="基本信息">
+            <div style="width: 100%;">
+                <table style="width: 100%">
+                    <tr class="hideRow">
+                        <td width="35%">
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            流程定义编号
+                        </td>
+                        <td>
+                            <input name="Code" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            流程定义名称
+                        </td>
+                        <td>
+                            <input name="Name" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            所属模块
+                        </td>
+                        <td>
+                            <input name="ConnName" class="mini-combobox" style="width: 100%" required="true" onvaluechanged="setCategoryData(this.getValue(), '');" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            所属分类
+                        </td>
+                        <td>
+                            <input name="CategoryID" class="mini-combobox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            表单对应表名
+                        </td>
+                        <td>
+                            <input name="TableName" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            表单URL
+                        </td>
+                        <td>
+                            <input name="FormUrl" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            流程名模板
+                        </td>
+                        <td>
+                            <input name="FlowNameTemplete" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            任务名模板
+                        </td>
+                        <td>
+                            <input name="TaskNameTemplete" class="mini-textbox" style="width: 100%" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            流程分类模板
+                        </td>
+                        <td>
+                            <input name="FlowCategorytemplete" class="mini-textbox" style="width: 100%" />
+                        </td>
+                    </tr>
+                    @if (Config.Constant.IsOracleDb == false)
+                    {
+                        <tr>
+                            <td>
+                                初始化变量
+                            </td>
+                            <td>
+                                <input name="InitVariable" class="mini-textbox" style="width: 100%" />
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>
+                            描述
+                        </td>
+                        <td>
+                            <input name="Description" class="mini-textarea" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="AllowDeleteForm" class="mini-checkbox" style="width: 100%">
+                                允许发起人删除(已启动流程)</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="isFlowChart" class="mini-checkbox" style="width: 100%">
+                                查看流程图说明</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div name="SendMsgToApplicant" class="mini-checkbox" style="width: 100%">
+                                给发起人发消息</div>
+                            &nbsp;&nbsp;
+                            <div name="MsgSendToAll" class="mini-checkbox" style="width: 100%">
+                                给全部人发消息</div>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+            <div class="mini-fit" style="overflow:hidden">
+                <b>流程定义编号：</b>流程的唯一标识（FlowCode），用于识别流程。 <br />
+                <b>表单对应表名：</b>表单所在数据库和表单对应表名都填写后，并且数据库字段都导入到数据字典中，则环节配置和路由配置字段选项卡中出现对应表的字段信息，为流程配置时做参考。 <br />
+                <b>表单URL：</b>用于指定跑流程的表单在系统中的相对路径。<br />
+                Eg:/MvcConfig/AutoForm/Templete/NormalForm?TmplCode=Demo.BYJ <br />
+                <b>流程名模板：</b>用于设置流程名显示的模板。<br />
+                填写格式为：{字段名}<br />
+                Eg：报销申请流程的表单上有字段“申请人”，那么如果希望报销流程的流程名显示为：某某人的报销申请流程。则可以将流程名模板中配置为：{申请人}的报销申请流程 <br />
+                <b>任务名模板：</b>用于设置流程任务名显示的模板。<br />
+                填写格式为：{字段名或系统变量名}.{字段名或系统变量名}.{字段名或系统变量名}<br />
+                例如：报销申请流程的表单上有字段“申请人”，那么如果希望报销流程的审批过程中每个环节任务的任务名为：某某申请人.某审批环节名.流程名。则可以将任务名模板中配置为：{申请人}.{StepName}.{FlowName} <br />
+                <b>初始化变量：</b>可以在启动环节给流程定义一个变量或多个变量，可以在各个流程路由的基本设置中的变量设置中进行重新赋值，可以在各个流程路由的权限设置中的变量权限中进行变量判断。<br />
+                填写格式为：变量名1=’变量值1’, 变量名2=’变量值2’, 变量名3=’变量值3’ <br />
+                <b>允许发起人删除：</b>流程启动后，在后续环节没有被执行的情况下，发起人是否可以删除该流程。 <br />
+                <b>给发起人发送消息：</b>流程结束后，是否给申请人发消息。 <br />
+            </div>
+        </div>
+        <div title="其它信息">
+            <table style="width: 100%">
+                <tr class="hideRow">
+                    <td width="35%">
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单宽度
+                    </td>
+                    <td>
+                        <input name="FormWidth" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        表单高度
+                    </td>
+                    <td>
+                        <input name="FormHeight" class="mini-textbox" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left;">
+                        <br />
+                        表单宽度高度：在任务列表上打开表单页面的大小
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+    var Categories = @Html.Raw(ViewBag.EnumCategory);
+    @Html.GetEnum("ConnEnum")
+</script>
+<script type="text/javascript">
+
+    function onFormSetData(data) {
+        var connName = getQueryString("ConnName");
+        var categoryID = getQueryString("CategoryID");
+        if (connName) {
+            mini.getbyName("ConnName").setValue(connName);
+            setCategoryData(connName, categoryID);
+        }
+        else {
+            setCategoryData(data.ConnName, data.CategoryID);
+        }
+
+        var categoryCode = getQueryString("CategoryCode");
+        if (categoryCode && categoryCode != "{CategoryCode}") {
+            mini.getbyName("Code").setValue(categoryCode + "_");
+        }
+    }
+
+    function setCategoryData(connName, categoryID) {
+        var ConnEnum = [];
+        var CateEnum = [];
+        for (var i = 0; i < Categories.length; i++) {
+            var c = Categories[i];
+            if (c.ParentID == '0')
+                ConnEnum.push({ value: c.Code, text: c.Name });
+            if (c.Code == connName)
+                CateEnum.push({ value: c.ID, text: c.Name });
+        }
+        mini.getbyName("ConnName").setData(ConnEnum);
+        mini.getbyName("ConnName").setValue(connName);
+        mini.getbyName("CategoryID").setData(CateEnum);
+        mini.getbyName("CategoryID").setValue(categoryID);
+    }
+</script>
+<script type="text/javascript">
+
+    var form = null;
+    function getData(onlyChanged) {
+        var id = getQueryString("ID");
+        if (form == null || (onlyChanged && form.isChanged() == false)) {
+            return null;
+        }
+        var data = form.getData();
+        var result = {};
+        result["ID"] = id;
+        result["Data"] = data;
+        result["Type"] = "Flow";
+        return result;
+    }
+
+    $(function () {
+        var id = getQueryString("ID");
+        var data = window.parent.getData(id, "Flow");
+        if (form == null) {
+            form = new mini.Form("#dataForm");
+        }
+        //设置表单数据
+        if(data){
+            form.setData(data);
+            form.setChanged(false);
+            onFormSetData(data);
+        }
+        if (getQueryString("editable") != 1)
+            setFormDisabled();
+    });
+
+</script>

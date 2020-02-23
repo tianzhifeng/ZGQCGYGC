@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "BomTab";
+}
+
+<div class="mini-fit" style="padding-top: 5px;">
+    <div id="Name" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+        @{
+            var list = ViewBag.BomCatagory as List<EPC.Logic.Domain.S_T_BomDefine_Detail>;
+            var engineeringInfo = ViewBag.EngineeringInfo as EPC.Logic.Domain.S_I_Engineering;
+            @*<div title="全部" url="BomList?EngineeringInfoID=@engineeringInfo.ID">
+            </div>*@
+            foreach (var item in list)
+            {
+                var linkUrl = String.IsNullOrEmpty(item.LinkUrl) ? "Tree" : item.LinkUrl;
+                linkUrl += linkUrl.IndexOf("?") > 0 ? "&EngineeringInfoID=" + engineeringInfo.ID + "&DefineID=" + item.ID + "&MajorCode=" + item.Code
+                    : "?EngineeringInfoID=" + engineeringInfo.ID + "&DefineID=" + item.ID + "&MajorCode=" + item.Code;
+                <div title="@item.Name" url="@linkUrl">
+                </div>
+            }
+        }
+    </div>
+</div>

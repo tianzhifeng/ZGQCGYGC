@@ -1,0 +1,185 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;" splitsize="6">
+    <div region="west" width="550px" expanded="true" showspliticon="false" showheader="false"
+        style="border-top: 0; border-bottom: 0;">
+        <div class="mini-toolbar" style="padding: 2px; border-bottom: 0; height: 35px;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="returnAmount" plain="true">还款</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入员工姓名或所属部门" onenter="quickSearch('UserName,DeptName',{gridId:'userGrid'});"
+                            onbuttonclick="quickSearch('UserName,DeptName',{gridId:'userGrid'});" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="userGrid" class="mini-datagrid" url="GetList" style="width: 100%; height: 100%;"
+                ondrawsummarycell="onDrawUserSummaryCell" allowresize="false" idfield="id" pagesize="20"
+                onselectionchanged="onDataGridRowClick" showsummaryrow="true" multiselect='false'>
+                <div property="columns">
+                    <div type="indexcolumn" width="30px">
+                    </div>
+                    <div field="UserName" headeralign="center" width="80" allowsort="true" align="center">
+                        员工姓名
+                    </div>
+                    <div field="DeptName" width="200" headeralign="center" allowsort="true" align="left">
+                        所属部门
+                    </div>
+                    <div field="LoanValue" headeralign="center" width="120" allowsort="true" align="right"
+                        decimalplaces="2" datatype="float" summarytype='sum'>
+                        总欠款(元)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="center" region="center" showheader="false" style="border-top: 0; border-bottom: 0; border-right: 0;"
+        class="tree-backcolor">
+        <div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-redo" onclick="cancelReturnAmount" plain="true"
+                            style="margin-top: 6px;">撤销还款</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="detailGrid" class="mini-datagrid" url="" style="width: 100%; height: 100%;"
+                ondrawsummarycell="onDrawSummaryCell" showsummaryrow="true" sortfield="CreateDate"
+                sortorder="desc">
+                <div property="columns">
+                    <div type="indexcolumn" width="30px">
+                    </div>
+                    <div field="CreateDate" headeralign="center" width="80" allowsort="true" dateformat="yyyy-MM-dd"
+                        align="center">
+                        日期
+                    </div>
+                    <div field="AccountValue" headeralign="center" width="80" allowsort="true" align="right"
+                        decimalplaces="2" datatype="float" summarytype='sum'>
+                        金额(元)
+                    </div>
+                    <div field="AccountType" headeralign="center" width="80" allowsort="true" align="center">
+                        类型
+                    </div>
+                    <div field="ShowForm" headeralign="center" width="80" allowsort="true" align="center">
+                        查看表单
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function onDrawUserSummaryCell(e) {
+        var record = e.record;
+        if (e.field == "UserName") {
+            e.cellHtml = "总计: ";
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+        else
+            e.cellStyle = "text-align:right; color:Brown";
+
+        if (e.column.summaryType != undefined && e.column.summaryType == "sum")
+            e.cellHtml = e.value.toFixed(2);
+    }
+
+    function onDrawSummaryCell(e) {
+        var record = e.record;
+        if (e.field == "CreateDate") {
+            e.cellHtml = "总计: ";
+            e.cellStyle = "text-align:right; color:Brown";
+        }
+        else
+            e.cellStyle = "text-align:right; color:Brown";
+
+        if (e.column.summaryType != undefined && e.column.summaryType == "sum")
+            e.cellHtml = e.value.toFixed(2);
+    }
+
+
+    //dataGrid行点击事件
+    function onDataGridRowClick(e) {
+        if (e.selected) {
+            var dataGrid = mini.get("detailGrid");
+            var userID = e.selected.ID;
+            dataGrid.setUrl("GetDetailList?UserID=" + userID);
+            dataGrid.load();
+        }
+    }
+
+    function returnAmount() {
+        var dataGrid = mini.get("userGrid");
+        var row = dataGrid.getSelected();
+        if (row == null) {
+            msgUI("请先选择一条用户记录！");
+            return;
+        }
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=ReturnAmount&UserID=" + row.ID + "&MaxAmount=" + row.LoanValue;
+        openWindow(url, {
+            "width": "750px", "height": "350px", "title": "新增【" + row.UserName + "】还款",
+            onDestroy: function () {
+                dataGrid.reload();
+                mini.get("detailGrid").setData();
+            }
+        });
+    }
+
+    function cancelReturnAmount() {
+        var dataGrid = mini.get("detailGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) {
+            msgUI("请先选择一条用户记录！");
+            return;
+        }
+        msgUI("是否确定撤回选中的还款记录？", 2, function (action) {
+            if (action == "ok") {
+                var rowIDs = "";
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].RelateFormID != null) return msgUI("只能撤销手动还款的记录！");
+                    rowIDs += rows[i].ID + ",";
+                }
+                addExecuteParam("rowIDs", rowIDs);
+                execute("CancelReturnAmount", {
+                    refresh: false, showLoading: false,
+                    onComplete: function (result) {
+                        msgUI("撤销成功！", 4, function (act) {
+                            mini.get("userGrid").reload();
+                            dataGrid.reload();
+                        });
+                    }
+                });
+            }
+        });
+
+    }
+
+    addGridButton("detailGrid", "ShowForm", {
+        onButtonClick: function (row) {
+            var relateFormID = row["RelateFormID"];
+            if (!relateFormID) return msgUI("该记录没有关联的表单信息");
+            var url = "", title = "";
+            if (row["AccountType"] == "还款") {
+                url = "/Expenses/Cost/ReimbursementSubmit/PageView?TmplCode=EPReimbursementApply&FlowCode=EPReimbursementApply&ID=" + relateFormID;
+                title = "报销单信息";
+            }
+            else if (row["AccountType"] == "借款") {
+                url = "/OfficeAuto/AutoForm/LoanApply/PageView?TmplCode=LoanApply&FlowCode=LoanApply&ID=" + relateFormID;
+                title = "借款单信息";
+            }
+            if (!url) return msgUI("该记录没有关联的表单信息");
+
+            openWindow(url, {
+                refresh: false, title: title, width: "800px", height: "80%",
+                onDestroy: function () { }
+            });
+        }
+    });
+
+</script>

@@ -1,0 +1,98 @@
+﻿    <link href="/OfficeAuto/CusStyle/images_files/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css">
+    <script src="/OfficeAuto/CusStyle/images_files/jquery-1.10.1.js" type="text/javascript"></script>
+    <script src="/OfficeAuto/CusStyle/images_files/jquery-ui-1.10.3.custom.js" type="text/javascript"></script>
+    <!--  -->
+    <script src="/OfficeAuto/CusStyle/images_files/menu.js" type="text/javascript"></script>
+    <link href="/OfficeAuto/CusStyle/images_files/templatemo_style.css" rel="stylesheet" type="text/css">
+    <link href="/OfficeAuto/CusStyle/images_files/default.css" rel="stylesheet" type="text/css">
+    <link href="/OfficeAuto/CusStyle/images_files/qt.css" rel="stylesheet" type="text/css">
+    <script src="/OfficeAuto/CusStyle/images_files/jquery.cookie.js" type="text/javascript"></script>
+    <link href="/OfficeAuto/CusStyle/images_files/mysurvey.css" rel="stylesheet" type="text/css">
+    <script src="/OfficeAuto/CusStyle/images_files/list.js" type="text/javascript"></script>
+    <style type="text/css"></style>
+<body onload="Load()">
+    <div id="body_wrapper" >
+        <div class="wrapper" style="width: 95%">
+            <div id="m-content">
+                <div class="m-content-right">
+                    <div class="content-right-title">
+                    </div>
+                    <div class="m-content-right-body">
+                        <div class="content-list">
+                            <div class="r_surveyTitle">
+                                <h2>
+                                    @ViewBag.tittle
+                                </h2>
+                            </div>
+                            <div class="r_tabs">
+                            </div>
+                            <table width="100%" id="content-tableList" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    @Html.Raw(ViewBag.htr)
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="surveyResultQu">
+                                                <div class="r-qu-body-title">
+                                                    添加评论</div>
+                                                <div class="r-qu-body-content">
+                                                    <table class="suQuTable" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td width="5">
+                                                                </td>
+                                                                <td class="bfbTd" style="width: 100%">
+                                                                    <label for="textarea">
+                                                                    </label>
+                                                                    <textarea name="textarea" id="textarea" cols="45" rows="5" style="width: 100%"></textarea>
+                                                                    <label for="textfield4">
+                                                                    </label>
+                                                                </td>
+                                                                <td colspan="4">
+                                                                    &nbsp;
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <div style="clear: both;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="btnSubmit" class="btn" style="width: 100%" style="display:none;">
+                                <div class=" btn001" onclick="Submit();">
+                                    提交评论</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+    <script type="text/javascript">
+        var id = "";
+        function pageLoad() {
+            var functype = getQueryString("FuncType");
+            if (functype != "view") {
+                $('#btnSubmit').show();
+            }
+        }
+        function Load() {
+            var chkObjs = document.getElementsByName("textarea");
+            chkObjs[0].value = "@ViewBag.Comment";
+        }
+        function Submit() {
+            id = getQueryString("QuesID");
+            var chkObjs = document.getElementsByName("textarea");
+            if (chkObjs[0].value == "") { 
+                alert("评论内容为空，无法提交");
+                return ;
+            }
+            addExecuteParam("QuesID", id);
+            addExecuteParam("comment", chkObjs[0].value);
+            execute("SaveComment", {actionTitle: "操作" ,closeWindow:true});
+        }
+    </script>

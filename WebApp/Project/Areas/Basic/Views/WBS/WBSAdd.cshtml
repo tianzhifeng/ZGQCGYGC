@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "WBS策划";
+}
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="addRow" plain="true">增加</a>
+                <a class="mini-button" id="btnAdd" iconcls="icon-add" onclick="addRow" plain="true">快速复制</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveWBS" plain="true">保存</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="deleteWBS" plain="true">删除</a>
+                <a class="mini-button" id="btnok" iconcls="icon-ok" onclick="addRow" plain="true">批量下达任务通知单</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="GetSubProjectList" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         allowcelledit="true" allowcellselect="true" showpager="false" editnextonenterkey="true" editnextrowcell="true"
+         borderstyle="border-left:0;border-right:0;border-bottom:0;" allowunselect="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Code" width="80" vtype="required" headeralign="center" allowsort="false" align="center">
+                子项号<input property="editor" class="mini-textbox" required="true" style="width: 100%;" />
+            </div>
+            <div field="Name" vtype="required" width="100" headeralign="center" allowsort="false">
+                子项名称<input property="editor" class="mini-textbox" required="true" style="width: 100%;" />
+            </div>
+            <div field="ExtField4" headeralign="center" vtype="required" width="100" allowsort="false"
+                 align="center">
+                子项类型<input property="editor" class="mini-combobox" data="SubProjectType" style="width: 100%;" required="true" />
+            </div>
+            <div field="MajorCode" name="MajorCode" displayfield="ExtField3" vtype="required" width="*" headeralign="center" allowsort="false"
+                 align="left">
+                专业
+                <input property="editor" class="mini-buttonedit" allowinput="false" style="width: 100%;"
+                       onbuttonclick="onMajorCodeColumnButtonEdit" required="true" />
+            </div>
+            <div field="ExtField1" headeralign="center" vtype="required" width="100" allowsort="false"
+                 align="center">
+                占地面积(m2)<input property="editor" class="mini-textbox" style="width: 100%;" required="true" />
+            </div>
+            <div field="ExtField2" headeralign="center" vtype="required" width="100" allowsort="false"
+                 align="center">
+                建筑面积(m2)<input property="editor" class="mini-textbox" style="width: 100%;" required="true" />
+            </div>
+            <div field="PlanStartDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false" align="center">
+                计划开始时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+            </div>
+            <div field="PlanEndDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="false" align="center">
+                计划结束时间<input property="editor" class="mini-datepicker" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.SubProjectType")
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var parentID = getQueryString("ParentID");
+    var wbsType = getQueryString("Type");
+</script>
+<script type="text/javascript">
+
+    function deleteWBS() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows && rows.length > 0) {
+            msgUI("确认要删除选中的子项吗？", 2, function (action) {
+                if (action == "ok") {
+                    addExecuteParam("WBSInfo", mini.encode(rows));
+                    addExecuteParam("ProjectInfoID", projectInfoID);
+                    execute("DeleteWBS", {
+                        refresh: true, onComplete: function (data) {
+                            msgUI("删除成功！");
+                            window.parent.dataTreeReLoad();
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            msgUI("请选择您要删除的子项！");
+        }
+    }
+
+    function saveWBS() {
+        var grid = mini.get("dataGrid");
+        grid.validate();
+        if (!grid.isValid()) { return; }
+        var rows = grid.getData();
+        addExecuteParam("WBSType", wbsType);
+        addExecuteParam("Children", mini.encode(rows));
+        addExecuteParam("ParentIDs", parentID);
+        execute("AddChild", {
+            refresh: false, onComplete: function (data) {
+                msgUI("保存成功！");
+                window.parent.dataTreeReLoad();
+            }
+        });
+    }
+
+    function addRow() {
+        var grid = mini.get("dataGrid");
+        var newRow = { WBSType: wbsType };
+        var index = grid.getData().length;
+        grid.addRow(newRow, index);
+    }
+
+    function onMajorCodeColumnButtonEdit(e) {
+        var sender = e.sender;
+        var width = "70%";
+        var height = "80%";
+        var wbsType = "Major";
+        var title = "选择专业";
+        var existedMajorValues = sender.value;
+        var url = "WBSAddWithAttrDefine?ProjectInfoID=" + projectInfoID + "&Type=" + wbsType + "&ExistedMajorValues=" + existedMajorValues;
+        openWindow(url, {
+            refresh: false, title: title, width: width, height: height,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                var returnValue = data.value;
+                var returnText = data.text;
+                sender.setValue(returnValue);
+                sender.setText(returnText);
+            }
+        });
+    }
+</script>

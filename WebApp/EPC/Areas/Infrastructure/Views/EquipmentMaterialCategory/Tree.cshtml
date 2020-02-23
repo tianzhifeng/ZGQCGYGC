@@ -1,0 +1,201 @@
+﻿<div class="mini-splitter" style="width: 100%; height: 100%;">
+    <div size="250" showcollapsebutton="false">
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="GetTree" 
+                allowdrag="true" allowdrop="true" ongivefeedback="onNodeDroping" onbeforedrop="onNodeDrop" ondragstart="ChangeText"
+                allowleafdropin="true" showtreeicon="true" textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false"  iconfield="IconClass"
+                expandonload="true" onnodeselect="onNodeSelect"  ondrawnode="OnDrawNode">
+            </ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+<div class="mini-toolbar gw-grid-toolbar" style="border-left: 0px">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="addrow();" plain="true">增加</a> 
+                <a class="mini-button" iconcls="icon-remove" onclick="delrow()" plain="true">删除</a> 
+                <a class="mini-button" iconcls="icon-save" onclick="savelist()" plain="true">保存</a> 
+            </td>
+            <td class="gw-toolbar-right">
+                <input id="EntityGridKey" class="mini-buttonedit gw-searchbox" emptytext="请输入编码或规格" 
+                    onenter="quickSearch('Size,Code',{gridId:'EntityGrid',queryBoxId:'EntityGridKey'});" 
+                    onbuttonclick="quickSearch('Size,Code', { gridId: 'EntityGrid', queryBoxId: 'EntityGridKey' });"  />
+                <input id="CategoryGridKey" class="mini-buttonedit gw-searchbox" emptytext="请输入分类或编码" 
+                    onenter="quickSearch('Name,Code', { gridId: 'CategoryGrid', queryBoxId: 'CategoryGridKey' });" 
+                    onbuttonclick="quickSearch('Name,Code', { gridId: 'CategoryGrid', queryBoxId: 'CategoryGridKey' });"  />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <form id="CategoryGridForm" action="/" method="post">
+    <div id="CategoryGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect='true' 
+        borderstyle="border-left:0px" url="" allowcellvalid="true" multiselect="true" allowcelledit="true" onload="onGridLoad">
+        <div property="columns">
+            <div type="indexcolumn" width="16px">
+            </div>
+            <div field="Name" width="80px" headeralign="center" allowsort="true" vtype="required">
+                分类/设备<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="Code" width="50px" headeralign="center" allowsort="true" vtype="required">
+                编码<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200"/>
+            </div>
+            <div field="Remark" width="200px" headeralign="center" allowsort="true" >
+                备注<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="500"/>
+            </div>
+        </div>
+    </div>
+    </form>
+    <form id="EntityGridForm" action="/" method="post">
+    <div id="EntityGrid" class="mini-datagrid" style="width: 100%; height: 100%;" allowcellselect='true' 
+        borderstyle="border-left:0px" url="" allowcellvalid="true" multiselect="true" allowcelledit="true" onload="onGridLoad">
+        <div property="columns">
+            <div type="indexcolumn" width="16">
+            </div>
+            <div field="Name" width="50" headeralign="center" allowsort="true">
+                设备名称
+            </div>
+            <div field="Code" width="50" headeralign="center" allowsort="true" vtype="required">
+                编码<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="Size" width="50" headeralign="center" allowsort="true" >
+                规格<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="Model" width="50" headeralign="center" allowsort="true" >
+                型号<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="Material" width="50" headeralign="center" allowsort="true" >
+                材质<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="ConnectionMode" width="50" headeralign="center" allowsort="true" >
+                连接方式<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="Brand" width="50" headeralign="center" allowsort="true" >
+                品牌<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="200" />
+            </div>
+            <div field="Remark" width="50" headeralign="center" allowsort="true" >
+                备注<input property="editor" class="mini-textbox" style="width: 100%;" maxlength="500" />
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+    </div>
+</div>
+<script type="text/javascript">
+    //树相关
+    var CurrentNode = {};
+
+    function ChangeText(e) {
+        e.dragText = "<font size='2'>移动：" + e.node.Name + "</font>";
+    }
+
+    function onNodeSelect(e) {
+        CurrentNode = e.node;
+        $(".mini-datagrid").hide();
+        $(".gw-searchbox").hide();
+        if (e.node.Type == "Entity") {
+            CurrentGridID = "EntityGrid";
+            var grid = mini.get(CurrentGridID);
+            var url = "GetEntityList?CategoryID=" + CurrentNode.ID;
+            grid.setUrl(url);
+            grid.reload();
+            grid.show();
+        }
+        else {
+            CurrentGridID = "CategoryGrid";
+            var grid = mini.get(CurrentGridID);
+            var url = "GetList?ParentID=" + CurrentNode.ID;
+            grid.setUrl(url);
+            grid.reload();
+            grid.show();
+        }
+        $("#" + CurrentGridID + "Key").show();
+    }
+
+    function pageLoad() {
+        var tree = mini.get("dataTree");
+        var node = tree.getRootNode();
+        node = tree.getChildNodes(node)[0];
+        tree.selectNode(node);
+        var e = {};
+        e.node = node;
+        onNodeSelect(e);
+    }
+
+    function onNodeDroping(e) {
+        //不能拖放到非同级节点的前后
+        if ((e.effect == "before" || e.effect == "after") && e.targetNode.ParentID != e.node.ParentID)
+            e.effect = "no";
+        if (e.effect == "add")
+            e.effect = "no";
+    }
+
+    function OnDrawNode(e) {
+        if (e.node.Type == "Category")
+            e.iconCls = "icon-item";
+        else
+            e.iconCls = "icon-register";
+    }
+
+</script>
+<script type="text/javascript">
+    //列表相关
+    var CurrentGridID = '';
+    var DataCount = 0;
+
+    function onGridLoad(e) {
+        var rtnData = mini.decode(e.text);
+        DataCount = rtnData.total;
+    }
+
+    function addrow() {
+        var code = ++DataCount;
+        var newRowData = { Name: CurrentNode.Name };
+        if (CurrentGridID == "EntityGrid") {
+            newRowData["CategoryID"] = CurrentNode.ID;
+            newRowData["CategoryFullID"] = CurrentNode.FullID;
+        }
+        else {
+            //根-专业分类-设备大类-设备小类-设备
+            //五层以后为设备，设备作为叶子节点，不能继续增加节点
+            if (CurrentNode.FullID.split('.').length >= 5)
+            {
+                msgUI("无法在设备节点下新增节点！");
+                return;
+            }
+            if (CurrentNode.FullID.split('.').length == 4)
+                 newRowData["Type"] = "Entity";
+            else
+                 newRowData["Type"] = "Category";
+            newRowData["ParentID"] = CurrentNode.ID;
+            newRowData["FullID"] = CurrentNode.FullID;
+            if (CurrentNode.Code)
+                code = CurrentNode.Code + "." + code
+        }
+        newRowData["Code"] = code;
+        newRowData["SortIndex"] = DataCount;
+        addRow(newRowData, { gridId: CurrentGridID });
+    }
+
+    function delrow() {
+        --DataCount;
+        delRow({ gridId: CurrentGridID });
+    }
+
+    function savelist() {
+        var setting = { action: 'SaveList', gridId: CurrentGridID, formId: CurrentGridID+"Form" };
+        if (CurrentGridID == "EntityGrid")
+            setting["action"] = "SaveEntityList";
+        setting.onComplete = function () {
+            var tree = mini.get("dataTree");
+            tree.reload();
+            tree.selectNode(CurrentNode);
+            var e = {};
+            e.node = CurrentNode;
+            onNodeSelect(e);
+        }
+        saveList(setting);
+    }
+</script>

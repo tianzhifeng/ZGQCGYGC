@@ -1,0 +1,391 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutFlow.cshtml";
+}
+<form id="dataForm" method="post">
+<input name="ID" class="mini-hidden" />
+<input name="MergeDocID" class="mini-hidden" />
+<input name="Status" class="mini-hidden" />
+<div class="formDiv" style="padding-bottom: 70px;">
+    <h1 align="center">
+        便函签发单
+    </h1>
+    <fieldset class="formDiv">
+        <legend>基本信息</legend>
+        <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+            <tbody>
+                <tr class="hideRow">
+                    <td width="15%" style="border-width: 0px">
+                    </td>
+                    <td width="35%" style="border-width: 0px">
+                    </td>
+                    <td width="15%" style="border-width: 0px">
+                    </td>
+                    <td width="35%" style="border-width: 0px">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        标题
+                    </td>
+                    <td colspan="3">
+                        <input name="Title" class="mini-textbox" required="true" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        文号
+                    </td>
+                    <td colspan="3">
+                        <input name="PaperNumber" class="mini-textbox" required="true" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        密级
+                    </td>
+                    <td>
+                        <input name="Dense" class="mini-combobox" required="true" style="width: 100%;" valuefield="value"
+                            textfield="text" data="PostingMiJi" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        紧急程度
+                    </td>
+                    <td>
+                        <input name="UrgentSlow" class="mini-combobox" required="true" style="width: 100%;"
+                            valuefield="value" textfield="text" data="PostingHuanJi" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        附件
+                    </td>
+                    <td colspan="3">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <a style="display: none" id="MergeDoc" href="javascript:;" onclick="openMergeDoc()">
+                                    </a>
+                                    <input name="DocID" class="mini-singlefile" style="width: 100%" filter="Word|*.doc;*.docx;" />
+                                </td>
+                                <td width="60px" style="text-align: right; display: none" status="TaoHong">
+                                    <a class="mini-button " iconcls="icon-taohong" onclick="taohongClick" plain="true"
+                                        tooltip="套红"></a><a class="mini-button " iconcls="icon-stamp" onclick="signClick"
+                                            plain="true" tooltip="盖章"></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        主送
+                    </td>
+                    <td colspan="3">
+                        <input name="MainSendUserID" textname="MainSendUserName" class="mini-buttonedit"
+                            allowinput="false" required="true" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        抄送
+                    </td>
+                    <td colspan="3">
+                        <input name="OtherSendUserIDs" textname="OtherSendUserNames" class="mini-buttonedit"
+                            allowinput="false" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        总份数
+                    </td>
+                    <td>
+                        <input name="TotalNumber" class="mini-textbox" vtype="int" readonly style="width: 100%;" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        正文数
+                    </td>
+                    <td>
+                        <input name="BodyTotalNumber" class="mini-textbox" vtype="int" style="width: 100%;"
+                            onvaluechanged="onNumberChanged" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        附件数
+                    </td>
+                    <td>
+                        <input name="AttachmentTotalNumber" class="mini-textbox" vtype="int" style="width: 100%;"
+                            onvaluechanged="onNumberChanged" />
+                    </td>
+                    <td style="padding-left: 20px;">
+                        <div status="Draft" style="display: none">
+                            部门负责人</div>
+                    </td>
+                    <td>
+                        <div status="Draft" style="display: none">
+                            <input name="DeptLeaderID" textname="DeptLeaderName" class="mini-buttonedit" style="width: 100%;" /></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div status="Draft" style="display: none">
+                            公共事业部<br />
+                            核稿人</div>
+                    </td>
+                    <td>
+                        <div status="Draft" style="display: none">
+                            <input name="PublicCareerDeptID" textname="PublicCareerDeptName" class="mini-buttonedit"
+                                style="width: 100%;" /></div>
+                    </td>
+                    <td style="padding-left: 20px;">
+                        <div status="Draft" style="display: none">
+                            会签人</div>
+                    </td>
+                    <td>
+                        <div status="Draft" style="display: none">
+                            <input name="LeaderCountersignIDs" textname="LeaderCountersignNames" class="mini-buttonedit"
+                                style="width: 100%;" /></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div status="PreReview" style="display: none">
+                            总经理</div>
+                    </td>
+                    <td>
+                        <div status="PreReview" style="display: none">
+                            <input name="WorkDeptLeaderID" textname="WorkDeptLeaderName" class="mini-buttonedit"
+                                style="width: 100%;" /></div>
+                    </td>
+                    <td style="padding-left: 20px;">
+                        <div status="PreReview" style="display: none">
+                            签发人</div>
+                    </td>
+                    <td>
+                        <div status="PreReview" style="display: none">
+                            <input name="LeaderIssueID" textname="LeaderIssueName" class="mini-buttonedit" style="width: 100%" /></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <fieldset class="formDiv">
+        <legend>签字信息</legend>
+        <table style="width: 100%;" class="ke-zeroborder" border="0" cellpadding="2">
+            <tbody>
+                <tr>
+                    <td width="15%">
+                        拟稿人
+                    </td>
+                    <td width="85%">
+                        <div name="DraftManComment" class="mini-auditsign" style="height: 100%">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        部门负责人
+                    </td>
+                    <td>
+                        <div name="DeptLeaderComment" class="mini-auditsign" style="height: 100%">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        公共事业部<br />
+                        核稿
+                    </td>
+                    <td>
+                        <div name="PublicCareerDeptComment" class="mini-auditsign" style="height: 100%">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        总经理签字
+                    </td>
+                    <td>
+                        <div name="WorkDeptLeaderComment" class="mini-auditsign" style="height: 100%">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        签发人签字
+                    </td>
+                    <td>
+                        <div name="LeaderIssueComment" class="mini-auditsign" style="height: 100%">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+</div>
+</form>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingMiJi))
+    @Html.GetEnum(typeof(OfficeAuto.Logic.PostingHuanJi))
+</script>
+<script type="text/javascript">
+    addMultiOrgSelector("MainSendUserID");
+    addMultiOrgSelector("OtherSendUserIDs");
+    addSingleUserSelector("DeptLeaderID");
+    addMultiUserSelector("LeaderCountersignIDs");
+    addSingleUserSelector("PublicCareerDeptID");
+    addSingleUserSelector("WorkDeptLeaderID");
+    addSingleUserSelector("LeaderIssueID"); 
+    
+</script>
+<script type="text/javascript">
+    mini.parse();
+    var funcType = getQueryString("FuncType");
+    var url = getRootPath() + "/WebOffice.axd?callback=wordSaveCallBack";
+
+    function getRootPath() {
+        var pathName = window.location.pathname.substring(1);
+        var webName = pathName == '' ? '' : pathName.substring(0, pathName.indexOf('/'));
+        return window.location.protocol + '//' + window.location.host + '/' + webName;
+    }
+
+    function onFormSetData(data) {
+        var status = data["Status"];
+        $("#dataForm [status='" + status + "']").show();
+        if (status != "Draft") {
+            var form = new mini.Form("#dataForm");
+            var fields = form.getFields();
+            for (var i = 0, l = fields.length; i < l; i++) {
+                var c = fields[i];
+                if (c.type == "textarea") {
+                    c.addCls("asLabel");
+                    c.setReadOnly(true);
+                    c.setValue(c.getValue() + "\n");
+                }
+                else {
+                    if (c.setReadOnly) c.setReadOnly(true);
+                    if (c.setIsValid) c.setIsValid(true);      //去除错误提示
+                    if (c.addCls) c.addCls("asLabel");         //增加asLabel外观
+                }
+            }
+        }
+        $.each($("#dataForm [status='" + status + "'] [uid]"), function (i, dom) {
+            var miniCtrl = mini.getbyUID($(dom).attr("uid"));
+            if (miniCtrl) {
+                if (miniCtrl.setReadOnly)
+                    miniCtrl.setReadOnly(false);
+                if (miniCtrl.removeCls)
+                    miniCtrl.removeCls("asLabel");
+                if (miniCtrl.setRequired)
+                    miniCtrl.setRequired(true);
+            }
+        });
+        if (status == "@OfficeAuto.Logic.PostingStatus.Complete") {
+            var miniDocID = mini.getbyName("DocID");
+            if (miniDocID.getValue() != "") {
+                miniDocID.hide();
+                $("#MergeDoc").text(getMiniFileName(miniDocID.getValue())).show();
+            }
+        }
+    }
+
+    function openMergeDoc() {
+        var mergeDocID = mini.getbyName("MergeDocID").getValue();
+        if ($.trim(mergeDocID) != "") {
+            window.open("/filestore/download.aspx?FileID=" + mergeDocID);
+        }
+    }
+
+    function onNumberChanged(e) {
+        var bodyTotalNumber = 0;
+        if (!isNaN(parseInt(mini.getbyName("BodyTotalNumber").getValue()))) {
+            bodyTotalNumber = parseInt(mini.getbyName("BodyTotalNumber").getValue());
+        }
+        var attachmentTotalNumber = 0;
+        if (!isNaN(parseInt(mini.getbyName("AttachmentTotalNumber").getValue()))) {
+            attachmentTotalNumber = parseInt(mini.getbyName("AttachmentTotalNumber").getValue());
+        }
+        mini.getbyName("TotalNumber").setValue(bodyTotalNumber + attachmentTotalNumber);
+    }
+
+    function onFormSaving() {
+        if (mini.getbyName("Status").getValue() == "@OfficeAuto.Logic.PostingStatus.TaoHong" && mini.getbyName("MergeDocID").getValue() == "") {
+            var rtn = true;
+            msgUI("发文没有套红签章,是否需要?", 3, function (action) {
+                if (action == "ok") {
+                    rtn = false;
+                }
+                else if (action == "close" || action == "cancel") {
+                    rtn = false;
+                }
+            });
+            return rtn;
+        }
+        else {
+            return true;
+        }
+    }
+
+    function taohongClick(e) {
+        //弹出套红
+        openWindow("/OfficeAuto/SelectorT/OutFileRedTitleSelect", {
+            title: "选择红头模板",
+            width: "800px",
+            height: "85%",
+            onDestroy: function (data) {
+                if (typeof (data) == "object") {
+                    if (data.length > 0) {
+                        addExecuteParam("ID", mini.getbyName("ID").getValue());
+                        addExecuteParam("HongTou", data[0]["Attachment"]);
+                        addExecuteParam("MergeDocID", mini.getbyName("MergeDocID").getValue());
+                        addExecuteParam("DocID", mini.getbyName("DocID").getValue());
+                        addExecuteParam("ZiHao", mini.getbyName("PaperNumber").getValue());
+                        addExecuteParam("Title", mini.getbyName("Title").getValue());
+                        execute("TaoHong", {
+                            showLoading: true,
+                            onComplete: function (data) {
+                                var newDocID = data["MergeDocID"];
+                                if ($.trim(newDocID) != "") {
+                                    mini.getbyName("MergeDocID").setValue(newDocID);
+                                    openWindow(url + "&DocID=" + newDocID + "&showrevisions=False&readonly=True", {
+                                        width: "800px",
+                                        height: "85%",
+                                        title: "套红正文"
+                                    });
+                                    msgUI("套红成功!");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    function signClick(e) {
+        msgUI("确认签章?", 2, function (action) {
+            if (action == "ok") {
+                addExecuteParam("ID", mini.getbyName("ID").getValue());
+                addExecuteParam("MergeDocID", mini.getbyName("MergeDocID").getValue());
+                addExecuteParam("DocID", mini.getbyName("DocID").getValue());
+                execute("Sign", {
+                    showLoading: true,
+                    onComplete: function (data) {
+                        var newDocID = data["MergeDocID"];
+                        if ($.trim(newDocID) != "") {
+                            mini.getbyName("MergeDocID").setValue(newDocID);
+                            openWindow(url + "&DocID=" + newDocID + "&showrevisions=False&readonly=True", {
+                                width: "800px",
+                                height: "85%",
+                                title: "签章正文"
+                            });
+                            msgUI("签章成功!");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    
+</script>

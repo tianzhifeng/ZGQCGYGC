@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "ProjectFinishDetail";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="GetFinishDetail" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID"
+        multiselect="true" borderstyle="border:0;" showpager="false" showsummaryrow="true" ondrawsummarycell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="Name" width="*" headeralign="center" allowsort="true">
+                卷册名称</div>
+            <div field="Code" width="90" headeralign="center">
+                卷册编号</div>
+            <div field="MajorValue" width="90" headeralign="center" align="center">
+                专业</div>
+            <div field="DesignerUserName" width="90" headeralign="center" align="center">
+                设计人</div>
+            <div field="PlanEndDate" width="90" dateformat="yyyy-MM-dd" headeralign="center" align="center">
+                计划完成日期</div>
+            <div field="FactEndDate" width="90" dateformat="yyyy-MM-dd" headeralign="center" align="center">
+                实际完成日期</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var Major = @Html.Raw(ViewBag.MajorJson)
+</script>
+<script type="text/javascript">
+    var projectInfoID = getQueryString("ProjectInfoID");
+    var year = getQueryString("Year");
+    var season = getQueryString("Season");
+    var month = getQueryString("Month");
+
+    var url = $("#dataGrid").attr("url");
+    url = url.split('?')[0] + "?ProjectInfoID=" + projectInfoID + "&Year=" + year + "&Season=" + season + "&Month=" + month;
+    $("#dataGrid").attr("url", url);
+
+    addGridEnum("dataGrid", "MajorValue", "Major");
+
+    function onDrawSummaryCell(e) {
+        var result = e.result;
+        var grid = e.sender;
+        if (e.field == "Name") {
+            e.cellHtml = "合计：";
+            e.cellStyle = " text-align: left;color:Brown";
+        }
+        else {
+            e.cellStyle = " text-align: right;color:Brown";
+        }
+    }
+</script>

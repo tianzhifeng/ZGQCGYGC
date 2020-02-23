@@ -1,0 +1,193 @@
+﻿@{
+    ViewBag.Title = "资料柜";
+}
+<div class="mini-splitter" style="width: 100%; height: 100%; background-color: white;">
+    <div size="250" showcollapsebutton="false">
+        <div class="mini-fit">
+            <ul id="myTree" class="mini-tree" url="GetTree" style="width: 100%; height: 100%"
+                showtreeicon="true" onnodeselect="onNodeSelect" ondrawnode="drawnode" expandonload="3"
+                textfield="Name" idfield="ID" parentfield="ParentID" resultastree="false" selectonload="true"
+                contextmenu="#treeMenu" iconfield="IconType"></ul>
+        </div>
+    </div>
+    <div showcollapsebutton="false">
+        <iframe id="myframe" name="myframe" src="" frameborder="0" style="width: 100%; height: 100%;"
+                border="0" scrolling="no"></iframe>
+    </div>
+</div>
+<ul id="treeMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="set" id="btnSet" iconcls="icon-edit" onclick="onAuthoritySetting">权限设置</li>
+    <li name="add" id="btnAdd" iconcls="icon-add" onclick="onAddNode">新增</li>
+    <li name="edit" id="btnEdit" iconcls="icon-edit" onclick="onEditNode">编辑</li>
+    <li name="invalid" id="btnInvalid" iconcls="icon-cancel" onclick="onInvalid">作废</li>
+    <li name="valid" id="btnValid" iconcls="icon-ok" onclick="onValid">取消作废</li>
+    <li name="remove" id="btnDel" iconcls="icon-remove" onclick="onRemoveNode">删除</li>
+</ul>
+<script type="text/javascript">
+    var tree;
+    function pageLoad() {
+        tree = mini.get("myTree");
+    }
+
+    function drawnode(e) {
+        var node = e.node;
+        if (node.IsValid == "F") {
+            e.iconCls = "icon-cancel";
+            e.nodeHtml = "<span style='color: red;'>" + e.node.Name + "</span>";
+        }
+    }
+
+    function onNodeSelect(e) {
+        var node = e.node;
+        if (node.Level != 0 && node.Authority != "None") {
+            var url = "/OfficeAuto/DocumentCabinets/FileList/PageView?TmplCode=FileInfo&DocumentInfoID=" + node.ID;
+            $('#myframe').attr("src", url);
+        } else {
+            $('#myframe').attr("src", "");
+        }
+    }
+
+    function onAddNode() {
+        var node = tree.getSelectedNode();
+        var url = "Edit?ParentID=" + node.ID + "&FullPathID=" + node.FullPathID + "&Level=" + node.Level + "&FuncType=insert";
+        openWindow(url, {
+            title: "新增", height: 350, width: 600, onDestroy: function () {
+                tree.reload();
+            }
+        });
+    }
+
+    function onEditNode() {
+        var node = tree.getSelectedNode();
+        var url = "Edit?ID=" + node.ID;
+        openWindow(url, {
+            title: "编辑", height: 350, width: 600, onDestroy: function () {
+                tree.reload();
+            }
+        });
+    }
+
+    function onInvalid() {
+        var node = tree.getSelectedNode();
+        if (node) {
+            if (tree.isLeaf(node)) {
+                addExecuteParam("ID", node.ID);
+                execute("DoInvalidNode", {
+                    mustConfirm: true, actionTitle: "作废", onComplete: function () { msgUI("作废成功！"); tree.reload(); }
+                });
+            } else {
+                msgUI("该节点下有子节点，不允许作废！");
+            }
+        }
+    }
+
+    function onValid() {
+        var node = tree.getSelectedNode();
+        addExecuteParam("ID", node.ID);
+        execute("DoValidNode", {
+            mustConfirm: true, actionTitle: "取消作废", onComplete: function () { msgUI("取消作废成功！"); tree.reload(); }
+        });
+    }
+
+    function onRemoveNode() {
+        var node = tree.getSelectedNode();
+        if (node) {
+            if (tree.isLeaf(node)) {
+                $.ajax({
+                    type: "GET",
+                    url: "GetFilesCount?ID=" + node.ID,
+                    dataType: "json",
+                    success: function (data) {
+                        //增加新版报错分支
+                        if (data.errcode) {
+                            var msg = getErrorFromHtml(data.errmsg);
+                            msgUI(msg, 4);
+                            return;
+                        }
+                        var num = parseInt(data);
+                        if (num > 0) {
+                            msgUI("该节点下有关联文件或子节点，不允许删除！");
+                        } else {
+                            addExecuteParam("ID", node.ID);
+                            execute("DeleteNode", { mustConfirm: true, actionTitle: "删除", onComplete: function () { msgUI("删除成功！"); tree.reload(); } });
+                        }
+                    }
+                });
+            } else {
+                msgUI("该节点下有子节点，请先删除子节点！");
+            }
+        }
+    }
+
+    //设置节点权限
+    function onAuthoritySetting() {
+        var node = tree.getSelectedNode();
+        var url = "/OfficeAuto/DocumentCabinets/AuthoritySetting/List?DocumentInfoID=" + node.ID + "&Level=" + node.Level;
+        openWindow(url, {
+            title: "权限设置", height: '80%', width: 800, onDestroy: function () {
+                tree.reload();
+            }
+        });
+    }
+
+    function onBeforeOpen(e) {
+        var menu = e.sender;
+        var node = tree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            return;
+        }
+
+        //获取最高权限
+        var highest = "ReadOnly";
+        addExecuteParam("DocumentInfoID", node.ID);
+        execute("GetHighestAuthority", {
+            async: false,
+            onComplete: function (data) {
+                if (data) {
+                    highest = data.HighestAuthority;
+                    var set = mini.getbyName("set", menu);
+                    var add = mini.getbyName("add", menu);
+                    var edit = mini.getbyName("edit", menu);
+                    var invalid = mini.getbyName("invalid", menu);
+                    var valid = mini.getbyName("valid", menu);
+                    var remove = mini.getbyName("remove", menu);
+                    if (highest != "FullControl") {
+                        e.cancel = true;
+                    }
+                    else {
+                        if (!node.ParentID) {
+                            add.show();
+                            set.show();
+                            edit.hide();
+                            invalid.hide();
+                            valid.hide();
+                            remove.hide();
+                        }
+                        else {
+                            var parentNode = tree.getParentNode(node);
+                            if (parentNode.Authority != "FullControl") {
+                                add.show();
+                                valid.hide();
+                                remove.hide();
+                                set.hide();
+                                edit.hide();
+                                invalid.hide();
+                            }
+                            else {
+                                set.show();
+                                add.show();
+                                edit.show();
+                                invalid.show();
+                                remove.show();
+                                valid.hide();
+                            }
+                        }
+                    }
+                } else {
+                    e.cancel = true;
+                }
+            }
+        });
+    }
+</script>

@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script type="text/javascript">
+
+        //GetBasicInfo参数分别为：当前用户信息、按钮字段权限、动态文件服务器地址和当前流程环节
+        //请根据具体需要调整true或false
+        @Html.GetBasicInfo(true, false, false, false)
+    </script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/miniui.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/CoreLib/MiniUI/customCtrl.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/MvcConfig/miniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content("/CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")" type="text/javascript"></script>
+    <style type="text/css">
+        /*弹出页无滚动条修正*/
+    </style>
+</head>
+<body>
+    @if (string.IsNullOrEmpty(Request["TaskExecID"]))
+    {
+        <div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+            <div title="center" region="center" style="border: 0;">
+                @RenderBody()
+                @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+                {
+                    <div style="margin-left: 35px; margin-right: 35px; margin-bottom: 65px;">
+                        <fieldset>
+                            <legend style="font-weight: bold; margin-left: 35px;">操作信息</legend>
+                            <div id="comment">
+                            </div>
+                        </fieldset>
+                    </div>
+                    <br />
+                    <br />
+                    <script type="text/javascript">
+                        function onCommentLoad(e) {
+                            if (e.data.length == 0)
+                                $("#commentGrid").hide();
+                        }
+                    </script>
+                }
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Request["TaskExecID"]))
+    {
+
+        <div class="mini-splitter" style="width: 100%; height: 100%;">
+            <div size="220" showcollapsebutton="true" expanded="false">
+                <table width="100%" style="height: 100%; table-layout: fixed">
+                    <tr>
+                        <td valign="top">
+                            <div id="trackShort" style="overflow: hidden;">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div showcollapsebutton="false">
+                <div class="mini-fit" style="padding-top: 5px;">
+                    <div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+                        <div title="center" region="center" style="border: 0;">
+                            @RenderBody()
+                            @if (System.Configuration.ConfigurationManager.AppSettings["showFlowComments"] == "True" && (!string.IsNullOrEmpty(Request["TaskExecID"]) || !string.IsNullOrEmpty(Request["FlowCode"])))
+                            {
+                                <div style="margin-left: 35px; margin-right: 35px; margin-bottom: 65px;">
+                                    <fieldset>
+                                        <legend style="font-weight: bold; margin-left: 35px;">操作信息</legend>
+                                        <div id="comment">
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <script type="text/javascript">
+                                    function onCommentLoad(e) {
+                                        if (e.data.length == 0)
+                                            $("#commentGrid").hide();
+                                    }
+                                </script>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var mainDiv = $("#trackShort")[0];
+            $("#trackShort").height($(document.body).height() - 100);
+
+        </script>
+
+    }
+    @if (!string.IsNullOrEmpty(Request["IsPreView"]))
+    {
+    }
+    else if (!string.IsNullOrEmpty(Request["FlowCode"]) || !string.IsNullOrEmpty(Request["TaskExecID"]) || (!string.IsNullOrEmpty(Request["FuncType"]) && Request["FuncType"].ToLower() == "view"))
+    {
+        @Html.GetFlowbar()
+    }
+    else
+    {
+        <div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+            <table>
+                <tr>
+                    <td>
+                        <a id="btnSave" class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a> <a id="btnCancel" class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                    <td id="btnRight"></td>
+                </tr>
+            </table>
+        </div>
+        <div style='width: 100%; height: 28px;'>
+        </div>
+    }
+    <div id="adviceWindow" class="mini-window" title="意见" style="width: 420px; min-height: 130px; position: fixed; z-index: 999;"
+         showmodal="true" allowresize="false" allowdrag="true">
+        <div class="queryDiv">
+            <form id="adviceForm" method="post">
+                <input name='Advice' emptytext='请输入意见' class='mini-textarea' style='width: 100%; height: 67px;' />
+            </form>
+            <div id="_flowButton">
+            </div>
+        </div>
+    </div>
+    <div id="commentWindow" class="mini-window" title="回复消息" style="width: 420px; min-height: 130px; position: fixed; z-index: 999;" showmodal="true" allowresize="false" allowdrag="true">
+        <input id="nodeID" style="display: none;" />
+        <div>
+            <form id="commentForm" method="post">
+                <div>
+                    <input name='_Comment' emptytext='请输入消息' class='mini-textarea' style='width: 100%; height: 67px;' />
+                </div>
+                <div style="height: 25px; text-align: left; border-bottom: solid 1px #cccccc; padding-top: 8px; padding-bottom: 8px;">
+                    <div style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; height: 28px; padding-left: 5px; line-height: 28px; width: 200px; float: left;">
+                        <div class="flow-addImgCss">
+                            <img src="/CommonWebResource/RelateResource/image/customctrl/user.png" style="padding-top: 6px;" />
+                        </div>
+                        <div class="flow-addCss">
+                            <a id="commentUser" ids="" style="color: #3c8dbc; cursor: pointer;" onclick="addCommentUser()">抄送人员</a>
+                        </div>
+                    </div>
+                    <div style="height: 28px; line-height: 28px; width: 200px; float: left;">
+                        <div class="flow-addImgCss">
+                            <img src="/CommonWebResource/RelateResource/image/customctrl/singlefile.png" style="padding-top: 6px;" />
+                        </div>
+                        <div class="flow-addCss">
+                            <a id="addFlowFile" onclick="addCommentFile()" style="color: #3c8dbc; cursor: pointer;">添加附件</a>
+                        </div>
+                    </div>
+                    <input name="flowSingleFile" id="flowSingleFile" class="mini-singlefile" style="display: none;" autocomplete='off' />
+                </div>
+            </form>
+            <div id="_flowCommentButton" style="text-align: center; padding: 10px;">
+                <a id="submitComment" class='mini-button mini-button-plain' onclick="saveComment()" style='margin-right: 20px;' hidefocus=''>
+                    <span class='mini-button-text  mini-button-icon icon-ok'>确定</span>
+                </a>
+                <a id="clearComment" class='mini-button mini-button-plain' hidefocus='' onclick='clearComment()'>
+                    <span class='mini-button-text  mini-button-icon icon-undo'>清空</span>
+                </a>
+                <a id="clearUserComment" style="display: none;" class='mini-button mini-button-plain' hidefocus='' onclick="clearComment('user')">
+                    <span class='mini-button-text  mini-button-icon icon-undo'>清空人员</span>
+                </a>
+                <a id="clearFileComment" style="display: none;" class='mini-button mini-button-plain' hidefocus='' onclick="clearComment('file')">
+                    <span class='mini-button-text  mini-button-icon icon-undo'>清空附件</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        preInit();
+
+        $(window).bind("beforeunload", onBeforeUnLoad);
+
+        function onBeforeUnLoad() {
+            var callback = getQueryString("callback");
+            if (callback && window.opener) {
+                window.opener.eval(callback + "();");
+            }
+        }
+
+        bindFlowComment();
+    </script>
+</body>
+</html>

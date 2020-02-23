@@ -1,0 +1,1752 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7999354B-90F9-40EB-8CC5-2E1758A200DF}</ProjectGuid>
+    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Base</RootNamespace>
+    <AssemblyName>Base</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aspose.Words, Version=13.2.0.0, Culture=neutral, PublicKeyToken=00725b1ceb58d0a9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Aspose.Words.dll</HintPath>
+    </Reference>
+    <Reference Include="Config.Logic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Config.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\BaseFrame\Resource\Dll\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Formula, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\Formula.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MvcAdapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\MvcAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\BaseFrame\Resource\Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BaseFrame\Resource\Dll\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\..\BaseFrame\Resource\Dll\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Areas\Auth\AuthAreaRegistration.cs" />
+    <Compile Include="Areas\Auth\Controllers\AuthLogController.cs" />
+    <Compile Include="Areas\Auth\Controllers\AuthorizeController.cs" />
+    <Compile Include="Areas\Auth\Controllers\CompanyAuthController.cs" />
+    <Compile Include="Areas\Auth\Controllers\DataModifyLogController.cs" />
+    <Compile Include="Areas\Auth\Controllers\LoginLogController.cs" />
+    <Compile Include="Areas\Auth\Controllers\OEMController.cs" />
+    <Compile Include="Areas\Auth\Controllers\OrgUserController.cs" />
+    <Compile Include="Areas\Auth\Controllers\ResController.cs" />
+    <Compile Include="Areas\Auth\Controllers\ResRoleController.cs" />
+    <Compile Include="Areas\Auth\Controllers\RoleController.cs" />
+    <Compile Include="Areas\Auth\Controllers\SecurityController.cs" />
+    <Compile Include="Areas\Auth\Controllers\UserController.cs" />
+    <Compile Include="Areas\AutoReport\AutoReportAreaRegistration.cs" />
+    <Compile Include="Areas\AutoReport\Controllers\DefineController.cs" />
+    <Compile Include="Areas\Calendar\CalendarAreaRegistration.cs" />
+    <Compile Include="Areas\Calendar\Controllers\HolidayController.cs" />
+    <Compile Include="Areas\Desktop\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Desktop\Controllers\PluginController.cs" />
+    <Compile Include="Areas\Desktop\DesktopAreaRegistration.cs" />
+    <Compile Include="Areas\GenerateCode\Controllers\RuleCodeController.cs" />
+    <Compile Include="Areas\GenerateCode\GenerateCodeAreaRegistration.cs" />
+    <Compile Include="Areas\Log\Controllers\LoginLogController.cs" />
+    <Compile Include="Areas\Log\Controllers\MacAddressController.cs" />
+    <Compile Include="Areas\Log\LogAreaRegistration.cs" />
+    <Compile Include="Areas\Meta\Controllers\CategoryController.cs" />
+    <Compile Include="Areas\Meta\Controllers\ConfigManageController.cs" />
+    <Compile Include="Areas\Meta\Controllers\DataController.cs" />
+    <Compile Include="Areas\Meta\Controllers\EnumController.cs" />
+    <Compile Include="Areas\Meta\Controllers\ParameterController.cs" />
+    <Compile Include="Areas\Meta\MetaAreaRegistration.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\AllFeedbackController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\CalendarController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\FeedbackController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\FriendLinkController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\KindEditorController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\NewsImageController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\PublicInformationController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\PublicInformCatalogController.cs" />
+    <Compile Include="Areas\PortalBlock\Controllers\ShortCutController.cs" />
+    <Compile Include="Areas\PortalBlock\PortalBlockAreaRegistration.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\AlarmConfigController.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\AlarmController.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\CollectMsgController.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\DeleteMsgController.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\MsgController.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\ReceiveMsgController.cs" />
+    <Compile Include="Areas\ShortMsg\Controllers\SendMsgController.cs" />
+    <Compile Include="Areas\ShortMsg\ShortMsgAreaRegistration.cs" />
+    <Compile Include="Areas\Task\Controllers\TaskController.cs" />
+    <Compile Include="Areas\Task\Controllers\TaskExecController.cs" />
+    <Compile Include="Areas\Task\TaskAreaRegistration.cs" />
+    <Compile Include="Areas\UI\Controllers\BIController.cs" />
+    <Compile Include="Areas\UI\Controllers\ComponentController.cs" />
+    <Compile Include="Areas\UI\Controllers\DataSourceController.cs" />
+    <Compile Include="Areas\UI\Controllers\ExcelImportController.cs" />
+    <Compile Include="Areas\UI\Controllers\ExcelPrintController.cs" />
+    <Compile Include="Areas\UI\Controllers\ExportSqlController.cs" />
+    <Compile Include="Areas\UI\Controllers\FormController.cs" />
+    <Compile Include="Areas\UI\Controllers\FreePivotController.cs" />
+    <Compile Include="Areas\UI\Controllers\FreePivotInstanceController.cs" />
+    <Compile Include="Areas\UI\Controllers\HelpController.cs" />
+    <Compile Include="Areas\UI\Controllers\ListController.cs" />
+    <Compile Include="Areas\UI\Controllers\PivotController.cs" />
+    <Compile Include="Areas\UI\Controllers\PortalController.cs" />
+    <Compile Include="Areas\UI\Controllers\SelectorController.cs" />
+    <Compile Include="Areas\UI\Controllers\WordController.cs" />
+    <Compile Include="Areas\UI\UIAreaRegistration.cs" />
+    <Compile Include="BaseApiController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BaseController.cs" />
+    <Compile Include="Controllers\AccountsController.cs" />
+    <Compile Include="Controllers\AllFeedbackController.cs" />
+    <Compile Include="Controllers\CheckLoginController.cs" />
+    <Compile Include="Controllers\ResApiController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
+    <Compile Include="Controllers\OrganizationsController.cs" />
+    <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\Auth\CompanyAuth\word.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\列表.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\授权.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\枚举.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\流程.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\菜单.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\表单.png" />
+    <Content Include="Scripts\Auth\CompanyAuth\角色.png" />
+    <Content Include="Scripts\Auth\menuIcons\01用印申请.png" />
+    <Content Include="Scripts\Auth\menuIcons\02用印借用.png" />
+    <Content Include="Scripts\Auth\menuIcons\03用印废止.png" />
+    <Content Include="Scripts\Auth\menuIcons\04用印转移.png" />
+    <Content Include="Scripts\Auth\menuIcons\05会议申请.png" />
+    <Content Include="Scripts\Auth\menuIcons\06申请出差.png" />
+    <Content Include="Scripts\Auth\menuIcons\07报销申请.png" />
+    <Content Include="Scripts\Auth\menuIcons\08借款申请.png" />
+    <Content Include="Scripts\Auth\menuIcons\11请假申请.png" />
+    <Content Include="Scripts\Auth\menuIcons\21客户要求评审.png" />
+    <Content Include="Scripts\Auth\menuIcons\22投标申请.png" />
+    <Content Include="Scripts\Auth\menuIcons\23建筑任务单.png" />
+    <Content Include="Scripts\Auth\menuIcons\24合同评审单.png" />
+    <Content Include="Scripts\Auth\menuIcons\8801我的待办.png" />
+    <Content Include="Scripts\Auth\menuIcons\8802已办事宜.png" />
+    <Content Include="Scripts\Auth\menuIcons\8803办结任务.png" />
+    <Content Include="Scripts\Auth\menuIcons\8804我的发起.png" />
+    <Content Include="Scripts\Auth\menuIcons\announcement.png" />
+    <Content Include="Scripts\Auth\menuIcons\approval.png" />
+    <Content Include="Scripts\Auth\menuIcons\attendance.png" />
+    <Content Include="Scripts\Auth\menuIcons\check-in.png" />
+    <Content Include="Scripts\Auth\menuIcons\leave.png" />
+    <Content Include="Scripts\Auth\menuIcons\material.png" />
+    <Content Include="Scripts\Auth\menuIcons\news.png" />
+    <Content Include="Scripts\Auth\menuIcons\notice.png" />
+    <Content Include="Scripts\Auth\menuIcons\pic-news.png" />
+    <Content Include="Scripts\Auth\menuIcons\project.png" />
+    <Content Include="Scripts\Auth\menuIcons\reimburse.png" />
+    <Content Include="Scripts\Auth\menuIcons\reminder.png" />
+    <Content Include="Scripts\Auth\menuIcons\scan.png" />
+    <Content Include="Scripts\Auth\menuIcons\trend.png" />
+    <Content Include="Scripts\Auth\menuIcons\work-log.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-application.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-approval.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-attendance.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-email.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-message.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-news.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-notice.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-pic-news.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-reimburse.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-reimburse2.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-reimburse3.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-reminder.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-review.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-review2.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-review3.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-salary.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-scan.png" />
+    <Content Include="Scripts\Auth\menuIcons\wx-user.png" />
+    <Content Include="Scripts\BaseStyle.css" />
+    <Content Include="Scripts\BI\img\ColumnGrid.png" />
+    <Content Include="Scripts\BI\img\ComplexTextBlock.png" />
+    <Content Include="Scripts\BI\img\FileGrid.png" />
+    <Content Include="Scripts\BI\img\Grid.png" />
+    <Content Include="Scripts\BI\img\Navigation.png" />
+    <Content Include="Scripts\BI\img\NoticeGrid.png" />
+    <Content Include="Scripts\BI\img\SimpleTitleGrid.png" />
+    <Content Include="Scripts\BI\img\StandardColumn.png" />
+    <Content Include="Scripts\BI\img\StandardPie.png" />
+    <Content Include="Scripts\BI\img\Tab.png" />
+    <Content Include="Scripts\BI\img\TargetColumn.png" />
+    <Content Include="Scripts\BI\img\TargetPie.png" />
+    <Content Include="Scripts\BI\img\TitleBlock.png" />
+    <Content Include="Scripts\Calendar\1.gif" />
+    <Content Include="Scripts\Calendar\10.gif" />
+    <Content Include="Scripts\Calendar\11.gif" />
+    <Content Include="Scripts\Calendar\12.gif" />
+    <Content Include="Scripts\Calendar\2.gif" />
+    <Content Include="Scripts\Calendar\3.gif" />
+    <Content Include="Scripts\Calendar\4.gif" />
+    <Content Include="Scripts\Calendar\5.gif" />
+    <Content Include="Scripts\Calendar\6.gif" />
+    <Content Include="Scripts\Calendar\7.gif" />
+    <Content Include="Scripts\Calendar\8.gif" />
+    <Content Include="Scripts\Calendar\9.gif" />
+    <Content Include="Scripts\Calendar\blue_left.png" />
+    <Content Include="Scripts\Calendar\blue_right.png" />
+    <Content Include="Scripts\Calendar\green_left.png" />
+    <Content Include="Scripts\Calendar\green_right.png" />
+    <Content Include="Scripts\Calendar\orange_left.png" />
+    <Content Include="Scripts\Calendar\orange_right.png" />
+    <Content Include="Scripts\Desktop\icon\001.png" />
+    <Content Include="Scripts\Desktop\icon\002.png" />
+    <Content Include="Scripts\Desktop\icon\003.png" />
+    <Content Include="Scripts\Desktop\icon\004.png" />
+    <Content Include="Scripts\Desktop\icon\app.png" />
+    <Content Include="Scripts\Desktop\icon\arrow.png" />
+    <Content Include="Scripts\Desktop\icon\badg.png" />
+    <Content Include="Scripts\Desktop\icon\bill.png" />
+    <Content Include="Scripts\Desktop\icon\blue2.png" />
+    <Content Include="Scripts\Desktop\icon\blue4.png" />
+    <Content Include="Scripts\Desktop\icon\book.png" />
+    <Content Include="Scripts\Desktop\icon\box.png" />
+    <Content Include="Scripts\Desktop\icon\brief.png" />
+    <Content Include="Scripts\Desktop\icon\cloud.png" />
+    <Content Include="Scripts\Desktop\icon\coff.png" />
+    <Content Include="Scripts\Desktop\icon\cone.png" />
+    <Content Include="Scripts\Desktop\icon\cont.png" />
+    <Content Include="Scripts\Desktop\icon\diary.png" />
+    <Content Include="Scripts\Desktop\icon\doc.png" />
+    <Content Include="Scripts\Desktop\icon\docs.png" />
+    <Content Include="Scripts\Desktop\icon\down.png" />
+    <Content Include="Scripts\Desktop\icon\enve.png" />
+    <Content Include="Scripts\Desktop\icon\fdown.png" />
+    <Content Include="Scripts\Desktop\icon\folder.png" />
+    <Content Include="Scripts\Desktop\icon\fuser.png" />
+    <Content Include="Scripts\Desktop\icon\fweb.png" />
+    <Content Include="Scripts\Desktop\icon\home.png" />
+    <Content Include="Scripts\Desktop\icon\icon0.png" />
+    <Content Include="Scripts\Desktop\icon\icon1.png" />
+    <Content Include="Scripts\Desktop\icon\icon10.png" />
+    <Content Include="Scripts\Desktop\icon\icon11.png" />
+    <Content Include="Scripts\Desktop\icon\icon12.png" />
+    <Content Include="Scripts\Desktop\icon\icon13.png" />
+    <Content Include="Scripts\Desktop\icon\icon14.png" />
+    <Content Include="Scripts\Desktop\icon\icon15.png" />
+    <Content Include="Scripts\Desktop\icon\icon16.png" />
+    <Content Include="Scripts\Desktop\icon\icon17.png" />
+    <Content Include="Scripts\Desktop\icon\icon18.png" />
+    <Content Include="Scripts\Desktop\icon\icon19.png" />
+    <Content Include="Scripts\Desktop\icon\icon2.png" />
+    <Content Include="Scripts\Desktop\icon\icon20.png" />
+    <Content Include="Scripts\Desktop\icon\icon21.png" />
+    <Content Include="Scripts\Desktop\icon\icon22.png" />
+    <Content Include="Scripts\Desktop\icon\icon3.png" />
+    <Content Include="Scripts\Desktop\icon\icon4.png" />
+    <Content Include="Scripts\Desktop\icon\icon5.png" />
+    <Content Include="Scripts\Desktop\icon\icon6.png" />
+    <Content Include="Scripts\Desktop\icon\icon7.png" />
+    <Content Include="Scripts\Desktop\icon\icon8.png" />
+    <Content Include="Scripts\Desktop\icon\icon9.png" />
+    <Content Include="Scripts\Desktop\icon\key.png" />
+    <Content Include="Scripts\Desktop\icon\mail.png" />
+    <Content Include="Scripts\Desktop\icon\map.png" />
+    <Content Include="Scripts\Desktop\icon\min\calendar.png" />
+    <Content Include="Scripts\Desktop\icon\min\news.png" />
+    <Content Include="Scripts\Desktop\icon\min\task.png" />
+    <Content Include="Scripts\Desktop\icon\notes.png" />
+    <Content Include="Scripts\Desktop\icon\phone.png" />
+    <Content Include="Scripts\Desktop\icon\pict.png" />
+    <Content Include="Scripts\Desktop\icon\plug.png" />
+    <Content Include="Scripts\Desktop\icon\proj.png" />
+    <Content Include="Scripts\Desktop\icon\ruler.png" />
+    <Content Include="Scripts\Desktop\icon\shle.png" />
+    <Content Include="Scripts\Desktop\icon\stat.png" />
+    <Content Include="Scripts\Desktop\icon\stat1.png" />
+    <Content Include="Scripts\Desktop\icon\stream.png" />
+    <Content Include="Scripts\Desktop\icon\tag.png" />
+    <Content Include="Scripts\Desktop\jsLib\desktop.js" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-1.7.1.js" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-1.7.1.min.js" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-smartMenu\css\smartMenu.css" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-smartMenu\js\jquery-smartMenu.js" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-smartMenu\js\mini\jquery-smartMenu-min.js" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-ui-1.8.18.custom.css" />
+    <Content Include="Scripts\Desktop\jsLib\jquery-ui-1.8.18.custom.min.js" />
+    <Content Include="Scripts\Desktop\jsLib\jquery.winResize.js" />
+    <Content Include="Scripts\Desktop\jsLib\myLib.js" />
+    <Content Include="Scripts\Desktop\themes\default\css\desktop.css" />
+    <Content Include="Scripts\Desktop\themes\default\css\filemanager.css" />
+    <Content Include="Scripts\Desktop\themes\default\css\plugin.css" />
+    <Content Include="Scripts\Desktop\themes\default\images\add_icon.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\bg.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\bg_task_b.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\blue.jpg" />
+    <Content Include="Scripts\Desktop\themes\default\images\blue_glow.jpg" />
+    <Content Include="Scripts\Desktop\themes\default\images\default_appbtn_bg.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\dock_b.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\dock_top.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\file.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\iconTextbg.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\iconTextbg_right.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\icon_over.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\item-child.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\loading.gif" />
+    <Content Include="Scripts\Desktop\themes\default\images\lr_btn.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\navbg.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\navBg0.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\panel.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\powered-by.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\close_plugin.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\show-desktop.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\skin.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\start-btn.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\start_itembtn.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\start_item_bg.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\start_item_over.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\task-bg.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\taskHdBtn.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\timer.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\titlebar_bg_cur.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\tixing.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\wheather.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\windowBtn.png" />
+    <Content Include="Scripts\Desktop\themes\default\images\win_tools_bg.png" />
+    <Content Include="Scripts\Desktop\themes\reset.css" />
+    <Content Include="Scripts\Gallery\ad_next.png" />
+    <Content Include="Scripts\Gallery\ad_prev.png" />
+    <Content Include="Scripts\Gallery\ad_scroll_back.png" />
+    <Content Include="Scripts\Gallery\ad_scroll_forward.png" />
+    <Content Include="Scripts\Gallery\jquery.ad-gallery.css" />
+    <Content Include="Scripts\Gallery\jquery.ad-gallery.js" />
+    <Content Include="Scripts\Gallery\jquery.ad-gallery.min.js" />
+    <Content Include="Scripts\Gallery\loader.gif" />
+    <Content Include="Scripts\Gallery\opa75.png" />
+    <Content Include="Scripts\Gallery\trans.gif" />
+    <Content Include="Scripts\Guide\BusinessModules\dagl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\grzx.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\dagl\help_01dagl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\dagl\help_02jsly.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\dagl\help_04kfgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\dagl\help_05tjfx.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\dagl\help_07xtpz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\grzx\help_01wdgz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\grzx\help_02wdtz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\grzx\help_03wdxzjy.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\grzx\help_04wdsz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\bg.png" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\foot.png" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy01.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy02.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy03.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy04.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy05.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy06.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_bbdy07.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lbdy01.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lbdy02.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lbdy03.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lbdy04.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lcdy01.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lcdy02.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_lcdy03.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_rkgl01.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\help_xzqdy01.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\icon-help.png" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\img1.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\img2.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\img3.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\img4.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\img5.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\jquery-1.7.2.min.js" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\jquery.SuperSlide.2.1.1.js" />
+    <Content Include="Scripts\Guide\BusinessModules\help\images\style.css" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_01ygxxgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_02ygxxcx.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_03zzgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_04xcbxgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_05pxgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_06bb.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_07jxpg.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\rlzy\help_08zpgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\scjy\help_01khxxgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\scjy\help_02jyxmgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\scjy\help_03tbbjgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\scjy\help_04htjskgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\scjy\help_05cxtjfx.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\scjy\help_06scjyglpz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\style.css" />
+    <Content Include="Scripts\Guide\BusinessModules\help\twda\help_01xmzl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\twda\help_02xmjd.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\twda\help_03zyjk.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\twda\help_04zljk.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\twda\help_05xmzt.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\twda\help_06xmpz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\xtgl\help_01xtjjsgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\xtgl\help_02qxgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\xtgl\help_03xtmhpz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\xtgl\help_04xtdygj.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\xtgl\help_05xtsjsz.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\xtgl\help_06xtgzgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_01xxfb.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_02gwgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_03gdzc.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_04bgyp.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_05cggl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_06hygl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_07wjdc.html" />
+    <Content Include="Scripts\Guide\BusinessModules\help\zhbg\help_08gggx.html" />
+    <Content Include="Scripts\Guide\BusinessModules\images\bt_help.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\bt_help_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_dagl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_dagl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_jsly.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_jsly_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_kfgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_kfgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_tjfx.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_tjfx_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_xtpz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\bt_xtpz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\dagl\line_dagl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_grzx.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdgz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdgz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdsz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdsz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdtz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdtz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdxzjy.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\bt_wdxzjy_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\grzx\line_grzx.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_bb.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_bb_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_jxpg.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_jxpg_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_pxgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_pxgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_rlzy.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_xcbxgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_xcbxgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_ygxxcx.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_ygxxcx_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_ygxxgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_ygxxgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_zpgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_zpgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_zygl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\bt_zygl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\rlzy\line_rlzy.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_cxtjfx.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_cxtjfx_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_htjskgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_htjskgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_jyxmgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_jyxmgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_khxxgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_khxxgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_scjyglpz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_scjyglpz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_tbbjgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\bt_tbbjgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\scjy\line_scjy.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\top_icon.jpg" />
+    <Content Include="Scripts\Guide\BusinessModules\images\top_icon.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmjd.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmjd_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmpz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmpz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmqgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmzl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmzl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmztgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_xmztgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_zljk.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_zljk_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_zyjk.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\bt_zyjk_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\twdn\line_xmqgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmjd.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmjd_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmpz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmpz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmqgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmzl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmzl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmztgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_xmztgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_zljk.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_zljk_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_zyjk.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\bt_zyjk_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xmqgl\line_xmqgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_qxgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_qxgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtdygj.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtdygj_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtgzgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtgzgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtmhpz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtmhpz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtsjsz.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_xtsjsz_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_zzjjsgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\bt_zzjjsgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\xtgl\line_xtgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_bgyp.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_bgyp_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_cggl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_cggl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_gdzc.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_gdzc_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_gggx.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_gggx_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_hygl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_hygl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_wjdc.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_wjdc_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_wjgl.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_wjgl_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_xxfb.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_xxfb_on.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\bt_zhbg.png" />
+    <Content Include="Scripts\Guide\BusinessModules\images\zhbg\line_zhbg.png" />
+    <Content Include="Scripts\Guide\BusinessModules\rlzy.html" />
+    <Content Include="Scripts\Guide\BusinessModules\scjy.html" />
+    <Content Include="Scripts\Guide\BusinessModules\twda.html" />
+    <Content Include="Scripts\Guide\BusinessModules\xmqgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\xtgl.html" />
+    <Content Include="Scripts\Guide\BusinessModules\zhbg.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\help_bbdy.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\help_bddy.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\help_lbdy.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\help_lcdy.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\help_rkgl.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\help_xzqdy.html" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\foot.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy01.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy02.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy03.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy04.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy05.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy06.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_bbdy07.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lbdy01.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lbdy02.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lbdy03.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lbdy04.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lcdy01.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lcdy02.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_lcdy03.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_rkgl01.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\help_xzqdy01.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\img1.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\img2.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\img3.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\img4.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\img5.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\jquery-1.7.2.min.js" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\jquery.SuperSlide.2.1.1.js" />
+    <Content Include="Scripts\Guide\SystemCustomTools\help\images\style.css" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bg_line.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bg_line2.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_help.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_help_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzbb.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzbb_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzbd.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzbd_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzlb.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzlb_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzlc.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzlc_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzrk.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_pzrk_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_xzqdy.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\bt_xzqdy_on.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\top_icon.jpg" />
+    <Content Include="Scripts\Guide\SystemCustomTools\images\top_icon.png" />
+    <Content Include="Scripts\Guide\SystemCustomTools\index.html" />
+    <Content Include="Scripts\KindEditor\kindeditor-all-min.js" />
+    <Content Include="Scripts\KindEditor\kindeditor-all.js" />
+    <Content Include="Scripts\KindEditor\kindeditor-min.js" />
+    <Content Include="Scripts\KindEditor\kindeditor.js" />
+    <Content Include="Scripts\KindEditor\lang\ar.js" />
+    <Content Include="Scripts\KindEditor\lang\en.js" />
+    <Content Include="Scripts\KindEditor\lang\ko.js" />
+    <Content Include="Scripts\KindEditor\lang\zh_CN.js" />
+    <Content Include="Scripts\KindEditor\lang\zh_TW.js" />
+    <Content Include="Scripts\KindEditor\plugins\anchor\anchor.js" />
+    <Content Include="Scripts\KindEditor\plugins\autoheight\autoheight.js" />
+    <Content Include="Scripts\KindEditor\plugins\baidumap\baidumap.js" />
+    <Content Include="Scripts\KindEditor\plugins\baidumap\index.html" />
+    <Content Include="Scripts\KindEditor\plugins\baidumap\map.html" />
+    <Content Include="Scripts\KindEditor\plugins\clearhtml\clearhtml.js" />
+    <Content Include="Scripts\KindEditor\plugins\code\code.js" />
+    <Content Include="Scripts\KindEditor\plugins\code\prettify.css" />
+    <Content Include="Scripts\KindEditor\plugins\code\prettify.js" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\emoticons.js" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\0.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\1.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\10.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\100.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\101.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\102.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\103.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\104.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\105.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\106.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\107.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\108.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\109.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\11.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\110.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\111.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\112.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\113.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\114.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\115.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\116.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\117.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\118.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\119.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\12.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\120.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\121.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\122.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\123.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\124.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\125.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\126.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\127.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\128.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\129.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\13.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\130.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\131.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\132.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\133.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\134.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\14.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\15.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\16.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\17.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\18.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\19.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\2.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\20.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\21.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\22.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\23.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\24.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\25.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\26.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\27.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\28.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\29.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\3.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\30.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\31.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\32.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\33.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\34.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\35.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\36.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\37.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\38.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\39.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\4.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\40.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\41.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\42.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\43.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\44.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\45.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\46.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\47.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\48.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\49.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\5.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\50.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\51.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\52.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\53.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\54.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\55.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\56.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\57.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\58.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\59.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\6.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\60.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\61.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\62.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\63.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\64.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\65.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\66.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\67.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\68.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\69.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\7.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\70.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\71.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\72.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\73.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\74.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\75.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\76.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\77.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\78.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\79.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\8.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\80.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\81.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\82.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\83.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\84.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\85.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\86.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\87.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\88.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\89.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\9.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\90.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\91.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\92.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\93.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\94.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\95.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\96.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\97.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\98.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\99.gif" />
+    <Content Include="Scripts\KindEditor\plugins\emoticons\images\static.gif" />
+    <Content Include="Scripts\KindEditor\plugins\filemanager\filemanager.js" />
+    <Content Include="Scripts\KindEditor\plugins\filemanager\images\file-16.gif" />
+    <Content Include="Scripts\KindEditor\plugins\filemanager\images\file-64.gif" />
+    <Content Include="Scripts\KindEditor\plugins\filemanager\images\folder-16.gif" />
+    <Content Include="Scripts\KindEditor\plugins\filemanager\images\folder-64.gif" />
+    <Content Include="Scripts\KindEditor\plugins\filemanager\images\go-up.gif" />
+    <Content Include="Scripts\KindEditor\plugins\flash\flash.js" />
+    <Content Include="Scripts\KindEditor\plugins\image\image.js" />
+    <Content Include="Scripts\KindEditor\plugins\image\images\align_left.gif" />
+    <Content Include="Scripts\KindEditor\plugins\image\images\align_right.gif" />
+    <Content Include="Scripts\KindEditor\plugins\image\images\align_top.gif" />
+    <Content Include="Scripts\KindEditor\plugins\image\images\refresh.png" />
+    <Content Include="Scripts\KindEditor\plugins\insertfile\insertfile.js" />
+    <Content Include="Scripts\KindEditor\plugins\lineheight\lineheight.js" />
+    <Content Include="Scripts\KindEditor\plugins\link\link.js" />
+    <Content Include="Scripts\KindEditor\plugins\map\map.html" />
+    <Content Include="Scripts\KindEditor\plugins\map\map.js" />
+    <Content Include="Scripts\KindEditor\plugins\media\media.js" />
+    <Content Include="Scripts\KindEditor\plugins\multiimage\images\image.png" />
+    <Content Include="Scripts\KindEditor\plugins\multiimage\images\select-files-en.png" />
+    <Content Include="Scripts\KindEditor\plugins\multiimage\images\select-files-zh_CN.png" />
+    <Content Include="Scripts\KindEditor\plugins\multiimage\images\swfupload.swf" />
+    <Content Include="Scripts\KindEditor\plugins\multiimage\multiimage.js" />
+    <Content Include="Scripts\KindEditor\plugins\pagebreak\pagebreak.js" />
+    <Content Include="Scripts\KindEditor\plugins\plainpaste\plainpaste.js" />
+    <Content Include="Scripts\KindEditor\plugins\preview\preview.js" />
+    <Content Include="Scripts\KindEditor\plugins\quickformat\quickformat.js" />
+    <Content Include="Scripts\KindEditor\plugins\table\table.js" />
+    <Content Include="Scripts\KindEditor\plugins\template\html\1.html" />
+    <Content Include="Scripts\KindEditor\plugins\template\html\2.html" />
+    <Content Include="Scripts\KindEditor\plugins\template\html\3.html" />
+    <Content Include="Scripts\KindEditor\plugins\template\template.js" />
+    <Content Include="Scripts\KindEditor\plugins\wordpaste\wordpaste.js" />
+    <Content Include="Scripts\KindEditor\themes\common\anchor.gif" />
+    <Content Include="Scripts\KindEditor\themes\common\blank.gif" />
+    <Content Include="Scripts\KindEditor\themes\common\flash.gif" />
+    <Content Include="Scripts\KindEditor\themes\common\loading.gif" />
+    <Content Include="Scripts\KindEditor\themes\common\media.gif" />
+    <Content Include="Scripts\KindEditor\themes\common\rm.gif" />
+    <Content Include="Scripts\KindEditor\themes\default\background.png" />
+    <Content Include="Scripts\KindEditor\themes\default\default.css" />
+    <Content Include="Scripts\KindEditor\themes\default\default.png" />
+    <Content Include="Scripts\KindEditor\themes\qq\editor.gif" />
+    <Content Include="Scripts\KindEditor\themes\qq\qq.css" />
+    <Content Include="Scripts\KindEditor\themes\simple\simple.css" />
+    <Content Include="Scripts\PublicInformation\attachment_right_bg.gif" />
+    <Content Include="Scripts\ShortMsg\collect.png" />
+    <Content Include="Scripts\ShortMsg\collect2.png" />
+    <Content Include="Scripts\ShortMsg\collecton.png" />
+    <Content Include="Scripts\ShortMsg\delete.png" />
+    <Content Include="Scripts\ShortMsg\delete2.png" />
+    <Content Include="Scripts\ShortMsg\deleteon.png" />
+    <Content Include="Scripts\ShortMsg\filter_down.png" />
+    <Content Include="Scripts\ShortMsg\filter_up.png" />
+    <Content Include="Scripts\ShortMsg\forward.png" />
+    <Content Include="Scripts\ShortMsg\forward2.png" />
+    <Content Include="Scripts\ShortMsg\forwardon.png" />
+    <Content Include="Scripts\ShortMsg\house.png" />
+    <Content Include="Scripts\ShortMsg\houseon.png" />
+    <Content Include="Scripts\ShortMsg\Msg.css" />
+    <Content Include="Scripts\ShortMsg\rar.png" />
+    <Content Include="Scripts\ShortMsg\recovery.png" />
+    <Content Include="Scripts\ShortMsg\recoveryon.png" />
+    <Content Include="Scripts\ShortMsg\reply.png" />
+    <Content Include="Scripts\ShortMsg\reply2.png" />
+    <Content Include="Scripts\ShortMsg\replyon.png" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Areas\Auth\Models\" />
+    <Folder Include="Areas\AutoReport\Models\" />
+    <Folder Include="Areas\Calendar\Models\" />
+    <Folder Include="Areas\Desktop\Models\" />
+    <Folder Include="Areas\Desktop\Views\Shared\" />
+    <Folder Include="Areas\GenerateCode\Models\" />
+    <Folder Include="Areas\Log\Models\" />
+    <Folder Include="Areas\Log\Views\Shared\" />
+    <Folder Include="Areas\Meta\Models\" />
+    <Folder Include="Areas\PortalBlock\Models\" />
+    <Folder Include="Areas\ShortMsg\Models\" />
+    <Folder Include="Areas\Task\Models\" />
+    <Folder Include="Areas\UI\Models\" />
+    <Folder Include="Models\" />
+    <Folder Include="Scripts\Desktop\plugin\weather\" />
+    <Folder Include="Scripts\Desktop\wallpapers\" />
+    <Folder Include="Scripts\KindEditor\attached\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BusinessModule\BaseLogic\Base.Logic\Base.Logic.csproj">
+      <Project>{EC8BB43B-4F2B-4E79-9BE7-5521D4A86F62}</Project>
+      <Name>Base.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\ResRole\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\Edit.cshtml" />
+    <Content Include="Areas\Auth\Views\User\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\OrgUser\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\OrgUser\RelationDataEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\OrgUser\NodeEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Role\Edit.cshtml" />
+    <Content Include="Areas\Auth\Views\Role\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Res\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Res\NodeEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\RetireList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\OrgUser\AbortTree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Web.config" />
+    <Content Include="Areas\Meta\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Enum\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Enum\DefEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Enum\ItemEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Data\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\SendMsg\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\SendMsg\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\ReceiveMsg\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\ReceiveMsg\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Res\RuleTree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Res\RuleNodeEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\ResRole\RuleTree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\AutoReport\Views\Define\Edit.cshtml" />
+    <Content Include="Areas\AutoReport\Views\Define\List.cshtml" />
+    <Content Include="Areas\AutoReport\Views\Web.config" />
+    <Content Include="Areas\AutoReport\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\MyPic.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformCatalog\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformCatalog\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformation\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformation\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformation\Tabs.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformation\Views.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\NewsImage\Edit.cshtml" />
+    <Content Include="Areas\PortalBlock\Views\NewsImage\Gallery.cshtml" />
+    <Content Include="Areas\PortalBlock\Views\NewsImage\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\NewsImage\Gallerys.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\AutoReport\Views\Define\Upload.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Feedback\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Feedback\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Calendar\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Calendar\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\ResView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\ReceiveMsg\Views.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformation\ListView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\FriendLink\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\FriendLink\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\FriendLink\ListView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\Msg\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\DeleteMsg\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\Msg\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Calendar\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Desktop\Views\Home\AddIcon.cshtml" />
+    <Content Include="Areas\Desktop\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Desktop\Views\Web.config" />
+    <Content Include="Areas\Desktop\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Desktop\Views\Plugin\Weather.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\OrgUser\Authorize.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Role\Authorize.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Role\RoleUserList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\LayoutEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\ItemList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsTextBox.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsDatepicker.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsTextArea.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsComboBox.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsCheckBoxList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsRadioButtonList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsButtonEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Selector\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Selector\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsSingleFile.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsMultiFile.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsAuditSign.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\LayoutFieldEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\SettingsField.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\LayoutGridEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\LayoutButtonEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\SettingsButton.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\FlowLogicList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsSubTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsCheckBox.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SerialNumberEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\DefaultValueEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Res\DataRuleEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\Alarm\AlarmList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\Alarm\AlarmDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\Alarm\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\SettingsButtonEdit.cshtml" />
+    <Content Include="Areas\UI\Views\List\SettingsCheckBox.cshtml" />
+    <Content Include="Areas\UI\Views\List\SettingsCheckBoxList.cshtml" />
+    <Content Include="Areas\UI\Views\List\SettingsComboBox.cshtml" />
+    <Content Include="Areas\UI\Views\List\SettingsDatepicker.cshtml" />
+    <Content Include="Areas\UI\Views\List\SettingsRadioButtonList.cshtml" />
+    <Content Include="Areas\UI\Views\List\SettingsTextBox.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Feedback\MyFeedbackList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\Authorize.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Authorize\Org.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Authorize\Role.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Authorize\User.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Authorize\UserView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Authorize\ResView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Authorize\RuleView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\ItemList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\SettingsEnum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\SettingsSubTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\EnumEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\Upload.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\SettingsDatetime.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\SettingsFloat.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\UploadPic.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Calendar\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Calendar\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Calendar\Views\Holiday\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Security\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\AuthLog\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\GenerateCode\Views\RuleCode\Edit.cshtml" />
+    <Content Include="Areas\GenerateCode\Views\RuleCode\Index.cshtml" />
+    <Content Include="Areas\GenerateCode\Views\RuleCode\List.cshtml" />
+    <Content Include="Areas\GenerateCode\Views\Web.config" />
+    <Content Include="Areas\GenerateCode\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsGridColumn.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Category\ModuleEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Category\CategoryEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\ConfigManage\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\ConfigManage\Import.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Feedback\DealFeedback.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Feedback\VerifyFeedback.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\AllFeedback\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\Feedback\DealPatchFeedback.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Help\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Help\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\RowItems.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\ColumnItems.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\DataItems.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\FilterItems.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExportSql\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExportSql\Collision.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExportSql\Log.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivot\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivot\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivotInstance\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivotInstance\NodeEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivotInstance\DataSourceSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivotInstance\Items.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsLinkEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Task\Views\Task\List.cshtml" />
+    <Content Include="Areas\Task\Views\Web.config" />
+    <Content Include="Areas\Task\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Task\Views\Task\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Task\Views\TaskExec\Exec.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivot\Enum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\FreePivotInstance\FieldSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Pivot\FieldSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\ShortCut\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Category\Tree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\DataSource\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\DataSource\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Component\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Component\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\LayoutEnEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileItemsList.cshtml" />
+    <Content Include="Areas\UI\Views\Form\MobileSettingsenum.cshtml" />
+    <Content Include="Areas\UI\Views\Form\MobileSettingslist.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\User\UserInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\CollectMsg\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\DefaultValueEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\BlockDefine.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsPie.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsLine.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsBar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsGauge.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsBlock.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\ConditionDefine.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\SettingsText.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Graph\ConditionEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingstable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\ConfigLayout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\MainBlockSetting.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\DataSourceSetting.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Portal\Edit.cshtml" />
+    <Content Include="Areas\UI\Views\Portal\List.cshtml" />
+    <Content Include="Areas\UI\Views\Portal\ListView.cshtml" />
+    <Content Include="Areas\UI\Views\Portal\Main.cshtml" />
+    <Content Include="Areas\UI\Views\Portal\Portal.cshtml" />
+    <Content Include="Areas\UI\Views\Portal\Selector.cshtml" />
+    <Content Include="Areas\UI\Views\Portal\Views.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Portal\UserTempletView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelPrint\Edit.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelPrint\ItemList.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelPrint\List.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelPrint\SettingsDatetime.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelPrint\SettingsEnum.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelPrint\SettingsFloat.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelPrint\SettingsSubTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelPrint\Upload.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\HelpEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Log\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Log\Views\LoginLog\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Log\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Log\Views\MacAddress\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Log\Views\MacAddress\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\List\DefaultValueEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\ColumnGridSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\ComplexTextBlockSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\EnumEdit.cshtml" />
+    <Content Include="Areas\UI\Views\BI\FileGridSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\GridSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\NavigationSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\NoticeGridSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\Selector.cshtml" />
+    <Content Include="Areas\UI\Views\BI\SimpleTitleGridSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\StandardColumnSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\StandardPieSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\TabSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\TargetColumnSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\TargetPieSettings.cshtml" />
+    <Content Include="Areas\UI\Views\BI\TitleBlockSettings.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\BI\GridColumnDefineSettings.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Portal\NewPortal.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\PublicInformation\PublicView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\ShortMsg\Views\AlarmConfig\Edit.cshtml" />
+    <Content Include="Areas\ShortMsg\Views\AlarmConfig\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingscomplexTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\VersionEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\VersionEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Word\VersionList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingslink.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\LayoutPrintEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingsdate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsSpinner.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\SettingsUEditor.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingsformat.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingsattachment.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PortalBlock\Views\ShortCut\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\ToList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\ToForm.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\ItemList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\SettingsDate.cshtml" />
+    <Content Include="Areas\UI\Views\ExcelImport\SettingsEnum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\SettingsConvert.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\ExcelImport\SettingsText.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Portal\LoginEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\LayoutEditUEditor.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\LoginLog\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\DataModifyLog\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\DataModifyLog\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\LayoutEnUEditor.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\VersionList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutSecurity.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\MobileSettingsinvoice.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\Tab.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\RefList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\Settings.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\ParamUserList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Meta\Views\Parameter\ParamSelector.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\Res\Icons.cshtml" />
+    <Content Include="Areas\Auth\Views\Res\MobileEnumEdit.cshtml" />
+    <Content Include="Areas\Auth\Views\Res\MobileEnumGroup.cshtml" />
+    <Content Include="Areas\Auth\Views\Res\MobileNodeEdit.cshtml" />
+    <Content Include="Areas\Auth\Views\Res\MobileTree.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UI\Views\Form\CalItemList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Auth\Views\CompanyAuth\List.cshtml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>23501</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:8050/portal/Portal.aspx</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

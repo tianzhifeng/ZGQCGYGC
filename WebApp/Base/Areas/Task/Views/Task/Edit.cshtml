@@ -1,0 +1,143 @@
+﻿<style>
+    .send
+    {
+        background-image: url(/CommonWebResource/RelateResource/image/icons/icon_mail.gif);
+    }
+    
+    .end
+    {
+        background-image: url(/CommonWebResource/Theme/Default/MiniUI/icons/end.gif);
+    }
+</style>
+<div class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;">
+    <div title="任务信息">
+        <div class="mini-fit" style="overflow: hidden;">
+            <div class="mini-toolbar" id="btnDiv" style="width: 100%;">
+                <table>
+                    <tr>
+                        <td>
+                            <a class="mini-button" id="btnSave" plain="true" iconcls="icon-save" onclick="save({actionTitle:'保存', closeWindow:true});"
+                                visible="false">保存</a>
+                            <a class="mini-button" id="btnEnd" plain="true" iconcls="end" onclick="save({ action: 'ConfirmTask', actionTitle: '确认' });"
+                                visible="false">任务完成确认</a>
+                        </td>
+                        <td id="btnRight">
+                            <a class="mini-button" id="btnHelp" onclick="showHelp()" iconcls="icon-help" plain="true">
+                                帮助</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <form id="dataForm" method="post">
+            <input name="ID" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>任务信息</legend>
+                    <div>
+                        <table>
+                            <tr class="hideRow">
+                                <td width="15%">
+                                </td>
+                                <td width="35%">
+                                </td>
+                                <td width="15%">
+                                </td>
+                                <td width="35%">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    任务名称
+                                </td>
+                                <td colspan="3">
+                                    <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    负责人
+                                </td>
+                                <td colspan="3">
+                                    <input name="ExecUserIDs" textname="ExecUserNames" class="mini-buttonedit" style="width: 100%;"
+                                        required="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    计划完成日期
+                                </td>
+                                <td>
+                                    <input name="DeadLine" class="mini-datepicker" style="width: 100%" />
+                                </td>
+                                <td>
+                                    确认完成日期
+                                </td>
+                                <td>
+                                    <input name="CompleteTime" class="mini-datepicker" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    紧急程度
+                                </td>
+                                <td>
+                                    <input name="Urgency" class="mini-combobox" style="width: 100%;" data="urgency" />
+                                </td>
+                                <td>
+                                    综合评分
+                                </td>
+                                <td>
+                                    <input name="ExecScore" class="mini-textbox" style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <hr />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <textarea class="mini-textarea" name="Description" emptytext="任务描述" style="width: 100%;
+                                        height: 275px;"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <input class="mini-multifile" style="width: 100%" name="Attachment" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+            </form>
+        </div>
+    </div>
+    @Html.Raw(ViewBag.html)
+</div>
+<script type="text/javascript">
+    var urgency = [{ value: "一般", text: "一般" }, { value: "紧急", text: "紧急"}];
+    addMultiUserSelector("ExecUserIDs");
+</script>
+<script type="text/javascript">
+    function onFormSetData(data) {
+        //完成时间不能修改
+        setFormItemDisabled("CompleteTime");
+
+        if (!data.Urgency)
+            mini.getbyName("Urgency").setValue("一般");
+
+        if (data.CreateUserID == user.UserID && !data.CompleteTime) { //当前人的未完成任务可修改           
+            mini.get("btnSave").show();
+            if (getQueryString("ID") == "") {
+                mini.get("btnEnd").hide();
+            }
+            else {               
+                mini.get("btnEnd").show();
+            }
+        }
+        else {
+            setFormDisabled(true);
+        }
+    }
+</script>

@@ -1,0 +1,252 @@
+﻿@{
+    ViewBag.Title = "里程碑执行";
+}
+
+<div class="mini-toolbar " style="padding: 0px; border-top: 0; border-right: 0; border-left: 0;">
+    <table>
+        <tr>
+            <td style="width: 100%">
+                <a class="mini-button" iconcls="icon-edit" onclick="changeMileStone" plain="true">变更</a>
+                <a class="mini-button" iconcls="icon-ok" onclick="bindReceiptObj" plain="true">关联收款项</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入里程碑名称" onenter="quickSearch('Code,Name');"
+                       onbuttonclick="quickSearch('Name');" />
+                <a class="mini-button" iconcls="icon-find" onclick="showWindow('queryWindow');">详细查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" url="GetList" style="width: 100%; height: 100%;"
+         multiselect="true" borderstyle="border-left:0;border-bottom:0;border-right:0;" allowcelledit="false"
+         allowcellselect="false" onshowrowdetail="onShowRowDetail" allowresize="false" ondrawcell="onDrawCell"
+         oncellvalidation="cellvalidation" onload="OnLoad" showpager="false" sortfield="PlanFinishDate" sortorder="asc">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="SetFinish" width="70" allowsort="fakse" align="center">
+                操作
+            </div>
+            <div type="expandcolumn">
+            </div>
+            <div name="Name" field="Name" width="300" allowsort="true">
+                里程碑名称
+            </div>
+            <div field="MajorValue" width="90" allowsort="true" align="center">
+                专业
+            </div>
+            <div field="OutMajorValue" width="90" headeralign="center" allowsort="true" align="center">
+                接收专业
+            </div>
+            <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="100" allowsort="true" align="center">
+                计划完成时间
+            </div>
+            <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="100" allowsort="true" align="center">
+                原计划完成时间
+            </div>
+            <div field="FactFinishDate" width="120" headeralign="center" align="center" allowsort="true" dateformat="yyyy-MM-dd">
+                实际完成时间
+            </div>
+            <div field="Weight" width="60" allowsort="true" align="right">
+                权重(%)
+            </div>
+            <div field="BindReceiptObjName" width="300" allowsort="true" align="left">
+                关联收款项名称
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="detailGrid_Form" style="display: none; width: 100%;">
+    <div id="detailPanel" class="mini-panel" style="width: 100%; height: 300px;" showcollapsebutton="false"
+         url="" expanded="true" showheader="false">
+    </div>
+</div>
+@*<div id="detailGrid_Form" style="display: none; width: 90%; padding-left: 100px;">
+        <div id="changeGrid" class="mini-datagrid" showpager="false" style="width: 100%; height: 200px;" showfooter="false">
+            <div property="columns">
+                <div type="indexcolumn">
+                </div>
+                <div field="ChangeReason" width="*" allowsort="true">
+                    变更原因
+                </div>
+                <div field="OrlPlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                    变更前计划完成时间
+                </div>
+                <div field="PlanFinishDate" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                    计划完成时间
+                </div>
+                <div field="ChangeTime" dateformat="yyyy-MM-dd" width="120" allowsort="true" align="center">
+                    变更时间
+                </div>
+            </div>
+        </div>
+    </div>*@
+<div id="queryWindow" class="mini-window" title="详细查询" style="width: 690px;">
+    <div class="queryDiv">
+        <form id="queryForm" method="post">
+            <table>
+                <tr>
+                    <td width="15%" align="center">
+                        里程碑名称
+                    </td>
+                    <td width="35%">
+                        <input name="$LK$Name" class="mini-textbox" style="width: 100%;" />
+                    </td>
+                    <td width="10%" align="center"></td>
+                    <td width="35%"></td>
+                    <td width="5%" />
+                </tr>
+                <tr>
+                    <td align="center">
+                        计划完成日期
+                    </td>
+                    <td align="left">
+                        <input name="$FR$FactFinishDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                    <td align="center">
+                        至
+                    </td>
+                    <td align="left">
+                        <input name="$TO$FactFinishDate" class="mini-datepicker" style="width: 100%" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+            <a class="mini-button" onclick="clearQueryForm()" iconcls="icon-undo">清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.MileStoneState));
+    @Html.GetEnum("Project.Major");
+    var projectInfo = @Html.Raw(ViewBag.ProjectInfo)
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "MileStoneLevel", "MileStoneLevel");
+    addGridEnum("dataGrid", "State", "MileStoneState");
+    addGridEnum("dataGrid", "MajorValue", "Major");
+    addGridEnum("dataGrid", "OutMajorValue", "Major");
+    addGridLink('dataGrid', 'FactFinishDate', 'MileStoneFinish?ID={ID}', { funcType: 'view', height: 480, width: 700 });
+    var projectInfoID = getQueryString("ProjectInfoID");
+
+    function onDrawCell(e) {
+        var field =e.field;
+        var rec = e.record;
+        if(field=="SetFinish"){
+            if(rec.FactFinishDate){
+                e.cellHtml = '<a href="javascript:SetExecute(\'' + rec.ID + '\')">撤销完成</a> ';
+            }
+            else
+            {
+                e.cellHtml = '<a href="javascript:setFinish(\'' + rec.ID + '\')">设置完成</a> ';
+            }
+        }
+    }
+
+    function setFinish(id) {
+        addExecuteParam("MileStoneID", id);
+        addExecuteParam("ValidateType", "Finish");
+        execute("ValidateMileStone", { showLoading: false, refresh: false, onComplete: function (data) {
+            msgUI("您确认要完成里程碑吗？", 2, function (data) {
+                if (data != "ok") return;
+                var url = "MileStoneFinish?ID=" +id;
+                openWindow(url, {
+                    refresh: false, title: "里程碑管理", width: 700, height: 480,
+                    onDestroy: function (data) {
+                        if(data=="close")return;
+                        mini.get("dataGrid").reload();
+                    }
+                });
+            });
+        }, validateForm: false
+        });
+    }
+
+    function SetExecute(id) {
+        addExecuteParam("MileStoneID", id);
+        addExecuteParam("ValidateType", "Execute");
+        execute("ValidateMileStone", { showLoading: true, refresh: false, onComplete: function (data) {
+            msgUI("您确认要撤销完成里程碑吗？", 2, function (data) {
+                if (data != "ok") return;
+                addExecuteParam("ID", id);
+                execute("SetExecute", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        mini.get("dataGrid").reload();
+                    }, validateForm: false
+                });
+            });
+        }, validateForm: false
+        });
+    }
+
+    function bindReceiptObj() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择里程碑记录"); return; }
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ReceiptObjectSelector&MarketProjectID="+projectInfo.MarketProjectInfoID;
+        openWindow(url, {
+            refresh: false, title: "收款项选择", width: "75%", height: "60%",addQueryString:false,
+            onDestroy: function (data) {
+                if(data=="close")return;
+                addExecuteParam("ProjectInfoID", projectInfoID);
+                addExecuteParam("mileStoneList", mini.encode(rows));
+                addExecuteParam("receiptObjList", mini.encode(data));
+                execute("BindingReceiptObject", { showLoading: true, refresh: false, onComplete: function (data) {
+                    grid.reload();
+                }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function OnLoad(e) {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.mergeColumns(["Name"]);
+    }
+
+    function cellvalidation(e) {
+        if (e.field == "FactFinishDate" && e.record.State == "@ViewBag.FinishState"
+        && (e.value == undefined || e.value == "")) {
+            e.isValid = false;
+        }
+    }
+
+    //单条变更
+    function changeMileStone() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows.length!=1) { msgUI("请选择一条里程碑"); return; }
+        if (rows[0].ApplyState !== '未申请') { msgUI("此里程碑已申请或完成不允许变更！"); return; }
+
+        var url = "MileStoneChange?MileStoneID=" + rows[0].ID;
+        openWindow(url, {
+            width: 700, height: 400,
+            title: "变更里程碑",
+            onDestroy: function (data) {
+                if (data == "close") return;
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    var detailGrid_Form = document.getElementById("detailGrid_Form");
+    function onShowRowDetail(e) {
+        var grid = e.sender;
+        var row = e.record;
+        var td = grid.getRowDetailCellEl(row);
+        detailGrid_Form.style.display = "block";
+        td.appendChild(detailGrid_Form);
+        //var changeGrid = mini.get("changeGrid");
+        //changeGrid.setUrl("GetChangeList?MileStoneID=" + row.ID);
+        //changeGrid.load();
+        var changeGrid = mini.get("detailPanel");
+        changeGrid.setUrl("/MvcConfig/UI/Form/PageView?TmplCode=MileStoneProductDetailTab&MileStoneID=" + row.ID + "&ModeCode=" + getQueryString("ModeCode"));
+        changeGrid.load();
+    }
+
+</script>

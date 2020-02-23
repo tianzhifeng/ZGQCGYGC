@@ -1,0 +1,29 @@
+﻿<script id="TitleBlock" type="text/x-jquery-tmpl">
+    <div class="pull-left tab-title-left">
+        <h4>
+            ${Title}<span> · ${Code}</span>
+        </h4>
+        <div style="postion: absolute; padding-top: 3px">
+            <div class="edlink" id="linkAttr">
+                ${SubTitle}
+            </div>
+            {{each Tag}}
+            <div class="edtag">
+                <span class="state-panel">&nbsp;${$value.Value}</span>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="pull-right tab-title-right">
+        <p>
+            {{each Attrs}}
+            <span class="has-mar">${$value.Name}：<span>${$value.Value}</span></span>
+            {{/each}}
+        </p>
+        {{each Button}}
+        <div class="BIinfo-headbt" style="border-top:1px;">
+            <span class="BIinfo-headb-panel BIinfo-headblg">&nbsp;${$value.ButtonName}  </span>
+        </div>
+        {{/each}}
+    </div>
+</script>

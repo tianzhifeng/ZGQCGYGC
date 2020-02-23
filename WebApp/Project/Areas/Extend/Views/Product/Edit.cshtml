@@ -1,0 +1,193 @@
+﻿@{
+    ViewBag.Title = "成果编辑";
+}
+<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="save();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <form id="dataForm" method="post">
+    <input name="ID" class="mini-hidden" />
+    <input name="ProjectInfoID" class="mini-hidden" />
+    <input name="WBSID" class="mini-hidden" />
+    <input name="AuditID" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>成果信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%">
+                        </td>
+                        <td width="35%">
+                        </td>
+                        <td width="15%">
+                        </td>
+                        <td width="35%">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            名称
+                        </td>
+                        <td>
+                            <input name="Name" style="width: 100%" class="mini-textbox" required="true" />
+                        </td>
+                        <td>
+                            编号
+                        </td>
+                        <td>
+                            <input name="Code" style="width: 100%" class="mini-textbox" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            类型
+                        </td>
+                        <td>
+                            <input name="FileType" class="mini-combobox" style="width: 100%;" textfield="text"
+                                valuefield="value" data="ProductFileType" />
+                        </td>
+                        <td>
+                            折合A1
+                        </td>
+                        <td>
+                            <input name="ToA1" style="width: 100%" class="mini-textbox" vtype="float" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            成果附件
+                        </td>
+                        <td colspan="3">
+                            <input name="MainFile" class="mini-singlefile" style="width: 100%;" vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                    @{
+                        var ArchiveType = ViewBag.ArchiveType.Split(',');
+                        for (int i = 0; i < ArchiveType.Length; i++)
+                        {
+                            var file = ArchiveType[i];
+                            var name = "其他文件";
+                            if (file == "PdfFile") { name = "PDF文件"; }
+                            else if (file == "PlotFile") { name = "Plot文件"; }
+                            else if (file == "XrefFile") { name = "引用文件"; }
+                            else if (file == "DwfFile") { name = "Dwf文件"; }
+                            else if (file == "TiffFile") { name = "Tiff文件"; }
+                            else if (file == "SignPdfFile") { name = "盖章PDF文件"; }
+                            <tr>
+                                <td>
+                                    @name
+                                </td>
+                                <td colspan="3">
+                                    <input name="@file" class="mini-singlefile" style="width: 100%;" vtype="maxLength:100" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                    @*<tr>
+                        <td>
+                            是否会签
+                        </td>
+                        <td>
+                            <input name="IsCoSign" class="mini-radiobuttonlist" style="width: 100%;" textfield="text"
+                                valuefield="value" data="Bool" onvaluechanged="BoolValueChanged" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            会签专业
+                        </td>
+                        <td colspan="3">
+                            <input name="CoSignMajor" style="width: 100%" valuefield="Value" textfield="Text"
+                                class="mini-checkboxlist" vtype="maxLength:50" data="Major" multiselect="true"
+                                valuefield="value" />
+                        </td>
+                    </tr>*@
+                    <tr>
+                        <td>
+                            备注
+                        </td>
+                        <td colspan="3">
+                            <input name="Description" class="mini-textarea" style="width: 100%; height: 100px;"
+                                vtype="maxLength:100" />
+                        </td>
+                    </tr>
+                </table>
+                @*<table width="100%">
+                    <tr>
+                        <td>规划阶段</td>
+                        <td>
+                            {}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>方案阶段</td>
+                        <td>
+                            {}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>初步设计阶段</td>
+                        <td>
+                        {}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>施工图阶段</td>
+                        <td>
+                        {}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>其它专业设计阶段</td>
+                        <td>基坑支护与桩基础</td>
+                        <td>
+                            {}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>其它专业设计阶段</td>
+                        <td>基坑支护与桩基础</td>
+                        <td>
+                            {}
+                        </td>
+                    </tr>
+                </table>*@
+            </div>
+        </fieldset>
+    </div>
+    </form>
+</div>
+<script>
+    var Bool=[{value:"True",text:"是"},{value:"False",text:"否"}];
+    @Html.GetEnum("Project.ProductFileType");
+    var Major = @Html.Raw(ViewBag.Major)
+    addSingleUserSelector("RegisterID");
+</script>
+<script type="text/javascript">
+    function onFormSetData() {
+        BoolValueChanged();
+
+    }
+
+    function BoolValueChanged() {
+        var value = mini.getbyName("IsCoSign").getValue();
+
+        if (value == "True") {
+            mini.getbyName("CoSignMajor").setRequired(true);
+            mini.getbyName("CoSignMajor").setEnabled(true);
+        }
+        else if (value == "False") {
+            mini.getbyName("CoSignMajor").setRequired(false);
+            mini.getbyName("CoSignMajor").setEnabled(false);
+        }
+    }
+
+</script>

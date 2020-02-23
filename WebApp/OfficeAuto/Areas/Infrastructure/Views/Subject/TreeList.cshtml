@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="onAddChild();" plain="true">增加子科目</a>
+                <a class="mini-button" iconcls="icon-add" onclick="onAdd();" plain="true">下方插入行</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delNode();" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;">
+                @*展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                    onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />*@
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入名称' onenter="treeSearch"
+                       onbuttonclick="treeSearch" />
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;"
+         url="GetSubjectTree" showtreeicon="true" treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false"
+         allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true" expandonload="true"
+         sortfield="SortIndex" sortorder="asc" multiselect="true" contextmenu="#gridMenu" iconfield="NodeType"
+         allowdrag="true" allowdrop="true" allowleafdropin="true" ongivefeedback="onGiveFeedback"
+         ondrop="onNodeDrop"
+         allowresize="true" fitcolumns="true">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div type="indexcolumn"></div>
+            <div name="Name" field="Name" headeralign="center" width="250" vtype="required">
+                科目名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" headeralign="center" width="200" vtype="required">
+                科目编码
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="BelongDeptIDs" displayfield="BelongDeptNames" headeralign="center" width="200">
+                使用部门
+                <input property="editor" name="BelongDeptIDs" class="mini-buttonedit" style="width: 100%;" />
+            </div>
+            <div field="Remark" headeralign="center" width="*" align="right">
+                备注
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="ModifyDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" align="center">
+                最后修改日期
+            </div>
+            <div field="ModifyUserName" width="100" headeralign="center" align="center">
+                最后修改人
+            </div>
+        </div>
+    </div>
+</div>
+<ul id="gridMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="add" iconcls="icon-add" onclick="onAdd">下方插入行</li>
+    <li name="addChild" iconcls="icon-add" onclick="onAddChild">增加子科目</li>
+    <li name="remove" iconcls="icon-remove" onclick="delNode">删除行</li>
+</ul>
+<script type="text/javascript">
+    addMultiOrgSelector("BelongDeptIDs");
+</script>
+<script type="text/javascript">
+
+    function onAddChild() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            return;
+        }
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("AddMode", "add");
+        execute("AddNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.addNode(data, "add", node);
+            }, validateForm: false
+        });
+
+    }
+
+    function onAdd() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            return;
+        }
+        addExecuteParam("AddMode", "after");
+        addExecuteParam("NodeID", node.ID);
+        execute("AddNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataTree.addNode(data, "after", node);
+            }, validateForm: false
+        });
+    }
+
+    function delNode() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            msgUI("请至少选择一个科目"); return;
+        }
+
+        msgUI("您确定要删除选中的科目吗？", 2, function (result) {
+            if (result != "ok") return;
+            var ids = "";
+            for (var i = 0; i < nodes.length; i++) {
+                if (i == nodes.length - 1) {
+                    ids += nodes[i].ID;
+                }
+                else {
+                    ids += nodes[i].ID + ",";
+                }
+            }
+            addExecuteParam("Ids", ids);
+            execute("DeleteNodes", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    dataTree.removeNodes(nodes);
+                }, validateForm: false
+            });
+        });
+    }
+
+    function saveData() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                tree.accept();
+            }, validateForm: true
+        });
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onBeforeOpen(e) {
+        var dataTree = mini.get("dataTree");
+        var menu = e.sender;
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            e.cancel = true;
+            //阻止浏览器默认右键菜单
+            e.htmlEvent.preventDefault();
+            return;
+        }
+        var addItem = mini.getbyName("add", menu);
+        var removeItem = mini.getbyName("remove", menu);
+        var addChildItem = mini.getbyName("addChild", menu);
+        addItem.hide();
+        removeItem.hide();
+        addChildItem.hide();
+        if (node.NodeType == "Root") {
+            addChildItem.show();
+        }
+        else {
+            addItem.show();
+            removeItem.show();
+            addChildItem.show();
+        }
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+        if (node.NodeType == "Root") {
+            e.effect = "no";
+        }
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false
+        });
+    }
+</script>

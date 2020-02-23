@@ -1,0 +1,237 @@
+﻿@{
+    Layout = ViewBag.Layout;
+}
+<style type="text/css">
+    .mini-grid-border {
+        border-top: 1px solid #ccc;
+        border-right: 0px;
+        border-left: 0px;
+        border-bottom: 0px;
+    }
+
+    .mini-tabs-bodys {
+        position: relative;
+        border-top: 0;
+        background: white;
+        padding: 0px;
+        text-align: left;
+        overflow: hidden;
+        border-top: 0px solid #999;
+        border-right: 1px solid #999;
+        border-left: 1px solid #999;
+        border-bottom: 1px solid #999;
+    }
+
+    .mini-splitter-pane2-vertical {
+        border: 0;
+        border-top: solid 1px #ccc;
+    }
+
+    .span_title {
+        font-weight: bold;
+        padding-left: 10px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 12px;
+        color: #333;
+    }
+
+    .mini-tabs-table {
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+        border-collapse: collapse;
+        border-collapse: separate;
+        position: relative;
+        width: 100%;
+    }
+
+    .mini-tabs {
+        overflow: hidden;
+        font-size: 9pt;
+        font-family: Tahoma, Verdana, 宋体;
+        position: relative;
+        width: 100%;
+    }
+
+    .mini-tabs-scrollCt {
+        position: relative;
+        border-bottom: solid 1px #A8A8A8;
+        border: solid 1px #999999;
+        background: #f0f0f0 repeat-x 0 0;
+        zoom: 1;
+        width: 100%!important;
+    }
+
+    .mini-tabs-bodys {
+        position: relative;
+        border: solid 1px #999999;
+        border-top: 0;
+        background: white;
+        padding: 5px;
+        text-align: left;
+        overflow: hidden;
+        width: 100%!important;
+    }
+</style>
+<script type="text/javascript">
+    //请现在页面或Layout中引用脚本：“/CommonWebResource/CoreLib/HighCharts/highcharts.js”
+    //请调用showGirdChartSettings方法打开图表配置页
+
+    var groupbyFieldEnum = [
+    ];
+
+    var sumFieldEnum = [
+    ];
+
+    function showChart() {
+        createChart('title', 'name', []);
+    }
+
+</script>
+
+@Html.Raw(ViewBag.ListHtml)
+<script type="text/javascript">
+    @Html.Raw(ViewBag.Script)
+    @Html.Raw(ViewBag.FixedFields)
+</script>
+<script src="/PortalLTE/Scripts/jQuery/jquery.nicescroll.min.js"></script>
+<script type="text/javascript">
+    mini.parse();
+    function exportList(currentPage) {
+        if (currentPage)
+            $("input[name='exportCurrentPage']").val("true");
+        else
+            $("input[name='exportCurrentPage']").val("false");
+        ExportExcel(getQueryString("TmplCode"), "dataGrid", "");
+    }
+    function onDrawcellGrid(e) {
+        if (e.field != undefined && FixedFields.indexOf(e.field.toUpperCase()) > -1) {
+        } else {
+            e.cellInnerCls = "mini-grid-cell-nowrap";
+        }
+    }
+
+    //Word导出
+    function exportWord(tmplCode) {
+        var grid = mini.get("dataGrid");
+        if (grid.getSelecteds().length != 1) {
+            msgUI("请选择一行记录");
+            return;
+        }
+        if (tmplCode == undefined)
+            tmplCode = getQueryString("TmplCode");
+        var url = "/MvcConfig/UI/Word/Export?TmplCode=" + tmplCode + "&ID={ID}";
+        url = replaceUrl(url);
+        window.location.href = url;
+        // window.open(url);该代码会重新打开一个页面，企业微信pc端，打开后有1个空白页面，不会自动关闭
+    }
+
+    //Word导出
+    function exportPdf(tmplCode) {
+        var grid = mini.get("dataGrid");
+        if (grid.getSelecteds().length != 1) {
+            msgUI("请选择一行记录");
+            return;
+        }
+        if (tmplCode == undefined)
+            tmplCode = getQueryString("TmplCode");
+        var url = "/MvcConfig/UI/Word/Export?pdf=true&TmplCode=" + tmplCode + "&ID={ID}";
+        url = replaceUrl(url);
+        window.location.href = url;
+        // window.open(url);该代码会重新打开一个页面，企业微信pc端，打开后有1个空白页面，不会自动关闭
+    }
+
+    $('.mini-grid-rows-view').niceScroll({ cursorcolor: "#dfdfdf", cursorwidth: "5px", autohidemode: false });
+
+    function onRowClick(e, key) {
+        var navGrid = mini.get(e.id);
+        var grid = mini.get("dataGrid");
+        $("#toolbar,#divGrid").show();
+        $("#divDes").hide();
+        var data = {};
+        //var isExistField = false;
+        //for (var i = 0; i < grid.getColumns() ; i++) {
+        //    if (grid.getColumns()[i].field == key) {
+        //        isExistField = true;
+        //    }
+        //}
+        //if (!isExistField) {
+        //    msgUI("当前字段" + key + "不存在，请重新检查！", 1);
+        //    return;
+        //}
+        data["$IL$" + key] = navGrid.getSelected().ID;
+
+        if (grid != undefined)
+            grid.load({ quickQueryFormData: mini.encode(data) });
+
+    }
+
+    function treeGridSearch(searchFields, normalSettings) {
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var data = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo == undefined) {
+            msgUI("当前快速查询文本框" + settings.queryBoxId + "不存在，请重新检查！", 1);
+            return;
+        }
+        var key = settings.queryKey;
+        var value = keyCo.getValue();
+        if (key) {
+            var nodes = tree.filter(function (node) {
+                var name = eval('node.' + key);
+                var text = name ? name.toLowerCase() : "";
+                if (text.indexOf(value) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+    function pageLoad() {
+        var data = {};
+        var grid = mini.get("dataGrid");
+        data["$IL$ID"] = "##$$%%";
+        if (grid != undefined)
+            grid.load({ quickQueryFormData: mini.encode(data) });
+
+    }
+
+
+</script>
+
+<div id='chartSettings' class='mini-window' title='统计图表生成' style='width: 690px; height: 245px; display: none;'>
+    <div style='padding: 20px;'>
+        <form id='queryForm'>
+            <table>
+                <tr>
+                    <td align='right'>统计项:
+                    </td>
+                    <td style='text-align: left'>
+                        <div id='groupbyField' class='mini-checkboxlist' multiselect='false' data='groupbyFieldEnum'>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width='20%' align='right'>统计项数值:
+                    </td>
+                    <td style='text-align: left'>
+                        <div id='sumField' class='mini-checkboxlist' multiselect='false' data='sumFieldEnum'>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan='2'></td>
+                </tr>
+                <tr>
+                    <td colspan='2' style='text-align: center;' class='queryDiv'>
+                        <div id='chartType' style='text-align: center;' class='mini-checkboxlist' multiselect='false'
+                            data='chartType'>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style='text-align: center;'>
+        <a class='mini-button' onclick='showChart();' iconcls='icon-find' style='margin-right: 20px;'>生成图表</a>
+        <a class='mini-button' onclick='hideWindow("chartSettings")' iconcls='icon-undo'>取消</a>
+    </div>
+</div>

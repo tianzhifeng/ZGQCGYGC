@@ -1,0 +1,47 @@
+﻿<div class="mini-toolbar" id="btnDiv" style="width: 100%; position: fixed; top: 0; left: 0; z-index: 100;">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="returnForm();">确定</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false" style="top: 30px; position: relative;">
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本属性</legend>
+            <div>
+                <table style="width: 100%;">
+                    <tr class="hideRow">
+                        <td width="50%"></td>
+                        <td width="50%"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            仅上传图片：
+                        </td>
+                        <td>
+                            <input name="onlyPic" class="mini-combobox" style="width: 100%;" data="trueOrFalse" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    var trueOrFalse = [
+        { value: 1, text: '是' },
+        { value: 0, text: '否' }
+    ];
+
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+        }
+    }
+</script>

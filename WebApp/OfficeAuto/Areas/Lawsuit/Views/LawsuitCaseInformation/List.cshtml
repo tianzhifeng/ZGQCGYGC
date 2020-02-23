@@ -1,0 +1,347 @@
+﻿@{
+    ViewBag.Title = "案件信息";
+}
+<div class='mini-toolbar gw-grid-toolbar' style='padding: 0px 0px 0px 0px;'>
+    <table>
+        <tr>
+            <td>
+                <a class='mini-button' id='btnAdd' iconcls='icon-add' text='增加' enabled='true' visible='true'
+                    onclick='openWindow("/MvcConfig/UI/Form/PageView?TmplCode=Lawsuit_CaseInformation",{"width":"1000","title":"增加"});'>
+                </a><a class='mini-button' enabled='true' visible='true' id='btnAddFile' text='上传文件资料'
+                    iconcls='icon-add' onclick='addFile'></a><a class='mini-button' id='btnModify' iconcls='icon-edit'
+                        text='编辑' enabled='true' visible='true' onclick='editForm'></a><a class='mini-button'
+                            id='btnDelete' iconcls='icon-remove' text='删除' enabled='true' visible='true'
+                            onclick='delCase();'></a>
+            </td>
+            <td class='gw-toolbar-right'>
+                <input id='key' class='mini-buttonedit gw-searchbox' emptytext='请输入案件名称或主题词' onenter="quickSearch('NameOfCase,SubjectHeadings');"
+                    onbuttonclick="quickSearch('NameOfCase,SubjectHeadings');" />
+                <a class='mini-button' onclick="showWindow('queryWindow');" iconcls='icon-find'>详细查询</a>
+                <a class='mini-button' onclick='showHelp()' iconcls='icon-help'>帮助</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class='mini-fit' id='divGrid'>
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%; height: 100%;' url='GetList'
+        istreegrid='false' expandonload='true' multiselect='true' allowalternating='false'
+        onshowrowdetail="onShowRowDetail" ajaxoptions="{async:true}" ondrawsummarycell='onDrawSummaryCell'>
+        <div property='columns'>
+            <div type='checkcolumn'>
+            </div>
+            <div type="expandcolumn">
+            </div>
+            <div name='ID' field='ID' header='ID' align='left' visible='false' allowsort='true'
+                header='ID'>
+            </div>
+            <div name='CreateDate' field='CreateDate' header='CreateDate' align='left' visible='false'
+                allowsort='true' dateformat='yyyy-MM-dd' header='CreateDate'>
+            </div>
+            <div name='ModifyDate' field='ModifyDate' header='ModifyDate' align='left' visible='false'
+                allowsort='true' dateformat='yyyy-MM-dd' header='ModifyDate'>
+            </div>
+            <div name='CreateUserID' field='CreateUserID' header='CreateUserID' align='left'
+                visible='false' allowsort='true' header='CreateUserID'>
+            </div>
+            <div name='CreateUser' field='CreateUser' header='CreateUser' align='left' visible='false'
+                allowsort='true' header='CreateUser'>
+            </div>
+            <div name='ModifyUserID' field='ModifyUserID' header='ModifyUserID' align='left'
+                visible='false' allowsort='true' header='ModifyUserID'>
+            </div>
+            <div name='ModifyUser' field='ModifyUser' header='ModifyUser' align='left' visible='false'
+                allowsort='true' header='ModifyUser'>
+            </div>
+            <div name='OrgID' field='OrgID' header='OrgID' align='left' visible='false' allowsort='true'
+                header='OrgID'>
+            </div>
+            <div name='CompanyID' field='CompanyID' header='CompanyID' align='left' visible='false'
+                allowsort='true' header='CompanyID'>
+            </div>
+            <div name='FlowPhase' field='FlowPhase' header='FlowPhase' align='left' visible='false'
+                allowsort='true' header='FlowPhase'>
+            </div>
+            <div name='FlowInfo' field='FlowInfo' header='FlowInfo' align='left' visible='false'
+                allowsort='true' header='FlowInfo'>
+            </div>
+            <div name='StepName' field='StepName' header='StepName' align='left' visible='false'
+                allowsort='true' header='StepName'>
+            </div>
+            <div name='TypesOfLitigation' field='TypesOfLitigation' header='诉讼类型' align='left'
+                visible='false' allowsort='true' header='诉讼类型'>
+            </div>
+            <div name='RelatedLitigationApplication' field='RelatedLitigationApplication' header='关联诉讼申请'
+                align='left' visible='false' allowsort='true' header='关联诉讼申请'>
+            </div>
+            <div name='RelatedLitigationApplicationName' field='RelatedLitigationApplicationName'
+                header='关联诉讼申请名称' align='left' visible='false' allowsort='true' header='关联诉讼申请名称'>
+            </div>
+            <div name='NameOfCase' field='NameOfCase' header='案件名称' width='120' align='left'
+                visible='true' allowsort='true' header='案件名称'>
+            </div>
+            <div name='SubjectHeadings' field='SubjectHeadings' header='主题词' width='100' align='left'
+                visible='true' allowsort='true' header='主题词'>
+            </div>
+            <div name='CaseType' field='CaseType' header='案件类型' width='80' align='center' visible='true'
+                allowsort='true' header='案件类型'>
+            </div>
+            <div name='AmountOfTheSubjectMatterOfTheCase' field='AmountOfTheSubjectMatterOfTheCase'
+                header='案件标的额' width='100' align='left' visible='true' allowsort='true' header='案件标的额'>
+            </div>
+            <div name='LitigationResponseDate' field='LitigationResponseDate' header='起诉/应诉日期'
+                width='100' align='center' visible='true' allowsort='true' dateformat='yyyy-MM-dd'
+                header='起诉/应诉日期'>
+            </div>
+            <div name='CaseNumber' field='CaseNumber' header='案号' width='100' align='left' visible='true'
+                allowsort='true' header='案号'>
+            </div>
+            <div name='Plaintiff' field='Plaintiff' header='原告' width='100' align='left' visible='true'
+                allowsort='true' header='原告'>
+            </div>
+            <div name='Defendant' field='Defendant' header='被告' width='100' align='left' visible='true'
+                allowsort='true' header='被告'>
+            </div>
+            <div name='TrialProcedure' field='TrialProcedure' header='审判程序' width='100' align='left'
+                visible='true' allowsort='true' header='审判程序'>
+            </div>
+            <div name='TransferingUnit' field='TransferingUnit' header='移交单位' width='100' align='center'
+                visible='true' allowsort='true' header='移交单位'>
+            </div>
+            <div name='Remarks' field='Remarks' header='备注' align='left' visible='false' allowsort='true'
+                header='备注'>
+            </div>
+        </div>
+    </div>
+    <div id="detailGrid_Form" style="display: none;">
+        <div id="file_grid" class="mini-datagrid" multiselect='true' style="width: 100%;
+            height: 250px;" url="GetCaseFileList">
+            <div property="columns">
+                <div type='checkcolumn'>
+                </div>
+                <div name="Edit" field="Edit" width="18" headeralign="center" allowsort="true">
+                    编辑
+                </div>
+                <div name="Del" field="Del" width="18" headeralign="center" allowsort="true">
+                    删除
+                </div>
+                <div name="NameOfData" field="NameOfData" width="120" headeralign="center" allowsort="true">
+                    资料名称
+                </div>
+                <div name="UploadingPeopleName" field="UploadingPeopleName" width="100" allowsort="true">
+                    上传人
+                </div>
+                <div name="UploadTime" field="UploadTime" width="100" allowsort="true" dateformat="yyyy-MM-dd">
+                    上传时间
+                </div>
+                <div name="AdditionalExplanation" field="AdditionalExplanation" width="100" headeralign="center"
+                    dateformat="yyyy-MM-dd" allowsort="true">
+                    补充说明</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id='queryWindow' class='mini-window' title='详细查询' style='width: 690px; height: 210px;'>
+    <div class='queryDiv'>
+        <form id='queryForm' method='post'>
+        <table>
+            <tr>
+                <td width="15%">
+                    案件名称
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input name="$LK$NameOfCase" class="mini-textbox" style='width: 100%' />
+                </td>
+                <td width="15%">
+                    主题词
+                </td>
+                <td width="35%" nowrap="nowrap">
+                    <input name="$LK$SubjectHeadings" class="mini-textbox" style='width: 100%' />
+                </td>
+                <tr>
+                    <td width="15%">
+                        案件类型
+                    </td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$CaseType" class="mini-textbox" style='width: 100%' />
+                    </td>
+                    <td width="15%">
+                        案件标的额
+                    </td>
+                    <td width="35%" nowrap="nowrap">
+                        <input name="$LK$AmountOfTheSubjectMatterOfTheCase" class="mini-textbox" style='width: 100%' />
+                    </td>
+                    <tr>
+                        <td width="15%">
+                            起诉/应诉日期
+                        </td>
+                        <td width="35%" nowrap="nowrap">
+                            <input name="$FR$LitigationResponseDate" class="mini-datepicker" style='width: 45%' />&nbsp;-&nbsp;<input
+                                name="$TO$LitigationResponseDate" class="mini-datepicker" style='width: 45%' />
+                        </td>
+                        <td width="15%">
+                            案号
+                        </td>
+                        <td width="35%" nowrap="nowrap">
+                            <input name="$LK$CaseNumber" class="mini-textbox" style='width: 100%' />
+                        </td>
+                        <tr>
+                            <td width="15%">
+                                原告
+                            </td>
+                            <td width="35%" nowrap="nowrap">
+                                <input name="$LK$Plaintiff" class="mini-textbox" style='width: 100%' />
+                            </td>
+                            <td width="15%">
+                                被告
+                            </td>
+                            <td width="35%" nowrap="nowrap">
+                                <input name="$LK$Defendant" class="mini-textbox" style='width: 100%' />
+                            </td>
+                            <tr>
+                                <td width="15%">
+                                    审判程序
+                                </td>
+                                <td width="35%" nowrap="nowrap">
+                                    <input name="$LK$TrialProcedure" class="mini-textbox" style='width: 100%' />
+                                </td>
+                                <td width="15%">
+                                    移交单位
+                                </td>
+                                <td width="35%" nowrap="nowrap">
+                                    <input name="$LK$TransferingUnit" class="mini-textbox" style='width: 100%' />
+                                </td>
+        </table>
+        </form>
+        <div>
+            <a class='mini-button' onclick='search()' iconcls='icon-find' style='margin-right: 20px;'>
+                查询</a> <a class='mini-button' onclick='clearQueryForm()' iconcls='icon-undo'>清空</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    addGridButton("dataGrid", "NameOfCase", {
+        onButtonClick: function (row) {
+            var title = "查看案件信息";
+            var url = "/MvcConfig/UI/Form/PageView?TmplCode=Lawsuit_CaseInformation&ID={ID}&FuncType=View";
+            openWindow(url, {
+                title: title,
+                onDestroy: function (data) {
+                    mini.get("dataGrid").reload();
+                }
+            });
+        }
+    });
+
+    addGridButton("file_grid", "NameOfData", {
+        onButtonClick: function (row) {
+            var title = "查看上传文件信息";
+            var id = row.ID;
+
+            var url = "/MvcConfig/UI/Form/PageView?TmplCode=Lawsuit_CaseFile&ID=" + id + "&FuncType=View";
+            openWindow(url, {
+                title: title,
+                onDestroy: function (data) {
+                }
+            });
+        }
+    });
+
+    addGridButton("file_grid", "Edit", { linkText: '编辑',
+        onButtonClick: function (row) {
+            url = "/MvcConfig/UI/Form/PageView?TmplCode=Lawsuit_CaseFile&ID=" + row.ID;
+            openWindow(url, { "width": "1000", "title": "编辑" });
+        }
+    });
+
+    addGridButton("file_grid", "Del", { linkText: '删除',
+        onButtonClick: function (row) {
+            mini.confirm("确定删除吗？", "删除", function (action) {
+                if (action == "ok") {
+                    addExecuteParam("IDs", row.ID);
+                    execute("DelFile", {
+                        validateForm: false,
+                        showLoading: true,
+                        refresh: true,
+                        onComplete: function (data) {
+                            msgUI("删除成功");
+                            mini.get("file_grid").reload();
+                        }
+                    });
+                }
+
+            });
+
+        }
+    });
+
+
+    function delCase() {
+        var rows = mini.get("dataGrid").getSelecteds();
+        if (rows.length == 0) {
+            return msgUI("需要选择一条操作记录，请重新确认！", 1);
+        }
+
+        mini.confirm("该案件下的资料也会被删除，确定要删除？", "删除", function (action) {
+
+            if (action == "ok") {
+
+                var ids = getValues(rows, "ID");
+                addExecuteParam("IDs", ids);
+
+                execute("DelCase", {
+                    validateForm: false,
+                    showLoading: true,
+                    refresh: true,
+                    onComplete: function (data) {
+                        msgUI("删除成功");
+                        mini.get("dataGrid").reload();
+                    }
+                });
+            }
+        });
+    }
+
+
+    function editForm() {
+        var rows = mini.get("dataGrid").getSelecteds();
+
+        if (rows.length != 1) {
+            return msgUI("需要选择一条操作记录，请重新确认！", 1);
+        }
+
+        url = "/MvcConfig/UI/Form/PageView?TmplCode=Lawsuit_CaseInformation&ID=" + rows[0].ID;
+        openWindow(url, { "width": "1000", "title": "编辑" });
+    }
+
+
+
+    function addFile() {
+        var rows = mini.get("dataGrid").getSelecteds();
+        if (rows.length != 1)
+            return msgUI("请选择一条案件信息！", 1);
+
+        //todo:校验是否能够添加信息
+        var url = "/MvcConfig/UI/Form/PageView?TmplCode=Lawsuit_CaseFile&CaseID={ID}";
+
+        openWindow(url, {
+            refresh: false, title: "上传案件资料表单", width: "90%", height: "90%", addQueryString: false,
+            onDestroy: function (data) {
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    var detailGrid_Form = document.getElementById("detailGrid_Form");
+    function onShowRowDetail(e) {
+        var grid = e.sender;
+        var row = e.record;
+
+        var td = grid.getRowDetailCellEl(row);
+        td.appendChild(detailGrid_Form);
+        detailGrid_Form.style.display = "block";
+        var file_grid = mini.get("file_grid");
+        file_grid.load({ CaseID: row.ID });
+
+    }
+</script>

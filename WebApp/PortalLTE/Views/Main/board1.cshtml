@@ -1,0 +1,196 @@
+﻿<div id="{|ID|}" class="box box-primary">
+    <!-- Custom Tabs -->
+    <div class="nav-tabs-custom" style="height:{|Height|}">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab_1" data-toggle="tab">我的待办任务</a></li>
+            <li><a href="#tab_2" data-toggle="tab">我的已办任务</a></li>
+            <li></li>
+            <li class="pull-right" data-widget="remove" v-show="isLock()" onclick="$('#{|ID|}').data('hidden','true');dashboardChanged('{|ID|}');" style="cursor: pointer"><a class="text-muted">
+                <i class="fa fa-times"></i>                                                                                                                                   </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <ul class="list-group">
+                    <li class="list-item list-item-task {{task.Urgency}}" v-for="task in list">
+                        <div v-if="{|IsOldPortal|} || {|IsList|}" class="item-head" style="cursor: pointer;" title="{{task.TaskName}}" v-on:click="openWindow(task);">
+                            <div class="taskno">
+                                {{task.Index}}</div>
+                            <div class="tasktitle nowrap">
+                                <img v-if="isNew(task.CreateTime)" src="/PortalLTE/Images/new.png" />{{task.TaskName}}
+                            </div>
+                            <div class="date">
+                                {{task.CreateTime | date }}
+                            </div>
+                        </div>
+                        <div v-else class="item-head" style="cursor: pointer;" title="{{task.TaskName}}" v-on:click="openWindow(task);">
+                            <div class="taskuser_ico">
+                                 <img class="img-circle" style="height:40px;width:40px;" :src="task.UserIcoUrl" alt="头像">
+                            </div>
+                            <div class="new_task_right">
+                                <div class="new_tasktitle nowrap">
+                                    <img v-if="isNew(task.CreateTime)" src="/PortalLTE/Images/new.png" />{{task.TaskName}} 
+                                </div>
+                                <div class="new_date-mark">
+                                    发送人:{{task.SendTaskUserNames}}  发送时间:{{task.CreateTime | filterDate }}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_2">
+                <ul class="list-group">
+                    <li class="list-item list-item-task" v-for="task in list1">
+                        <div class="item-head" v-if="{|IsOldPortal|} || {|IsList|}" style="cursor: pointer;" title="{{task.TaskName}}" v-on:click="openWindow(task);">
+                            <div class="taskno">
+                                {{task.Index}}</div>
+                            <div class="tasktitle nowrap">
+                                <img v-if="isNew(task.ExecTime)" src="/PortalLTE/Images/new.png" />{{task.TaskName}} 
+                            </div>
+                            <div class="date">
+                                {{task.ExecTime | date }}
+                            </div>
+                        </div>
+                        <div v-else class="item-head" style="cursor: pointer;" title="{{task.TaskName}}" v-on:click="openWindow(task);">
+                            <div class="taskuser_ico">
+                                 <img class="img-circle" style="height:40px;width:40px;" :src="task.UserIcoUrl" alt="头像">
+                            </div>
+                            <div class="new_task_right">
+                                <div class="new_tasktitle nowrap">
+                                    <img v-if="isNew(task.ExecTime)" src="/PortalLTE/Images/new.png" />{{task.TaskName}} 
+                                </div>
+                                <div class="new_date-mark">
+                                    接收人:{{task.TaskUserNames}}  执行时间:{{task.ExecTime | filterDate }}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.tab-pane -->
+        </div>
+        <!-- /.tab-content -->
+    </div>
+    <!-- nav-tabs-custom -->
+</div>
+<script>
+    var undoTaskList = new Vue({
+        el: '#{|ID|}',
+        data: {
+            list: [],
+            list1:[]
+        },
+        methods: {
+            openWindow: function (task) {
+                if (task.FormWidth == "") task.FormWidth = "80%";
+                if (task.FormHeight == "") task.FormHeight = "80%";
+                var url = task.FormUrl;
+                if (url.indexOf('?') >= 0)
+                    url += "&ID=" + task.ID + "&TaskExecID=" + task.TaskExecID;
+                else
+                    url += "?ID=" + task.ID + "&TaskExecID=" + task.TaskExecID;
+                var opts = {
+                    url: url,
+                    title: task.TaskName,
+                    width: task.FormWidth,
+                    height: task.FormHeight,
+                    showMaxButton: true,
+                    ondestroy: function (action) {
+                        loadUndoTask();
+                    }
+                };
+                if (NoPopupLayer && NoPopupLayer != "true")
+                    mini.open(opts);
+                else
+                    window.open(url);
+            },
+            isNew: function (input) {
+                var date = new Date(input);
+                var h = (new Date().getTime() - date.getTime()) / 1000 / 60 / 60;
+                if (h < PortalNewsTime)
+                    return true;
+                return false;
+            },
+            isLock: function (item) {
+                return getCache('isLockPortal') == 'false' || window.location.href.indexOf('/Base/UI/Portal/Portal') > 0;
+            }
+        },
+        filters: {
+            filterDate: function (input) {
+                var date = new Date(input);
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+                month = month < 10 ? "0" + month : month;
+                day = day < 10 ? "0" + day : day;
+                var hour = date.getHours();
+                var minute = date.getMinutes();
+                if (minute < 10)
+                    minute = "0" + minute;
+                return year + "-" + month + "-" + day + " " + hour + ":" + minute;
+            }
+        }
+    });
+
+    function loadUndoTask() {
+        $.ajax({
+            url: "/PortalLTE/Main/UndoTask",
+            type: "get",
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var list = $.parseJSON(data);
+                for (var i = 0; i < list.length; i++) {
+                    for (var key in list[i]) {
+                        if (key == 'SendTaskUserIDs')
+                            list[i]["UserIcoUrl"] = "/PortalLTE/Main/DeptUserImage?UserID=" + list[i][key].split(',')[0];
+                    }
+                }
+                undoTaskList._data.list = list;
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function loadDoneTask() {
+        $.ajax({
+            url: "/PortalLTE/Main/DoneTask",
+            type: "get",
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var list = $.parseJSON(data);
+                for (var i = 0; i < list.length; i++) {
+                    for (var key in list[i]) {
+                        if (key == 'TaskUserIDs')
+                            list[i]["UserIcoUrl"] = "/PortalLTE/Main/DeptUserImage?UserID=" + list[i][key].split(',')[0];
+                    }
+                }
+                undoTaskList._data.list1 = list;
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+
+    loadUndoTask();
+    loadDoneTask();
+</script>

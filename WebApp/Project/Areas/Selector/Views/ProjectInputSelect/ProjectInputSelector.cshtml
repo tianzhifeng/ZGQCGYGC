@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "ProjectInputSelector";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="项目信息" region="west" width="300" expanded="true" showspliticon="true">
+        <ul id="dataTree" url="" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID"
+            enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="true" onnodeselect="onNodeSelected"></ul>
+    </div>
+    <div title="center" region="center">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-add" onclick="returnValue();" plain="true">导入</a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称" style="width: 200px;" onenter="tabSearch();"
+                               onbuttonclick="tabSearch();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit" style="height: 100px;">
+            <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" onload="onDataGridLoad"
+                 showpager="false">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div name="InputType" field="InputType" width="100" headeralign="center" align="center">
+                        资料分类
+                    </div>
+                    <div field="InfoName" width="*" headeralign="center">
+                        资料名称
+                    </div>
+                    <div field="LastUploadDate" width="100" headeralign="center" dateformat="yyyy-MM-dd" allowsort="true" align="center">
+                        最近上传日期
+                    </div>
+                    @*<div field="State" width="100" headeralign="center">
+                        评审状态
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var projectInfoID = getQueryString("ProjectInfoID");
+    $("#dataTree").attr("url", "GetTree?ProjectInfoID=" + projectInfoID);
+    normalParamSettings.searchFields = "Name";
+
+    function tabSearch(normalSettings) {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node || !node.ProjectInfoID) return;
+        var data = {};
+        data["$EQ$ProjectInfoID"] = node.ProjectInfoID;
+        var settings = $.extend(true, {}, normalParamSettings, normalSettings);
+        var quickSearchData = {};
+        var keyCo = mini.get(settings.queryBoxId);
+        if (keyCo && settings.searchFields) {
+            var keys = settings.searchFields.split(',');
+            for (i = 0, len = keys.length; i < len; i++) {
+                quickSearchData["$IL$" + keys[i]] = keyCo.getValue();
+            }
+        }
+        var grid = mini.get("#dataGrid");
+        grid.setUrl("GetInputList");
+        grid.load({
+            queryFormData: mini.encode(data),
+            quickQueryFormData: mini.encode(quickSearchData)
+        });
+    }
+
+    function onDataGridLoad(e) {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.mergeColumns(["InputType"]);
+    }
+
+    function onNodeSelected(e) {
+        var tree = mini.get("dataTree");
+        if (e.node.ProjectInfoID) {
+            tabSearch();
+        }
+    }
+
+    function returnValue() {
+        var dataGrid = mini.get("dataGrid");
+        var products = dataGrid.getSelecteds();
+        closeWindow(products);
+    }
+</script>

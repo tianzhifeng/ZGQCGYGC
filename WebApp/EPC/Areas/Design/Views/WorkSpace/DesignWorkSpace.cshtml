@@ -1,0 +1,408 @@
+﻿@{
+    ViewBag.Title = "DesignWorkSpace";
+}
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="350" expanded="true" showspliticon="true" showheader="false" style="border-top:0px;">
+        <div class="mini-toolbar" style="padding: 0px; ">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;"></td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="keyTree" emptytext="请输入名称" style="width: 200px;" onenter="treeSearch"
+                               onbuttonclick="treeSearch" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="dataTree" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID" iconfield="NodeType"
+                onnodeselect="onNodeSelect" enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="true"
+                ondrawnode="onDrawNode"></ul>
+        </div>
+    </div>
+    <div title="center" region="center" style="border-top:0px;">
+        <div class="mini-fit" style="padding-top: 5px;">
+            <div id="mainTab" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" borderstyle="border:0px;">
+                <div title="成果图纸">
+                    <div class="mini-toolbar" style="padding: 0px; border: 0">
+                        <table>
+                            <tr>
+                                <td style="width: 100%;">
+                                    <a class="mini-button" iconcls="icon-add" onclick="addDrawings();">批量增加</a>
+                                    <a class="mini-button" iconcls="icon-add" onclick="addDrawing();">增加</a>
+                                    <a class="mini-button" iconcls="icon-remove" onclick="delDrawing()">删除</a>
+                                    <a class="mini-button" iconcls="icon-download" onclick="downLoad();">批量下载</a>
+                                    <a class="mini-button" iconcls="icon-goto" onclick="startFlow">送校审</a>
+                                    <a class="mini-button" iconcls="icon-goto" onclick="downLoadPDF()" plain="true">批量下载PDF</a>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入成果名称或编号" onenter="quickSearch('Code,Name');"
+                                           onbuttonclick="quickSearch('Code,Name');" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url=""
+                             multiselect="true" borderstyle="border-left:0;border-right:0;" ondrawcell="onDrawCell">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="Edit" width="40" align="center">
+                                    编辑
+                                </div>
+                                <div field="UpVersion" width="40" align="center">
+                                    升版
+                                </div>
+                                <div field="Code" width="100" allowsort="true" align="left">
+                                    成果编号
+                                </div>
+                                <div field="Name" width="300" allowsort="true" align="left">
+                                    成果名称
+                                </div>
+                                <div field="Version" width="50" allowsort="true" align="right">
+                                    版本号
+                                </div>
+                                <div field="FileType" width="60" allowsort="true" align="center">
+                                    类型
+                                </div>
+                                <div field="AuditState" width="60" allowsort="true" allowsort="true" align="center">
+                                    校审状态
+                                </div>
+                                @*<div field="CoSignState" width="60" allowsort="true" allowsort="true" align="center">
+                                        会签状态
+                                    </div>*@
+                                <div field="CreateUser" width="60" allowsort="true" align="center">
+                                    提交人
+                                </div>
+                                <div field="SubmitDate" width="80" allowsort="true" align="center" dateformat="yyyy-MM-dd">
+                                    提交日期
+                                </div>
+                                <div field="AuditInfo" name="AuditInfo" width="100" allowsort="false" align="center">
+                                    校审单信息
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div title="校审信息">
+                    <div class="mini-toolbar" style="padding: 0px; border: 0">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 100%;"></td>
+                                <td style="white-space: nowrap;">
+                                    <input id="auditkey" class="mini-buttonedit gw-searchbox" emptytext="请输入校审编号" onenter="quickSearch('SerialNumber',{gridId:'auditGrid',queryBoxId:'auditkey'});"
+                                           onbuttonclick="quickSearch('SerialNumber',{gridId:'auditGrid',queryBoxId:'auditkey'});" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mini-fit">
+                        <div id="auditGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+                             idfield="ID" multiselect="true" borderstyle="border-left:0;border-right:0;">
+                            <div property="columns">
+                                <div type="checkcolumn">
+                                </div>
+                                <div field="StepName" width="80" headeralign="center" allowsort="true" align="center">
+                                    当前环节
+                                </div>
+                                <div field="SerialNumber" width="350" headeralign="center" align="center" allowsort="true">
+                                    校审单编号
+                                </div>
+                                <div field="CreateUser" headeralign="center" width="80" allowsort="true" align="center">
+                                    提交人
+                                </div>
+                                <div field="CreateDate" width="150" headeralign="center" dateformat="yyyy-MM-dd"
+                                     allowsort="true" align="center">
+                                    提交日期
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div title="会签信息">
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Base.DrawingFileType")
+    @Html.GetEnum(typeof(EPC.Logic.AuditState))
+    @Html.GetEnum(typeof(EPC.Logic.CoSignState))
+</script>
+<script type="text/javascript">
+    var engineerinInfoID = getQueryString("EngineeringInfoID");
+    $("#dataTree").attr("url", "GetDesignWorkSpaceTree?EngineeringInfoID=" + engineerinInfoID);
+    $(".mini-button").hide();
+
+    addGridEnum("dataGrid", "FileType", "DrawingFileType");
+    addGridEnum("dataGrid", "AuditState", "AuditState");
+    addGridEnum("dataGrid", "CoSignState", "CoSignState");
+
+    addGridButton('dataGrid', 'Version', {
+        onButtonClick: function (row, settings) {
+            ShowVersion(row, settings)
+        }
+    });
+
+    //function onDrawNode(e) {
+    //    var node = e.node;
+    //    if (node.DrawingCount > 0) {
+    //        e.nodeHtml = node.Name + "【" + node.DrawingCount + "】";
+    //    }
+    //    if (!node.ParentID) {
+    //        e.nodeStyle = "font-weight:bolder; ";
+    //    }
+    //}
+
+    function ShowVersion(row, settings) {
+        if (row.Version == "0") {
+            msgUI("没有历史版本记录。");
+            return;
+        }
+        var url = "ShowVersion?ProductID=" + row.ID;
+        openWindow(url, {
+            title: "成果版本查看", height: 380, width: 800
+        });
+    }
+
+    function treeSearch() {
+        var tree = mini.get("dataTree");
+        var key = mini.get("keyTree").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        }
+        else {
+            key = key.toLowerCase();
+            tree.filter(function (node) {
+                var text = node.Name ? node.Name.toLowerCase() : "";
+                if (text.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    function onDrawNode(e) {
+        var node = e.node;
+        if (node.InUser != "True") {
+            e.nodeStyle = "color:gray;"
+        }
+        else {
+            e.nodeStyle = "color:red;"
+        }
+        if (node.DrawingCount > 0) {
+            e.nodeHtml = node.Name + "【" + node.DrawingCount + "】";
+        }
+    }
+
+    addGridButton("auditGrid", "SerialNumber", {
+        onButtonClick: function (row) {
+            var url = "/EPC/Design/Audit/PageView?TmplCode=DrawingAudit&FlowCode=DrawingAudit&FuncType=View&ID=" + row.ID;
+            openWindow(url, {
+                refresh: false, title: "校审单信息", width: "70%", height: "90%",
+                onDestroy: function () {
+                    mini.get("auditGrid").reload();
+                }
+            });
+        }
+    });
+
+    addGridButton("dataGrid", "AuditInfo", {
+        linkText: '校审单信息', onButtonClick: function (row) {
+            var auditID = row["AuditID"];
+            if (!auditID) return msgUI("该成果没有关联的校审单信息");
+            var url = "/EPC/Design/Audit/PageView?TmplCode=DrawingAudit&FlowCode=DrawingAudit&ID=" + auditID;
+            openWindow(url, {
+                refresh: false, title: "校审单信息", width: "90%", height: "70%",
+                onDestroy: function () {
+                    mini.get("dataGrid").reload();
+                }
+            });
+        }
+    });
+
+
+
+    var wbsID = "";
+    var taskID = "";
+    function onNodeSelect(e) {
+        var node = e.node;
+        var url = "GetDrawingList?WBSID=" + e.node.WBSID + "&TaskID=" + e.node.TaskID;
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.setUrl(url);
+        dataGrid.reload();
+        if (node.InUser != "True") {
+            $(".mini-button").hide();
+        }
+        else {
+            $(".mini-button").show();
+        }
+        wbsID = e.node.WBSID;
+        taskID = e.node.TaskID;
+        var auditorUrl = "GetAuditList?WBSID=" + wbsID + "&TaskID=" + taskID;
+        var auditGrid = mini.get("auditGrid");
+        auditGrid.setUrl(auditorUrl);
+        auditGrid.reload();
+    }
+
+    function addDrawings() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            msgUI("请选择一个节点"); return;
+        }
+        var url = "DesignWorkSpaceBatchAdd?WBSID=" + node.WBSID + "&TaskID=" + node.TaskID;
+        openWindow(url, {
+            refresh: true, title: "批量增加", width: 750, height: 450, addQuerytString: false,
+            onDestroy: function (data) {
+                if (data != "close")
+                    mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function addDrawing() {
+        var tree = mini.get("dataTree");
+        var node = tree.getSelectedNode();
+        if (!node) {
+            msgUI("请选择一个节点"); return;
+        }
+        add({ url: "DesignWorkSpaceEdit?WBSID=" + node.WBSID + "&TaskID=" + node.TaskID, height: 400, width: 600, addQuerytString: false });
+    }
+
+    function editDrawing(id) {
+        var grid = mini.get("dataGrid");
+        var row = grid.findRow(function (row) {
+            if (row.ID == id) return true;
+        });
+
+        if (row.AuditState != "Create" && row.AuditState != "Design") {
+            msgUI("已经发起校审的成果不能编辑。"); return;
+        }
+        openWindow("DesignWorkSpaceEdit?ID={ID}", { title: "成果编辑", height: 400, width: 600, currentRow: row });
+    }
+
+    function UpVersion(id) {
+        var grid = mini.get("dataGrid");
+        var row = grid.findRow(function (row) {
+            if (row.ID == id) return true;
+        });
+
+        if (row.AuditState != "Pass") {
+            msgUI("请选择校审通过的图纸进行升版操作。");
+            return;
+        }
+        var url = "DesignWorkSapceUpgrade?ID=" + row.ID;
+        openWindow(url, {
+            title: "成果升版", height: 430, width: 600, onDestroy: function (data) {
+                mini.get("dataGrid").reload();
+            }
+        });
+    }
+
+    function delDrawing() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        var editFlag = true;
+        $.each(rows, function (i, e) {
+            if (e.AuditState != "Create" && e.AuditState != "Design")
+                editFlag = false;
+        })
+        if (editFlag)
+            del();
+        else
+        { msgUI("已经发起校审的成果不能删除。"); return; }
+    }
+
+    function startFlow() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请至少选择一个成果。"); return; }
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].AuditState != "Create") {
+                msgUI("您选中的成果中，存在已经发起校审的成果，请重新选择"); return;
+            }
+        }
+        var productIDs = getValues(rows, "ID");
+        addExecuteParam("ProductIDs", productIDs);
+        execute("ValidateStartFlow", {
+            showLoading: true, onComplete: function (data) {
+                var flowCode = "DrawingAudit";
+                //if (data && data.auditModeInfo && data.auditModeInfo.auditModeInfo == "OneByOne") {
+                //    flowCode = "DrawingAudit";
+                //}
+                var formUrl = "/EPC/Design/Audit/PageView?TmplCode=DrawingAudit&FlowCode=DrawingAudit&EngineeringInfoID="
+                    + engineerinInfoID + "&WBSID=" + wbsID + "&TaskID=" + taskID + "&BatchID=" + data.BatchID;
+                openWindow(formUrl, {
+                    refresh: false, title: "设计校审", width: "70%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") {
+                            return;
+                        }
+                        dataGrid.reload();
+                    }
+                });
+            }
+        });
+    }
+
+    function downLoad() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows == undefined || rows.length == 0)
+            return msgUI("请选择需要下载的附件！", 1);
+        var filedIds = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].MainFile != undefined && rows[i].MainFile != null && rows[i].MainFile != "")
+                filedIds += rows[i].MainFile.split('_')[0] + ",";
+        }
+        if (filedIds.length > 0)
+            filedIds = filedIds.substr(0, filedIds.length - 1);
+        else
+            return msgUI("无附件可下载！", 1);
+        DownloadFile(filedIds);
+    }
+
+    function downLoadPDF() {
+        var grid = mini.get("dataGrid");
+        var rows = grid.getSelecteds();
+        if (rows == undefined || rows.length == 0)
+            return msgUI("请选择需要下载的成果！", 1);
+        var filedIds = "";
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].PdfFile != undefined && rows[i].PdfFile != null && rows[i].PdfFile != "")
+                filedIds += rows[i].PdfFile.split('_')[0] + ",";
+        }
+        if (filedIds.length > 0)
+            filedIds = filedIds.substr(0, filedIds.length - 1);
+        else
+            return msgUI("无附件可下载！", 1);
+        DownloadFile(filedIds);
+    }
+
+    function viewAuditInfo(AuditID) {
+        if (!AuditID) { return; }
+        var url = "/EPC/Design/Audit/PageView?TmplCode=DrawingAudit&FlowCode=DrawingAudit&FuncType=View&ID=" + AuditID;
+        openWindow(url, {
+            refresh: false, title: "校审单信息", width: "70%", height: "90%",
+            onDestroy: function () {
+            }
+        });
+    }
+
+    function onDrawCell(e) {
+        if (e.field == "UpVersion") {
+            e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/version.png' onclick='UpVersion(\"" + e.record.ID + "\")'  />";
+        }
+        if (e.field == "Edit") {
+            e.cellHtml = "<img src='/CommonWebResource/Theme/Default/MiniUI/icons/edit.gif' onclick='editDrawing(\"" + e.record.ID + "\")'  />";
+        }
+        //if (e.field == "AuditState" && e.record.AuditID) {
+        //    var s = '<a href="javascript:void(0)" onclick="viewAuditInfo(\'' + e.record.AuditID + '\');">' + e.cellHtml + '</a>';
+        //    e.cellHtml = s;
+        //}
+    }
+</script>

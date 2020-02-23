@@ -1,0 +1,130 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" plain="true" iconcls="icon-save" onclick="saveRole();">保存</a>
+                <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" url="GetMenu">
+    <input name="ID" class="mini-hidden" />
+    <input name="Type" class="mini-hidden" />
+    <input name="Code" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td>应用
+                        </td>
+                        <td colspan="3">
+                            <input name="UseID" class="mini-combobox" required="true" data="useList" valuefield="ID" textfield="title" style="width: 100%;" onvaluechanged="onUseValueChanged" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>菜单名称
+                        </td>
+                        <td colspan="3">
+                            <input name="Name" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>菜单位置
+                        </td>
+                        <td colspan="3">
+                            <input name="FullID" class="mini-buttonedit" required="true" style="width: 100%;" onbuttonclick="onButtonEdit" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>地址
+                        </td>
+                        <td colspan="3">
+                            <input name="Url" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<style type="text/css">
+    .formDiv {
+        padding-left: 35px;
+        padding-bottom: 20px;
+        padding-right: 35px;
+        padding-top: 10px!important;
+    }
+</style>
+<script type="text/javascript">
+    var useList = @Html.Raw(ViewBag.UseList);
+    var resList = @Html.Raw(ViewBag.ResList);
+
+    function onButtonEdit(){
+        var btnEdit = this;
+        var data = btnEdit.getValue();
+        openWindow(urlConstant.singleRes, { width: '320px', height: '580px',data: data, onDestroy: function (data) {
+            if (!data || data == "close") return;
+            var id = getValues(data, "ID");
+            var name = getValues(data, "Name");
+            var fullID = getValues(data, "FullID");
+            
+            btnEdit.setValue(fullID);
+            var title = "";
+            for(var i = 0;i < fullID.split('.').length; i++){
+                for(var j = 0;j < resList.length; j++){
+                    if(resList[j].ID == fullID.split('.')[i]){
+                        title += title.split('/').length > 0 ? '/' + resList[j].Name : resList[j].Name;
+                        break;
+                    }
+                }
+            }
+            btnEdit.setText(title); 
+        }
+        });
+    }
+
+    function onFormSetData(data) {
+        if(data){
+            mini.getbyName("FullID").setValue(data.FullID); 
+            mini.getbyName("FullID").setText(data.FullPath);
+        }
+    }
+
+    function onUseValueChanged(e){
+        var record = e.selected;
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=" + record.code;
+        if (record.type != 'List')
+            url = "/MvcConfig/UI/Layout/LayoutView?TmplCode=" + record.code;
+        mini.getbyName("Url").setValue(url);
+        mini.getbyName("Type").setValue(record.type);
+        mini.getbyName("Code").setValue(record.code);
+        mini.getbyName("Name").setValue(record.title);
+    }
+
+    function saveRole() {
+        var url = 'AddMenu';
+        var categoryID = getCache("_CacheCategoryID");
+        var form = new mini.Form("#dataForm");
+        addExecuteParam("data", form.getData());
+        if(getQueryString("ID") != '')
+            url='EditMenu';
+        execute(url + "?CategoryID=" + categoryID, {
+            onComplete: function (data) {
+                msgUI("保存成功", 1, function (action) {
+                    if (action == "ok") {
+                        closeWindow("refresh");
+                    }});
+            }
+        });
+    }
+</script>

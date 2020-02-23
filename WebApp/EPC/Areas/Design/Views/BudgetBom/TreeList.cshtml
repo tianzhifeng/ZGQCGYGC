@@ -1,0 +1,698 @@
+﻿@{
+    ViewBag.Title = "TreeList";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<script src="@Url.Content("/EPC/Scripts/Design/Bom/jquery.tmpl.js")" type="text/javascript"></script>
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                @{
+                    if (ViewBag.FlowEnd)
+                    {
+                        <a class="mini-button" iconcls="icon-add" onclick="upgrad()" plain="true">编辑升版</a>
+                        <a class="mini-button" iconcls="icon-flowstart" onclick="flowTrace()" plain="true">流程跟踪</a>
+                        <a class="mini-button" iconcls="icon-excel" onclick="exportToExcel" plain="true">导出Excel</a>
+                    }
+                    else
+                    {
+                        if (ViewBag.FlowPhase == "Processing")
+                        {
+                            <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">保存</a>
+                            <a class="mini-menubutton" iconcls="icon-add" plain="true" menu="#popupMenu">导入</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="onAdd" plain="true">下方插入行</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="onRemove" plain="true">删除行</a>
+                            <a class="mini-button" iconcls="icon-flowstart" onclick="flowTrace()" plain="true">流程跟踪</a>
+                        }
+                        else
+                        {
+                            <a class="mini-button" iconcls="icon-edit" onclick="startFlow" plain="true">提交审批</a>
+                            <a class="mini-button" iconcls="icon-save" onclick="saveData();" plain="true">暂存</a>
+                            <a class="mini-button" iconcls="icon-add" onclick="onAdd" plain="true">下方插入行</a>
+                            <a class="mini-button" iconcls="icon-remove" onclick="onRemove" plain="true">删除行</a>
+                            <a class="mini-button" iconcls="icon-cancel" onclick="revert();" plain="true">撤销</a>
+                            <a class="mini-menubutton" iconcls="icon-add" plain="true" menu="#popupMenu">导入</a>
+                            <a class="mini-button" iconcls="icon-excel" onclick="exportToExcel" plain="true">导出Excel</a>
+                        }
+                    }
+                }
+            </td>
+            <td style="white-space: nowrap;">
+                当前版本：<a href="javascript:void();" onclick="viewVersionList();">@ViewBag.VersionNo</a>
+                &nbsp;  &nbsp;  &nbsp;
+                展开至：<input name="ExpandedNodeType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="NodeType" allowinput="false"
+                           onvaluechanged="collapseLevel" value="@ViewBag.ExpandLevel" />
+                &nbsp;
+                显示：<input name="ShowType" class="mini-combobox" style="width: 100px;" textfield="text" valuefield="value" data="showType" allowinput="false"
+                          onvaluechanged="onShowTypeChanged" value="New" /> &nbsp;
+                @{
+                    if (ViewBag.FlowEnd)
+                    {
+                    }
+                    else
+                    {
+                        <div id="showAll" name="showAll" checked="true" class="mini-checkbox" text="显示所有结构" onvaluechanged="onCheckBoxValueChanged"></div>
+                    }
+                }
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="Area">
+    @{
+        <div id="dataTree" class="mini-treegrid" style="width:100%;height:100%;" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true" allowcelledit="true"
+             showtreeicon="true" ondrawcell="onDrawingCell" allowcellwrap="true" oncellbeginedit="OnCellBeginEdit" onload="onload" multiselect="true"
+             treecolumn="Name" idfield="ID" parentfield="ParentID" resultastree="false" expandonload="true" iconfield="NodeType" contextmenu="#gridMenu"
+             allowresize="false" fitcolumns="false" allowdrag="true" allowdrop="true" autoload="false" allowleafdropin="true" ongivefeedback="onGiveFeedback" virtualscroll="@ViewBag.VirtualScroll"
+             ondrop="onNodeDrop">
+            <div property="columns">
+                <div type="checkcolumn"></div>
+                <div type="indexcolumn"></div>
+                <div name="Name" field="TemplateID" displayfield="Name" width="300" headeralign="center">
+                    名称
+                    <div property="editor" popupwidth="600" class="mini-autocomplete" textfield="Name" valuefield="ID"
+                         style="width: 100%;" url="GetTemplate" onvaluechanged="onAutoCompleteValueChanged">
+                        <div property="columns">
+                            <div header="设备名称" field="Name" width="120">
+                            </div>
+                            <div header="物资编码" field="Number" width="120">
+                            </div>
+                            <div header="规格" field="Size" width="120">
+                            </div>
+                            <div header="型号" field="Model" width="120">
+                            </div>
+                            <div header="材质" field="Material" width="120">
+                            </div>
+                            <div header="品牌" field="Brand" width="120">
+                            </div>
+                            <div header="连接方式" field="ConnectionMode" width="120">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div field="MajorCode" displayfield="MajorName" width="80" headeralign="center" align="center" autoshowpopup="true">
+                    专业分类<input property="editor" class="mini-combobox" style="width:100%;" data="BOMMajor" textfield="text" valuefield="value" />
+                </div>
+                <div field="Number" width="100" headeralign="center" align="center" autoshowpopup="true">
+                    物资编码<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Model" width="200" headeralign="center">
+                    规格/ 型号<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Material" width="100" headeralign="center">
+                    材质<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Unit" width="50" headeralign="center" align="right">
+                    单位<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Quantity" width="50" headeralign="center" align="right">
+                    数量<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Branding" width="100" headeralign="center">
+                    品牌<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="ConnectionType" width="100" headeralign="center">
+                    连接方式<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+                <div field="Remark" width="200" headeralign="center">
+                    备注<input property="editor" class="mini-textbox" style="width: 100%;" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<ul id="gridMenu" class="mini-contextmenu" onbeforeopen="onBeforeOpen">
+    <li name="add" iconcls="icon-add" onclick="onAdd">下方插入行</li>
+    <li name="remove" iconcls="icon-remove" onclick="onRemove">删除行</li>
+    <li name="revert" iconcls="icon-remove" onclick="onRevert">撤销更改</li>
+</ul>
+<ul id="popupMenu" class="mini-contextmenu">
+    @{
+        if (ViewBag.PushCount == 0)
+        {
+            <li name="add" iconcls="icon-add" onclick="excelImport">Excel导入</li>
+        }
+    }
+    <li name="remove" iconcls="icon-add" onclick="bidImport">导入全部投标明细</li>
+</ul>
+
+<!--导出Excel——模拟异步ajax提交表单 -->
+<form id='excelFormBid' style='display:none;' action='ExportExcel' method='post' target='excelIFrameBid'>
+    <input type='hidden' name='VersionID' />
+    <input type='hidden' name='MajorCode' />
+    <input type='hidden' name='jsonColumns' />
+    <input type='hidden' name='queryTabData' />
+    <input type='hidden' name='queryFormData' />
+</form>
+<iframe id='excelIFrameBid' name='excelIFrameBid' style='display:none;'></iframe>
+
+<script id="formTemplate" type="text/x-jquery-tmpl">
+    <div style="text-align:left; font-weight:bolder; color:red;">上一版内容</div>
+    <table class="mini-grid-table" cellspacing="0" cellpadding="0" style="width:700px;table-layout:fixed;">
+        <tr>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">名称</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">专业分类</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">  规格/ 型号</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">材质</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 80px;text-align:center"> 数量</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">品牌</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 100px;text-align:center">连接方式</td>
+            <td class="mini-grid-headerCell mini-grid-bottomCell " style="width: 200px;text-align:center"> 备注</td>
+        </tr>
+        <tr>
+            <td style="width: 100px;text-align:center">${Name}</td>
+            <td style="width: 100px;text-align:center">${MajorName}</td>
+            <td style="width: 100px;text-align:center">${Model}</td>
+            <td style="width: 100px;text-align:center">${Material}</td>
+            <td style="width: 100px;text-align:center">${Unit}</td>
+            <td style="width: 100px;text-align:center">${Quantity}</td>
+            <td style="width: 100px;text-align:center">${Branding}</td>
+            <td style="width: 100px;text-align:center">${ConnectionType}</td>
+            <td style="width: 100px;text-align:center">${Remark}</td>
+        </tr>
+    </table>
+</script>
+
+@{
+    if (ViewBag.VirtualScroll == "true")
+    {
+        <style type="text/css">
+            .mini-grid-cell {
+                padding-left: 4px;
+                padding-right: 2px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                border-right: #ececec 1px solid;
+            }
+        </style>
+    }
+}
+<script type="text/javascript">
+    @Html.GetEnum("Base.PBSType")
+    @Html.GetEnum("Base.BOMMajor")
+    var flowEnd = "@Html.Raw(ViewBag.FlowEnd)";
+    var versionID = "@Html.Raw(ViewBag.VersionID)";
+    //var deepNodeType = "@ViewBag.ExpandLevel";
+    var NodeType = @Html.Raw(ViewBag.NodeTypeEnum);
+</script>
+<script type="text/javascript">
+    var showType = [{ text: "显示全部", value: "All" }, { text: "仅显示差异", value: "Diff" }, { text: "仅显示最新", value: "New" }];
+    var engineeringInfoID = getQueryString("EngineeringInfoID");
+    normalParamSettings.gridId = "dataTree";
+    windowParamSettings.gridId = "dataTree";
+    function exportToExcel() {
+        downloadExcelData("Bid", versionID);
+    }
+
+    function excelImport() {
+        var validateUrl = "/EPC/Design/BudgetBom/ValidateData?VersionID=" + versionID;
+        var saveUrl = "/EPC/Design/BudgetBom/SaveExcelData?VersionID=" + versionID;
+        var excelKey = "Bid_Import";
+        ImportExcel(excelKey, validateUrl, saveUrl);
+    }
+
+    function bidImport() {
+        msgUI("导入前请先保存目前的编辑内容，您确定需要从投标预算中导入全部的设备清单吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("VersionID", versionID);
+            execute("ImportFromBid", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    var grid = mini.get("dataTree");
+                    grid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+
+
+    // 响应自定义列的弹出层的导出事件
+    function downloadExcelData(key, versionID) {
+        var grid = mini.get("dataTree");
+        var dataurl = changeToFullUrl(grid.getUrl());
+        var includeColumns = "";
+        var columns = grid.getBottomColumns();
+        function getColumns(columns) {
+            columns = columns.clone();
+            for (var i = columns.length - 1; i >= 0; i--) {
+                var column = columns[i];
+                if (!column.field || !column.header || column.header.trim() == '' || column.visible == false) {
+                    columns.removeAt(i);
+                } else {
+                    if (includeColumns.length == 0 || includeColumns.indexOf(column.field.toLowerCase() + ',') >= 0) {
+                        var c = { ChineseName: column.header.trim(), FieldName: column.field, TableName: key };
+                        // 判断是否为时间字段，设置格式化字符串
+                        if (column.dateFormat) {
+                            c.DateFormat = column.dateFormat;
+                        }
+                        //导出excel使用显示字段
+                        if (column.displayField) {
+                            c.FieldName = column.displayField;
+                        }
+                        if (column.dataType) {
+                            c.DataType = column.dataType;
+                        }
+                        columns[i] = c;
+                    }
+                }
+            }
+            return columns;
+        }
+        var columns = getColumns(columns);
+        // 提交下载表单（利用iframe模拟Ajax）
+        var $excelForm = $("#excelForm" + $.trim(key));
+        if ($excelForm.length == 0) {
+            alert('请确保ID为excelForm的表单存在！');
+        }
+
+        var tabData = GetTabsData();
+        var data = {};
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            var key = "$EQ$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+
+        var title = document.title;
+        var formData = {
+            referUrl: window.location.href,
+            dataUrl: dataurl,
+            VersionID: versionID,
+            excelKey: "Bid",
+            title: title,
+            jsonColumns: mini.encode(columns),
+            queryTabData: mini.encode(tabData),
+            queryFormData: mini.encode(data)
+        };
+        for (var p in formData) {
+            $excelForm.find("input[name='" + p + "']").val(formData[p]);
+        }
+        $excelForm.submit();
+    }
+
+    function collapseLevel() {
+        var level = mini.getbyName("ExpandedNodeType").getValue();
+        var tree = mini.get("dataTree");
+        tree.expandAll();
+        tree.collapseLevel(level);
+    }
+
+    function viewVersionList() {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=EBudgetBomVesionList&EngineeringInfoID=" + engineeringInfoID + "&VersionID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "设备清单历史版本", width: "70%", height: "60%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onDrawingCell(e) {
+        var treeGrid = e.sender;
+        var record = e.record;
+        var column = e.column;
+        var field = e.field;
+        if (flowEnd == "True") {
+            if (record.NodeType != "Detail") {
+                e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+            }
+            else {
+                if (record.ModifyState == "Add") {
+                    if (field == "Name") {
+                        e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+                    }
+                    e.cellStyle = "background:#BBFFFF";
+                }
+                else if (record.ModifyState == "Modify") {
+                    if (field == "Name") {
+                        e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+                    }
+                    e.cellStyle = " background: yellow;";
+                }
+                else if (record.ModifyState == "Remove") {
+                    e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff";
+                }
+            }
+        }
+        else {
+            if (record.NodeType == "Detail") {
+                if (record.ModifyState == "Add") {
+                    if (field == "Name") {
+                        e.cellHtml = record.Name + "<img style=\"height:18px;float:right;\" src=\"/EPC/Scripts/Design/Bom/new_red.png\" />";// record.Name + "new";
+                    }
+                    e.cellStyle = "background:#BBFFFF";
+                }
+                else if (record.ModifyState == "Modify") {
+                    if (field == "Name") {
+                        e.cellHtml = '<span id="' + record.ID + '" class="showCellTooltip" data-placement="bottomleft">' + record.Name + '</span>';
+                    }
+                    e.cellStyle = " background: yellow;";
+                }
+                else if (record.ModifyState == "Remove") {
+                    e.cellStyle = "background:url('/EPC/Scripts/Design/Bom/red-line.jpg')  center ;color:#fff";
+                }
+            }
+            else {
+                e.cellStyle = "font-weight:bolder; background:#F0F0F0";
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        var tip = new mini.ToolTip();
+        tip.set({
+            target: document,
+            selector: '.showCellTooltip',
+            onbeforeopen: function (e) {
+                e.cancel = false;
+            },
+            onopen: function (e) {
+                var el = e.element;
+                var id = el.id;
+                if (id) {
+                    this.showLoading();
+                    addExecuteParam("ID", id);
+                    execute("GetLastDetailInfo", {
+                        showLoading: false, refresh: false, onComplete: function (data) {
+                            var html = $("#formTemplate").tmpl(data);
+                            tip.setContent(html);
+                        }, validateForm: false
+                    });
+                }
+            }
+        });
+    });
+
+    function onBeforeOpen(e) {
+        var dataTree = mini.get("dataTree");
+        var menu = e.sender;
+        var node = dataTree.getSelectedNode();
+        if (!node || flowEnd == "True") {
+            e.cancel = true;
+            //阻止浏览器默认右键菜单
+            e.htmlEvent.preventDefault();
+            return;
+        }
+        else if (node.NodeType == "SubProject") {
+            e.cancel = true;
+            e.htmlEvent.preventDefault();
+            return;
+        }
+        var addItem = mini.getbyName("add", menu);
+        var removeItem = mini.getbyName("remove", menu);
+        var revertItem = mini.getbyName("revert", menu);
+        addItem.show();
+        removeItem.show();
+        revertItem.hide();
+        if (node.NodeType == "Detail") {
+            if (node.ModifyState != "Normal") {
+                revertItem.show();
+            }
+            if (node.ModifyState == "Remove") {
+                removeItem.hide();
+            }
+        }
+        else if (node.NodeType == "Module") {
+            removeItem.hide();
+        }
+        else {
+            removeItem.hide();
+            addItem.hide();
+        }
+    }
+
+    function onload() {
+        collapseLevel();
+    }
+
+    function OnCellBeginEdit(e) {
+        var record = e.record, field = e.field;
+        if (flowEnd == "True" || record.NodeType != "Detail") {
+            e.cancel = true;
+        }
+        else if (record.ModifyState == "Remove") {
+            e.cancel = true;
+        }
+    }
+
+    function onAutoCompleteValueChanged(e) {
+        var grid = mini.get("dataTree");
+        grid.commitEdit();
+        var data = e.selected;
+        if (data) {
+            var node = grid.getSelectedNode();
+            grid.updateNode(node, {
+                Name: data.Name,
+                Number: data.Number,
+                Model: data.Size,
+                Branding: data.Branding,
+                Material: data.Material,
+                ConnectionType: data.ConnectionMode
+            });
+        }
+    }
+
+    function upgrad() {
+        msgUI("您确定需要升版Bom表吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("EngineeringInfoID", engineeringInfoID);
+            execute("UpgradBom", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function startFlow() {
+        if (!versionID) {
+            msgUI("没有找到指定的版本，无法提交"); return;
+        }
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var tree = mini.get("dataTree");
+                tree.reload();
+                var url = "/EPC/Design/BudgetBomSubmit/PageView?FlowCode=BudgetBomSubmit&TmplCode=BudgetBomSubmit&ID=" + versionID;
+                openWindow(url, {
+                    refresh: false, title: "设备清单提交", width: "90%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") return;
+                        window.location.reload();
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function saveData() {
+        var tree = mini.get("dataTree");
+        var nodes = tree.getChanges();
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("SaveNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                tree.reload();
+            }, validateForm: false
+        });
+    }
+
+    function revert() {
+        msgUI("撤销操作将撤销所有的编辑内容，您确定要继续吗？", 2, function (result) {
+            if (result != "ok") return;
+            addExecuteParam("VersionID", versionID);
+            execute("Revert", {
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    window.location.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function onAdd() {
+        var dataTree = mini.get("dataTree");
+        var node = dataTree.getSelectedNode();
+        if (!node) {
+            return;
+        }
+        addExecuteParam("NodeID", node.ID);
+        addExecuteParam("NodeType", node.NodeType);
+
+        addExecuteParam("VersionID", versionID);
+        var tabData = GetTabsData();
+        var majorCode = "all";
+        if (tabData.length > 0)
+            majorCode = tabData[0].value;
+        addExecuteParam("MajorCode", majorCode);
+        execute("AddVersionDetail", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                if (node.NodeType == "Detail") {
+                    dataTree.addNode(data, "after", node);
+                }
+                else {
+                    dataTree.addNode(data, "add", node);
+                }
+            }, validateForm: false
+        });
+    }
+
+    function onRemove() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+        addExecuteParam("ListData", mini.encode(nodes));
+        execute("DeleteNodes", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].ModifyState == "Add") {
+                        dataTree.removeNode(nodes[i]);
+                    }
+                    else {
+                        var showType = mini.getbyName("ShowType");
+                        if (showType && showType.getValue() == "New") {
+                            dataTree.removeNode(nodes[i]);
+                        }
+                        else {
+                            dataTree.updateNode(nodes[i], { ModifyState: "Remove" });
+                        }
+                    }
+                }
+            }, validateForm: false
+        });
+    }
+
+    function onRevert() {
+        var dataTree = mini.get("dataTree");
+        var nodes = dataTree.getSelecteds();
+        if (nodes.length == 0) {
+            return;
+        }
+        addExecuteParam("ListData", mini.encode(nodes));
+        addExecuteParam("VersionID", mini.encode(nodes));
+        execute("RevertNode", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    if (node.ModifyState == "Add") {
+                        dataTree.removeNode(node);
+                    }
+                    else {
+                        for (var m = 0; m < data.length; m++) {
+                            if (data[m].ID == node.ID) {
+                                dataTree.updateNode(node, data[m]);
+                                dataTree.commitEditRow(node);
+                                dataTree.acceptRecord(node);
+                            }
+                        }
+                    }
+                }
+            }, validateForm: false
+        });
+    }
+
+    function onShowTypeChanged(e) {
+        var showDiff = mini.getbyName("ShowType").getValue();
+        var showAllCo = mini.get("showAll");
+        if (flowEnd == "True") {
+            if(showAllCo){
+                showAllCo.setValue("false");
+                showAllCo.disable();
+            }
+        }
+        else {
+            var showAll = mini.get("showAll").getValue();
+            if (showDiff == "Diff") {
+                showAll = false;
+                mini.get("showAll").setValue("false");
+                mini.get("showAll").disable();
+            }
+            else {
+                mini.get("showAll").enable();
+            }
+        }
+        var tabData = GetTabsData();
+        cusTabSearch(tabData);
+    }
+
+    function onCheckBoxValueChanged(e) {
+        var tabData = GetTabsData();
+        cusTabSearch(tabData);
+    }
+
+    function cusTabSearch(tabData) {
+        var tree = mini.get("dataTree");
+        var showAll = "false";
+        var showDiff = "New";
+        if (mini.get("showAll")) {
+            showAll = mini.get("showAll").getValue();
+        }
+        if (mini.getbyName("ShowType")) {
+            showDiff = mini.getbyName("ShowType").getValue();
+        }
+        var url = "GetVersionTreeList?VersionID=" + versionID + "&showAllPBS=" + showAll + "&ShowType=" + showDiff;
+        tree.setUrl(url);
+        var data = {};
+        for (var i = 0; i < tabData.length; i++) {
+            var tabDataInfo = tabData[i];
+            var key = "$EQ$" + tabDataInfo.queryfield;
+            data[key] = tabDataInfo.value;
+        }
+        tree.load({
+            queryTabData: mini.encode(tabData), queryFormData: mini.encode(data)
+        });
+    }
+
+    function flowTrace() {
+        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + versionID;
+        openWindow(url, {
+            refresh: false, title: "流程跟踪", width: "80%", height: "85%",
+            onDestroy: function () { }
+        });
+    }
+
+    function onNodeDrop(e) {
+        var tree = mini.get("dataTree");
+        addExecuteParam("sourceID", e.dragNode.ID);
+        addExecuteParam("targetID", e.dropNode.ID);
+        addExecuteParam("dragAction", e.dragAction);
+        execute("MoveNode", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                tree.updateNode(e.dragNode, data);
+                tree.acceptRecord(e.dragNode);
+            }, validateForm: false
+        });
+    }
+
+    function onGiveFeedback(e) {
+        var tree = e.sender;
+        var node = e.node;              //被拖拽的节点
+        var targetNode = e.targetNode;  //目标投放节点
+        var effect = e.effect;          //投放方式：add|before|after
+
+        if (node.NodeType != "Detail") {
+            e.effect = "no";
+        }
+        else if (targetNode.NodeType == "Detail" && effect == "add") {
+            e.effect = "no";
+        }
+        else if ((effect == "after" || effect == "before") && targetNode.NodeType != "Detail") {
+            e.effect = "no";
+        }
+        else if (effect == "add" && targetNode.NodeType != deepNodeType) {
+            e.effect = "no";
+        }
+        if (flowEnd == "True") {
+            e.effect = "no";
+        }
+    }
+
+</script>
+
+<style type="text/css">
+    .showCellTooltip {
+        background: yellow;
+    }
+</style>

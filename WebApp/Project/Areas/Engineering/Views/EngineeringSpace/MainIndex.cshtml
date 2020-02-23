@@ -1,0 +1,755 @@
+﻿@{
+    ViewBag.Title = "MainIndex";
+    Layout = "";
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>工程空间</title>
+    <!--jQuery js-->
+    <script src="/Project/Scripts/EngineeringSpace/js/jquery-3.2.1.js" type="text/javascript"></script>
+    <!--MiniUI-->
+     <script>var IsUseNewPortal = '@ViewBag.IsUseNewPortal';</script>
+    <link href="/Project/Scripts/EngineeringSpace/css/bootstrap.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="/Project/Scripts/EngineeringSpace/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css" />
+    <script src="/Project/Scripts/EngineeringSpace/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/Project/Scripts/EngineeringSpace/js/jquery.nicescroll.js" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/miniui.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/CoreLib/MiniUI/customCtrl.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /MvcConfig/miniuiExt.js")" type="text/javascript"></script>
+    <script src="@Url.Content(" /CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")" type="text/javascript"></script>
+    <link href="/Project/Scripts/EngineeringSpace/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        .mini-tree-nodetext a
+        {
+            text-decoration: none;
+            color: #000;
+            outline: none;
+            display: inline;
+            margin-bottom: 2px;
+            margin-top: 1px\9\0;
+            +line-height:16px;
+            _margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="indexOne">
+        @{
+            var displayStr = "";
+            if (ViewBag.IsOpenForm == "True")
+            {
+                displayStr = "display:none;";
+            }
+            <div class="navs .has-feedback">
+                <div class="chose-room" onoff="false" style="@displayStr">
+                    <span class="icon-exchange icon"></span><span>&nbsp;切换空间</span>
+                </div>
+                <span class="url-active" style="width: calc(90% - 100px);"><span>当前：</span>
+                    @if (ViewBag.IsEngineeringMode == "true")
+                    {
+                        <span style="max-width: 40%; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+                            <a href="javascript:void(0);" id="currentEngineering" class="now"></a></span>
+                        <span id="projectTitle"></span>
+                    }
+                    <span style="max-width: 40%; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+                        <a href="javascript:void(0);" id="currentProject" class="now"></a></span>
+                    <span id="functionMenu" class="now"></span></span>
+                <div class="pull-right drop-nav" onoff="false" style="@displayStr">
+                    <span class="icon-double-angle-down"></span>
+                </div>
+            </div>
+            if (ViewBag.IsOpenForm == "True")
+            {
+                displayStr = "display:none;";
+            }
+            <div id="navss" style="display: none;">
+                <ul class="nav nav-pills" style="@displayStr">
+                </ul>
+            </div>
+        }
+        <div id="Index-container">
+            <section id="todoList">
+                <div class="todoListtop">
+                    <ul>
+                        <li id="myProject">最近</li>
+                        <li id="allProject" class="active">全部项目</li>
+                        @{
+                            if (ViewBag.IsEngineeringMode == "true")
+                            {
+                            <li id="allEngineering">全部工程</li>
+                            }
+                        }
+                    </ul>
+                    <div class="search-input">
+                        <input id="key" type="text" placeholder="按项目关键字搜索" />
+                        <span class="icon-search icon"></span>
+                    </div>
+                </div>
+                <div id="treewrap" style="width: 100%; height: calc(100% - 121px)">
+                    <div id="treegrid" class="mini-treegrid engTree" url="" onload='onTreeGridLoad' autoLoad="false"
+                        showtreeicon="true" treecolumn="taskname" idfield="ID" parentfield="ParentID" expandonload="true"
+                        allowresize="false" allowcelledit="false" allowcellselect="false" expandonnodeclick="true" resultastree="false">
+                        <div property="columns">
+                            <div name="taskname" field="Name" headeralign="center" width="*" minwidth="200px" allowsort="true">名称</div>
+                            <div field="Code" width="120" headeralign="center" align="left" allowsort="true">编号</div>
+                            <div field="ProjectClass" width="120" align="center" headeralign="center" allowsort="true">业务类型</div>
+                            <div field="PhaseContent" width="150" align="center" headeralign="center" allowsort="true">设计阶段</div>
+                            <div field="ChargeUserName" width="90" align="center" headeralign="center" allowsort="true">项目负责人</div>
+                            <div field="DeptName" width="90" align="center" headeralign="center" allowsort="true">部门</div>
+                            <div field="CreateDate" width="90" align="center" dateformat="yyyy-MM-dd" headeralign="center" allowsort="true">创建日期</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagebar" class="page-set pull-right">
+                    <span>当前</span>
+                    <span>第<span class="blod" id="pageIndex"></span>页/共<span class="blod" id="pagerTotal"></span>页</span>
+                    <span>每页显示</span>
+                    <select name="" id="pSize" class="show-page">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span>转到</span>
+                    <input id="goToPager" type="text" class="direct-page" />
+                    <span>页</span>
+                </div>
+                <nav id="pagePre" aria-label="..." class="chose-page  visible-md-inline-block visible-lg-inline-block">
+                    <ul class="pager">
+                        <li><a href="javascript:void(0)" class="first-page">首页</a></li>
+                        <li><a href="javascript:void(0)" class="prev-page">上一页</a></li>
+                        <li class="pages-btn-group">
+                            <ul class="pager pages-container" style="display: inline-block; margin: 0px"></ul>
+                        </li>
+                        <li><a href="javascript:void(0)" class="next-page">下一页</a></li>
+                        <li><a href="javascript:void(0)" class="last-page">尾页</a></li>
+                    </ul>
+                </nav>
+            </section>
+            <img src="/Project/Scripts/EngineeringSpace/images/up-sj.png" class="up-sj" />
+        </div>
+        <div id="iframe-container">
+        </div>
+        <div class="control-img">
+            <img src="/Project/Scripts/EngineeringSpace/images/control.png" alt="">
+        </div>
+    </div>
+    <script type="text/javascript">
+        var defaultEnterID = "@Html.Raw(ViewBag.DefaultEnterID)";
+        var defaultEnterType = "@Html.Raw(ViewBag.DefaultEnterType)";
+        var defaultTitle = "@Html.Raw(ViewBag.DefaultTitle)";
+        var defaultEngieeringID = "@Html.Raw(ViewBag.DefaultEngieeringID)";
+        var defaultEngieeringName = "@Html.Raw(ViewBag.DefaultEngieeringName)";
+        var defaultMarketEngineeringID = "@Html.Raw(ViewBag.DefaultMarketEngineeringID)";
+        var allProjectUrl = "GetProjectList";
+        var allEngineeringUrl = "GetTreeList";
+        var myProjectUrl = "GetMyList";
+        var isOpenForm = "@Html.Raw(ViewBag.IsOpenForm)";
+        var projectIndex = "MainContentProject"
+        @Html.GetEnum("Base.ProjectClass")
+    </script>
+    <script type="text/javascript">
+        addGridEnum('treegrid', 'ProjectClass', 'BusinessType');
+        if (isOpenForm == "True") {
+            var bg = localStorage.getItem("background-image");
+            if (!bg)
+                bg = "/PortalLTE/Images/bgImage/bgRW.jpg";
+            $("body").css("background-image", "url(" + bg + ")");
+        }
+
+        var pagerInfo = { pageIndex: 0, pageSize: 10, lastPageIndex: 0 };
+        var searchFields = "Name,Code";
+        var currentProjectID = "";
+        var currentEngineeringID = "";
+        var currentMarketEngineeringID = "";
+        var todoListtopType = "allProjectUrl";
+
+        var iframeMsg;
+        $(".nav-chose .home span").on("click", function () {
+            $(".nav-pills li").eq(0).trigger("click")
+        });
+
+        $("#pSize").change(function () {
+            var size = Number($(this).children('option:selected').val());
+            pagerInfo.pageSize = size;
+            pagerInfo.pageIndex = 0;
+            searchTree(todoListtopType);
+        });
+
+        $("#key").on("keyup", function (e) {
+            if (e.keyCode == 13) {
+                searchTree(todoListtopType);
+            }
+        });
+
+
+        $(".icon-search").on("click", function () {
+            searchTree(todoListtopType);
+        });
+
+        $("#goToPager").on("keyup", function (e) {
+            if (e.keyCode == 13) {
+                var index = Number($(this).val());
+                if (isNaN(index) || index <= 0) index = pagerInfo.pageIndex;
+                else index = index - 1;
+                if (pagerInfo.lastPageIndex < index) {
+                    index = pagerInfo.lastPageIndex;
+                }
+                else
+                    pagerInfo.pageIndex = index;
+                searchTree(todoListtopType);
+            }
+        });
+
+        //首页点击事件
+        $(".first-page").on("click", function () {
+            pagerInfo.pageIndex = 0;
+            searchTree(todoListtopType);
+        });
+
+        //尾页点击事件
+        $(".last-page").on("click", function () {
+            pagerInfo.pageIndex = pagerInfo.lastPageIndex;
+            searchTree(todoListtopType);
+        });
+
+        //下一页点击事件
+        $(".next-page").on("click", function () {
+            if (pagerInfo.pageIndex < pagerInfo.lastPageIndex) {
+                pagerInfo.pageIndex = pagerInfo.pageIndex + 1;
+            }
+            else {
+                pagerInfo.pageIndex = pagerInfo.lastPageIndex
+            }
+            searchTree(todoListtopType);
+        });
+
+        //上一页点击事件
+        $(".prev-page").on("click", function () {
+            if (pagerInfo.pageIndex > 0) {
+                pagerInfo.pageIndex = pagerInfo.pageIndex - 1;
+            }
+            else
+                pagerInfo.pageIndex = 0;
+            searchTree(todoListtopType);
+        });
+
+        mini.parse();
+        var treegrid = mini.get("treegrid");
+
+        $(document).ready(function () {
+            $("#treewrap").niceScroll({ railoffset: true });
+            var scroll = $("#treewrap").getNiceScroll()[0];
+            scroll.mousewheel($("#treewrap")[0], scroll.onmousewheel);
+        });
+
+        treegrid.on("collapse", function (e) {
+            $("#treewrap").getNiceScroll().resize();
+        });
+
+        treegrid.on("expand", function (e) {
+            $("#treewrap").getNiceScroll().resize();
+        });
+
+        //树形列表描单元格，拼HTML链接
+        treegrid.on("drawcell", function (e) {
+            var record = e.record,
+                column = e.column,
+                field = e.field,
+                value = e.value;
+            if (field == "Code" && (record.Type == "Engineering" || record.Type == "Project")) {
+                ///在这里控制工程还是项目，如果是工程  事件为moves（）；项目为movepro();
+            }
+            else if (field == "Name" && (record.Type == "Engineering" || record.Type == "Project")) {
+                if (record.Type == "Engineering")
+                    e.cellHtml = "<div  class='enter-arrow' onclick='moves(\"" + record.ID + "\",\"" + record.Name.replace("[工程]", "").replace(/\"/g,"\\\"") + "\",\"" + record.RelateID + "\")' title='" + e.value + "'><span>进入</span><span class='icon icon-arrow-right'></span></div>"
+                        + "<a style='display:inline' href='javascript:moves(\"" + record.ID + "\",\"" + record.Name.replace("[工程]", "").replace(/\"/g, "\\\"") + "\",\"" + record.RelateID + "\")' title='" + e.value + "'>" + e.value + "</a>";
+                else
+                    e.cellHtml = "<div  class='enter-arrow' onclick='movespro(\"" + record.ProjectInfoID + "\",\"" + record.Name.replace("[项目]", "").replace(/\"/g, "\\\"") + "\",\"" + record.RootName.replace(/\"/g, "\\\"") + "\",\"" + record.RootID + "\",\"" + record.RelateID + "\")' title='" + e.value + "'><span>进入</span><span class='icon icon-arrow-right'></span></div>"
+                        + "<a style='display:inline' href='javascript:movespro(\"" + record.ProjectInfoID + "\",\"" + record.Name.replace("[项目]", "").replace(/\"/g, "\\\"") + "\",\"" + record.RootName.replace(/\"/g, "\\\"") + "\",\"" + record.RootID + "\",\"" + record.RelateID + "\")' title='" + e.value + "'>" + e.value + "</a>";
+            }
+        });
+
+        //默认进入上次进入的空间
+        if (defaultEnterID) {
+            if (defaultEnterType == "Project") {
+                movespro(defaultEnterID, defaultTitle, defaultEngieeringName, defaultEngieeringID);
+                currentMarketEngineeringID = defaultMarketEngineeringID;
+            }
+            else {
+                moves(defaultEnterID, defaultTitle, defaultMarketEngineeringID);
+            }
+        }
+        else {
+            $("#Index-container").animate({ "bottom": "0%" }, 300);
+            $(this).attr("onoff", "true");
+            searchTree(todoListtopType);
+        }
+
+        //设置右边IframeURL
+        function setRightUrl(url) {
+            $(".item-content:visible").find("iframe")[0].src = url;
+        }
+
+        //设置左边IframeURL
+        function setLeftUrl(url) {
+            $(".item-slider").find("iframe")[0].src = url;
+        }
+
+        //当前工程按钮点击出发
+        $("#currentEngineering").on("click", function () {
+            moves(currentEngineeringID, $(this).text(), currentMarketEngineeringID);
+        });
+
+        //当前项目按钮点击触发
+        $("#currentProject").on("click", function () {
+            setLeftUrl("SliderProject?ProjectInfoID=" + currentProjectID + "&SetMainContent=False");
+            setRightUrl(projectIndex + "?ProjectInfoID=" + currentProjectID);
+            setFuncMenuText();
+        });
+
+        //设置功能菜单导航的标题
+        function setFuncMenuText(text) {
+            if (text)
+                $("#functionMenu").text("> " + text);
+            else
+                $("#functionMenu").text("");
+        }
+
+        //打开工程TAB页
+        function moves(recordID, title, engineeringID) {
+            if (engineeringID)
+                currentMarketEngineeringID = engineeringID;
+            setFuncMenuText("");
+            $(".navs .nav-sj").removeClass("nav-actives");
+            var $lis = $('<li role="presentation" class="active" showTree-id="T" tab-id="' + recordID + '"><a  href="javascript:void(0)" type="Engineering"  engineeringname="' + title + '" engineeringid="' + recordID + '"  title="' + title + '">' + title
+                + '</a><span class="close-iframe glyphicon glyphicon-remove" style="cursor:pointer;"></span></li>')
+            if (recordID != currentEngineeringID)
+                $(".nav-pills").empty().append($lis);
+            else {
+                if ($("#navss .nav-pills li[class='active']").attr("tab-id") == recordID) {
+                    document.getElementById('engSliderFrame').contentWindow.location.reload(true);
+                    document.getElementById('engContentFrame').contentWindow.location.reload(true);
+                }
+                else {
+                    for (var i = 0; i < $("#navss .nav-pills li").length; i++) {
+                        if ($("#navss .nav-pills li").eq(i).attr("tab-id") == recordID) {
+                            $("#navss .nav-pills li").eq(i).trigger("click");
+                            $("#Index-container").animate({ "bottom": "100%" }, 500, function () {
+                            });
+                            $(".chose-room").attr("onoff", "false");
+                            return false;
+                        }
+                    }
+                    $(".nav-pills").append($lis);
+                    $lis.siblings().removeClass("active");
+                }
+            }
+            var sliderUrl = "Slider?ShowShadow=False&GroupInfoID=" + recordID + "&EngineeringInfoID=" + currentMarketEngineeringID;
+            var contentUrl = "MainContent?GroupInfoID=" + recordID + "&EngineeringInfoID=" + currentMarketEngineeringID;
+            var leftDisplay = ""; var rightDisplay = "";
+            if (isOpenForm == "True") {
+                //leftDisplay = "display:none;";
+                //rightDisplay = "padding-left: 0px;";
+            }
+            var $iframes = $('<div data-id="' + recordID + '" class="iframe-item" >\
+                                <div class="item-slider" style="' + leftDisplay + '" >\
+                                    <iframe src="' + sliderUrl + '" id="engSliderFrame" frameborder="0"></iframe>\
+                                </div>\
+                                <div class="item-content" style="' + rightDisplay + '">\
+                                    <iframe src="' + contentUrl + '" id="engContentFrame" frameborder="0"></iframe>\
+                                </div>\
+                            </div>');
+
+            //清空  ，然后创建
+            if (recordID != currentEngineeringID)
+                $("#iframe-container").empty().append($iframes);
+            else {
+                $("#iframe-container").append($iframes);
+                $("#iframe-container .iframe-item").hide();
+                $iframes.show();
+            }
+            $("#Index-container").animate({ "bottom": "100%" }, 500, function () {
+            });
+            $(".chose-room").attr("onoff", "false");
+            $("#projectTitle").text("");
+            $("#currentProject").text("");
+            $("#currentEngineering").text("" + $lis.find("a").text());
+            //$("#currentEngineering").attr("title", $("#currentEngineering").text);
+            currentEngineeringID = recordID;
+        }
+
+        //打开项目TAB页
+        function movespro(recordID, title, engineeringName, engineeringID, relateID) {
+            if (relateID)
+                currentMarketEngineeringID = relateID;
+            setFuncMenuText("");
+            var $lis = $('<li role="presentation" class="active" showTree-id="T" tab-id="' + recordID + '"><a href="javascript:void(0)" type="Project" engineeringname="' + engineeringName + '" engineeringid="' + engineeringID + '" title="' + title + '">' + title
+                + '</a><span class="close-iframe glyphicon glyphicon-remove" style="cursor:pointer;"></span></li>')
+
+            if (engineeringID != currentEngineeringID) {
+                $(".nav-pills").empty().append($lis);
+            }
+            else {
+                for (var i = 0; i < $("#navss .nav-pills li").length; i++) {
+                    if ($("#navss .nav-pills li").eq(i).attr("tab-id") == recordID) {
+                        $("#navss .nav-pills li").eq(i).trigger("click");
+                        $("#Index-container").animate({ "bottom": "100%" }, 500, function () {
+                        });
+                        $(".chose-room").attr("onoff", "false");
+                        return;
+                    }
+                }
+                $(".nav-pills").append($lis);
+                $lis.siblings().removeClass("active");
+            }
+            var sliderUrl = "SliderProject?ShowShadow=False&ProjectInfoID=" + recordID;
+            addExecuteParam("ProjectInfoID", recordID);
+            execute("GetProjectIndex", {
+                async: false,
+                onComplete: function (data) {
+                    projectIndex = data.index;
+                }
+            });
+
+            var contentUrl = projectIndex + "?ProjectInfoID=" + recordID
+
+            var leftDisplay = ""; var rightDisplay = "";
+            if (isOpenForm == "True") {
+                //leftDisplay = "display:none;";
+                //rightDisplay = "padding-left: 0px;";
+            }
+
+            var $iframespro = $('<div data-id="' + recordID + '" class="iframe-item">\
+                                <div class="item-slider" style="' + leftDisplay + '" >\
+                                    <iframe src="' + sliderUrl + '" frameborder="0"></iframe>\
+                                </div>\
+                                <div class="item-content" style="' + rightDisplay + '">\
+                                    <iframe src="' + contentUrl + '" frameborder="0"></iframe>\
+                                </div>\
+                            </div>');
+
+            $("#iframe-container").append($iframespro);
+            $("#iframe-container .iframe-item").hide();
+            $iframespro.show();
+            $("#Index-container").animate({ "bottom": "100%" }, 500, function () {
+            });
+            $("#projectTitle").text(">");
+            $("#currentProject").text("" + $lis.find("a").text());
+            $("#currentProject").attr("title", "" + $lis.find("a").text());
+            $("#currentEngineering").text("" + engineeringName);
+            $("#currentEngineering").attr("title", engineeringName);
+
+            currentEngineeringID = engineeringID;
+            currentProjectID = recordID;
+        }
+
+        //关闭TAB事件
+        $("body").on("click", ".close-iframe", function (event) {
+            $("#iframe-container .iframe-item").eq($(this).parent().index()).remove();
+            if (!$(this).parent().hasClass("active")) {
+                $(this).parent().remove();
+                return;
+            }
+            if ($(this).parent().index() == 0) {
+                $(this).parent().next().trigger("click");
+                $(this).parent().remove();
+            } else {
+                $(this).parent().prev().trigger("click");
+                $(this).parent().remove();
+            }
+            var len = $("#navss .nav-pills li").length;
+
+            if (len == 0) {
+                $(".control-img").hide();
+
+                //$("#currentEngineering").text("");
+                $("#projectTitle").text("");
+                $("#currentProject").text("");
+                $("#functionMenu").text("");
+            }
+            event.stopPropagation();
+        })
+
+        //TAB选中事件
+        $("body").on("click", "#navss .nav-pills li", function () {
+            $(this).addClass("active").siblings().removeClass("active");
+            $("#iframe-container .iframe-item").hide();
+            if ($("#navss .nav-pills .active").attr("showTree-id") == "T") {
+                $(".control-img").hide();
+            }
+            else {
+                $(".control-img").show();
+            }
+
+            for (var i = 0; i < $("#iframe-container .iframe-item").length; i++) {
+                if ($("#iframe-container .iframe-item").eq(i).attr("data-id") == $(this).attr("tab-id")) {
+                    $("#iframe-container .iframe-item").eq(i).show();
+                }
+            }
+            var type = $(this).find("a").attr("type");
+            var engineeringID = $(this).find("a").attr("engineeringid");
+            var engineeringName = $(this).find("a").attr("engineeringname");
+            if (type == "Engineering") {
+                currentEngineeringID = engineeringID;
+                $("#projectTitle").text("");
+                $("#currentProject").text("");
+                $("#currentEngineering").text(engineeringName);
+            }
+            else {
+                currentEngineeringID = engineeringID;
+                var projectId = $(this).attr("tab-id");
+                currentProjectID = projectId;
+                var projectName = $(this).find("a").text();
+                $("#projectTitle").text(">");
+                $("#currentProject").text(projectName);
+                $("#currentEngineering").text(engineeringName);
+                setFuncMenuText();
+            }
+        });
+
+        $(".control-img").on("click", function () {
+            for (var i = 0; i < $("#iframe-container .iframe-item").length; i++) {
+                if ($("#iframe-container .iframe-item").eq(i).css("display") == "block") {
+                    $("#iframe-container .iframe-item").eq(i).find(".control-img").hide();
+                    $("#navss .nav-pills li[class='active']").attr("showTree-id", "T");
+                    $("#iframe-container .iframe-item").eq(i).find(".item-content").animate({
+                        "padding-left": "259px"
+                    }, 300);
+                    $("#iframe-container .iframe-item").eq(i).find(".item-slider").animate({
+                        left: "0px"
+                    }, 300);
+                }
+            }
+            $(this).hide();
+        })
+
+        $("#search .form-control").on("mouseover", function () {
+            $(this).stop();
+            $(this).animate({ width: "259px" }, 500)
+        }).on("mouseout", function () {
+            if ($(this).is(":focus")) {
+                return;
+            }
+            $(this).stop();
+            $(this).animate({ width: "0px" }, 500)
+        }).on("blur", function () {
+            $(this).stop();
+            $(this).animate({ width: "0px" }, 500)
+        })
+
+        $(".mini-tabs-firstSpace").on("click", function () {
+            $("#slider-container").show();
+        });
+
+        //切换工程按钮点击事件
+        $(".chose-room").on("click", function (event) {
+            todoListtopType = $("#todoList .todoListtop .active").attr("id");
+            if ($(this).attr("onoff") == "false") {
+                $("#Index-container").animate({ "bottom": "0%" }, 300);
+                searchTree(todoListtopType);
+                $(this).attr("onoff", "true");
+            } else {
+                $("#Index-container").animate({ "bottom": "100%" }, 300);
+                $(this).attr("onoff", "false");
+            }
+            $("#Index-container .up-sj").show();
+            event.stopPropagation();
+            if (todoListtopType == "myProject") {
+                $("#pagebar").hide();
+                $("#pagePre .pager").hide();
+                $(".search-input").hide();
+            }
+            else {
+                $("#pagebar").show();
+                $("#pagePre .pager").show();
+                $(".search-input").show();
+            }
+        })
+
+
+        $(".show-prosess").on("click", function () {
+            if ($(".chose-profess").attr("off") == "false") {
+                $(".chose-profess").show();
+                $(".chose-profess").attr("off", "true");
+            } else {
+                $(".tab-content-right").css("margin-left", "308px");
+                $(".tab-content-right").css("left", "0px")
+                $(".chose-profess").hide();
+                $(".chose-profess").attr("off", "false")
+            }
+        })
+
+        $(".chose-profess ul li").on("click", function () {
+            $(".active-pro").text($(this).text()).css("background-color", $(this).find("div").css("background-color"));
+            $(this).siblings().find("div").removeClass("active");
+            $(this).find("div").addClass("active");
+
+        });
+
+        //收起项目工程TAB区域按钮事件
+        $(".drop-nav").on("click", function () {
+            if ($("#Index-container").css("bottom") == "0px") {
+                return false;
+            }
+            if ($(".drop-nav").attr("onoff") == "true") {
+                $(this).css({ "background-color": "transparent" });
+                $(this).find("span").css({ "color": "#fff" });
+
+                $("#navss").animate({ "top": "-2px" });
+                $("#navss").hide();
+                $(".drop-nav").attr("onoff", "false").find("span").addClass("icon-double-angle-down").removeClass("icon-double-angle-up");
+                $("#iframe-container").animate({
+                    "margin-top": "-42px",
+                    "height": $("#iframe-container").height() + 42 + "px"
+                });
+                $(".control-img").animate({
+                    top: "44px"
+                });
+
+            } else {
+                $(this).css({ "background-color": "transparent" });
+                $(this).find("span").css({ "color": "black" });
+
+                $("#navss").animate({ "top": "41px" }, "fast", function () {
+                    $("#navss").show();
+                });
+                $(".drop-nav").attr("onoff", "true").find("span").addClass("icon-double-angle-up").removeClass("icon-double-angle-down");
+                $("#iframe-container").animate({
+                    "margin-top": "0px",
+                    "height": "100%"
+                });
+                $(".control-img").animate({
+                    top: "100px"
+                });
+            }
+        });
+
+        //常用或者全部TAB切换事件
+        $(".todoListtop ul li").on("click", function () {
+            $(this).addClass("active").siblings().removeClass("active");
+            if (todoListtopType == $(this).attr("id")) return;
+            todoListtopType = $(this).attr("id");
+            if (todoListtopType == "myProject") {
+                $("#pagebar").hide();
+                $("#pagePre .pager").hide();
+                $(".search-input").hide();
+            }
+            else {
+                $("#pagebar").show();
+                $("#pagePre .pager").show();
+                $(".search-input").show();
+            }
+            pagerInfo.pageIndex = 0;
+            pagerInfo.pageSize = 10;
+            searchTree(todoListtopType);
+        });
+
+        function onTreeGridLoad(e) {
+            if (e.text) {
+                var resultData = mini.decode(e.text);
+                e.result = resultData;
+                if (e.result && e.result.data) {
+                    e.sender.loadList(e.result.data);
+                    updatePagerInfo(pagerInfo.pageIndex, pagerInfo.pageSize, e.result.total);
+                }
+            }
+        }
+        //取项目或工程数据
+        function searchTree(type) {
+            var url = allProjectUrl;
+            if (type == "myProject") {
+                url = myProjectUrl;
+            }
+            else if (type == "allEngineering") {
+                url = allEngineeringUrl;
+            }
+            else {
+                url = allProjectUrl;
+            }
+            treegrid.setPageIndex(pagerInfo.pageIndex);
+            treegrid.setPageSize(pagerInfo.pageSize);
+            treegrid.setUrl(url);
+            var keyValue = $("#key").val();
+            var pageIndex = pagerInfo.pageIndex, pageSize = pagerInfo.pageSize;
+            var keys = searchFields.split(',');
+            var quickSearchData = {};
+            if (type != "myProject") {
+                for (i = 0, len = keys.length; i < len; i++) {
+                    quickSearchData["$IL$" + keys[i]] = keyValue;
+                }
+            }
+            var data = {};
+            addExecuteParam("quickQueryFormData", mini.encode(quickSearchData));
+            addExecuteParam("queryFormData", mini.encode(data));
+            addExecuteParam("pageIndex", pageIndex);
+            addExecuteParam("pageSize", pageSize);
+            addExecuteParam("sortField", treegrid.sortField);
+            addExecuteParam("sortOrder", treegrid.sortOrder);
+            execute(url, {
+                async: false,
+                showLoading: true, refresh: false, onComplete: function (data) {
+                    treegrid.loadList(data.data, "ID", "ParentID");
+                    updatePagerInfo(pagerInfo.pageIndex, pagerInfo.pageSize, data.total);
+                    $("#treewrap").getNiceScroll().resize();
+                    var scroll = $("#treewrap").getNiceScroll()[0];
+                    if (scroll)
+                        scroll.mousewheel($("#treewrap")[0], scroll.onmousewheel);
+                }, validateForm: false
+            });
+        }
+
+        function updatePagerInfo(pageIndex, pageSize, total) {
+            $("#pageIndex").text(pageIndex + 1);
+            var pageTotal = parseInt(total / pageSize);
+            if (total > 0 && total < pageSize) pageTotal = 1;
+            else if (total % pageSize > 0) pageTotal = pageTotal + 1;
+            pagerInfo.lastPageIndex = pageTotal - 1;
+            $("#pagerTotal").text(pageTotal);
+            $("#goToPager").val(pageIndex + 1);
+            $(".pager .pages-container").empty();
+            if (pageIndex > 9 && pageIndex <= pageTotal) {
+                var mode = parseInt((pageIndex + 1) / 10);
+                var start = 0;
+                if ((pageIndex + 1) % 10 == 0) {
+                    start = (mode - 1) * 10 + 1;
+                }
+                else {
+                    start = mode * 10 + 1;
+                }
+                var len = 10;
+                if ((pageTotal + 1 - start) < 10)
+                    len = pageTotal - start + 1;
+                for (var i = 0; i < len; i++) {
+                    var index = start + i;
+                    var $li = $('<li><a href="javascript:void(0)" onclick="pagerLoad(' + (index - 1) + ')">' + index + '</a></li>');
+                    if (index == pageIndex + 1)
+                        $li.find("a").addClass("actives");
+                    $(".pager .pages-container").append($li);
+                }
+            }
+            else {
+                var len = 10;
+                if (pageTotal < 10) len = pageTotal;
+                for (var i = 1; i <= len; i++) {
+                    var $li = $('<li><a href="javascript:void(0)" onclick="pagerLoad(' + (i - 1) + ')">' + i + '</a></li>');
+                    if (i == pageIndex + 1)
+                        $li.find("a").addClass("actives");
+                    $(".pager .pages-container").append($li);
+                }
+            }
+        }
+
+        function pagerLoad(index) {
+            $(".pager .pages-container").find("a").removeClass("actives");
+            $(this).addClass("actives");
+            pagerInfo.pageIndex = index;
+            searchTree(todoListtopType);
+        }
+
+    </script>
+</body>
+</html>

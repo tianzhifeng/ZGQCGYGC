@@ -1,0 +1,727 @@
+﻿@{
+    ViewBag.Title = "计算式配置";
+}
+
+@section scripts{
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.js")" type="text/javascript"></script>
+    <script charset="utf-8" src="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/mode/javascript/javascript.js")" type="text/javascript"></script>
+    <link href="@Url.Content("/CommonWebResource/CoreLib/CodeMirror/lib/codemirror.css")" rel="stylesheet" type="text/css" />
+}
+<style>
+    .CodeMirror {
+        border: 1px solid #ccc;
+        font-size: 13px;
+    }
+</style>
+
+<div id="mainLayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div title="west" region="west" width="300" expanded="true" showspliticon="false" showheader="false">
+        <div class="mini-toolbar">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" iconcls="icon-add" onclick="addRow({TriggerMethod:'InputChange',CalType:'Decimal',CalDefaultValue:'false'},{createId:true,isLast:true})">增加</a>
+                        <a class="mini-button" iconcls="icon-remove" onclick="delRow();">移除</a>
+                        <a class="mini-button" iconcls="icon-save" onclick="saveItemList();">保存</a>
+                        <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a>
+                        <a class="mini-button" iconcls="icon-down" onclick="moveDown();">下移</a>
+                    </td>
+                    <td id="btnRight"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetCalItemList" allowcellvalid="true"
+                 allowcelledit="true" allowcellselect="true" multiselect="false" showpager="false"
+                 onselectionchanged="onRowSelectChanged" borderstyle="border-right:0;border-left:0;"
+                 editnextonenterkey="true" editnextrowcell="true">
+                <div property="columns">
+                    <div type="checkcolumn">
+                    </div>
+                    <div  field="Code" displayField="text" width="200" vtype="required;">
+                        字段<input property="editor" class="mini-combobox" shownullitem="false" style="width: 100%;" data="formFields" allowinput="true"
+                                 valuefromselect="false" onitemclick="commitEdit" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="east" region="east" width="300" expanded="true" showspliticon="false" showheader="false">
+        <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;"></td>
+                    <td style="white-space: nowrap;">
+                        <input class="mini-buttonedit searchbox" id="key" emptytext="请输入名称或编号" style="width: 200px;" onenter="treeSearch();"
+                               onbuttonclick="treeSearch();" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mini-fit">
+            <ul id="dataTree" url="" class="mini-tree" style="width: 100%; height: 100%;" showtreeicon="true" textfield="Name" idfield="ID" onbeforeexpand="onBeforeExpand"
+                enablehottrack="false" parentfield="ParentID" resultastree="false" expandonload="0" onnodedblclick="onNodeDblClick" iconfield="NodeType"
+                ondrawnode="onDrawNode"></ul>
+        </div>
+    </div>
+    <div title="center" region="center">
+        <div id="dataForm" autogetdata="false">
+            <input name="ID" class="mini-hidden" />
+            <div class="formDiv">
+                <fieldset>
+                    <legend>基本信息</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%">触发方式</td>
+                            <td width="35%;">
+                                <div name="TriggerMethod" class="mini-radiobuttonlist" repeatitems="4" repeatlayout="table" repeatdirection="horizontal"
+                                     required="true" textfield="text" valuefield="value" data="TriggerMethod" onvaluechanged="onTriggerValuchanged">
+                                </div>
+                            </td>
+                            <td width="15%" style="padding-left: 20px;">计算时机</td>
+                            <td>
+                                <input name="CalDefaultValue" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                       data="calTime" allowinput="false" valuefromselect="true" multiselect="true" onvaluechanged="saveSettings();" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>触发控件</td>
+                            <td colspan="3">
+                                <input name="TriggerFields" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                       data="formFields" allowinput="false" valuefromselect="true" multiselect="true" onvaluechanged="saveSettings();" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>返回类型</td>
+                            <td colspan="3">
+                                <div name="CalType" class="mini-radiobuttonlist" repeatitems="4" repeatlayout="none" repeatdirection="horizontal"
+                                     textfield="text" valuefield="value" data="CalType" required="true" onvaluechanged="saveSettings();">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="decimalPlaceRow">
+                            <td>保留小数</td>
+                            <td colspan="3">
+                                <input name="decimalPlaces" minvalue="0" maxvalue="6" style="width: 100%" class="mini-spinner" vtype="maxLength:50" onvaluechanged="saveSettings();" />
+                            </td>
+                        </tr>
+                        <tr id="expressionRow">
+                            <td>计算式</td>
+                            <td colspan="3">
+                                <textarea id="Expression" name="editor" style="height:300px;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>解析后表达式</td>
+                            <td colspan="3">
+                                <input name="RealExpression" style="width: 100%" class="mini-textbox" onvaluechanged="saveSettings();" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset id="SubTableAdapterRow">
+                    <legend>字段对应</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;"></td>
+                            <td width="15%" style="padding-left: 20px;"></td>
+                            <td width="35%;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div id="SubTableAdapter" class="mini-datagrid" style="width: 100%; height: auto;" idfield="ID" multiselect="true" showpager="false"
+                                     oncellendedit="onAdpEndEdit" oncellbeginedit="onAdpCellBeginEdit" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true">
+                                    <div property="columns">
+                                        <div field="FieldName" width="150" headeralign="center" allowsort="false">
+                                            字段名称
+                                        </div>
+                                        <div field="FieldCode" width="150" headeralign="center" allowsort="false">
+                                            字段
+                                        </div>
+                                        <div autoshowpopup="true" field="ParamField" width="120" allowsort="false" headeralign="center" vtype="requried;">
+                                            对应字段
+                                            <input property="editor" class="mini-combobox" style="width:100%;" multiselect="true" data="" allowinput="true" valuefromselect="true" />
+                                        </div>
+                                        <div field="DefaultValue" width="120" headeralign="center" allowsort="false" vtype="required">
+                                            为空默认<input property="editor" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>参数设置</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;"></td>
+                            <td width="15%" style="padding-left: 20px;"></td>
+                            <td width="35%;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div id="Details" class="mini-datagrid" style="width: 100%; height: auto;" idfield="ID" multiselect="true" showpager="false"
+                                     oncellendedit="onDetailsEndEdit" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true">
+                                    <div property="columns">
+                                        <div field="NeedInputCode" width="150" headeralign="center" allowsort="false">
+                                            输入匹配参数
+                                        </div>
+                                        <div type="comboboxcolumn" autoshowpopup="true" field="InputField" width="250" allowsort="false" headeralign="center" vtype="requried;">
+                                            对应表单字段
+                                            <input property="editor" class="mini-combobox" style="width:100%;" data="formFields" allowinput="true" valuefromselect="true" />
+                                        </div>
+                                        <div field="DefaultValue" width="150" headeralign="center" allowsort="false" vtype="required">
+                                            为空默认<input property="editor" style="width: 100%" class="mini-textbox" required="true" vtype="maxLength:50" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+
+                <fieldset id="valueCondition">
+                    <legend>匹配条件</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%">取值字段</td>
+                            <td width="35%;">
+                                <input name="CollectionValueField" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" onvaluechanged="saveSettings();"
+                                       data="" allowinput="true" valuefromselect="true" />
+                            </td>
+                            <td width="15%" style="padding-left: 20px;"></td>
+                            <td width="35%;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div id="filterToolBar" class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addRow({Group:'Group1'},{gridId:'ValueCondition',isLast:true})" plain="true">增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId:'ValueCondition'})" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="ValueCondition" class="mini-datagrid" style="width: 100%; height: auto;" idfield="ID" multiselect="true" showpager="false"
+                                     oncellendedit="onValueConditionEndEdit" oncellbeginedit="onValueConditionCellBeginEdit" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true">
+                                    <div property="columns">
+                                        <div autoshowpopup="true" field="Value" width="120" allowsort="false" headeralign="center" vtype="requried;">
+                                            参数字段
+                                            <input property="editor" class="mini-combobox" style="width:100%;" multiselect="false" data="" allowinput="true" valuefromselect="true" />
+                                        </div>
+                                        <div type="comboboxcolumn" autoshowpopup="true" field="QueryMode" width="60" headeralign="center" align="center" allowsort="false" vtype="required">
+                                            运算符<input property="editor" class="mini-combobox" style="width:100%;" data="queryModeEnum" allowinput="true" valuefromselect="true" />
+                                        </div>
+                                        <div type="comboboxcolumn" autoshowpopup="true" field="FieldCode" width="200" headeralign="center" allowsort="false" vtype="required">
+                                            表单字段
+                                            <input property="editor" class="mini-combobox" style="width:100%;" data="formFields" allowinput="true" />
+                                        </div>
+                                        <div field="ConditionValue" width="200" headeralign="center" allowsort="false" vtype="required">
+                                            固定值
+                                            <input property="editor" class="mini-textbox" style="width:100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+
+                <fieldset>
+                    <legend>过滤数据（符合过滤条件的不进行计算）</legend>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                            <td width="15%"></td>
+                            <td width="35%;"></td>
+                            <td width="15%" style="padding-left: 20px;"></td>
+                            <td width="35%;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div id="filterToolBar" class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 100%;">
+                                                <a class="mini-button" iconcls="icon-add" onclick="addRow({Group:'Group1'},{gridId:'Filter',isLast:true})" plain="true">增加</a>
+                                                <a class="mini-button" iconcls="icon-remove" onclick="delRow({gridId:'Filter'})" plain="true">删除</a>
+                                            </td>
+                                            <td style="white-space: nowrap;"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="Filter" class="mini-datagrid" style="width: 100%; height: auto;" idfield="ID" multiselect="true" showpager="false"
+                                     oncellendedit="onFilterEndEdit" allowcelledit="true" allowcellselect="true" editnextonenterkey="true" editnextrowcell="true">
+                                    <div property="columns">
+                                        <div type="comboboxcolumn" autoshowpopup="true" field="Field" width="200" headeralign="center" allowsort="false" vtype="required">
+                                            参数名
+                                            <input property="editor" class="mini-combobox" style="width:100%;" data="formFields" allowinput="true" valuefromselect="true" />
+                                        </div>
+                                        <div type="comboboxcolumn" autoshowpopup="true" field="QueryMode" width="60" headeralign="center" allowsort="false" vtype="required">
+                                            运算符<input property="editor" class="mini-combobox" style="width:100%;" data="queryModeEnum" allowinput="true" valuefromselect="true" />
+                                        </div>
+                                        <div field="Value" width="90" headeralign="center" allowsort="false">
+                                            值<input property="editor" style="width: 100%" class="mini-textbox" />
+                                        </div>
+                                        <div field="Group" width="70" headeralign="center" allowsort="false">
+                                            分组<input property="editor" style="width: 100%" class="mini-textbox" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var formFields = @Html.Raw(ViewBag.FormFields);
+    var dataSourceFields = @Html.Raw(ViewBag.DataSourceFields);
+    @Html.GetEnum(typeof(Base.Logic.TriggerMethod))
+    @Html.GetEnum(typeof(Base.Logic.ArgumentType))
+    @Html.GetEnum(typeof(Base.Logic.CalType))
+    var queryModeEnum = [
+  { value: "Equal", text: "=" },
+  { value: "LessThan", text: "<" },
+  { value: "GreaterThan", text: ">" },
+  { value: "LessThanOrEqual", text: "<=" },
+  { value: "GreaterThanOrEqual", text: ">=" },
+  { value: "Like", text: "Like" },
+  { value: "In", text: "In" },
+  { value: "IsNull", text: "IsNull" },
+  { value: "IsNotNull", text: "IsNotNull" }
+    ];
+
+    var calTime=[{value:"FormLoad",text:"表单加载时"},{value:"DefaultValue",text:"设置表单默认时"},{value:"FormCal",text:"表单计算时"}];
+    //var trueOrFalse=[{value:"true",text:"是"},{value:"false",text:"否"}];
+</script>
+
+<style>
+    .Root:before {
+        content: "\f19c";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .ParamType:before {
+        content: "\f1b3";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .Paramter:before {
+        content: "\f1b2";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .FormField:before {
+        content: "\f125";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .Form:before {
+        content: "\f125";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .Func:before {
+        content: "\f009";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+
+    .SysFunc:before {
+        content: "\f009";
+        padding-right: 5px;
+        font-size: 14px;
+    }
+</style>
+<script type="text/javascript">
+
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }
+
+
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+    function getitemTypeText(value) {
+        for (var i = 0; i < ItemType.length; i++) {
+            if (ItemType[i]["value"] == value)
+                return ItemType[i]["text"];
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    var returnType=[{text:"字符串",value:"String"},{text:"数字",value:"Decimal"},{text:"集合",value:"Collection"}];
+
+    var formID = getQueryString("FormID");
+    $("#dataTree").attr("url","GetParamTree?DefineID="+formID);
+
+    function saveItemList() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+        grid.validate();
+        if (grid.isValid() == false) {
+            msgUI("输入数据有误！");
+            return;
+        }
+        addExecuteParam("ItemList", grid.getData());
+        execute("SaveCalItemList", { showLoading: true, loadingInterval: 0, refresh: false, onComplete: function (data) {
+
+        }, validateForm: false
+        });
+    }
+
+    function onTriggerValuchanged(e) {
+        if(e.value&&e.value=="InputChange"){
+            mini.getbyName("TriggerFields").setRequired(true);
+        }
+        else{
+            mini.getbyName("TriggerFields").setRequired(false);
+        }
+        saveSettings(true);
+    }
+
+    function onDetailsEndEdit(e) {
+        saveSettings(false);
+    }
+
+    function onFilterEndEdit(e) {
+        saveSettings(false);
+    }
+
+    function onBeforeExpand(e) {
+
+    }
+
+    function insertValue(textValue) {
+        editor.replaceSelection(textValue);
+    }
+
+    function insertNode(nodeID) {
+        var tree = mini.get("dataTree");
+        var nodes = tree.findNodes(function (treeNode) {
+            if (treeNode.ID == nodeID) return true;
+            else return false;
+        });
+
+        if (nodes == 0) {
+            return;
+        }
+        var node = nodes[0];
+        if (node.ParamType == "CalArg" && !node.Expression) {
+            msgUI("计算参数没有定义表达式，无法被插入"); return;
+        }
+        if (node && node.ID != id && (node.NodeType == "Paramter")) {
+            insertValue("{" + node.Code + "}");
+        }
+        else if (node && node.ID != id && node.NodeType == "Func") {
+            insertValue("Func_" + node.Code + "()");
+        }
+        else if (node&&node.NodeType == "FormField") {
+            insertValue("{" + node.Code + "}");
+        }
+    }
+
+    function onDrawNode(e) {
+        var tree = e.sender;
+        var node = e.node;
+        if (node.NodeType == "Paramter" || node.NodeType == "Func"||node.NodeType=="FormField") {
+            e.nodeHtml = '' + node.Name + '&nbsp;<span onclick="insertNode(\'' + node.ID + '\');" title="插入" class="mini-button-icon icon-add"></span>';
+        }
+        if (node.NodeType == "Paramter") {
+            e.nodeStyle = 'font-weight:bold;';
+        }
+        else if (node.NodeType == "Func" && node.ID != "SysFuncRoot") {
+            e.nodeStyle = 'font-style:italic;font-weight:bold;';
+        }
+    }
+
+    function onNodeDblClick(e) {
+        var node = e.node;
+        if (node && node.ParamType == "CalArg" && !node.Expression) {
+            msgUI("计算参数没有定义表达式，无法被插入"); return;
+        }
+        if (node && node.ID != id && node.NodeType == "Paramter") {
+            insertValue("{" + node.Code + "}");
+        }
+        else if (node && node.ID != id && node.NodeType == "Func") {
+            insertValue("Func_" + node.Code + "()");
+        }
+        else if (node&&node.NodeType == "FormField") {
+            insertValue("{" + node.Code + "}");
+        }
+    }
+
+    var editor = null;
+    function pageLoad() {
+        setFormItemDisabled("Expression");
+        setFormItemDisabled("TriggerMethod");
+        setFormItemDisabled("TriggerFields");
+        setFormItemDisabled("RealExpression");
+        $("#filterToolBar").hide();
+        var myTextarea = document.getElementById('Expression');
+        var CodeMirrorEditor = CodeMirror.fromTextArea(myTextarea, {
+            mode: "text/javascript",
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            theme: "xq-light",
+        });
+        editor = CodeMirrorEditor;
+        editor.setOption("readOnly",true);
+        editor.setSize('auto', '200px');
+
+        editor.on("change",function(s){
+            setInputParamList();
+            if(editorChangeSave){
+                saveSettings();
+            }
+            editorChangeSave=true;
+        });
+    }
+
+    var editorChangeSave=false;
+
+    function setInputParamList() {
+        var detailGrid = mini.get("Details");
+        if(editor){
+            var exp = editor.getValue();
+            if(!exp){
+                detailGrid.clearRows();return;
+            }
+            var dataList = [];
+            addExecuteParam("exp", exp);
+            execute("GetRealExpression", { showLoading: false,async:false, refresh: false, onComplete: function (data) {
+                exp=data.resExp;
+                dataList = data.ListData;
+                adpExpressFields = data.RefColumns;
+                mini.getbyName("CollectionValueField").setData(adpExpressFields);
+            }, validateForm: false
+            });
+            mini.getbyName("RealExpression").setValue(exp);
+            var dataGrid = mini.get("dataGrid");
+            var row = dataGrid.getSelected();
+            if(row){
+                var details = mini.decode(row.Details);
+                for (var i = 0; i < dataList.length; i++) {
+                    var item =  dataList[i];
+                    if(details&&details.length>0){
+                        var detailConfigs = $.grep(details, function (detailItem, i) {
+                            return item.NeedInputCode == detailItem.NeedInputCode;
+                        });
+                        if (detailConfigs.length > 0) {
+                            item.InputField = detailConfigs[0].InputField;
+                            if(detailConfigs[0].DefaultValue){
+                                item.DefaultValue = detailConfigs[0].DefaultValue;
+                            }
+                        }
+                    }
+                }
+                detailGrid.setData(dataList);
+                setDetailAdapter(row);
+            }
+            else{
+                detailGrid.clearRows();
+                mini.get("SubTableAdapter").clearRows();
+            }
+        }
+        else{
+            detailGrid.clearRows();
+            mini.get("SubTableAdapter").clearRows();
+        }
+    }
+
+    function onRowSelectChanged(e) {
+        if(e.selected){
+            var form = new mini.Form("dataForm");
+            form.setData(e.selected);
+            setFormItemEditabled("TriggerMethod");
+            setFormItemEditabled("TriggerFields");
+            setFormItemEditabled("Param");
+            setFormItemEditabled("IgnoreScript");
+            $("#filterToolBar").show();
+            editorChangeSave=false;
+            editor.setValue(e.selected.Expression);
+            editor.setOption("readOnly",false);
+            var filterList =   mini.decode(e.selected.Filter);
+            mini.get("Filter").setData(filterList);
+
+            var valueConditionList =   mini.decode(e.selected.ValueCondition);
+            mini.get("ValueCondition").setData(valueConditionList);
+
+            setDetailAdapter(e.selected);
+        }
+        else{
+            var form = new mini.Form("dataForm");
+            form.clear();
+            setFormItemDisabled("ParamCode");
+            setFormItemDisabled("Expression");
+            setFormItemDisabled("TriggerMethod");
+            setFormItemDisabled("TriggerFields");
+            setFormItemDisabled("Param");
+            mini.get("Details").clearRows();
+            mini.get("Filter").clearRows();
+            mini.get("SubTableAdapter").clearRows();
+            mini.get("ValueCondition").clearRows();
+            $("#filterToolBar").hide();
+            editor.setOption("readOnly",true);
+            editorChangeSave=false;
+            editor.setValue("");
+        }
+        //adpExpressFields=null;
+    }
+
+    function setDetailAdapter(row) {
+        var adpGrid = mini.get("SubTableAdapter");
+        var detailConfigs = $.grep(formFields, function (field, i) {
+            return field.value == row.Code;
+        });
+        if(detailConfigs.length==0){
+            return;
+        }
+        var adpData = mini.decode(row.SubTableAdapter)
+        if( detailConfigs[0].ItemType=="SubTable"){
+            $("#SubTableAdapterRow").show();
+            var subTableFields=  $.grep(formFields, function (field, i) {
+                return field.value.indexOf("{"+row.Code.replace("{","").replace("}","")+".")>=0 ;
+            });
+            var dataList = [];
+            for (var i = 0; i < subTableFields.length; i++) {
+                var item = subTableFields[i];
+                var itemCode = item.value.replace("{","").replace("}","").split('.')[1];
+                var di = {FieldName:item.text, FieldCode:itemCode};
+                if(adpData){
+                    var diList = $.grep(adpData, function (row, i) {
+                        return row.FieldCode==itemCode;
+                    });
+                    if(diList.length>0){
+                        di.ParamField=diList[0].ParamField;
+                        di.DefaultValue=diList[0].DefaultValue;
+                    }
+                }
+                dataList.push(di);
+            }
+            adpGrid.setData(dataList);
+        }
+        else{
+            $("#SubTableAdapterRow").hide();
+            adpGrid.clearRows();
+        }
+    }
+
+    function onValueConditionEndEdit(e) {
+        saveSettings(false);
+    }
+
+
+    function onValueConditionCellBeginEdit(e) {
+        var field = e.field;
+        if(field=="Value"){
+            var editor = e.editor;
+            if(editor){
+                editor.setData(adpExpressFields);
+            }
+        }
+    }
+
+    function onAdpEndEdit(e) {
+        saveSettings(false);
+    }
+
+    var adpExpressFields=null;
+    function onAdpCellBeginEdit(e) {
+        var field = e.field;
+        if(field=="ParamField"){
+            var editor = e.editor;
+            if(editor){
+                editor.setData(adpExpressFields);
+            }
+        }
+    }
+
+
+
+    function saveSettings(isCommitEdit) {
+        var form = new mini.Form("dataForm");
+        var formData = form.getData();
+        var detail = mini.get("Details");
+        if(isCommitEdit){
+            detail.commitEdit();
+        }
+        var listData = detail.getData();
+        detail.accept ();
+        var v = editor.getValue();
+        formData.Expression=v;
+        formData["Details"]=mini.encode(listData);
+
+        var filter = mini.get("Filter");
+        if(isCommitEdit){
+            filter.commitEdit();
+        }
+        var filterList = filter.getData();
+        filter.accept ();
+        formData["Filter"]=mini.encode(filterList);
+
+        var subTableAdapter = mini.get("SubTableAdapter");
+        if(isCommitEdit){
+            subTableAdapter.commitEdit();
+        }
+        var subTableAdapterList = subTableAdapter.getData();
+        subTableAdapter.accept ();
+        formData["SubTableAdapter"]=mini.encode(subTableAdapterList);
+
+        var valueCondition = mini.get("ValueCondition");
+        if(isCommitEdit){
+            valueCondition.commitEdit();
+        }
+        var valueConditionList = valueCondition.getData();
+        valueCondition.accept ();
+        formData["ValueCondition"]=mini.encode(valueConditionList);
+
+        var dataGrid = mini.get("dataGrid");
+        var row=  dataGrid.getSelected();
+        if(row){
+            dataGrid.updateRow(row,formData);
+        }
+    }
+
+    function treeSearch() {
+        var dataTree = mini.get("dataTree");
+        var key = mini.get("key");
+        var keyValue = key.getValue();
+        if (keyValue) {
+            dataTree.filter(function (node) {
+                if (node.Name.indexOf(keyValue) >= 0 || node.Code.indexOf(keyValue) >= 0) {
+                    return true;
+                }
+                else return false;
+            });
+        }
+        else {
+            dataTree.clearFilter();
+        }
+    }
+</script>

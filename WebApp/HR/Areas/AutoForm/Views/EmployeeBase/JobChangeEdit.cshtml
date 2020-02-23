@@ -1,0 +1,226 @@
+﻿<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    @if (Request["FuncType"] == null || Request["FuncType"].ToLower() != "view")
+    { <div title="north" region="north" height="34" showspliticon="false" showheader="false"
+        allowresize="false" splitsize="0" style="border: 0;">
+        <div class="mini-toolbar" id="btnDiv">
+            <table>
+                <tr>
+                    <td>
+                        <a class="mini-button" plain="true" iconcls="icon-save" onclick="SaveInfo();">保存</a>
+                        <a class="mini-button" plain="true" iconcls="icon-cancel" onclick="closeWindow()">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div> 
+    }
+    <div title="center" region="center">
+        <form id="dataForm" method="post" url="GetJobInformationChangeModel">
+        <input name="ID" class="mini-hidden" />
+        <input name="EmployeeID" class="mini-hidden" />
+        <div class="formDiv" style="width: 90%; margin-left: auto; margin-right: auto;">
+            <fieldset>
+                <legend>基本信息</legend>
+                <div>
+                    <table>
+                        <tr class="hideRow">
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                            <td width="15%">
+                            </td>
+                            <td width="35%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                员工工号
+                            </td>
+                            <td>
+                                <input name="EmployeeCode" style="width: 100%" class="mini-textbox" enabled="false" />
+                            </td>
+                            <td>
+                                员工姓名
+                            </td>
+                            <td>
+                                <input name="EmployeeName" class="mini-textbox" style="width: 100%" enabled="false" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                变动时间
+                            </td>
+                            <td>
+                                <input name="ChangeDate" class="mini-datepicker" style="width: 100%;" required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                变动原因
+                            </td>
+                            <td colspan="3">
+                                <input name="ChangeReason" class="mini-textarea" style="width: 100%; height: 70px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                备注
+                            </td>
+                            <td colspan="3">
+                                <input name="Remark" class="mini-textarea" style="width: 100%; height: 70px;" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>在岗信息</legend>
+                <div style="height: 150px">
+                    <div id="CurrentJobList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                        idfield="ID" showpager="false">
+                        <div property="columns">
+                            <div type="indexcolumn">
+                            </div>
+                            <div field="EmployeeCategory" width="80" headeralign="center" align="center">
+                                人员类别</div>
+                            <div field="JobCategory" width="80" headeralign="center" align="center">
+                                职务类别</div>
+                            <div field="Clique" width="100" headeralign="center" align="center">
+                                所属集团</div>
+                            <div field="SubCompany" width="150" headeralign="center" align="center">
+                                所属子公司</div>
+                            <div field="DeptIDName" width="120" headeralign="center" align="center">
+                                所属部门</div>
+                            <div field="IsMain" width="80" headeralign="center" align="center">
+                                是否主责</div>
+                            <div field="JobName" width="100" headeralign="center" align="center">
+                                职务</div>
+                            <div field="Major" width="100" headeralign="center" align="center" data="Major">
+                                专业</div>
+                            <div field="EmployDate" width="80" headeralign="center" align="center" dateformat="yyyy-MM-dd">
+                                聘任日期</div>
+                            <div field="JobAgreeCode" width="100" headeralign="center" align="center">
+                                职批准文号</div>
+                            <div field="EmployAgreeCode" width="100" headeralign="center" align="center">
+                                聘任批准文号</div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>变动信息</legend>
+                <div id="changeJobButton" class="mini-toolbar" style="border-bottom: 0px; margin-top: 3px;">
+                    @if (Request["FuncType"] == null || Request["FuncType"].ToLower() != "view")
+                    {
+                        <a class="mini-button" iconcls="icon-add" onclick="addJob">增加</a> <a class="mini-button"
+                            iconcls="icon-remove" onclick="delJob">删除</a>
+                    }
+                </div>
+                <div style="height: 150px">
+                    <div id="ChangeJobList" class="mini-datagrid" style="width: 100%; height: 100%;"
+                        oncellbeginedit="onCellBeginEdit" idfield="ID" multiselect="true" showpager="false"
+                        allowcelledit="true" allowcellselect="true">
+                        <div property="columns">
+                            <div type="checkcolumn">
+                            </div>
+                            <div field="IsDeleted" visible="false">
+                            </div>
+                            <div field="EmployeeCategory" width="80" headeralign="center" align="center">
+                                人员类别<input property="editor" class="mini-combobox" data="EmployeeBigType" style="width: 100%;" /></div>
+                            <div field="JobCategory" width="80" headeralign="center" align="center" vtype="required">
+                                职务类别<input property="editor" class="mini-combobox" data="JobCategory" style="width: 100%;" /></div>
+                            <div field="Clique" width="100" headeralign="center" align="center">
+                                所属集团<input property="editor" class="mini-textbox" style="width: 100%;" /></div>
+                            <div field="SubCompany" width="150" headeralign="center" align="center">
+                                所属子公司<input property="editor" class="mini-textbox" style="width: 100%;" /></div>
+                            <div field="DeptID" displayfield="DeptIDName" width="120" headeralign="center" align="center"
+                                vtype="required">
+                                所属部门<input property="editor" name="DeptID" valuefield="DepID" textfield="DeptIDName"
+                                    class="mini-buttonedit" style="width: 100%;" /></div>
+                            <div field="IsMain" width="80" headeralign="center" align="center" vtype="required">
+                                是否主责<input property="editor" class="mini-combobox" data="TrueOrFalse" style="width: 100%;" /></div>
+                            <div name="JobID" field="JobID" displayfield="JobName" width="100" headeralign="center"
+                                align="center" vtype="required">
+                                职务<input property="editor" valuefield="value" textfield="text" class="mini-combobox"
+                                    style="width: 100%;" /></div>
+                            <div field="Major" width="100" headeralign="center" align="center">
+                                专业<input property="editor" class="mini-combobox" data="Major" style="width: 100%;" /></div>
+                            <div field="EmployDate" width="80" headeralign="center" align="center" dateformat="yyyy-MM-dd">
+                                聘任日期<input property="editor" class="mini-datepicker" style="width: 100%;" /></div>
+                            <div field="JobAgreeCode" width="100" headeralign="center" align="center">
+                                职批准文号<input property="editor" class="mini-textbox" style="width: 100%;" /></div>
+                            <div field="EmployAgreeCode" width="100" headeralign="center" align="center">
+                                聘任批准文号<input property="editor" class="mini-textbox" style="width: 100%;" /></div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("HR.EmployeeBigType");
+    @Html.GetEnum("HR.JobCategory");
+    @Html.GetEnum("System.TrueOrFalse");
+    @Html.GetEnum("Project.Major");
+</script>
+<script type="text/javascript">
+    addGridEnum("CurrentJobList", "IsMain", "TrueOrFalse");
+    addGridEnum("ChangeJobList", "IsMain", "TrueOrFalse");
+    addGridEnum("CurrentJobList", "EmployeeCategory", "EmployeeBigType");
+    addGridEnum("ChangeJobList", "EmployeeCategory", "EmployeeBigType");
+    addGridEnum("CurrentJobList", "JobCategory", "JobCategory");
+    addGridEnum("ChangeJobList", "JobCategory", "JobCategory");
+    addGridEnum("ChangeJobList", "Major", "Major");
+    addGridEnum("CurrentJobList", "Major", "Major");
+    addSingleOrgSelector("DeptID", { OrgType: "Org,Dept,ManufactureDept,SubDept" });
+
+    function onCellBeginEdit(e) {
+        var record = e.record;
+        if (e.field == "JobID") {
+            if (record.DeptID == undefined || record.DeptID == null || record.DeptID == "")
+                return msgUI("请选择所属部门！", 1);
+            e.sender.getColumn("JobID").editor.setUrl("/HR/AutoForm/EmployeeBase/GetJobEnumByDept?DeptID=" + record.DeptID);
+        }
+    }
+
+    function addJob() {
+        var grid = mini.get("ChangeJobList");
+        var row = { IsDeleted: "0" };
+        grid.addRow(row, grid.getData().length);
+
+    }
+
+    function delJob() {
+        var grid = mini.get("ChangeJobList");
+        var rows = grid.getSelecteds();
+        if (rows.length == 0)
+            return msgUI("请选择需要调动的职务信息！");
+        grid.removeRows(rows, true);
+
+    }
+
+    function SaveInfo() {
+        var grid = mini.get("ChangeJobList");
+        var data = grid.getData();
+        if (data == null || data.length==0) {
+            return msgUI("请添加变动信息。");
+            return;
+        }
+        var count = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].IsMain == "1")
+                count++;
+        }
+        if (count >= 2)
+            return msgUI("只能存在一个主责部门");
+
+        var changeJobList = grid.getChanges();
+        addExecuteParam("ChangeJobList", mini.encode(changeJobList));
+        execute("SaveJobChangeInfo", { actionTitle: "保存", closeWindow: true, refresh: false });
+
+
+    }
+</script>

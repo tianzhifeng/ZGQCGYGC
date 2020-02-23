@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "BatchAdd";
+}
+<div class="mini-toolbar" style="padding: 0px; border-top: 0; border-left: 0; border-right: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="upload();">上传附件</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveProducts" plain="true">增加成果</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;"
+         idfield="ID" multiselect="true" allowcelledit="true" allowcellselect="true" editnextonenterkey="true"
+         editnextrowcell="true" borderstyle="border-left:0;border-right:0;border-bottom:0;" allowunselect="false" showpager="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="remove" width="60" headeralign="center" allowsort="false">
+                移除
+            </div>
+            <div field="Name" width="200" headeralign="center" allowsort="false" vtype="required">
+                名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="100" headeralign="center" allowsort="false" align="center"
+                 vtype="required">
+                编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PhaseValue" type="comboboxcolumn" autoshowpopup="true" width="120" headeralign="center" allowsort="false" align="center">
+                阶段
+                <input property="editor" class="mini-combobox" valuefield="value" textfield="text" style="width: 100%;" data="Phase" />
+            </div>
+            <div field="MonomerInfo" type="comboboxcolumn" autoshowpopup="true" width="150" headeralign="center" allowsort="false" align="center">
+                单体
+                <input property="editor" class="mini-combobox" valuefield="value" textfield="text" style="width: 100%;" data="Monomer" />
+            </div>
+            <div field="FileSize" width="100" headeralign="center" allowsort="false" align="center" vtype="required">
+                图幅<input property="editor" class="mini-combobox" style="width: 100%;" data="BorderSize" />
+            </div>
+            <div field="FileType" width="100" headeralign="center" allowsort="false" align="center"
+                 vtype="required">
+                类型
+                <input property="editor" class="mini-combobox" style="width: 100%;" data="ProductFileType">
+            </div>
+            <div field="ToA1" width="100" headeralign="center" allowsort="false" align="center"
+                 vtype="float">
+                折合A1<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.ProductFileType")
+    @Html.GetEnum("Project.Phase")
+    var Monomer = @Html.Raw(ViewBag.Monomer);
+    var wbsNode = @Html.Raw(ViewBag.WBSInfo);
+    var Phase = @Html.Raw(ViewBag.Phase);
+    @Html.GetEnum("Project.BorderSize")
+</script>
+<script type="text/javascript">
+
+    addGridEnum("dataGrid", "PhaseValue", "Phase");
+
+
+    addGridButton("dataGrid", "remove", {
+        linkText: "移除",
+        onButtonClick: function (row) {
+            var grid = mini.get("dataGrid");
+            grid.removeRow(row);
+        }
+    });
+
+    function saveProducts() {
+        var grid = mini.get("dataGrid");
+        grid.validate();
+        if (grid.isValid() == false) {
+            msgUI("当前输入的信息有误，请重新检查！", 1);
+            return;
+        }
+        var data = grid.getData();
+        addExecuteParam("WBSID", "@Request["WBSID"]");
+        addExecuteParam("ListData", mini.encode(data));
+        addExecuteParam("ProjectInfoID", "@Request["ProjectInfoID"]");
+        execute("SaveProducts", {
+            refresh: false, showLoading: true, onComplete: function (data) {
+                closeWindow(data);
+            }
+        });
+    }
+
+    function delRow() {
+        var grid = mini.get("dataGrid");
+        grid.removeRows(grid.getSelecteds());
+    }
+
+    function upload() {
+        var url = "/Project/SWFUpload/Upload";
+        openWindow(url, {
+            refresh: false, title: "文件上传", width: 700, height: 260,
+            onDestroy: function (data) {
+                if (!data || data.length == 0 || data == "close") { return; }
+                setGrid(data);
+            }
+        });
+    }
+
+    function setGrid(val) {
+        if (typeof (val) == "undefined" || val == "")
+            return;
+        val = val.split(',');
+        var fileField = getQueryString("FileField");
+        if (!fileField)
+            fileField = "MainFile";
+        var grid = mini.get("dataGrid");
+        for (var i = 0; i < val.length; i++) {
+            var file = val[i];
+            var name = file.substring(file.indexOf("_") + 1, file.lastIndexOf("."));
+            var row = { Name: name, FileType: "图纸" };
+            row[fileField] = file;
+            grid.addRow(row);
+        }
+    }
+
+</script>

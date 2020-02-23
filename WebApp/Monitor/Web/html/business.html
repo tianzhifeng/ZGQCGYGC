@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>经营信息</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/date.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/prj-info.css">
+    <link rel="stylesheet" type="text/css" href="../css/search.css">
+    <link rel="stylesheet" type="text/css" href="../css/newBusiness.css">
+    <link rel="stylesheet" type="text/css" href="../css/business-info.css">
+    <link rel="stylesheet" type="text/css" href="../css/contact.css">
+</head>
+<body>
+<!--菜单-->
+<div class="page-menu"></div>
+<!--loading-->
+<div class="loading"><div></div></div>
+<!--页面-->
+<ul class="page-views page-move">
+    <li class="page">
+        <div class="page-view">
+            <div class="head">
+                <button class="left"></button>
+                <span class="title">经营信息总览</span>
+                <button class="right" onclick='showSearchPage("contractSearch")'><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+            <div class="content content-color" way-scope="indexScope">
+                <!--actual receipt-->
+                <div class="part-cls">
+                    <div class="chart-div" onclick='showReceipt("showReceipt")'>
+                        <!--title-->
+                        <div class="left-cls">
+                            <div class="business-title">
+                                <span class="span-icon icon-contact">当年实际收款</span>
+                                <span class="span-cls">(万元)</span>
+                            </div>
+                            <div class="basic-cls">
+                                <span class="icon-rmb1-cls">¥</span>
+                                <span class="blue-rmb-cls fee-margin-cls" way-data="Receipt.ActualValue"></span>
+                                <i class="receiptRate glyphicon" way-data="Receipt.GrowthRate"></i>
+                            </div>
+                            <div class="goal-cls">
+                                <span class="icon-rmb2-cls">¥</span>
+                                <span class="orange-rmb-cls fee-margin-cls" way-data="Receipt.GoalValue"></span>
+                                <img  class="goal-icon icon-goal">
+                            </div>
+                        </div>
+                        <!--circle chart-->
+                        <div class="business-rate right-cls" id="business-rate"></div>
+                    </div>
+                    <!--two col-->
+                    <div class="col-cls">
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentSurplusContract")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentSurplusContract.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当前合同余额(万元)</span>
+                        </div>
+                        <div class="two-col-cls"  onclick='showCurrentPage("CurrentAccountReceivable")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentAccountReceivable.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当前应收款(万元)</span>
+                        </div>
+                    </div>
+                    <!--three col-->
+                    <div class="col-cls">
+                        <div class="three-col-cls" onclick='showCurrentPage("CurrentQuarterActualReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentQuarterActualReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当季实收款(万元)</span>
+                        </div>
+                        <div class="three-col-cls" onclick='showCurrentPage("CurrentMonthActualReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentMonthActualReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当月实收款(万元)</span>
+                        </div>
+                        <div class="three-col-cls" onclick='showCurrentPage("CurrentWeekActualReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentWeekActualReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">本周实收款(万元)</span>
+                        </div>
+                    </div>
+                </div>
+                <!--plan receipt-->
+                <div class="middle-part-cls">
+                    <!--title-->
+                    <div class="business-title plan-receipt-cls">
+                        <span class="span-icon icon-plan">计划收款</span>
+                        <span class="span-cls">(万元)</span>
+                    </div>
+                    <!--blue square-->
+                    <div class="plan-blue-cls">
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentYearPlanReceipt")'>
+                            <span class="reverse-col-content-cls">当年计划收款(万元)</span>
+                            <div class="reverse-col-content-cls line-set">
+                                <span>¥</span>
+                                <span class="ever-blue-fee-cls" way-data="CurrentYearPlanReceipt.TotalMoney"></span>
+                            </div>
+                        </div>
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentYearAfterPlanReceipt")'>
+                            <span class="reverse-col-content-cls">本年后计划收款(万元)</span>
+                            <div class="reverse-col-content-cls line-set">
+                                <span>¥</span>
+                                <span class="ever-blue-fee-cls" way-data="CurrentYearAfterPlanReceipt.TotalMoney"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--two row two col-->
+                    <div class="plan-row-cls">
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentQuarterPlanReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentQuarterPlanReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当季计划收款(万元)</span>
+                        </div>
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentMonthPlanReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentMonthPlanReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当月计划收款(万元)</span>
+                        </div>
+                    </div>
+                    <div class="plan-row-cls">
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentQuarterAfterPlanReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentQuarterAfterPlanReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">本季后计划收款(万元)</span>
+                        </div>
+                        <div class="two-col-cls" onclick='showCurrentPage("CurrentMonthAfterPlanReceipt")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentMonthAfterPlanReceipt.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">本月后计划收款(万元)</span>
+                        </div>
+                    </div>
+                </div>
+                <!--contract info-->
+                <div class="part-cls">
+                    <div class="chart-div"  onclick='showContract("showContract")'>
+                        <!--title-->
+                        <div class="left-cls">
+                            <div class="business-title">
+                                <span class="span-icon icon-item">当年已签合同额</span>
+                                <span class="span-cls">(万元)</span>
+                            </div>
+                            <div class="basic-cls">
+                                <span class="icon-rmb1-cls">¥</span>
+                                <span class="blue-rmb-cls fee-margin-cls" way-data="Contract.ActualValue"></span>
+                                <i class="contractRate glyphicon" way-data="Contract.GrowthRate"></i>
+                            </div>
+                            <div class="goal-cls">
+                                <span class="icon-rmb2-cls">¥</span>
+                                <span class="orange-rmb-cls fee-margin-cls" way-data="Contract.GoalValue"></span>
+                                <img class="goal-icon icon-goal">
+                            </div>
+                        </div>
+                        <!--circle chart-->
+                        <div class="business-rate right-cls" id="business-rate-second"></div>
+                    </div>
+                    <!--two col-->
+                    <div class="col-cls" onclick='showCurrentPage("CurrentUnSignContract")'>
+                        <div class="one-col-cls">
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentUnSignContract.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当年待签合同(万元)</span>
+                        </div>
+                    </div>
+                    <!--three col-->
+                    <div class="col-cls">
+                        <div class="three-col-cls" onclick='showCurrentPage("CurrentQuarterSignContract")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentQuarterSignContract.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当季已签(万元)</span>
+                        </div>
+                        <div class="three-col-cls" onclick='showCurrentPage("CurrentMonthSignContract")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentMonthSignContract.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">当月已签(万元)</span>
+                        </div>
+                        <div class="three-col-cls" onclick='showCurrentPage("CurrentWeekSignContract")'>
+                            <div class="col-content-cls">
+                                <span>¥</span>
+                                <span class="ever-fee-cls" way-data="CurrentWeekSignContract.TotalMoney"></span>
+                            </div>
+                            <span class="col-content-cls">本周已签(万元)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+</body>
+</html>
+<script src="../js/way.min.js"></script>
+<script src="../js/jquery-1.10.2.js"></script>
+<script src="../js/core.js"></script>
+<script src="../js/echarts-all.js"></script>
+<script src="../js/date.min.js"></script>
+<script language="JavaScript" src="../js/businessCtrl.js"></script>
+<script src="../js/business-info.js"></script>
+<script src="../js/currentActualReceipt.js"></script>
+<script src="../js/contract.js"></script>
+<script src="../js/contractSearch.js"></script>

@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+<script src="/PortalLTE/Scripts/dist/js/vue.min.js"></script>
+<div id="pdfList" class="mini-fit">
+    <div class="mini-splitter" style="width: 100%; height: 100%;">
+        <div size="15%">
+            <div class="mini-toolbar gw-grid-toolbar" borderstyle="border-left:0px">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 10%;">
+                            <a class="mini-button" onclick="getPDF(-1)" plain="true"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+                        </td>
+                        <td style="width: 80%;" align="center">
+                            <span id="index">0</span>/<span id="count">0</span>
+                        </td>
+                        <td style="width: 10%;">
+                            <a class="mini-button" onclick="getPDF(1)" plain="true"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mini-fit">
+                <div id="dataGrid" style="width: 100%; height: 100%;" class="mini-datagrid" showpager="false" onselect="onSelect">
+                    <div property="columns">
+                        <div type="indexcolumn"></div>
+                        <div field="Name" width="*" align="left">
+                            成果名称
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <iframe id="PDFFrame" style="width: 100%; height: 100%;"></iframe>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var index = 0;
+    var cRow = {};
+    function onSelect(e) {
+        var row = e.record;
+        var url = "/Project/PDFViewer/Viewer?fileID=" + row.FileID + "&productID=" + row.ProductID + "&Version=" + row.Version + "&viewType=" + getQueryString("viewType") + "&ProjectInfoID=" + getQueryString("ProjectInfoID");
+        if (row.IsApply)
+            url += "&IsApply=true"
+        $("#PDFFrame").attr("src", url);
+        index = row._id;
+        $("#index").html(index);
+        cRow = row;
+    }
+
+    function getPosInfo() {
+        return cRow;
+    }
+
+    function getPDF(isNext) {
+        var dataGrid = mini.get("dataGrid");
+        var count = dataGrid.getData().length;
+        index += isNext;
+        if (index == 0)
+            index = count;
+        else if (index == count + 1)
+            index = 1;
+        var row = mini.get("dataGrid").getRow(index - 1);
+        dataGrid.select(row, true);
+    }
+
+    function setData(data) {
+        mini.get("dataGrid").setData(data);
+        $("#count").html(data.length);
+        $("#index").html(0);
+    }
+</script>

@@ -1,0 +1,246 @@
+﻿<script src="/CommonWebResource/Theme/Default/MiniCssInc.js" type="text/javascript"></script>
+<!-- Bootstrap 3.3.6 -->
+<link rel="stylesheet" href="/PortalLTE/Scripts/bootstrap/css/bootstrap.min.css">
+<!-- FontAwesome 4.3.0 -->
+<link href="/PortalLTE/Scripts/dist/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons 2.0.0 -->
+<link href="/PortalLTE/Scripts/dist/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+<!-- Theme style -->
+<link rel="stylesheet" href="/PortalLTE/Scripts/dist/css/AdminLTE.min.css">
+<!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+<link rel="stylesheet" href="/PortalLTE/Scripts/dist/css/skins/_all-skins.min.css">
+<!-- jQuery 2.2.0 -->
+<script src="/PortalLTE/Scripts/jQuery/jQuery-2.2.0.min.js"></script>
+<script src="/PortalLTE/Scripts/dist/js/vue.min.js"></script>
+<!-- ./wrapper -->
+<!-- jQuery UI 1.11.4 -->
+<script src="/PortalLTE/Scripts/jQueryUI/jquery-ui.min.js"></script>
+<script src="/PortalLTE/Scripts/jQuery/jquery.nicescroll.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+
+<!-- Bootstrap 3.3.6 -->
+<script src="/PortalLTE/Scripts/bootstrap/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/PortalLTE/Scripts/dist/js/app.min.js"></script>
+<script src="/PortalLTE/Scripts/dist/js/pages/dashboard.js"></script>
+<script src="/PortalLTE/Scripts/dist/js/demo.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+    $("<link>").attr({
+        rel: "stylesheet",
+        type: "text/css",
+        href: "/PortalLTE/Scripts/Custom/index" + (IsUserNewPortal() ? "2018" : "") + ".css",
+        newappend: 'true'
+    }).appendTo("head");
+    $("<link>").attr({
+        rel: "stylesheet",
+        type: "text/css",
+        href: "/PortalLTE/portalLTE" + (IsUserNewPortal() ? "2018BL" : "") + ".css",
+        newappend: 'true'
+    }).appendTo("head");
+</script>
+
+<!--miniui-->
+<script src="/CommonWebResource/CoreLib/MiniUI/miniui.js" type="text/javascript"></script>
+<style>
+    body {
+        height: 100%;
+        overflow: hidden;
+        font-family: '微软雅黑','Helvetica Neue',Helvetica,Arial,sans-serif;
+        background-image: url('/PortalLTE/Images/bg.jpg')!important;
+        background-size: cover;
+        background-repeat-x: no-repeat;
+        background-repeat-y: no-repeat;
+    }
+    .main-content {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        padding-top: 50px;
+        left: 0px;
+        right: 0px;
+        background-color: rgba(240, 240, 240, 0);
+        transition: transform 0.3s ease-in-out 0s, left 0.3s ease-in-out 0s;
+    }
+    .userinfo_right {
+        text-align:left;
+    }
+    .box-header .box-title, .box-header > .fa, .box-header > .glyphicon, .box-header > .ion {
+        display: inline-block;
+        font-size: 18px;
+        line-height: 45px;
+        margin: 0px;
+    }
+    /*[id^="dashboard_"] {
+        border: 1px solid #b5ceff;
+    }*/
+</style>
+<div style="height:100%;width:100%;">
+    <body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
+        <div class="wrapper">
+            <div class="main-content nicescroll" id="mainView" style="padding-top: 0px;height:100%;">
+                <!-- Content Wrapper. Contains page content -->
+                <!-- Main content -->
+                <section class="content" style="height:100%;width:100%;">
+                    @Html.Raw(ViewBag.PortalLTE)
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
+    </body>
+</div>
+<script type="text/javascript">
+    Vue.filter('date', function (input) {
+        var date = new Date(input);
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        month = month < 10 ? "0" + month : month;
+        day = day < 10 ? "0" + day : day;
+        var hour = date.getHours();
+        hour = hour < 10 ? "0" + hour : hour;
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        return year.toString().substr(2, 2) + "-" + month + "-" + day + " " + hour + ":" + minute;
+    });
+
+    $(".box").show();
+    //滚动条样式控制
+    $(".nicescroll").niceScroll({ cursorcolor: "#dfdfdf", cursorwidth: "3px" });
+    var isNotSave = false;
+    function ClickPortal(id) {
+        if (id == undefined || id == null)
+            return;
+
+        $.ajax({
+            url: "GetPortal?id=" + id,
+            type: "post",
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+
+                var form = new window.parent.mini.Form("dataForm");
+                var obj = mini.decode(data);
+                form.setData(obj);
+                window.parent.typeEnabled(false);
+                if (obj) {
+                    window.parent.PortalValuechanged(obj.Type);
+                    if (obj.LinkUrl.indexOf('Task') > 0 || obj.LinkUrl.indexOf('board2') > 0 || obj.LinkUrl.indexOf('board5') > 0 || obj.LinkUrl.indexOf('board9') > 0
+                         || obj.LinkUrl.indexOf('MailList') > 0 || obj.LinkUrl.indexOf('board10') > 0 || obj.LinkUrl.indexOf('board4') > 0) {
+                        window.parent.$("#tr_DisplayType").hide();
+                    } else {
+                        window.parent.$("#tr_DisplayType").show();
+                        if (obj.LinkUrl.indexOf('board1.cshtml') > 0 || obj.LinkUrl.indexOf('board3.cshtml') > 0 || obj.LinkUrl.indexOf('board7.cshtml') > 0)
+                            window.parent.board137("board1");
+                        else
+                            window.parent.board137("");
+                    }
+                }
+                window.parent.$("#p_table").show();
+                window.parent.isNew = false;
+                window.parent.portalID = id;
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    var dashboard = {
+        Set: function (key, value) { this[key] = value },
+        Get: function (key) { return this[key] },
+        Contains: function (key) { return this.Get(key) == null ? false : true },
+        Remove: function (key) { delete this[key] }
+    };
+    function dashboardChanged(e) {
+        var dashboards = $('section[id^="dashboard_"]');
+        for (var i = 0; i < dashboards.length; i++) {
+            var child = $("#" + dashboards[i].id).children("div[class^='box']");
+            var ids = new Array();
+            for (var j = 0; j < child.length; j++) {
+                if (!$("#" + child[j].id).is(":hidden") && child[j].id != e)
+                    ids.push(child[j].id);
+            }
+            if (dashboard.Contains(dashboards[i].id)) {
+                dashboard.Remove(dashboards[i].id);
+            }
+            dashboard.Set(dashboards[i].id, ids.toString().replace(/,/g, '&'));
+        }
+
+        if (Object.keys(dashboard).length < 5)
+            return;
+
+        var json = new Array();
+        for (var i = 4; i < Object.keys(dashboard).length; i++) {
+            var key = Object.keys(dashboard)[i];
+            if (key) {
+                json.push(key + ':' + dashboard.Get(key));
+            }
+        }
+       
+        $.ajax({
+            url: "SetTemplet?ID=" + getQueryString("ID"),
+            type: "post",
+            data: { json: json.toString() },
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+
+                execute("DeletePortal?ID=" + e);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+
+            }
+        });
+    }
+
+    $(document).click(function () {
+
+        $.ajax({
+            url: "GetModel?ID=" + getQueryString("ID"),
+            type: "post",
+            data: {},
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+
+                var type = window.parent.TempletType[2].value;
+                window.parent.mini.getbyName("Rows").setValue(data.Rows);
+                window.parent.mini.getbyName("Cols").setValue(data.Cols);
+                window.parent.mini.getbyName("ColsWidth").setValue(data.ColsWidth);
+                if (data.Rows == "1" && data.Cols == "3") {
+                    var type = window.parent.TempletType[0].value;
+                } else if (data.Rows == "1" && data.Cols == "2") {
+                    type = window.parent.TempletType[1].value;
+                }
+                window.parent.mini.getbyName("TempletType").setValue(type);
+                if(type == "custom")
+                    window.parent.$("#rAndc").show();
+                //window.parent.TempletValuechanged(type);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+
+            }
+        });
+        
+    });
+</script>

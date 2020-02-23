@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "DetailList";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showsummaryrow="true"
+        ondrawsummarycell="onDrawSummaryCell"
+        showpager="false" borderstyle="border:0">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="UserName" width="100" headeralign="center" align="center" allowsort="false">
+                人员姓名
+            </div>
+            <div field="MistakeCount" width="120" headeralign="center" allowsort="false" align="right" renderer="onLinkRender" summarytype="sum">
+                错误数量
+            </div>
+            <div field="MistakeLevel" width="200" headeralign="center" allowsort="false" align="center">
+                错误类别
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum("Project.MistakeLevel");
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "MistakeLevel", "MistakeLevel");
+    var requestData = {};
+    function setData(queryData) {
+        requestData = $.extend({}, mini.clone(queryData), requestData);
+        var grid = mini.get("dataGrid");
+        var mistakeType = getQueryString("MistakeType");
+        grid.setUrl("GetDetailInfo?MistakeType=" + mistakeType);
+        grid.load({ "queryFormData": mini.encode(queryData) });
+    }
+
+    function onLinkRender(e) {
+        var cls = "";
+        var uid = e.record._uid;
+        var s = '<a ' + cls + 'href="javascript:void(0)" onclick="onGridLink(\'' + uid + '\',\'' + e.field + '\',\'' + e.sender.id + '\');">' + e.value + '</a>';
+        return s;
+    }
+
+    function onGridLink(UID, field, GridID) {
+        var dataGrid = mini.get(GridID);
+        var row = dataGrid.getRowByUID(UID);
+        var queryData = $.extend({}, mini.clone(requestData), { "$EQ$DesignerID": row.UserID });
+        var mistakeType = getQueryString("MistakeType");
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=ProjectMistakeDetail&MistakeType=" + mistakeType; var width = "80%"; var height = "80%";
+        openWindow(url, { data: queryData, width: width, height: height, title: "查看" });
+    }
+
+    function onDetailShow(e) {
+        requestData["$EQ$DesignerID"] = e.row.UserID;
+
+    }
+
+
+    function onDrawSummaryCell(e) {
+        e.cellStyle = "text-align:right; color:brown;font-size:12px;";
+    }
+
+</script>

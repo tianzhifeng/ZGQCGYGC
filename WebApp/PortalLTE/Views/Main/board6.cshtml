@@ -1,0 +1,166 @@
+﻿<div id="{|ID|}" class="box box-primary" style="height:{|Height|}">
+    <div class="box-header">
+        <h3 class="box-title">{|Title|}</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" title="查看更多" data-widget="ellipsis" onclick="moreNews();">
+                <i class="fa fa-ellipsis-v"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" v-show="isLock()" data-widget="remove" onclick="$('#{|ID|}').data('hidden', 'true');dashboardChanged('{|ID|}');">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body" id="newsList">
+        <ul class="list-group">
+            <li class="list-item list-item-task" v-for="item in list1">
+                <div style="cursor: pointer;" v-on:click="openWindow(item);">
+                    <div v-if="{|IsOldPortal|} || {|IsList|}"  class="item-head nicescroll" style="cursor: pointer;">
+                        <div class="taskno">
+                            {{item.SortIndex}}
+                        </div>
+                        <div class="tasktitle nowrap">
+                            <img v-if="isNew(item.CreateTime)" src="/PortalLTE/Images/new.png" />{{item.Title}} 
+                        </div>
+                        <div class="date">
+                            {{item.CreateTime | date }}
+                        </div>
+                    </div>
+                    <div v-else class="item-head nicescroll" style="cursor: pointer;">
+                        <div class="new_time">
+                            <div class="new_time_day">{{item.CreateTime | filterDay }}</div>
+                            <div class="new_time_year">{{item.CreateTime | filterYearMonth }}</div>
+                        </div>
+                        <div class="new_task_right">
+                            <div class="new_tasktitle nowrap">
+                                <img v-if="isNew(item.CreateTime)" src="/PortalLTE/Images/new.png" /> {{item.Title}} 
+                            </div>
+                            <div class="new_date-mark">
+                                    发布时间:{{item.CreateTime | filterDate }}  发布人:{{item.CreateUserName}}
+                            </div>
+                            <div class="new_contenttext">{{item.ContentText}}</div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+    function moreNews() {
+        var url = "/Base/PortalBlock/PublicInformation/ListView?CatalogKey=CNews&BlockType=Portal";
+        var opts = {
+            url: url,
+            title: "公司新闻",
+            width: "80%",
+            height: "80%",
+            showMaxButton: true,
+            ondestroy: function (action) {
+
+            }
+        };
+        if (NoPopupLayer && NoPopupLayer != "true")
+            mini.open(opts);
+        else
+            window.open(url);
+    }
+</script>
+<script>
+    var newsList = new Vue({
+        el: '#{|ID|}',
+        data: {
+            list: [],
+            list1: []
+        },
+        methods: {
+            openWindow: function (item) {
+                var url = "/Base/PortalBlock/PublicInformation/Views?BlockType=Portal&ID=" + item.ID;
+                var opts = {
+                    url: url,
+                    title: item.Title,
+                    width: 800,
+                    height: 650,
+                    showMaxButton: true,
+                    ondestroy: function (action) {
+
+                    }
+                };
+                if (NoPopupLayer && NoPopupLayer != "true")
+                    mini.open(opts);
+                else
+                    window.open(url);
+            },
+            isNew: function (input) {
+                var date = new Date(input);
+                var h = (new Date().getTime() - date.getTime()) / 1000 / 60 / 60;
+                if (h < PortalNewsTime)
+                    return true;
+                return false;
+            },
+            isLock: function (item) {
+                return getCache('isLockPortal') == 'false' || window.location.href.indexOf('/Base/UI/Portal/Portal') > 0;
+            }
+        },
+        filters: {
+            filterDate: function (input) {
+                var date = new Date(input);
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+                month = month < 10 ? "0" + month : month;
+                day = day < 10 ? "0" + day : day;
+                var hour = date.getHours();
+                hour = hour < 10 ? "0" + hour : hour;
+                var minute = date.getMinutes();
+                minute = minute < 10 ? "0" + minute : minute;
+                return year + "-" + month + "-" + day + " " + hour + ":" + minute;
+            },
+            filterDay: function (input) {
+                var date = new Date(input);
+                var day = date.getDate();
+                day = day < 10 ? "0" + day : day;
+                return day;
+            },
+            filterYearMonth: function (input) {
+                var date = new Date(input);
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                month = month < 10 ? "0" + month : month;
+                return year + "-" + month;
+            }
+        }
+    });
+
+    function GetCorpInformation() {
+        $.ajax({
+            url: "/PortalLTE/Main/GetCorpInformation",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                //增加新版报错分支
+                if (data.errcode) {
+                    var msg = getErrorFromHtml(data.errmsg);
+                    msgUI(msg, 4);
+                    return;
+                }
+                var data = $.parseJSON(data);
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        data[i]["SortIndex"] = i + 1;
+                        if (new Date(data[i]["CreateDate"]) > (new Date()) - 24 * 60 * 60 * 1000)
+                            data[i]["IsNew"] = true;
+                    }
+                    newsList._data.list1 = data;
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    GetCorpInformation();
+
+</script>

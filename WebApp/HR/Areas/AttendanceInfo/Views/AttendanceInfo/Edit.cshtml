@@ -1,0 +1,39 @@
+﻿<div style="width: 100%; padding-top: 8%; text-align: center">
+    <table style="width: 60%; text-align: center" align="center">
+        <tr style="width: 100%">
+            <td style="width: 50%">
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-edit" onclick="doEdit('SignIn')">
+                    上班签到
+                </a>&nbsp;&nbsp;&nbsp;&nbsp;<strong>上班签到规定时间为 @ViewBag.AmCheckDate 及以前</strong>
+            </td>
+            <td style="width: 50%">
+                <a class="mini-button" id="btnSave" plain="true" iconcls="icon-edit" onclick="doEdit('SignOut')">
+                    下班签退
+                </a>&nbsp;&nbsp;&nbsp;&nbsp;<strong>下班签退规定时间为 @ViewBag.PmCheckDate 及以后</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="left">
+                <font color="red">
+                    考勤说明：<br />
+                    @Html.Raw(@ViewBag.Description);
+                </font>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    function doEdit(type) {
+        addExecuteParam("Type", type);
+        execute("Sign", {
+            onComplete: function () {
+                msgUI("操作成功！");
+            }
+        })
+    }
+</script>

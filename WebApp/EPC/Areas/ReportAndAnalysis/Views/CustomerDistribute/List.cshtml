@@ -1,0 +1,364 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    @Scripts.Render("/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js")
+    @Scripts.Render("/CommonWebResource/Theme/Default/MiniCssInc.js")
+    @Scripts.Render("/EPC/Scripts/ECharts/js/echarts.js")
+    @Scripts.Render("/EPC/Scripts/ECharts/asset/js/codemirror.js")
+    @Scripts.Render("/EPC/Scripts/ECharts/asset/js/javascript.js")
+    @Styles.Render("/EPC/Scripts/ECharts/asset/css/bootstrap.css")
+    @Styles.Render("/EPC/Scripts//bootstrap/css/common.css")
+</head>
+<body style="font-family: Microsoft Yahei;">
+    <!--Step:1 Prepare a dom for ECharts which (must) has size (width & hight)-->
+    <!--Step:1 为ECharts准备一个具备大小（宽高）的Dom-->
+    <div id="mainMap" style="height: 100%; width: 62%; border: 0px solid #ccc; float: left;
+        overflow: hidden;">
+    </div>
+    <div class="jh-item-frame" id="ListDataDiv" style="display: none; right: 20px; width: 30%;">
+        <div class="row ">
+            <div class="col-xs-12">
+                <div class="jh-itemall-sash">
+                    <div>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <h4 class="f" id="TotalCountTitle"></h4>
+                                </td>
+                                <td class="text-right" id="MoreCustomerInfo"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="jh-table">
+                            <tr>
+                                <td style="vertical-align: middle">
+                                    <img src="/EPC/Scripts/ECharts/asset/ico/customerCount.png" />
+                                    &nbsp;客户个数
+                                </td>
+                                <td class="text-right" id="TotalCustomerCount"></td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">
+                                    <img src="/EPC/Scripts/ECharts/asset/ico/contractCount.png" />
+                                    &nbsp;合同个数
+                                </td>
+                                <td class="text-right" id="TotalContractCount"></td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle">
+                                    <img src="/EPC/Scripts/ECharts/asset/ico/preProjectCount.png" />
+                                    &nbsp;项目个数
+                                </td>
+                                <td class="text-right" id="TotalPreProjectCount"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div style="display: inline;" id="CustomerInfo">
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var dataStatus = null;
+        var customerData = [];
+        var contractData = [];
+        var preProjectData = [];
+        //全国客户、合同、前期项目个数
+        var allCustomerCount = 0;
+        var allContractCount = 0;
+        var allPreProjectCount = 0;
+        //全国合同额排在前三名的客户信息
+        var customerInfoList = [];
+        var flag = false;
+        var provinceName = "";
+        $(function () {
+            $.ajax({
+                type: "POST",
+                url: "GetMapData",
+                success: function (data) {
+                    customerData = data[0];
+                    contractData = data[1];
+                    preProjectData = data[2];
+                    //获取全国客户、合同、前期项目个数的方法
+                    GetCountryCount();
+                    MapInit();
+                    setListData("全国", "", allCustomerCount, allContractCount, allPreProjectCount, customerInfoList);
+                }
+            });
+        });
+        function MapInit() {// Step:3 conifg ECharts's path, link to echarts.js from current page.
+            // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
+            require.config({
+                paths: {
+                    echarts: '/EPC/Scripts/ECharts/js'
+                }
+            });
+
+            // Step:4 require echarts and use it in the callback.
+            // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+            require(
+        [
+            'echarts',
+            'echarts/chart/bar',
+            'echarts/chart/line',
+            'echarts/chart/map'
+        ],
+        function (ec) {
+            // --- 地图 ---
+            var myChart = ec.init(document.getElementById('mainMap'));
+            var ecConfig = require('echarts/config');
+            myChart.setOption({
+                title: {
+                    text: "全国客户分布图",
+                    x: 'center',
+                    textAlign: 'center',
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    position: function (p) {
+                        // 位置回调
+                        // console.log && console.log(p);
+                        return [p[0] + 5, p[1] - 75];
+                    },
+                    formatter: function (params, ticket, callback) {
+                        var customerCount = 0;
+                        var contractCount = 0;
+                        var preProjectCount = 0;
+                        var provinceValue = "";
+                        var lisData = [];
+                        //由于后台拼数据时，已经按制定顺序将全部省份全部拼出，所以只需找到*省份在客户数组所在下标，即可知道*省份在合同数组，前期项目数组中的下标
+                        for (var i = 0; i < customerData.length; i++) {
+                            if (customerData[i]["name"].toString().indexOf(params.name) != -1) {
+                                customerCount = customerData[i]["value"];
+                                lisData = customerData[i].list;
+                                break;
+                            }
+                        }
+                        for (var i = 0; i < contractData.length; i++) {
+                            if (customerData[i]["name"].toString().indexOf(params.name) != -1) {
+                                contractCount = contractData[i]["value"];
+                                break;
+                            }
+                        }
+                        for (var i = 0; i < preProjectData.length; i++) {
+                            if (preProjectData[i]["name"].toString().indexOf(params.name) != -1) {
+                                preProjectCount = preProjectData[i]["value"];
+                                break;
+                            }
+                        }
+                        if (params.data != undefined && params.data.provinceValue != undefined)
+                            provinceValue = params.data.provinceValue;
+                        if (!provinceValue)
+                            provinceValue = params.name;
+                        var res = "<div style='height:70px;width:80px;filter:alpha(opacity=100); '>" +
+                        "<table><tr><td><img src='/EPC/Scripts/ECharts/asset/ico/customerCount.png' /></td><td style='width:50px;text-align:center;'>" + customerCount + "个</td></tr>" +
+                        "<tr><td><img src='/EPC/Scripts/ECharts/asset/ico/contractCount.png' /></td><td style='width:50px;text-align:center;'>" + contractCount + "个</td></tr>" +
+                        "<tr><td> <img src='/EPC/Scripts/ECharts/asset/ico/preProjectCount.png' /></td><td style='width:50px;text-align:center;'>" + preProjectCount + "个</td></tr></table></div>";
+                        if (flag == false) {
+                            setListData(params.name, provinceValue, customerCount, contractCount, preProjectCount, lisData);
+                        }
+                        else {
+                            if (provinceName == params.name) {
+                                setListData(params.name, provinceValue, customerCount, contractCount, preProjectCount, lisData);
+                            }
+                        }
+                        return res;
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                    padding: 10,
+                    data: ['客户个数', '合同个数', '项目个数']
+                },
+                toolbox: {
+                    show: true,
+                    orient: 'horizontal',
+                    x: 'center',
+                    y: 'top',
+                    padding: 40,
+                    feature: {
+                        restore: {
+                            show: true,
+                            title: '查看全国数据'
+                        }
+                    }
+                },
+                roam: false,
+                dataRange: {
+                    min: 0,
+                    max: 1500,
+                    hoverLink: false,
+                    x: 'left',
+                    y: 'bottom',
+                    text: ['高', '低'],         // 文本，默认为数值文本
+                    splitNumber: 0
+                },
+                series: [
+        {
+            name: '客户个数',
+            type: 'map',
+            mapType: 'china',
+            selectedMode: 'single',
+            showLegendSymbol: false,
+            roam: false,
+            itemStyle: {
+                normal: { label: { show: true } },
+                emphasis: { label: { show: true } }
+            },
+            data: customerData
+        },
+        {
+            name: '合同个数',
+            type: 'map',
+            mapType: 'china',
+            showLegendSymbol: false,
+            itemStyle: {
+                normal: { label: { show: true } },
+                emphasis: { label: { show: true } }
+            },
+            data: contractData
+        },
+        {
+            name: '项目个数',
+            type: 'map',
+            mapType: 'china',
+            showLegendSymbol: false,
+            itemStyle: {
+                normal: { label: { show: true } },
+                emphasis: { label: { show: true } }
+            },
+            data: preProjectData
+        }
+                ]
+            });
+
+            myChart.on(ecConfig.EVENT.CLICK, function (param) {
+                if (provinceName == "") {
+                    flag = true;
+                    provinceName = param.name;
+                }
+                else {
+                    if (param.name == provinceName) {
+                        flag = false;
+                        provinceName = "";
+                    }
+                    else {
+                        flag = true;
+                        provinceName = param.name;
+                    }
+                }
+                return false;
+
+            });
+            myChart.on(ecConfig.EVENT.RESTORE, function (param) {
+                flag = true;
+                provinceName = "";
+                setListData("全国", "", allCustomerCount, allContractCount, allPreProjectCount, customerInfoList);
+
+            });
+        }
+    );
+        }
+
+
+        /*******************************************************************
+        ******   <province>省份</province>                            ******
+        ******   <provinceValue>数据库中对应的省份值</provinceValue>  ******
+        ******   <customerCount>客户个数</customerCount>              ******
+        ******   <contractCount>合同个数</contractCount>              ******
+        ******   <preProjectCount>前期项目个数</preProjectCount>      ******
+        ******   <listData>合同额在前三名的客户的信息</listData>      ******
+        ********************************************************************/
+        function setListData(province, provinceValue, customerCount, contractCount, preProjectCount, listData) {
+            var totalCountTitleHtml = "";
+            var moreCustomerInfoHtml = "";
+            var totalCustomerCountHtml = "";
+            var totalContractCountHtml = "";
+            var totalPreProjectCountHtml = "";
+            var customerInfoHtml = "";
+            totalCountTitleHtml = province + "客户信息明细";
+            $("#TotalCountTitle").html(totalCountTitleHtml);
+            moreCustomerInfoHtml = '<small><a href = "#" onclick="onMoreCustomerInfoHtmlClick(\'' + provinceValue + '\')" >更多客户...</a></small>';
+            $("#MoreCustomerInfo").html(moreCustomerInfoHtml);
+            totalCustomerCountHtml = '<a class=" jh-itemall-textb" href="#" onclick="onMoreCustomerInfoHtmlClick(\'' + provinceValue + '\');">' + customerCount + '</a><small>个</small>';
+            $("#TotalCustomerCount").html(totalCustomerCountHtml);
+            totalContractCountHtml = '<a class=" jh-itemall-textb" href="#" onclick="onTotalContractCountClick(\'' + provinceValue + '\');">' + contractCount + '</a><small>个</small>';
+            $("#TotalContractCount").html(totalContractCountHtml);
+            totalPreProjectCountHtml = '<a class=" jh-itemall-textb" href="#" onclick="onTotalPreProjectCountClick(\'' + provinceValue + '\');">' + preProjectCount + '</a><small>个</small>';
+            $("#TotalPreProjectCount").html(totalPreProjectCountHtml);
+
+            if (listData != undefined) {
+                for (var i = 0; i < listData.length; i++) {
+                    if (listData[i]["province"] == province) {
+                        var intext = '到款率' + listData[i]["receiptRate"] + '%';
+                        var outtext = '到款率' + listData[i]["receiptRate"] + '%';
+                        if (Number(listData[i]["receiptRate"]) < 40) {
+                            intext = "";
+                        } else {
+                            outtext = "";
+                        }
+                        customerInfoHtml += '<div class="col-xs-12"><div class="jh-itemall-sash"><div class="jh-itemname jh-item-name">' +
+                '<a href="#" onclick = "onCustomerInfoHtmlClick(\'' + listData[i]["customerID"] + '\')">' + listData[i]["customerName"] + '</a></div><div><div class="progress jh-item-progress" style="text-align:center;color:#428BCA">' +
+                    '<div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0"' +
+                                'aria-valuemax="100" style="width: ' + listData[i]["receiptRate"] + '%;">' + intext + '</div>'+outtext+'</div></div>' +
+            '<div class="jh-item-info">' + '合同额:' + listData[i]["contractRMBAmount"] + '<small>万元</small>; 到款额:' + listData[i]["receiptRMBAmount"] +
+            '<small>万元</small></div></div></div>';
+                    }
+                }
+            }
+            $("#CustomerInfo").html(customerInfoHtml);
+            $("#ListDataDiv").css("display", "");
+        }
+
+        function GetCountryCount() {
+            //后台拼数据时，customerData，contractData，preProjectData
+            //的最后一个Item保存的是全国数据信息
+            if (contractData.length - 1 >= 0)
+                allContractCount = contractData[contractData.length - 1].value;
+            if (customerData.length - 1 >= 0) {
+                allCustomerCount = customerData[customerData.length - 1].value;
+                customerInfoList = customerData[customerData.length - 1].list;
+            }
+            if (preProjectData.length - 1 >= 0)
+                allPreProjectCount = preProjectData[preProjectData.length - 1].value;
+        }
+
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+    function onMoreCustomerInfoHtmlClick(province) {
+        var url = "/EPC/ReportAndAnalysis/CustomerReport/CustomerInfoReport?Province=" + province;
+        if (province == null || province == undefined || province == "")
+            url = "/EPC/ReportAndAnalysis/CustomerReport/CustomerInfoReport";
+        openWindow(url, { title: '客户信息明细', width: '80%', height: '90%', funcType: 'view' });
+    }
+
+    function onCustomerInfoHtmlClick(ID) {
+        var url = "/EPC/ReportAndAnalysis/CustomerReport/Index?ID=" + ID;
+        openWindow(url, { title: '客户信息明细', width: '80%', height: '90%', funcType: 'view' });
+    }
+
+    function onTotalContractCountClick(province) {
+        var url = "/MvcConfig/UI/List/PageView?TmplCode=AreaContractInfo&Province=" + province;
+        if (province == null || province == undefined || province == "")
+            url = "/MvcConfig/UI/List/PageView?TmplCode=AreaContractInfo";
+        openWindow(url, { title: '合同信息明细', width: '80%', height: '90%', funcType: 'View' });
+    }
+    function onTotalPreProjectCountClick(province) {
+        var url = "/EPC/ReportAndAnalysis/ProjectInfo/ProjectInfoList?Province=" + province;
+        if (province == null || province == undefined || province == "")
+            url = "/EPC/ReportAndAnalysis/ProjectInfo/ProjectInfoList";
+        openWindow(url, { title: '项目信息明细', width: '80%', height: '90%', funcType: 'view' });
+    }
+
+</script>
+

@@ -1,0 +1,20 @@
+﻿<ul id="dataTree" class="mini-tree" style="overflow: hidden; width: 100%; height: 100%" url="/Base/Meta/Category/GetTree?RootFullID=0" textfield="Name"
+    idfield="ID" parentfield="ParentID" resultastree="false" expandonload="1" contextmenu="#treeMenu" iconfield="IconClass">
+</ul>
+<ul id="treeMenu" class="mini-contextmenu">
+    <li name="menuEditModule" iconcls="icon-download" onclick="exportSql()">导出差异Sql</li>
+</ul>
+<script type="text/javascript">
+    function exportSql() {
+        mini.prompt("如：2001-1-1，空日期为1900年", "请输入起始日期", function (btn, text) {
+            if (btn == "ok") {
+                if (!text) {
+                    text = '1900-1-1';
+                }               
+                var node = mini.get("dataTree").getSelectedNode();
+                var url = "/Base/UI/ExportSql/ExportSql?CategoryFullID=" + node.FullID + "&startDate=" + text;
+                window.open(url);
+            }
+        });
+    }
+</script>

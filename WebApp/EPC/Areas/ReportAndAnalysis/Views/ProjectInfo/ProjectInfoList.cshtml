@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "ProjectInfoList";
+}
+<div id="miniToolBar" class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="add({ url: '/MvcConfig/UI/Form/PageView?TmplCode=ProjectInfomation', weight: '90%', height: '80%' });"
+                   plain="true">增加</a> <a class="mini-button" iconcls="icon-edit" onclick="edit({ url: '/MvcConfig/UI/Form/PageView?TmplCode=ProjectInfomation', weight: '90%', height: '80%' });"
+                                          plain="true">编辑</a> <a class="mini-button" iconcls="icon-remove" onclick="del()"
+                                                                 plain="true">删除</a> <a class='mini-button' iconcls='icon-addnew' onclick='pushTaskForMP()'
+                                                                                        plain='true'>任务单下达</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号" style="width: 200px;"
+                       onenter="quickSearch('Name,SerialNumber');" onbuttonclick="quickSearch('Name,SerialNumber');" />
+                <a class="mini-button" onclick="showWindow('queryWindow')" iconcls="icon-find" plain="true">
+                    详细查询
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+         idfield="ID" multiselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="SerialNumber" width="150" headeralign="center" allowsort="true">
+                项目编号
+            </div>
+            <div field="Name" width="350" headeralign="center" allowsort="true">
+                项目名称
+            </div>
+            <div field="CustomerInfoName" width="350" headeralign="center" allowsort="true">
+                客户名称
+            </div>
+            <div field="ChargerDeptName" headeralign="center" width="120" allowsort="true">
+                责任部门
+            </div>
+            <div field="ChargerUserName" headeralign="center" width="90" allowsort="true" align="center">
+                项目负责人
+            </div>
+            @*<div field="MarketDeptName" headeralign="center" width="120" allowsort="true">
+                商务部门
+            </div>*@
+            <div field="BusinessChargerName" headeralign="center" width="90" allowsort="true"
+                 align="center">
+                商务负责人
+            </div> 
+            <div field="OtherDeptName" headeralign="center" width="180" allowsort="true">
+                其它配合部门
+            </div>
+            <div field="Country" headeralign="center" width="120" allowsort="true" align="center">
+                国家
+            </div>
+            <div field="Province" headeralign="center" width="120" allowsort="true" align="center">
+                省份
+            </div>
+            <div field="City" headeralign="center" width="120" allowsort="true" align="center">
+                城市
+            </div>
+        </div>
+    </div>
+    <div id="queryWindow" class="mini-window" title="详细查询" style="width: 700px; display: none;"
+         showmodal="true" allowresize="false" allowdrag="true">
+        <div class="queryDiv">
+            <form id="queryForm" method="post">
+                <table>
+                    <tr>
+                        <td width="10%" align="center">
+                            项目编号
+                        </td>
+                        <td width="23%" align="left">
+                            <input name="$LK$SerialNumber" style="width: 75%;" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                        <td width="10%" align="center">
+                            项目名称
+                        </td>
+                        <td width="23%" align="left">
+                            <input name="$LK$Name" style="width: 75%;" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                        <td width="10%" align="center">
+                            客户名称
+                        </td>
+                        <td width="23%" align="left">
+                            <input name="$LK$CustomerInfoName" style="width: 75%;" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            责任部门
+                        </td>
+                        <td align="left">
+                            <input name="$LK$ChargerDeptName" style="width: 75%;" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                        <td align="center">
+                            项目负责人
+                        </td>
+                        <td align="left">
+                            <input name="$LK$ChargerUserName" style="width: 75%;" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                        @*<td align="center">
+                            商务部门
+                        </td>
+                        <td align="left">
+                            <input name="$LK$MarketDeptName" style="width: 75%;" class="mini-textbox" vtype="maxLength:50" />
+                        </td>*@
+                    </tr>
+                </table>
+            </form>
+            <div>
+                <a class="mini-button" onclick="search()" iconcls="icon-find" style="margin-right: 20px;">查询</a>
+                <a class="mini-button" onclick="clearQueryForm('queryForm')" iconcls="icon-undo">清空</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    addGridLink('dataGrid', 'Name', 'Index?ID={ID}', {
+        funcType: 'view', height: '70%', width: '70%', title: '查看项目信息'
+    });
+    @Html.GetEnum(typeof(EPC.Logic.ProjectState));
+    @Html.GetEnum("FlowPhase");
+</script>
+<script type="text/javascript">
+    addGridEnum("dataGrid", "State", "ProjectState");
+    addGridEnum("trackDataGrid", "Phase", "Phase");
+    addGridLink('trackDataGrid', 'view', '/Project/AutoUI/TaskNotice/PageView?TmplCode=TaskNotice&FlowCode=TaskNotice&ID={ID}', { width: "80%", height: "80%", linkText: '查看' });
+    //addGridButton("trackDataGrid", "flowview", {
+    //    linkText: '流程跟踪', onButtonClick: function (row) {
+    //        var url = "/MvcConfig/Workflow/Trace/Diagram?ID=" + row.ID + "&FuncType=FlowTrace";
+    //        openWindow(url, { "width": "1000", "title": "流程跟踪" })
+    //    }
+
+    //});
+    function pushTaskForMP() {
+        var Grid = mini.get("dataGrid");
+        var row = Grid.getSelected();
+        if (!row) { msgUI("请选择一条记录"); return; }
+        addExecuteParam("ID", row.ID);
+        execute("ValidateData", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                openWindow("/Project/AutoUI/TaskNotice/PageView?TmplCode=TaskNotice&FlowCode=TaskNotice&MarkeProjectID=" + row.ID,
+                {
+                    refresh: false, title: "设计任务通知单", width: "70%", height: "80%", onDestory: function () {
+                        Grid.reload();
+                        mini.get("trackDataGrid").reload();
+                    }
+                });
+            }
+        });
+    }
+</script>

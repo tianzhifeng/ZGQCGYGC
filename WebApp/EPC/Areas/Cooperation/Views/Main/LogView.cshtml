@@ -1,0 +1,52 @@
+﻿<link href="~/Scripts/Main/css/logStyle.css" rel="stylesheet" type="text/css" />
+
+@using EPC.Logic
+
+<div id="content">
+    <ul class="timeline">
+        @foreach (var dic in ViewBag.LogList as List<Dictionary<string, object>>)
+        {
+            DateTime date = Convert.ToDateTime(@dic["CreateDate"]);
+            <li class="event" data-date="@date.ToString("yyyy-MM-dd HH:mm:ss")">
+                <h3>@dic["CreateUser"]</h3>
+                <p class="operateCls">@dic["OperateType"]-@dic["DBTableName"]</p>
+                <p class="remark">@dic["Remark"]</p>
+            </li>
+        }
+    </ul>
+</div>
+<script>
+    @Html.GetEnum(typeof(EnumOperaType), "operateType");
+    var dbTable = [
+        { text: '现场照片', value: 'S_C_ProjectVideo' },
+        { text: '项目文档', value: 'S_I_CommonDocument' },
+        { text: '工作联系单', value: 'T_C_WorkingContact' },
+        { text: '问题整改单', value: 'S_C_RectifySheet_RectifyProblems' },
+        { text: '', value: '' },
+        { text: '', value: '' },
+        { text: '', value: '' },
+        { text: '', value: '' },
+        { text: '', value: '' }];
+
+
+    $(function () {
+        $.each($(".operateCls"), function (index, item) {
+            var oldContent = $(item).html();
+            var arr = oldContent.split('-');
+            var first = getObjValue('operateType', arr[0]);
+            var second = getObjValue('dbTable', arr[1]);
+            $(item).html(first + '-' + second);
+        });
+    })
+
+    function getObjValue(objName, value) {
+        var list = eval(objName);
+        var res = value;
+        $.each(list, function (index, item) {
+            if (item.value == value) {
+                res = item.text;
+            }
+        })
+        return res;
+    }
+</script>

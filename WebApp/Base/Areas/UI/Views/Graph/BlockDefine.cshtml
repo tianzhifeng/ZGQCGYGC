@@ -1,0 +1,126 @@
+﻿<div class="mini-toolbar">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-add" onclick="addRow({Group:'1'},{isLast:true})">
+                    添加</a> <a class="mini-button" iconcls="icon-remove" onclick="delRow();">移除</a>
+                <a class="mini-button" iconcls="icon-save" onclick="saveBlockDefineSettings();">保存</a>
+                <a class="mini-button" iconcls="icon-up" onclick="moveUp();">上移</a> <a class="mini-button"
+                    iconcls="icon-down" onclick="moveDown();">下移</a>
+            </td>
+            <td id="btnRight">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" url="GetBlockDefineSettings"
+        allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true"
+        showpager="false" allowunselect="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="ID" width="50" align="center" vtype="required;">
+                编号
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Width" width="40" align="center" vtype="required;">
+                宽度
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Height" width="40" align="center" vtype="required;">
+                高度
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PositionX" width="40" align="center" vtype="required;">
+                X轴坐标
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="PositionY" width="40" align="center" vtype="required;">
+                Y轴坐标
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Group" width="40" align="center" vtype="required;">
+                组别
+                <input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div type="comboboxcolumn" field="GraphType" width="100" autoshowpopup="true" align="center"
+                vtype="required;">
+                图表类型
+                <input property="editor" class="mini-combobox" style="width: 100%;" data="GraphType"
+                    onitemclick="commitEdit" />
+            </div>
+            <div field="DataSourceCode" width="250" align="left">
+                块数据源
+                <input property="editor" class="mini-combobox" style="width: 100%;" data="defaultValueList"
+                    onitemclick="commitEdit" multiselect="true" />
+            </div>
+            <div field="Settings" width="*" visible='false'>
+                参数配置
+                <input property="editor" class="mini-textarea" style="width: 100%;" />
+            </div>
+            <div field="Details" width="80">
+                详细
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Base.Logic.GraphType))
+var defaultValueList=@ViewBag.DefaultValueList;
+</script>
+<script type="text/javascript">
+    function commitEdit() {
+        var grid = mini.get("dataGrid");
+        grid.commitEdit();
+    }
+
+    function moveUp() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveUp(rows);
+    }
+
+    function moveDown() {
+        var dataGrid = mini.get("#dataGrid");
+        var rows = dataGrid.getSelecteds();
+        dataGrid.moveDown(rows);
+    }        
+</script>
+<script type="text/javascript">
+
+    function getitemTypeText(value) {
+        for (var i = 0; i < GraphType.length; i++) {
+            if (GraphType[i]["value"] == value)
+                return GraphType[i]["text"];
+        }
+    }
+    addGridButton("dataGrid", "Details", { linkText: '详细', onButtonClick: function (row) {
+        var type = row["GraphType"].split('_')[0];
+        if (!type) { msgUI('请先选择控件类型!'); return; }
+        var url = "";
+        url = "Settings" + type + "?Type=" + type;
+        if (type == "speedometer")
+            url = "SettingsGauge?Type=" + type;
+        if (type == "table") {
+            if (!row["DataSourceCode"]) { msgUI('请先选择数据源编号!'); return; }
+            url += "&DataSourceCode=" + row["DataSourceCode"];
+        }
+        var title = getitemTypeText(type);
+        var width = 1000;
+        var settingData = "false";
+        if (row["Settings"] != null)
+            settingData = row["Settings"];
+        openWindow(url, { width: width, title: title, data: settingData, onDestroy: function (data) {
+            if (data != "close")
+                row["Settings"] = mini.encode(data);
+        }
+        });
+    }
+    });
+
+    function saveBlockDefineSettings() {
+        addExecuteParam("BlockDefineSettings", mini.get("dataGrid").getData());
+        execute("SaveBlockDefineSettings", { actionTitle: "保存" });
+    }
+</script>

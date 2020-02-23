@@ -1,0 +1,47 @@
+<div class="head">
+    <button class="left" onclick="$monitor.goback(this)"><i class="glyphicon glyphicon-menu-left"></i></button>
+    <span class="title">搜索结果</span>
+    <button class="right"></button>
+</div>
+
+<div class="filter search-result bindParentData liCls">
+    <span way-data="type"></span>：<span way-data="searchText"></span>
+</div>
+
+<!-- 填写内容 -->
+<div class="content has-filter content-list scroll">
+    <div class="scroll-content">
+        <!--外层循环-->
+        <div class="list-model prj-result-list" onclick="EnterProjectInfo(this)" way-css="StateCss">
+            <div class="rememberCls" way-data="ID"></div>
+            <div class="triangle"></div>
+            <div class="badge-text" way-data="State"></div>
+            <div class="detail">
+                <div class="title" way-data="Name">
+                    <i class="glyphicon glyphicon-menu-right"></i>
+                </div>
+                <div class="span-icon icon-no code-cls"> <span  way-data="Code"></span></div>
+                <div class="span-icon icon-user user-cls" ><span way-data="ChargeUserName"></span></div>
+                <p>
+                    <span class="span-icon icon-time" way-data="PlanStartDate" way-transform="dateFormatter"></span>至
+                    <span class="pl-5 endtime" way-data="PlanEndDate" way-transform="dateFormatter"></span>
+                </p>
+            </div>
+            <!--里程碑-->
+            <ul class="time-line prj-search-result">
+                <li>
+                    <div class="desc">
+                        <div><span way-data="Name"></span><span class="miston" way-css="MistonState" way-data="State"></span></div>
+                        <div class="plan-cls">
+                            <div class="left-date">计划完成<span way-data="PlanFinishDate" way-transform="dateFormatter"></span></div>
+                            <div>实际完成<span way-data="FactFinishDate" way-transform="dateFormatter"></span></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="show-milestone" onclick="showSearchMilestone(this,event)">
+                <i class="glyphicon glyphicon-menu-down"></i><span>查看</span>项目里程碑
+            </div>
+        </div>
+    </div>
+</div>

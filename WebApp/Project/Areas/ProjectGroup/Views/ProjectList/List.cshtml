@@ -1,0 +1,359 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-setting" onclick="Finish();" plain="true">完工</a>
+                <a class="mini-button" iconcls="icon-pause" onclick="Pause();" plain="true">暂停</a>
+                <a class="mini-button" iconcls="icon-stop" onclick="Terminate();" plain="true">终止</a>
+                <a class="mini-button" iconcls="icon-undo" onclick="Restart();" plain="true">重新启动</a><span class="separator"></span><a class="mini-button" iconcls="icon-remove" onclick="DeleteProject();"
+                                                                                                                                       plain="true">删除项目</a>
+            </td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext="请输入项目名称或编号 " style="width: 250px;"
+                       onenter="tabSearch();" onbuttonclick="tabSearch();" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" id="gridArea">
+    <div id="dataGrid" url="GetList" class="mini-datagrid" style="width: 100%; height: 100%;"
+         idfield="ID" multiselect="true" showcolumns="false">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="Content" width="*" headeralign="center" allowsort="false" renderer="onContentRenderer">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //addGridEnum("dataGrid", "FieldName", "EnumKey");
+    //addGridLink("dataGrid", "FieldName", "URL?ID={ID}", { funcType: "view", height: 600, width: 800 });
+    //addGridButton("dataGrid", "FieldName", { onButtonClick: function (row) { } });
+</script>
+<script type="text/javascript">
+    @Html.GetEnum(typeof(Project.Logic.ProjectCommoneState))
+    @Html.GetEnum("Project.Phase")
+</script>
+<script type="text/javascript">
+    normalParamSettings.searchFields = "Name,Code";
+
+    function onContentRenderer(e) {
+        var rec = e.record;
+        var rowIndex = e.rowIndex;
+        var $table = $("<table width=\"100%\" border=\"0\" cellspacing=\"5\" cellpadding=\"0\"></table");
+        var $img = $("<img>").attr("width", "74px").attr("height", "16px").attr("border", "0px").attr("align", "absmiddle");
+
+        //第一行
+        var $tr1td = $("<td></td>").append($("<h3></h3>").text(rec.Name));
+        $tr1td.append($("<h4></h4>").text("（" + rec.Code + "）"));
+        var $tr1 = $("<tr></tr>").append($tr1td);
+        $table.append($("<tr></tr>").append($tr1));
+
+        //第二行
+        var title = $.trim(rec.Name);
+        var $tr2td = $("<td></td>");
+        $contractValue = $('<span>合同金额（元）:<span/><a href="javascript:void();" class="now" onclick="openMarketInfo(\'合同信息\',\'/MvcConfig/UI/List/PageView?TmplCode=ProjectContractInfoList\',\'' + rec.ID + '\')">' + formatCurrency(rec.ContractValue) + '</a>');
+        $tr2td.append($contractValue);
+
+        $summaryReceiptValue = $('<span>已收款金额（元）:<span/><a href="javascript:void();" class="now" onclick="openMarketInfo(\'到款信息\',\'/MvcConfig/UI/List/PageView?TmplCode=ProjectReceipt\',\'' + rec.ID + '\')">' + formatCurrency(rec.SummaryReceiptValue) + '</a>');
+        $tr2td.append($summaryReceiptValue);
+
+        $canReceiptValue = $('<span>经营应收款金额（元）:<span/><a href="javascript:void();" class="now" onclick="openMarketInfo(\'可收款信息\',\'/MvcConfig/UI/List/PageView?TmplCode=ReceiptObjInfo&CanReceipt=True&ProjectInfo=' + rec.ID + '\')">' + formatCurrency(rec.CanReceiptValue) + '</a>');
+        $tr2td.append($canReceiptValue);
+
+        $receiptRatio = $('<span>到款率：' + rec.ReceiptRatio.toFixed() + '%<span/>');
+        $tr2td.append($receiptRatio);
+        var $tr2 = $("<tr></tr>").append($tr2td);
+        $table.append($tr2);
+
+        //第三行
+        var $tr3td = $("<td></td>");
+        var PhaseContent = "";
+        $(Phase).each(function (i, row) {
+            var phaseList = rec.Phase.split(',');
+            for (var i = 0; i < phaseList.length; i++)
+                if (row.value == phaseList[i]) {
+                    PhaseContent += "," + row.text;
+                }
+        });
+        PhaseContent = PhaseContent.substring(1);
+        (!rec.ChargerDeptName) ? rec.ChargerDeptName = "" : rec.ChargerDeptName = rec.ChargerDeptName;
+        (!rec.ChargerUserName) ? rec.ChargerUserName = "" : rec.ChargerUserName = rec.ChargerUserName;
+        $tr3td.append($("<h0></h0>").text("设计阶段：" + PhaseContent));
+        $tr3td.append($("<h0></h0>").text("责任部门：" + rec.ChargerDeptName));
+        $tr3td.append($("<h0></h0>").text("项目负责人：" + rec.ChargerUserName));
+        $tr3td.append($("<h0></h0>").text("立项日期：" + mini.formatDate(rec.CreateDate, "yyyy-MM-dd")));
+        var $tr3 = $("<tr></tr>").append($tr3td);
+        $table.append($tr3);
+
+        //第四行
+        $engineeringInfo = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/project/Engineering/EngineeringSpace/MainIndex\',\'' + rec.ID + '\')">打开项目空间</a></h0>');
+        var $tr4td = $("<td></td>");
+        $tr4td.append($engineeringInfo);
+
+        $product = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/ProductTrack/MainTab\',\'' + rec.ID + '\')" >成果跟踪</a></h0>');
+        $tr4td.append($product);
+
+        $flowTrace = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/FlowTrace/List\',\'' + rec.ID + '\')" >流程跟踪</a></h0>');
+        $tr4td.append($flowTrace);
+
+        $ISOForm = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/ISO/FileView\',\'' + rec.ID + '\')" >ISO表单中心</a></h0>');
+        $tr4td.append($ISOForm);
+
+        $costMonitor = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/CostAnalyze/CostTab\',\'' + rec.ID + '\')" >成本跟踪</a></h0>');
+        $tr4td.append($costMonitor);
+
+        $resourceMonitor = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/WorkHourAnalyze/Tab\',\'' + rec.ID + '\')" >工时负荷跟踪</a></h0>');
+        $tr4td.append($resourceMonitor);
+
+        $qanitiyForm = $('<h0><a href="javascript:void();" class="now" onclick="openProjectInfo(\'' + rec.Name + '\',\'/Project/Monitor/QualityInfo/QualityInfoList\',\'' + rec.ID + '\')" >质量跟踪</a></h0>');
+        $tr4td.append($qanitiyForm);
+        
+        //$upGradeTaskForm = $('<h0><a href="javascript:void();" class="now" onclick="upGradeTaskForm(\'' + rec.ID + '\')" >任务单升版</a></h0>');
+        //$tr4td.append($upGradeTaskForm);
+
+        $ProjectMangerChange = $('<h0><a href="javascript:void();" class="now" onclick="changeProjectManager(\'' + rec.ID + '\')" >项目负责人变更</a></h0>');
+        $tr4td.append($ProjectMangerChange);
+
+        var stateName = "";
+        $(ProjectCommoneState).each(function (i, row) {
+            if (row.value == rec.State) {
+                stateName = row.text;
+            }
+        });
+        $state = $('<span class="stateSpan ' + rec.State + '">' + stateName + '</span>');
+        $tr4td.append($state);
+
+        var $tr4 = $("<tr></tr>").append($tr4td);
+        $table.append($tr4);
+
+        var $html = $("<div></div>").attr("id", "Content" + id).append($table);
+        $html.addClass("left_main_list")
+        return $html[0].outerHTML;
+    }
+
+
+    function openMarketInfo(Name, linkUrl, ID) {
+        if (ID) {
+            linkUrl += (linkUrl.indexOf("?") >= 0 ? "&" : "?") + "ProjectInfoID=" + ID;
+        }
+        openWindow(linkUrl, {
+            refresh: false, title: Name, width: "90%", height: "90%",
+            onDestroy: function () { }
+        });
+    }
+
+    function openClickInfo(Name, linkUrl, EngineerID) {
+        if (!EngineerID || !linkUrl) return;
+        addExecuteParam("RelateID", EngineerID);
+        execute("GetGroupInfoID", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                linkUrl.indexOf("?") >= 0 ? linkUrl += "&IsOpenForm=True&GroupInfoID=" + data.ID : linkUrl += "?IsOpenForm=True&GroupInfoID=" + data.ID;
+                openWindow(linkUrl, {
+                    refresh: false, title: Name, width: "90%", height: "90%",
+                    onDestroy: function () { }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function openProjectInfo(Name, linkUrl, ProjectInfoID) {
+        if (!ProjectInfoID || !linkUrl) return;
+        addExecuteParam("RelateID", ProjectInfoID);
+        execute("GetProjectInfoID", {
+            showLoading: false, refresh: false, onComplete: function (data) {
+                linkUrl.indexOf("?") >= 0 ? linkUrl += "&IsOpenForm=True&SpaceCode=Project&AuthType=FullControl&ProjectInfoID=" + data.ID : linkUrl += "?IsOpenForm=True&SpaceCode=Project&AuthType=FullControl&ProjectInfoID=" + data.ID;
+                openWindow(linkUrl, {
+                    refresh: false, title: Name, width: "90%", height: "90%",
+                    onDestroy: function () { }
+                });
+            }, validateForm: false
+        });
+    }
+
+    function Finish() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择要完工的项目！"); return; }
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i]["State"] == "Finish") { msgUI("已完工的项目不能设置！"); return; }
+        }
+        openWindow("Edit", {
+            width: 400, height: 400, title: "设置完工日期", onDestroy: function (data) {
+                if (data == "close") return;
+                addExecuteParam("ListData", mini.encode(rows));
+                addExecuteParam("factFinishDate", mini.formatDate(data.FactFinishDate, "yyyy-MM-dd"));
+                execute("Finish", {
+                    showLoading: true, refresh: false, onComplete: function (data) {
+                        dataGrid.reload();
+                    }, validateForm: false
+                });
+            }
+        });
+    }
+
+    function Pause() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("Pause", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function Terminate() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("Terminate", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function Restart() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("Restart", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.reload();
+            }, validateForm: false
+        });
+    }
+
+    function DeleteProject() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        if (rows.length == 0) { msgUI("请选择一条记录"); return; }
+        msgUI("确认要删除所选择的项目吗？", 2, function (res) {
+            if (res != "ok") return;
+            var rowIDs = getValues(rows, "ID");
+            addExecuteParam("rowIDs", rowIDs);
+            execute("DeleteProject", {
+                actionTitle: "删除", showLoading: true, refresh: false, onComplete: function (data) {
+                    dataGrid.reload();
+                }, validateForm: false
+            });
+        });
+    }
+
+    function formatCurrency(num) {
+        num = num.toString().replace(/\$|\,/g, '');
+        if (isNaN(num))
+            num = "0";
+        sign = (num == (num = Math.abs(num)));
+        num = Math.floor(num * 100 + 0.50000000001);
+        cents = num % 100;
+        num = Math.floor(num / 100).toString();
+        if (cents < 10)
+            cents = "0" + cents;
+        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3) ; i++)
+            num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+            num.substring(num.length - (4 * i + 3));
+        return (((sign) ? '' : '-') + num + '.' + cents);
+    }
+
+    function upGradeTaskForm(ProjectInfoID) {
+        addExecuteParam("ProjectInfoID", ProjectInfoID);
+        execute("ValidateTaskNoticeUpgrade", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var versionNumber = parseInt(data.VersionNumber) + 1;
+                if (isNaN(versionNumber)) versionNumber = 1;
+                var version = versionNumber + "," + data.Versions;
+                var url = "/Project/AutoUI/TaskNotice/PageView?TmplCode=TaskNotice&FlowCode=TaskNotice&RelateField=ProjectInfoID&ProjectInfoID="
+                    + data.ProjectInfoID + "&VersionNumber=" + versionNumber + "&Versions=" + version + "&UpperVersion=" + data.ID + "&closeForm=true";
+                openWindow(url, {
+                    refresh: false, title: "任务单升版", width: "70%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") { return; }
+                        mini.get("dataGrid").reload();
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+
+    function changeProjectManager(ProjectInfoID) {
+        addExecuteParam("ProjectInfoID", ProjectInfoID);
+        execute("ValidateProjectManagerChange", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var url = "/Project/AutoUI/ProjectInfoChange/PageView?TmplCode=ProjectInfoChange&FlowCode=ProjectInfoChange&ProjectInfoID=" + data.ProjectInfoID;
+                openWindow(url, {
+                    refresh: false, title: "项目负责人变更", width: "60%", height: "90%",
+                    onDestroy: function (data) {
+                        if (data == "close") { return; }
+                        mini.get("dataGrid").reload();
+                    }
+                });
+            }, validateForm: false
+        });
+    }
+
+</script>
+@section scripts{
+    <link href="@Url.Content("/Project/Scripts/MyProject/project.css")" rel="stylesheet" type="text/css" />
+}
+<style>
+    .mini-modal {
+        opacity: .9;
+        background: #ccc;
+    }
+
+    .stateSpan {
+        padding: 0px 8px !important;
+        float: right !important;
+        border-radius: 15px;
+        font-size: 12px;
+        background-color: transparent !important;
+        margin-right: 0px !important;
+    }
+
+    .Finish {
+        background-color: #FFF;
+        color: #e062c6;
+        border: 1px solid #e062c6;
+    }
+
+    .Create {
+        background-color: #FFF;
+        color: #82bf00;
+        border: 1px solid #82bf00;
+    }
+
+    .Execute {
+        background-color: #FFF;
+        color: #2b88d8;
+        border: 1px solid #2b88d8;
+    }
+
+    .Plan {
+        background-color: #FFF;
+        color: #02afbf;
+        border: 1px solid #02afbf;
+    }
+
+    .Terminate {
+        background-color: #FFF;
+        color: #c63c39;
+        border: 1px solid #c63c39;
+    }
+
+    .Pause {
+        background-color: #FFF;
+        color: #e89f41;
+        border: 1px solid #e89f41;
+    }
+</style>

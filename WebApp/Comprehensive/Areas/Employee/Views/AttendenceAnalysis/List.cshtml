@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "考勤报表";
+    Layout = "~/Views/Shared/_LayoutTab.cshtml";
+}
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input id="key" class="mini-buttonedit gw-searchbox" emptytext="请输入员工工号或员工姓名" onenter="tabSearch({searchFields:'Name,Code',IsOrRelation:'false'})"
+                    onbuttonclick="tabSearch({searchFields:'Name,Code',IsOrRelation:'false'})" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="fitDiv" class="mini-fit">
+    <div id='dataGrid' class='mini-datagrid' style='width: 100%;height: 100%;'
+        url='GetList' multiselect='true' allowalternating='false' onload="onLoad"
+        frozenstartcolumn="0" frozenendcolumn="8" showpagebar="true" fitcolumns="false"
+        ondrawcell="onDrawCell">
+        <div property="columns">
+            <div field="indexcolumn" type="indexcolumn">序号</div>
+            <div field="Code" headeralign="center" width="80" align="center">员工工号</div>
+            <div field="Name" headeralign="center" width="80" align="center">员工姓名</div>
+            <div header='小计' headeralign='center'>
+                <div property='columns'>
+                    <div field="SumNormal" headeralign="center" width="50" align="center">正常</div>
+                    <div field="SumLate" headeralign="center" width="50" align="center">迟到</div>
+                    <div field="SumEarly" headeralign="center" width="50" align="center">早退</div>
+                    <div field="SumAbsence" headeralign="center" width="50" align="center">缺勤</div>
+                    <div field="SumEvection" headeralign="center" width="50" align="center">出差</div>
+                    <div field="SumLeave" headeralign="center" width="50" align="center">请假</div>
+                </div>
+            </div>
+            @for (int i = 0; i < 31; i++)
+            {
+                <div header='day' headeralign='center'>
+                    <div property='columns'>
+                        <div field="day_morning" headeralign="center" width="50" align="center">上午</div>
+                        <div field="day_afternoon" headeralign="center" width="50" align="center">下午</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function onLoad(e) {
+        var daysInMonth = mini.decode(e.text).daysInMonth;
+        var year = mini.decode(e.text).year;
+        var month = mini.decode(e.text).month;
+        if (month < 10)
+            month = "0" + month;
+
+        var index = 1;
+        var columns = mini.get("dataGrid").getColumns();
+        for (var i = 0; i < columns.length; i++) {
+            if (columns[i].header != "序号" && columns[i].header != "员工工号"
+                && columns[i].header != "员工姓名" && columns[i].header != "小计") {
+                var column = columns[i];
+                if (index <= daysInMonth) {
+                    var day = index;
+                    if (day < 10)
+                        day = "0" + day;
+                    var date = year + "-" + month + "-" + day;
+                    column["header"] = date;
+                    var child = column.columns;
+                    child[0]["field"] = date + "_Morning";
+                    child[1]["field"] = date + "_Afternoon";
+                    index++;
+                    mini.get("dataGrid").showColumn(column);
+                }
+                else {
+                    mini.get("dataGrid").hideColumn(column);
+                }
+            }
+        }
+        mini.get("dataGrid").setColumns(columns);
+    }
+
+    function onDrawCell(e) {
+        if (e.field.indexOf("Morning") >= 0 || e.field.indexOf("Afternoon") >= 0) {
+            if (e.value == "迟到" || e.value == "早退") {
+                e.cellHtml = '<span style="color:brown;">' + e.value + '</span>';
+            }
+            else if (e.value == "缺勤") {
+                e.cellHtml = '<span style="color:red;">' + e.value + '</span>';
+            }
+            else if (e.value == "出差") {
+                e.cellHtml = '<span style="color:orange;">' + e.value + '</span>';
+            }
+            else if (e.value == "请假") {
+                e.cellHtml = '<span style="color:purple;">' + e.value + '</span>';
+            }
+        }
+    }
+</script>

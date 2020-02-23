@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "文档查询";
+}
+
+@using EPC.Logic
+
+<div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;"></td>
+            <td style="white-space: nowrap;">
+                <input class="mini-buttonedit searchbox" id="key" emptytext='数据表或名称' style="width: 200px;" onenter="quickSearch(quickSearchCode, { gridId: 'dataGrid', queryBoxId: 'key' });"
+                       onbuttonclick="quickSearch(quickSearchCode, { gridId: 'dataGrid', queryBoxId: 'key' });" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit">
+    <div id="dataGrid" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true"
+         url="GetLogList?EngineeringInfoID=@ViewBag.EngineeringInfoID"
+         borderstyle="border-bottom:0px;">
+        <div property="columns">
+            <div type="indexcolumn">
+            </div>
+            <div field="DBTableName" headeralign="center" width="100" allowsort="true" align="left">
+                数据表
+            </div>
+            <div field="Name" headeralign="center" width="100" allowsort="true" align="left">
+                名称
+            </div>
+            <div field="OperateType" headeralign="center" width="80" allowsort="true" align="center">
+                操作类型
+            </div>
+            <div field="CreateUser" headeralign="center" width="50" allowsort="true" align="center">
+                操作人
+            </div>
+            <div field="CreateDate" headeralign="center" width="80" allowsort="true" dateformat="yyyy-MM-dd" align="center">
+                操作时间
+            </div>
+            <div field="Remark" headeralign="center" width="150" allowsort="true" align="left">
+                备注
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var dbTable = [
+        { text: '现场照片', value: 'S_C_ProjectVideo' },
+        { text: '项目文档', value: 'S_I_CommonDocument' },
+        { text: '工作联系单', value: 'T_C_WorkingContact' },
+        { text: '整改问题单', value: 'S_C_RectifySheet_RectifyProblems' },
+        { text: '', value: '' },
+        { text: '', value: '' },
+        { text: '', value: '' },
+        { text: '', value: '' },
+        { text: '', value: '' }];
+
+    @Html.GetEnum(typeof(EnumOperaType), "OperateType")
+
+    addGridEnum("dataGrid", "DBTableName", "dbTable");
+    addGridEnum("dataGrid", "OperateType", "OperateType");
+</script>
+<script>
+
+    var quickSearchCode = 'DBTableName,Name';
+</script>

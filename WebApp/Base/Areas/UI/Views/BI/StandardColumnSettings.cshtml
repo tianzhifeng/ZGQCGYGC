@@ -1,0 +1,358 @@
+﻿@{
+    ViewBag.Title = "StandardColumnSettings";
+}
+<div id="formlayout" class="mini-layout" style="width: 100%; height: 100%;">
+    <div region="north" height="32" showspliticon="false" showheader="false" allowresize="false" splitsize="0"
+         style="border: 0;">
+        <div class="mini-toolbar" style="padding: 0px; border-left: 0; border-top: 0; border-right: 0;">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 100%;">
+                        <a class="mini-button" iconcls="icon-save" onclick="returnValue();" plain="true">确定</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div title="center" region="center" style="border: 0;">
+        <div id="dataForm" autogetdata="false">
+            <input name="ID" class="mini-hidden" />
+            <fieldset class="formDiv">
+                <legend>数据源定义</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td colspan="4">
+                            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <a class="mini-button" iconcls="icon-add" onclick="addRow({}, { gridId: 'dataSourceGrid', islast: true })">添加</a>
+                                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({ gridId: 'dataSourceGrid' });">移除</a>
+                                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('dataSourceGrid');">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('dataSourceGrid');">下移</a>
+                                        </td>
+                                        <td style="white-space: nowrap;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="dataSourceGrid" class="mini-datagrid" style="width: 100%; height: auto;" url=""
+                                 allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true"
+                                 showpager="false" allowunselect="false">
+                                <div property="columns">
+                                    <div type="checkcolumn"></div>
+                                    <div field="Name" width="100" vtype="required;">
+                                        名称
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="Code" width="100" vtype="required;">
+                                        编号
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="ConnName" width="150" autoshowpopup="true" align="center" vtype="required;">
+                                        数据库连接
+                                        <input property="editor" class="mini-combobox" style="width: 100%;" data="ConnEnum" />
+                                    </div>
+                                    <div field="SQL" width="*">
+                                        SQL
+                                        <input property="editor" class="mini-textarea" style="width: 100%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>基础信息</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td>标题显示</td>
+                        <td colspan="3" style="padding-right:40px;">
+                            <input name="MainTitle" style="width: 100%" class="mini-textbox" emptytext="请输入标题名称" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>默认数据源</td>
+                        <td style="padding-right:40px;">
+                            <input name="DefaultDataSource" style="width: 100%" class="mini-textbox" emptytext="数据源定义的编号" required="true" vtype="maxLength:50" />
+                        </td>
+                        <td>允许多数据源切换</td>
+                        <td style="padding-right:40px;">
+                            <input name="AllowChangeDataSource" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="trueOrFalse" allowinput="false" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>显示图例</td>
+                        <td style="padding-right:40px;">
+                            <input name="showInLegend" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="trueOrFalse" allowinput="false" />
+                        </td>
+                        <td>图例布局位置</td>
+                        <td style="padding-right:40px;">
+                            <input name="layout" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="layoutData" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>图例水平对齐</td>
+                        <td style="padding-right:40px;">
+                            <input name="align" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="alignData" allowinput="false" />
+                        </td>
+                        <td>图例垂直对齐</td>
+                        <td style="padding-right:40px;">
+                            <input name="verticalAlign" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value"
+                                   data="valignData" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>X轴字段</td>
+                        <td style="padding-right:40px;">
+                            <input name="categoryField" style="width: 100%" class="mini-textbox" emptytext="柱状图显示的名称,如:Name" required="true" vtype="maxLength:50" />
+                        </td>
+                        <td>是否固定X轴</td>
+                        <td style="padding-right:40px;">
+                            <input name="diyCategory" class="mini-combobox" style="width: 100%;" required="true" textfield="text" valuefield="value"
+                                   data="trueOrFalse" allowinput="false" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>X轴固定内容</td>
+                        <td style="padding-right:40px;" colspan="3">
+                            <input name="Categories" style="width: 100%" class="mini-textbox" emptytext="柱状图显示的固定内容,可以是文字或字段" required="true" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>固定X轴枚举</td>
+                        <td style="padding-right:40px;">
+                            <input name="categoryEnumKey" style="width: 100%" class="mini-textbox" vtype="maxLength:50" />
+                        </td>
+                        <td></td>
+                        <td style="padding-right:40px;"></td>
+                    </tr>
+
+                    <tr>
+                        <td>样式</td>
+                        <td style="padding-right:40px;">
+                            <input name="Style" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="true"
+                                   data="BlockStyle" allowinput="false" />
+                        </td>
+                        <td>图表高度</td>
+                        <td style="padding-right:40px;">
+                            <input name="chartHeight" style="width: 100%" class="mini-textbox" emptytext="单位px" required="true" vtype="maxLength:50" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>叠加显示</td>
+                        <td style="padding-right:40px;">
+                            <input name="stacking" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" required="false"data="stackingEnum" allowinput="false" />
+                        </td>
+                        <td></td>
+                        <td style="padding-right:40px;">
+                           
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>图形</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td colspan="4">
+                            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <a class="mini-button" iconcls="icon-add" onclick="addRow({}, { gridId: 'seriesGrid', isLast: true })">添加</a>
+                                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({ gridId: 'seriesGrid' });">移除</a>
+                                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('seriesGrid');">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('seriesGrid');">下移</a>
+                                        </td>
+                                        <td style="white-space: nowrap;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="seriesGrid" class="mini-datagrid" style="width: 100%; height: auto;" url="" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true"
+                                 showpager="false" allowunselect="false">
+                                <div property="columns">
+                                    <div type="checkcolumn"></div>
+                                    <div field="name" width="100" align="left">
+                                        名称
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div type="comboboxcolumn" autoshowpopup="true" field="type" width="100" align="center" vtype="required;">
+                                        类型
+                                        <input property="editor" class="mini-combobox" style="width:100%;" data="seriesType" textfield="text" valuefield="value" />
+                                    </div>
+                                    <div field="whereString" width="100" align="left">
+                                        <a href="#" title="显示条件">条件</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="groupField" width="100" align="left">
+                                        <a href="#" title="柱状图名称下面出现的分组,如: 2011年 2012年 2013年">分组字段</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="valueField" width="100" align="left">
+                                        <a href="#" title="柱状图图形的值字段,如:Value">取值字段</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="valueSuffix" width="100" align="left">
+                                        单位
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div type="comboboxcolumn" field="yAxis" autoShowPopup="true" width="100" align="center">
+                                        Y轴
+                                        <input property="editor" class="mini-combobox" style="width: 100%;" data="yAxisType" textfield="text" valuefield="value"  />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset class="formDiv">
+                <legend>Y轴定义</legend>
+                <table style="width:100%" border="0" cellpadding="0" cellspacing="2">
+                    <tr>
+                        <td colspan="4">
+                            <div class="mini-toolbar" style="padding: 0px; border-bottom: 0;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <a class="mini-button" iconcls="icon-add" onclick="addRow({}, { gridId: 'yAxisGrid', isLast: true })">添加</a>
+                                            <a class="mini-button" iconcls="icon-remove" onclick="delRow({ gridId: 'yAxisGrid' });">移除</a>
+                                            <a class="mini-button" iconcls="icon-up" onclick="moveUp('yAxisGrid');">上移</a>
+                                            <a class="mini-button" iconcls="icon-down" onclick="moveDown('yAxisGrid');">下移</a>
+                                        </td>
+                                        <td style="white-space: nowrap;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="yAxisGrid" class="mini-datagrid" style="width: 100%; height: auto;" url="" allowcellvalid="true" multiselect="true" allowcelledit="true" allowcellselect="true"
+                                 showpager="false" allowunselect="false">
+                                <div property="columns">
+                                    <div type="indexcolumn" headeralign="center" width="10">序号</div>
+                                    <div type="checkcolumn" width="10"></div>
+                                    <div field="Title" width="100" align="left" vtype="required;">
+                                        <a href="#" title="柱状图左边显示的名称,如:金额">Y轴名称</a>
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                    <div field="Unit" width="100" align="left">
+                                        单位
+                                        <input property="editor" class="mini-textbox" style="width: 100%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                        <td width="15%"></td>
+                        <td width="35%;" style="padding-right: 40px;"></td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    @Html.GetEnum(typeof( Config.ConnEnum))
+</script>
+<script type="text/javascript">
+    var BlockStyle = [{ text: "蓝色", value: "blue" }, { text: "红色", value: "red" }, { text: "绿色", value: "green" },
+    { text: "紫色", value: "purple" }, { text: "橙色", value: "orange" }];
+    var plotValueDisplay = [{ text: "值", value: "y" }, { text: "百分比", value: 'percentage' }];
+    var alignData = [{ text: "左对齐", value: "left" }, { text: "居中", value: "center" }, { text: "右对齐", value: "right" }];
+    var valignData = [{ text: "上对齐", value: "top" }, { text: "居中", value: "middle" }, { text: "下对齐", value: "bottom" }];
+    var layoutData = [{ text: "水平", value: "horizontal" }, { text: "垂直", value: "vertical" }];
+    var trueOrFalse = [{ text: "是", value: "true" }, { text: "否", value: "false" }];
+    var seriesType = [{ text: "折线", value: "spline" }, { text: "柱状", value: "column" }];
+    var yAxisType = [{ text: "", value: "" },{ text: "左轴", value: "0" }, { text: "右轴", value: "1" }];
+    var stackingEnum = [{ text: "不进行堆叠", value: "" }, { text: "普通堆叠", value: "normal" }, { text: "百分比堆叠", value: "percent"}];
+    function setData(data) {
+        if (data) {
+            var rowSettings = mini.decode(data);
+            var form = new mini.Form("dataForm");
+            form.setData(rowSettings);
+            form.setChanged(false);
+            if (rowSettings.dataSource) {
+                var dataSourceGrid = mini.get("dataSourceGrid");
+                dataSourceGrid.setData(rowSettings.dataSource);
+            }
+            if (rowSettings.yAxis) {
+                var tagDefineGrid = mini.get("yAxisGrid");
+                tagDefineGrid.setData(mini.decode(rowSettings.yAxis));
+            }
+            if (rowSettings.Series) {
+                var seriesGrid = mini.get("seriesGrid");
+                seriesGrid.setData(mini.decode(rowSettings.Series));
+            }
+        }
+    }
+
+    function moveUp(gridId) {
+        var dataGrid = mini.get("#" + gridId);
+        if (dataGrid) {
+            var rows = dataGrid.getSelecteds();
+            dataGrid.moveUp(rows);
+        }
+    }
+
+    function moveDown(gridId) {
+        var dataGrid = mini.get("#" + gridId);
+        if (dataGrid) {
+            var rows = dataGrid.getSelecteds();
+            dataGrid.moveDown(rows);
+        }
+    }
+
+
+    function returnValue() {
+        var form = new mini.Form("dataForm");
+        form.validate();
+        if (!form.isValid()) {
+            msgUI("请检查页面填写内容格式"); return;
+        }
+        var formData = form.getData();
+        var dataSourceGrid = mini.get("dataSourceGrid");
+        dataSourceGrid.commitEdit();
+        dataSourceGrid.validate(); if (!dataSourceGrid.isValid()) { return; }
+        var dataSource = dataSourceGrid.getData();
+        formData.dataSource = dataSource;
+
+        var yAxisGrid = mini.get("yAxisGrid");
+        yAxisGrid.commitEdit();
+        yAxisGrid.validate(); if (!yAxisGrid.isValid()) { return; }
+        var yAxis = yAxisGrid.getData();
+        formData.yAxis = yAxis;
+
+        var seriesGrid = mini.get("seriesGrid");
+        seriesGrid.commitEdit();
+        seriesGrid.validate(); if (!seriesGrid.isValid()) { return; }
+        var series = seriesGrid.getData();
+        formData.Series = series;
+        closeWindow(formData);
+    }
+</script>

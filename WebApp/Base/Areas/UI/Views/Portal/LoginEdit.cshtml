@@ -1,0 +1,91 @@
+﻿<div class="mini-toolbar" id="btnDiv">
+    <table>
+        <tr>
+            <td>
+                <a class="mini-button" iconcls="icon-save" onclick="returnForm();">确认</a>
+                <a class="mini-button" iconcls="icon-cancel" onclick="closeWindow('close')">取消</a>
+            </td>
+            <td id="btnRight"></td>
+        </tr>
+    </table>
+</div>
+<form id="dataForm" method="post" autogetdata="false">
+    <input name="ID" class="mini-hidden" />
+    <div class="formDiv">
+        <fieldset>
+            <legend>基本信息</legend>
+            <div>
+                <table>
+                    <tr class="hideRow">
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                        <td width="15%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td>类型
+                        </td>
+                        <td>
+                            <input name="Type" class="mini-combobox" style="width: 100%;" textfield="text" valuefield="value" data="NewPortalType" required="true" onvaluechanged="onTypeValueChanged" />
+                        </td>
+                        <td>标题
+                        </td>
+                        <td>
+                            <input name="Title" class="mini-textbox" style="width: 100%;" required="true" />
+                        </td>
+                    </tr>
+                    <tr id="tr_catalog">
+                        <td>栏目
+                        </td>
+                        <td colspan="3">
+                            <div id="Keys" name="Keys" class="mini-combobox" style="width: 410px;" popupwidth="410" textfield="CatalogName" valuefield="CatalogKey"
+                                url="GetPublicInformCatalog" multiselect="true" showclose="true" required="true" oncloseclick="onCloseClick">
+                                <div property="columns">
+                                    <div header="栏目Key" field="CatalogKey"></div>
+                                    <div header="名称" field="CatalogName" renderer="onPublicInformCatalogRenderer"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>显示条数
+                        </td>
+                        <td>
+                            <input name="Count" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                        <td>排序
+                        </td>
+                        <td>
+                            <input name="SortIndex" class="mini-textbox" style="width: 100%;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script>
+    @Html.GetEnum(typeof(Base.Logic.NewPortalType));
+
+    function isShowCatalog() {
+        if (mini.getbyName("Type").getValue() == NewPortalType[1].value)
+            $("#tr_catalog").hide();
+        else
+            $("#tr_catalog").show();
+    }
+
+    function setData(data) {
+        if (data) {
+            var form = new mini.Form("dataForm");
+            mini.getbyName("Keys").setValue(data.Keys);
+            form.setData(mini.decode(data));
+            form.setChanged(false);
+            isShowCatalog();
+        }
+    }
+
+    function onTypeValueChanged(e) {
+        isShowCatalog();
+    }
+
+</script>

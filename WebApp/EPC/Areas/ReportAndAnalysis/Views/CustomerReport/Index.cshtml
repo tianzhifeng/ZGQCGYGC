@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    @Scripts.Render("/CommonWebResource/CoreLib/Basic/jQuery/jquery-1.6.2.min.js")
+    @Scripts.Render("/CommonWebResource/CoreLib/MiniUI/miniui.js")
+    @Scripts.Render("/CommonWebResource/CoreLib/MiniUI/baseMiniuiExt.js")
+    @Scripts.Render("/MvcConfig/miniuiExt.js")
+    @Scripts.Render("/CommonWebResource/Theme/" + @Html.GetGlobalColor() + "/MiniCssInc.js")
+    @*@Styles.Render("/market/Scripts/marketstyle.css")
+    @Scripts.Render("/market/Scripts/jquery.vector-map.js")
+    @Scripts.Render("/market/Scripts/china-zh.js")
+    @Styles.Render("/market/Scripts/jquery.vector-map.css")*@
+</head>
+<body>
+    <div id="CustomerTabs" class="mini-tabs" activeindex="0" style="width: 100%; height: 100%;" maskonload="false">
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var id = getQueryString("Id");
+    var funcType = getQueryString("FuncType");
+    initTab();
+
+    function initTab() {
+        mini.parse();
+        var tabs = mini.get("CustomerTabs");
+        if (id != "") {
+            var customerTab = { title: "客户基本信息", url: "/MvcConfig/UI/Form/PageView?TmplCode=CustomerInfo&ID=" + id + "&FuncType=" + funcType + "&IsIndex=YES", showCloseButton: false };
+            tabs.addTab(customerTab);
+
+            tabs.activeTab(customerTab);
+
+
+
+            var customerLinkmanTab = { title: "客户回访信息", url: "/MvcConfig/UI/List/PageView?TmplCode=ReturnVisit&FuncType=View&CustomerInfo=" + id, showCloseButton: false };
+            tabs.addTab(customerLinkmanTab);
+            var customerContactLogTab = { title: "客户投诉信息", url: "/MvcConfig/UI/List/PageView?TmplCode=CustomerComplain&FuncType=View&CustomerInfo=" + id, showCloseButton: false };
+            tabs.addTab(customerContactLogTab);
+            var customerBigEventTab = { title: "客户大事件", url: "/MvcConfig/UI/List/PageView?TmplCode=CustomerBigEvent&FuncType=View&CustomerInfo=" + id, showCloseButton: false };
+
+            tabs.addTab(customerBigEventTab);
+            var customerProjectTab = { title: "项目信息", url: "/EPC/ReportAndAnalysis/CustomerReport/ProjectList?CustomerInfo=" + id, showCloseButton: false };
+            tabs.addTab(customerProjectTab);
+            var customerContractTab = { title: "合同概况", url: "/EPC/ReportAndAnalysis/CustomerReport/ContractSituationList?FuncType=View&PartyA=" + id, showCloseButton: false };
+            tabs.addTab(customerContractTab);
+            var customerPlanReceiptTab = { title: "收款项信息", url: "/EPC/ReportAndAnalysis/CustomerReport/ReceiptObjectList?PartyA=" + id, showCloseButton: false };
+            tabs.addTab(customerPlanReceiptTab);
+        }
+        else {
+            var customerTab = { title: "客户基本信息", url: customerUrl, showCloseButton: false };
+            tabs.addTab(customerTab);
+            tabs.activeTab(customerTab);
+        }
+    }
+</script>

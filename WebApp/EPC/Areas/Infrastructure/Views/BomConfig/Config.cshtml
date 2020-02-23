@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Config";
+}
+
+<div class="mini-toolbar" style="padding: 2px; border-bottom: 0;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <a class="mini-button" iconcls="icon-add" onclick="addDetailRow()" plain="true">增加</a>
+                <a class="mini-button" iconcls="icon-remove" onclick="delDetail()" plain="true">删除</a>
+                <a class="mini-button" iconcls="icon-edit" onclick="saveDetail();" plain="true">保存</a>
+            </td>
+            <td style="white-space: nowrap;"></td>
+        </tr>
+    </table>
+</div>
+<div class="mini-fit" style="height: 100px;">
+    <div id="dataGrid" url="" class="mini-datagrid" style="width: 100%; height: 100%;" idfield="ID" multiselect="true" showpager="false"
+         allowcelledit="true" allowcellselect="true">
+        <div property="columns">
+            <div type="checkcolumn">
+            </div>
+            <div field="config" width="80" headeralign="center" allowsort="true">
+                详细
+            </div>
+            <div field="Name" width="200" headeralign="center" allowsort="true" vtype="required">
+                专业名称<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="Code" width="200" headeralign="center" allowsort="true" vtype="required">
+                专业编号<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="SortIndex" headeralign="center" width="70" allowsort="true" align="center" vtype="int">
+                序号<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+            <div field="LinkUrl" headeralign="center" width="*" allowsort="true" align="left">
+                链接地址<input property="editor" class="mini-textbox" style="width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    addGridButton("dataGrid", "config", {
+        linkText: "详细",
+        onButtonClick: function (row) {
+            var url = "FieldEdit";
+            openWindow(url, {
+                refresh: false, title: "属性配置", width: 900, height: 600,
+                data: row["ConfigData"],
+                onDestroy: function (data) {
+                    if (data != "close")
+                        row["ConfigData"] = mini.encode(data);
+                }
+            });
+        }
+    });
+
+    var defineID = getQueryString("DefineID");
+    $("#dataGrid").attr("url", "GetDetailList?DefineID=" + defineID);
+    function addDetailRow() {
+
+        addExecuteParam("DefineID", defineID);
+        execute("AddNewDetail", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                var dataGrid = mini.get("dataGrid");
+                dataGrid.addRow(data);
+            }, validateForm: false
+        });
+
+    }
+
+    function delDetail() {
+        var dataGrid = mini.get("dataGrid");
+        var rows = dataGrid.getSelecteds();
+        addExecuteParam("ListData", mini.encode(rows));
+        execute("DelDetail", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+                dataGrid.removeRows(rows);
+            }, validateForm: false
+        });
+    }
+
+    function saveDetail() {
+        var dataGrid = mini.get("dataGrid");
+        dataGrid.commitEdit();
+        var data = dataGrid.getData();
+        addExecuteParam("ListData", mini.encode(data));
+        execute("SaveDetailList", {
+            showLoading: true, refresh: false, onComplete: function (data) {
+
+            }, validateForm: false
+        });
+
+    }
+
+</script>

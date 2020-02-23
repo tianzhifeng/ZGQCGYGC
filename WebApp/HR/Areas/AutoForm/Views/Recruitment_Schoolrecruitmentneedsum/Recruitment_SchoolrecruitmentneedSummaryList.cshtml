@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "校园招聘需求汇总";
+}
+<div class="mini-fit">
+    <div id="dataGrid" url="GetSchoolrecruitmentneedsumList" class="mini-datagrid" style="width: 100%;
+        height: 100%;" idfield="ID" multiselect="true">
+        <div property="columns">
+            @*<div type="checkcolumn">
+            </div>*@
+            <div type="indexcolumn">
+            </div>
+            <div field="Major" width="120" headeralign="center" allowsort="true" align="center">
+                专业</div>
+            @foreach (var dept in ViewBag.deptDataTable.Rows)
+            {
+                var field = dept["Dept"].ToString();
+                var fieldName = dept["DeptName"].ToString();
+                
+                <div field="@field" width="120" headeralign="center" allowsort="true" align="center">
+                    @fieldName</div>
+            }
+        </div>
+    </div>
+</div>
+
